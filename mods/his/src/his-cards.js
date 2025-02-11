@@ -5162,7 +5162,7 @@ console.log("and we have Siege Mining...");
 	    if (his_self.game.spaces[extra]) {
 	      for (let f in his_self.game.spaces[extra].units) {
 		if (his_self.game.spaces[extra].units[f].length > 0) {
-		  if (his_self.returnCommandingPower(f) == "hapsburg") {
+		  if (his_self.returnControllingPower(f) == "hapsburg") {
 		    are_haps_in_space = true;
 		  }
 		}
@@ -5181,9 +5181,11 @@ console.log("and we have Siege Mining...");
 	    let fis = his_self.returnArrayOfFactionsInSpace(spacekey);
 	    if (fis.includes(f)) {
               if (his_self.game.deck[0].fhand[i].includes('030')) {
-	        if (his_self.doesPlayerHaveLandUnitsInSpace(his_self.game.player, spacekey)) {
-	          if (his_self.game.spaces[spacekey].units["hapsburg"].length > 1) {
-                    return 1;
+	        for (let f in his_self.game.spaces[spacekey].units) {
+		  if (his_self.game.spaces[spacekey].units[f].length > 0) {
+		    if (his_self.returnControllingPower(f) == "hapsburg") {
+                      return 1;
+                    }
                   }
                 }
               }
@@ -5208,23 +5210,51 @@ console.log("and we have Siege Mining...");
 	      }
 	    }
 	    if (nhr >= 3) {
-	      let rolls_removed = 0;
-	      if (his_self.game.state.field_battle.faction_map["hapsburg"] === his_self.game.state.field_battle.attacker_faction) {
-		for (let z = his_self.game.state.field_battle.attacker_modified_rolls.length-1; z >= 0 && rolls_removed < 3; z--) {
-		  his_self.game.state.field_battle.attacker_modified_rolls.splice(z, 1);
-		  rolls_removed++;
-	        }
-	      } else {
-		for (let z = his_self.game.state.field_battle.defender_modified_rolls.length-1; z >= 0 && rolls_removed < 3; z--) {
-		  his_self.game.state.field_battle.defender_modified_rolls.splice(z, 1);
-		  rolls_removed++;
-	        }
-	      }
+	      his_self.addMove("discard\t"+faction+"\t030");
+	      his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction) + " triggers " + his_self.popup("030"));
+	      his_self.addMove("tercios_remove_haps_rolls\t"+his_self.game.state.field_battle.spacekey+"\t"+faction+"\t"+3);
+	      his_self.endTurn();
 	    }
 	  }
         }
         return 1;
       },
+      handleGameLoop : function(his_self, qe, mv) {
+
+        if (mv[0] === "tercios_remove_haps_rolls") {
+
+	  let spacekey = mv[1];
+	  let faction = mv[2];
+
+	  if (his_self.returnControllingPower(his_self.game.state.field_battle.attacker_faction) == "hapsburg") {
+	    for (let i = 0; i < 3; i++) {
+	      if (his_self.game.state.field_battle.attacker_modified_rolls[i]) {
+		if (his_self.game.state.field_battle.attacker_modified_rolls[i] >= 5) {
+	          his_self.game.state.field_battle.attacker_hits--;
+		}
+	        his_self.game.state.field_battle.attacker_modified_rolls[i] = 0;
+	      }
+	    }
+	  } else {
+	    for (let i = 0; i < 3; i++) {
+	      if (his_self.game.state.field_battle.defender_modified_rolls[i]) {
+		if (his_self.game.state.field_battle.defender_modified_rolls[i] >= 5) {
+	          his_self.game.state.field_battle.defender_hits--;
+		}
+	        his_self.game.state.field_battle.defender_modified_rolls[i] = 0;
+	      }
+	    }
+	  }
+
+          his_self.game.queue.splice(qe, 1);
+	  his_self.displayModal(his_self.returnFactionName(faction) + " triggers Tercios");
+
+	  return 1;
+
+        }
+
+        return 1;
+      }
     }
     deck['031'] = { 
       img : "cards/HIS-031.svg" , 
@@ -5275,12 +5305,32 @@ console.log("and we have Siege Mining...");
 
           let player = mv[1];
           let faction = mv[2];
+	  let is_move_over_pass = false;
+
           his_self.game.queue.splice(qe, 1);
 
 	  his_self.displayModal(his_self.returnFactionName(faction) + " triggers Foul Weather");
 
 	  his_self.updateLog(his_self.returnFactionName(faction) + " triggers " + his_self.popup("031"));
 	  his_self.game.state.events.foul_weather = 1;
+
+
+	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
+	    let lqe = his_self.game.queue[i];
+	    let lmv = lqe.split("\t");
+	    if (lmv[0] == "move") {
+	      let source = lmv[3];
+	      let destination = lmv[4];
+	      if (his_self.game.spaces[source].pass) {
+	        for (let z = 0; z < his_self.game.spaces[source].pass.length; z++) {
+		  if (his_self.game.spaces[source].pass[z] == destination) {
+		    is_move_over_pass = true;
+		  }
+	        }
+	      }
+	    }
+	  }
+
 
 	  //
 	  // "lose 1 CP"
@@ -5293,6 +5343,13 @@ console.log("and we have Siege Mining...");
 	      // only stop if at "continue" or "play"
 	      if (lqe.indexOf("cards_left") == 0 || lqe.indexOf("counter_or_acknowledge") == 0 || lqe.indexOf("RESOLVE") == 0 || lqe.indexOf("HALTED") == 0)  {
 	      } else {
+		if (is_move_over_pass) {
+	          if (lqe.indexOf("continue") == 0) {
+		    let lmv = lqe.split("\t");
+		    let replacement_command = lmv[0] + "\t" + lmv[1] + "\t" + lmv[2] + "\t" + lmv[3] + "\t" + (parseInt(lmv[4])+1) + "\t" + lmv[5];
+		    his_self.game.queue[i] = replacement_command;
+		  }
+		}
 	        i = -1;
 	      }
 	    }
@@ -5401,7 +5458,8 @@ console.log("and we have Siege Mining...");
       menuOptionActivated:  function(his_self, menu, player, faction) {
 	// only triggered by Holy Roman Emperor
 	if (menu === "event") {
-	  this.game.queue.push("ops\thapsburg\t002\t5");
+          his_self.addMove("gout_stops_charles_v\t"+faction);
+          his_self.endTurn();
 	  return 1;
 	}
 
@@ -5504,7 +5562,26 @@ console.log("and we have Siege Mining...");
       },
       handleGameLoop : function(his_self, qe, mv) {
 
-        if (mv[0] == "gout") {
+	if (mv[0] === "gout_stops_charles_v") {
+
+	  let triggering_faction = mv[1];
+
+          his_self.game.queue.splice(qe, 1);
+
+
+	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
+	    if (his_self.game.queue[i] == "event\thapsburg\t002") {
+	      his_self.game.queue[i] = "ops\thapsburg\t002\t5";
+	    }
+	  }
+	  his_self.displayModal(his_self.returnFactionName(triggering_faction) + " triggers Gout");
+
+	  return 1;
+
+	}
+
+
+        if (mv[0] === "gout") {
 
           his_self.game.queue.splice(qe, 1);
 
@@ -5829,14 +5906,22 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
       turn : 1 ,
       type : "response" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      menuOption  :       function(his_self, menu, player) {
+      menuOption  :       function(his_self, menu, player, extra="") {
         if (menu === "post_assault_rolls") {
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('035')) {
-              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
-              i = 100;
-              return { faction : f , event : '035', html : `<li class="option blink" id="035">siege artillery (${f})</li>` };
+	      let assault_spacekey = his_self.game.state.assault.spacekey;
+	      let attacker_faction = his_self.game.state.assault.attacker_faction;
+	      for (let z = 0; z < his_self.game.state.players_info[his_self.game.player-1].factions.length; z++) {
+                if (attacker_faction == his_self.game.state.players_info[his_self.game.player-1].factions[z]) {
+                  if (4 >= his_self.returnHopsToFortifiedHomeSpace(assault_spacekey, attacker_faction)) {
+              	    f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+              	    i = 100;
+              	    return { faction : f , event : '035', html : `<li class="option blink" id="035">siege artillery (${f})</li>` };
+		  }
+		}
+	      }
             }
           }
         }   

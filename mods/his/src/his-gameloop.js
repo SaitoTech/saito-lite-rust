@@ -5298,8 +5298,11 @@ console.log("----------------------------");
 	    try {
 
 	      if (z[i].key !== this.game.state.active_card) {
+console.log("event: " + z[i].key);
                 if (z[i].menuOptionTriggers(this, stage, this.game.player, extra) == 1) {
+console.log("event 2");
                   let x = z[i].menuOption(this, stage, this.game.player, extra);
+console.log("menu option!");
 		  if (x.html) {
                     html += x.html;
 	            z[i].faction = x.faction;
@@ -6011,7 +6014,6 @@ try {
 	        }
 	      }
 	    }
-
 
 	    return { rolls : rolls , units : units };
           }
@@ -11407,19 +11409,12 @@ defender_hits - attacker_hits;
 	    faction = mv[1];
 	  }
 
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("into check interventions");
-
 	  this.unbindBackButtonFunction();
 	  this.updateStatus("preparing for Action Phase...");
 
 	  let should_i_check = false;
 	  if (this.game.confirms_needed[this.game.player-1] == 1) { should_i_check = true; }
 	  if (faction != "" && this.game.player == this.returnPlayerCommandingFaction(faction)) { should_i_check = true; }
-
-console.log("$hould i check? " + should_i_check);
 
 	  if (should_i_check) {
 
@@ -11434,13 +11429,14 @@ console.log("$hould i check? " + should_i_check);
 	    }
 
 	    //
-	    // Professional Rowers permits naval_intercept and naval_avoid_battle
+	    // Professional Rowers permits naval_intercept and naval_avoid_battle and post-naval-battle
 	    //
 	    for (let z = 0; z < this.game.deck[0].fhand.length; z++) {
 	      for (let i = 0; i < this.game.deck[0].fhand[z].length; i++) {
 	        if (this.game.deck[0].fhand[z][i] == "034") {
                   this.addMove("SETVAR\tstate\tevents\tintervention_naval_avoid_battle_possible\t1");
                   this.addMove("SETVAR\tstate\tevents\tintervention_naval_intercept_possible\t1");
+                  this.addMove("SETVAR\tstate\tevents\tintervention_post_naval_battle_possible\t1");
 	        };
 	      }
 	    }
@@ -11471,17 +11467,6 @@ console.log("$hould i check? " + should_i_check);
 	        if (this.game.deck[0].fhand[z][i] == "035") {
                   this.addMove("SETVAR\tstate\tevents\tintervention_post_assault_possible\t1");
 	        }
-	      }
-	    }
-
-	    //
-	    // Post Naval Battle - Professional Rowers
-	    //
-	    for (let z = 0; z < this.game.deck[0].fhand.length; z++) {
-	      for (let i = 0; i < this.game.deck[0].fhand[z].length; i++) {
-	        if (this.game.deck[0].fhand[z][i] == "034") {
-                  this.addMove("SETVAR\tstate\tevents\tintervention_post_naval_battle_possible\t1");
-	        };
 	      }
 	    }
 
@@ -13230,6 +13215,17 @@ console.log("----------------------------");
 	  let player_of_faction = this.returnPlayerCommandingFaction(faction);
 	  let already_discarded = false;
 
+
+          if (card === "034") {
+            this.game.state.events.intervention_naval_avoid_battle_possible = 0;
+            this.game.state.events.intervention_naval_intercept_possible = 0;
+            this.game.state.events.intervention_post_naval_battle_possible = 0;
+          }
+
+          if (card === "037") {
+            this.game.state.events.intervention_on_events_possible = 0;
+          }
+
 	  if (this.game.deck[0].discards[card]) { already_discarded = true; }
 	  //
 	  // move into discards
@@ -13586,6 +13582,7 @@ console.log("----------------------------");
  	    mycallback.push({ text : "back to menu" , mycallback : () => { this.playerPlayOps(card, faction, ops, limit); }});
 	    this.unbindBackButtonFunction();
 	    this.playerAcknowledgeNotice(`You have ${ops} OPS remaining...`, mycallback);
+
 	  } else {
 	    this.hideOverlays();
 	    let fhand_idx = 0;

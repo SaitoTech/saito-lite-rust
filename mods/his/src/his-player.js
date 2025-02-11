@@ -2046,18 +2046,12 @@ if (relief_siege == 1) {
     //
     // check if the eventing of this card makes interventions impossible
     //
-    if (this.game.state.events.intervention_on_movement_possible == 1) {
-
-    }
+    if (this.game.state.events.intervention_on_movement_possible == 1) {}
     if (this.game.state.events.intervention_on_events_possible == 1) {
       if (card === "037") { this.game.state.events.intervention_on_events_possible = 0; }
     }
-    if (this.game.state.events.intervention_on_assault_possible == 1) {
-
-    }
-    if (this.game.state.events.intervention_post_assault_possible == 1) {
-
-    }
+    if (this.game.state.events.intervention_on_assault_possible == 1) {}
+    if (this.game.state.events.intervention_post_assault_possible == 1) {}
     if (this.game.state.events.intervention_post_naval_assault_possible == 1) {
       if (card === "034") { this.game.state.events.intervention_naval_avoid_battle_possible = 0; }
     }
@@ -2067,8 +2061,6 @@ if (relief_siege == 1) {
     if (this.game.state.events.intervention_naval_intercept_possible == 1) {
       if (card === "034") { this.game.state.events.intervention_naval_intercept_possible = 0; }
     }
-
-
 
 
     //
@@ -2212,10 +2204,12 @@ if (relief_siege == 1) {
 
     //
     // back button loses track of which card was played, but foreign
-    // recruits submits with card=""
+    // recruits submits with card="". we need to know the last card
+    // played for a few reasons, including untriggering events
     //
     this.game.player_last_card = "";
     if (card != "") { this.game.player_last_card = card; }
+
 
     //
     // unbind in all cases except where OPS are max from card
@@ -2266,6 +2260,16 @@ if (relief_siege == 1) {
 
     if (ops == null) { ops = 2; }
     if (ops == 0) { 
+    
+      if (this.game.player_last_card == "034") {
+        this.addMove("SETVAR\tstate\tevents\tintervention_naval_avoid_battle_possible\t0");
+        this.addMove("SETVAR\tstate\tevents\tintervention_naval_intercept_possible\t0");
+        this.addMove("SETVAR\tstate\tevents\tintervention_post_naval_battle_possible\t0");
+      }       
+      if (this.game.player_last_card == "037") {
+        this.addMove("SETVAR\tstate\tevents\tintervention_on_events_possible\t0");
+      }   
+      
       this.endTurn();
       return;
     }
@@ -2365,7 +2369,15 @@ if (relief_siege == 1) {
 	  his_self.menu_overlay.hide();
 
           if (user_choice === "end_turn") {
-            this.endTurn();
+            if (his_self.game.player_last_card == "034") {
+              his_self.addMove("SETVAR\tstate\tevents\tintervention_naval_avoid_battle_possible\t0");
+              his_self.addMove("SETVAR\tstate\tevents\tintervention_naval_intercept_possible\t0");
+              his_self.addMove("SETVAR\tstate\tevents\tintervention_post_naval_battle_possible\t0");
+            }       
+            if (this.game.player_last_card == "037") {
+              his_self.addMove("SETVAR\tstate\tevents\tintervention_on_events_possible\t0");
+            }   
+            his_self.endTurn();
             return;
           }
 
@@ -2527,6 +2539,14 @@ if (relief_siege == 1) {
 	his_self.menu_overlay.hide();
 
         if (user_choice === "end_turn") {
+          if (his_self.game.player_last_card == "034") {
+            his_self.addMove("SETVAR\tstate\tevents\tintervention_naval_avoid_battle_possible\t0");
+            his_self.addMove("SETVAR\tstate\tevents\tintervention_naval_intercept_possible\t0");
+            his_self.addMove("SETVAR\tstate\tevents\tintervention_post_naval_battle_possible\t0");
+          }       
+          if (this.game.player_last_card == "037") {
+            his_self.addMove("SETVAR\tstate\tevents\tintervention_on_events_possible\t0");
+          }   
           this.endTurn();
           return;
         }
@@ -2668,6 +2688,14 @@ if (relief_siege == 1) {
     // and not removed from the deck.
     //
     if (this.game.state.removed.includes(card)) {
+      if (his_self.game.player_last_card == "034") {
+        his_self.addMove("SETVAR\tstate\tevents\tintervention_naval_avoid_battle_possible\t0");
+        his_self.addMove("SETVAR\tstate\tevents\tintervention_naval_intercept_possible\t0");
+        his_self.addMove("SETVAR\tstate\tevents\tintervention_post_naval_battle_possible\t0");
+      }       
+      if (this.game.player_last_card == "037") {
+        his_self.addMove("SETVAR\tstate\tevents\tintervention_on_events_possible\t0");
+      }   
       this.endTurn();
       return;
     }
