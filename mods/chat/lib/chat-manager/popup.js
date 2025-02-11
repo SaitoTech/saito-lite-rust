@@ -674,10 +674,11 @@ class ChatPopup {
 
 		if (this.app.browser.isMobileBrowser()){
 			window.history.pushState("chat", "");
-			this.closeFn = window.onpopstate;
-			window.onpopstate = (e) => {
-				this.close();
-			}
+			this.close_function_set = true;
+			//this.app.browser.pushBackFn(window.onpopstate);
+			//window.onpopstate = (e) => {
+			//	this.close();
+			//}
 		}
 
 		if (this.group.name != this.mod.communityGroupName) {
@@ -971,7 +972,8 @@ class ChatPopup {
 		this.manually_closed = true;
 		this.remove();
 		this.app.storage.saveOptions();
-		window.onpopstate = this.closeFn;
+		this.close_function_set = false;
+		//window.onpopstate = this.app.browser.popBackFn();
 	}
 }
 

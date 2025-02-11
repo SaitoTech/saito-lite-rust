@@ -128,15 +128,19 @@ class RedSquareNavigation {
         }
       }
 
-      window.history.replaceState({view: "home"}, '', '/' + this.mod.slug);
+        window.history.replaceState({view: "home"}, '', '/' + this.mod.slug);
+        this.app.connection.emit('saito-header-reset-logo');
+          // Need to clear our SPA history stack....
+        this.app.browser.resetBackFn(() => {
+          this.app.connection.emit('redsquare-home-render-request');
+          console.log("Redsquare home in history");
+        });
     };
 
     //
     // notifications
     //
     document.querySelector('.redsquare-menu-notifications').onclick = (e) => {
-      window.history.pushState({view: "notifications"}, "", '/' + this.mod.slug);
-      window.location.hash = '#notifications';
       this.app.connection.emit('redsquare-notifications-render-request');
       this.app.connection.emit('redsquare-remove-loading-message', 'navigating...');
     };
@@ -145,10 +149,7 @@ class RedSquareNavigation {
     // profile
     //
     document.querySelector('.redsquare-menu-profile').onclick = (e) => {
-      window.history.pushState({view: "profile"}, "", '/' + this.mod.slug + `/?user_id=${this.mod.publicKey}`);
-      //window.location.hash = '#profile';
-      this.app.connection.emit('redsquare-profile-render-request', this.mod.publicKey);
-      this.app.connection.emit('redsquare-remove-loading-message', 'navigating...');
+      this.openProfile(this.mod.publicKey);
     };
 
     //
@@ -161,6 +162,11 @@ class RedSquareNavigation {
         ms[0].loadSettings('.module-settings-overlay');
       }
     };
+  }
+
+  openProfile(publicKey){
+      this.app.connection.emit('redsquare-profile-render-request', publicKey);
+      this.app.connection.emit('redsquare-remove-loading-message', 'navigating...');
   }
 
   incrementNotifications(notifications = -1) {
