@@ -408,14 +408,14 @@ class Browser {
 			}
 		);
 
-		window.addEventListener("popstate", (event)=> {
+		window.onpopstate = (event)=> {
 			console.log("Browser navigation: ", event?.state);
 			if (event.state){
 				this.popBackFn(event);	
 			}else{
 				console.log(event);
 			}
-		});
+		}
 
 		//hide pace-js if its still active
 		setTimeout(function () {
