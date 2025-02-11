@@ -58,6 +58,7 @@ class Browser {
 		this.tab_event_name = "visibilitychange";
 		this.title_interval = null;
 	    this.terminationEvent = 'unload';
+	    this.back_fn_queue = [];
 
 	}
 
@@ -406,6 +407,15 @@ class Browser {
 				capture: true
 			}
 		);
+
+		window.onpopstate = (event)=> {
+			console.log("Browser navigation: ", event?.state);
+			if (event.state){
+				this.popBackFn(event);	
+			}else{
+				console.log(event);
+			}
+		}
 
 		//hide pace-js if its still active
 		setTimeout(function () {
@@ -2777,6 +2787,39 @@ class Browser {
             root,
             cleanup
         };
+    }
+
+    pushBackFn(callback){
+    	this.back_fn_queue.push(callback);
+
+    	if (this.back_fn_queue.length == 2){
+    		console.log("HISTORY: Add back arrow");
+	    	this.app.connection.emit('saito-header-replace-logo', ()=> {
+	    		window.history.back();
+	    	});
+
+    	}
+
+    	console.log("HISTORY PUSHED: ", this.back_fn_queue);
+    }
+
+    popBackFn(event){
+    	this.back_fn_queue.pop();
+
+    	console.log("HISTORY POPPED: ", this.back_fn_queue, event);
+
+    	if (this.back_fn_queue.length > 0) {
+    		this.back_fn_queue[this.back_fn_queue.length - 1]();
+    	}
+
+    	if (this.back_fn_queue.length <= 1) {
+    		this.app.connection.emit('saito-header-reset-logo');
+    	}
+    }
+
+    resetBackFn(callback){
+    	this.back_fn_queue = [];
+    	this.pushBackFn(callback);
     }
 }
 

@@ -76,6 +76,8 @@ class Stun extends ModTemplate {
 		// });
 
 		app.connection.on('stun-connection-connected', async (publicKey) => {
+			let stats = await this.peers.get(publicKey).getStats()
+			console.log("STUN STATS: ", stats);
 			//await this.app.network.addStunPeer(publicKey, this.peers.get(publicKey))
 		});
 	}

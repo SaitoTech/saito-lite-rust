@@ -187,14 +187,9 @@ class RedSquare extends ModTemplate {
         } RedSquare Profile`,
         icon: 'fa fa-user',
         callback: function (app, publicKey) {
-          if (app.modules.returnActiveModule().returnName() == 'Red Square') {
-            app.connection.emit('redsquare-profile-render-request', publicKey);
-            window.history.pushState(
-              { view: 'profile' },
-              '',
-              '/' + this_mod.slug + `/?user_id=${publicKey}`
-            );
-          } else {
+          if (this_mod?.menu){
+            this_mod.menu.openProfile(publicKey);
+          }else{
             navigateWindow(`/redsquare/?user_id=${publicKey}`);
           }
         }
@@ -705,11 +700,6 @@ class RedSquare extends ModTemplate {
             break;
           case '#profile':
             this.app.connection.emit('redsquare-profile-render-request');
-            window.history.pushState(
-              { view: 'profile' },
-              '',
-              '/' + this.slug + `/?user_id=${this.publicKey}`
-            );
             break;
           default:
         }
@@ -1625,7 +1615,7 @@ class RedSquare extends ModTemplate {
         // only insert notification if doesn't already exist
         //
         if (this.notifications_sigs_hmap[tx.signature] != 1) {
-          console.log('Add notification', tx.msg, tx.timestamp);
+          //console.log('Add notification', tx.msg, tx.timestamp);
 
           let insertion_index = 0;
 
