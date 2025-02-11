@@ -3,7 +3,7 @@ module.exports = (app, mod, sobj) => {
   let warning_msg = "(0 network fees)";
   let fee = mod.includeFeeInMax(sobj.ticker);
   if (fee){
-    if (mod.gm?.opengame) {
+    if (mod.gm?.opengame && mod.gm?.settleNow) {
       warning_msg = `(${fee} ${sobj.ticker} per round)`;
     } else {
       warning_msg = `(${fee} ${sobj.ticker} at end of game)`;

@@ -40,7 +40,7 @@ module.exports = (app, mod, form) => {
 
   let warning_msg = "(0 network fees)";
   if (fee){
-    if (mod.gm?.opengame) {
+    if (mod.gm?.opengame && mod.gm?.settleNow) {
       warning_msg = `(${fee} ${form?.ticker} per round)`;
     } else {
       warning_msg = `(${fee} ${form?.ticker} at end of game)`;

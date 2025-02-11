@@ -112,20 +112,8 @@ class Crypto extends ModTemplate {
 							game_mod.game.crypto != 'CHIPS'
 						) {
 
-							if (typeof game_mod.game.stake === "object"){
-								let str = "";
-								for (let i in game_mod.game.stake){
-									if (i !== 'min'){
-										str += `${game_mod.app.keychain.returnUsername(i)}: ${game_mod.game.stake[i]} ${game_mod.game.crypto} / `
-									}
-								}
-								str = str.substring(0, str.length - 3);
-								salert(`${str} staked on this game`);
-							}else{
-								salert(
-									`${game_mod.game.stake} ${game_mod.game.crypto} staked on this game!`
-								);
-							}
+							game_mod.showStakeOverlay();
+						
 							return;
 						}
 
