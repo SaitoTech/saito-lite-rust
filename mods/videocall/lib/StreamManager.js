@@ -434,6 +434,12 @@ class StreamManager {
 
     //Plug local stream into UI component
     this.app.connection.emit('add-local-stream-request', this.localStream);
+
+    /*
+    //To debug multiple video boxes 
+    this.app.connection.emit('add-remote-stream-request', "guest1", this.localStream);
+    this.app.connection.emit('add-remote-stream-request', "guest2", this.localStream);
+    */
   }
 
   removePeer(peer, message = 'left the meeting') {
