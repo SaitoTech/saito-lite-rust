@@ -84,10 +84,9 @@ class PokerStake {
   // returns "true" or "false" based on need to settle
   //
   needToSettleDebt() {
-    if (!this.game.crypto) {
+    if (!this.game.options?.crypto) {
       return false;
     }
-    
     //
     // if settleNow is true, the send/receive are added directly in the poker queue
     //
