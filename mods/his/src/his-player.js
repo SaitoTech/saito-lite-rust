@@ -6125,7 +6125,7 @@ does_units_to_move_have_unit = true; }
   }
   playerBuyMercenary(his_self, player, faction, ops_to_spend, ops_remaining) {
 
-    his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.playerTurn(faction, selected_card); });
+    his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
 
     //
     // ui for building multiple units
@@ -6562,19 +6562,30 @@ does_units_to_move_have_unit = true; }
 
     if (his_self.game.state.events.foul_weather) { return 0; }
 
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$");
+
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
 
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
 
+console.log(JSON.stringify(conquerable_spaces));
+
     let assaultable_spaces = 0;
     let nonassaultable_spaces = 0;
 
     for (let i = 0; i < conquerable_spaces.length; i++) {
+console.log("cs: " + conquerable_spaces[i]);
       if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) {
         if (conquerable_spaces[i] !== "egypt" && conquerable_spaces[i] !== "persia" && conquerable_spaces[i] !== "ireland") {
+console.log("not controlled by me");
 	  if (his_self.isSpaceInLineOfControl(conquerable_spaces[i], faction)) {
+console.log("in line of control!");
             if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1 || (faction == "ottoman" && his_self.game.state.events.roxelana == 1) || (faction == his_self.returnControllingPower("scotland") && his_self.game.state.events.scots_raid == 1)) {
+console.log("assaulted this turn: " + JSON.stringify(his_self.game.state.spaces_assaulted_this_turn));
 	      if (!his_self.game.state.spaces_assaulted_this_turn.includes(conquerable_spaces[i])) {
 
 	        //
@@ -6585,6 +6596,7 @@ does_units_to_move_have_unit = true; }
 	        let squadrons_protecting_space = his_self.returnNumberOfSquadronsProtectingSpace(conquerable_spaces[i]);
 	        if (squadrons_protecting_space == 0) { assaultable_spaces++ } else {
 
+console.log("checking if squadrons are protecting!");
 		      let attacker_squadrons_adjacent = 0;
 
 		      for (let y = 0; y < his_self.game.spaces[conquerable_spaces[i]].ports.length; y++) {
@@ -7145,15 +7157,15 @@ does_units_to_move_have_unit = true; }
     return 0;
   }
 
-  async playerInitiatePiracyInASea(his_self, player, faction) {
+  async playerInitiatePiracyInASea(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
     // relevant vars defined for this function
     //state.events.ottoman_piracy_enabled = 0;
     //state.events.ottoman_corsairs_enabled = 0;
     //state.events.ottoman_piracy_attempts = 0;
     //state.events.ottoman_piracy_seazones = [];
-    
-    his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.playerTurn(faction, selected_card); });
+
+    his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
 
     let msg = "Select Sea for Piracy: ";
     let html = '<ul>';
@@ -8566,9 +8578,13 @@ does_units_to_move_have_unit = true; }
       //
       for (let key in his_self.game.spaces) {
 	if (his_self.game.spaces[key].home === target_faction) {
-	  if (his_self.game.spaces[key].political === faction) {
+	  if (his_self.returnControllingPower(his_self.game.spaces[key].political) === faction) {
             his_self.addMove(`control\t${target_faction}\t${key}`);
-            his_self.addMove(`withdraw_to_nearest_fortified_space\t${faction}\t${key}`);
+	    for (let f in his_self.game.spaces[key].units) {
+	      if (his_self.returnControllingPower(f) == faction) {
+                his_self.addMove(`withdraw_to_nearest_fortified_space\t${f}\t${key}`);
+	      }
+	    }
 	  }
         }
       }
@@ -8673,9 +8689,9 @@ does_units_to_move_have_unit = true; }
                   his_self.displaySpace(spacekey);
                   his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction_to_destroy+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
                   let z = false;
-                  his_self.addMove("war_loser_regain_leaders_for_vp_or_cards\t"+faction+"\t"+target_faction);
-                  his_self.addMove("war_loser_regain_spaces_for_vp_or_cards\t"+faction+"\t"+target_faction);
-                  his_self.addMove("war_loser_regain_keys_for_vp\t"+faction+"\t"+target_faction);
+                  his_self.prependMove("war_loser_regain_keys_for_vp\t"+faction+"\t"+target_faction);
+                  his_self.prependMove("war_loser_regain_spaces_for_vp_or_cards\t"+faction+"\t"+target_faction);
+                  his_self.prependMove("war_loser_regain_leaders_for_vp_or_cards\t"+faction+"\t"+target_faction);
                   his_self.endTurn();
                 });
               },

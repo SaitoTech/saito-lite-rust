@@ -22,6 +22,7 @@
     if (obj.gout == null)               { obj.gout = false; }
     if (obj.locked == null)		{ obj.locked = 0; }
     if (obj.lost_field_battle == null)	{ obj.lost_field_battle = 0; }
+    if (obj.lost_naval_battle == null)	{ obj.lost_naval_battle = 0; }
     if (obj.relief_force == null)	{ obj.relief_force = false; }
     if (obj.already_moved == null)	{ obj.already_moved = 0; }
     if (obj.onCommitted == null) {

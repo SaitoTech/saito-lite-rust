@@ -6516,6 +6516,7 @@ try {
 	      if (his_self.game.state.field_battle.defender_rolls > 0) { his_self.game.state.field_battle.defender_rolls--; }
 	      if (his_self.game.state.field_battle.defender_modified_rolls.length > 0) {
 		if (his_self.game.state.field_battle.defender_modified_rolls[his_self.game.state.field_battle.defender_modified_rolls.length-1] >= 5) {
+		  his_self.updateLog("Field Battle - hit removed from defender...");
 		  his_self.game.state.field_battle.defender_hits--;
 		}
 		his_self.game.state.field_battle.defender_modified_rolls.splice(his_self.game.state.field_battle.defender_modified_rolls.length, 1);
@@ -6527,6 +6528,7 @@ try {
 	      if (his_self.game.state.field_battle.attacker_rolls > 0) { his_self.game.state.field_battle.attacker_rolls--; }
 	      if (his_self.game.state.field_battle.attacker_modified_rolls.length > 0) {
 		if (his_self.game.state.field_battle.attacker_modified_rolls[his_self.game.state.field_battle.attacker_modified_rolls.length-1] >= 5) {
+		  his_self.updateLog("Field Battle - hit removed from attacker...");
 		  his_self.game.state.field_battle.attacker_hits--;
 		}
 		his_self.game.state.field_battle.attacker_modified_rolls.splice(his_self.game.state.field_battle.attacker_modified_rolls.length, 1);
@@ -9462,7 +9464,6 @@ try {
           his_self.game.queue.push("assault_assign_hits_render");
           his_self.game.queue.push("assault_show_hits_render");
           his_self.game.queue.push("counter_or_acknowledge\tAssault is about to begin in "+space.name + "\tpre_assault_rolls\t"+spacekey);
-          //his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
           his_self.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
 
           his_self.assault_overlay.renderPreAssault(his_self.game.state.assault);
@@ -10571,6 +10572,7 @@ try {
 	  let attacker_idx = 0;
 	  let defender_idx = 0;
 	  let was_defender_uncommitted = 0;
+	  let debate_results_discarded = false;
 
 	  this.game.queue.splice(qe, 1);
 
@@ -10781,13 +10783,13 @@ try {
 	      //
 	      // if campeggio is the debater, we have 1/3 chance of ignoring result
 	      //
-
 	      if (this.game.state.theological_debate.defender_debater === "campeggio-debater" && this.game.state.theological_debate.defender_debater_entered_uncommitted == 1) {
 		let roll = this.rollDice(6);
 	        if (roll >= 5) {
 	          this.updateLog(this.popup("campeggio-debater") + " rolls: " + roll + " debate loss discarded");
 		  total_spaces_to_convert = 0;
 		  bonus_conversions = 0;
+	          debate_results_discarded = true;
 	        } else {
 	          this.updateLog(this.popup("campeggio-debater") + " rolls: " + roll + " debate loss sustained");
 	 	}
@@ -10813,7 +10815,7 @@ try {
 	      //
 	      // attacker has more hits, is defender burned?
 	      //
-	      if (unaltered_total_spaces_to_convert > this.game.state.theological_debate.defender_debater_power) {
+	      if (debate_results_discarded == false && unaltered_total_spaces_to_convert > this.game.state.theological_debate.defender_debater_power) {
 		if (this.game.state.theological_debate.attacker_faction === "papacy") {
 		  this.burnDebater(this.game.state.theological_debate.defender_debater);
 		} else {
@@ -10872,6 +10874,7 @@ defender_hits - attacker_hits;
 	          this.updateLog("Campeggio rolls: " + roll + " debate loss discarded");
 		  total_spaces_to_convert = 0;
 		  bonus_conversions = 0;
+		  debate_results_discarded = true;
 	        } else {
 	          this.updateLog("Campeggio rolls: " + roll + " debate loss sustained");
 	 	}
@@ -10897,7 +10900,7 @@ defender_hits - attacker_hits;
 	      //
 	      // defender has more hits, is attacker burned?
 	      //
-	      if (unaltered_total_spaces_to_convert > this.game.state.theological_debate.attacker_debater_power) {
+	      if (debate_results_discarded == false && unaltered_total_spaces_to_convert > this.game.state.theological_debate.attacker_debater_power) {
 	        if (this.game.state.theological_debate.attacker_faction === "protestant") {
 		  this.burnDebater(this.game.state.theological_debate.attacker_debater);
 	 	} else {
@@ -12346,6 +12349,17 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  this.game.queue.splice(qe, 1);
 
   	  this.unsetEnemies(f1, f2);
+
+	  // also unset any minor allied powers
+	  if (this.returnControllingPower("venice") == f1) { this.unsetEnemies("venice", f2); }
+	  if (this.returnControllingPower("venice") == f2) { this.unsetEnemies("venice", f1); }
+	  if (this.returnControllingPower("hungary") == f1) { this.unsetEnemies("hungary", f2); }
+	  if (this.returnControllingPower("hungary") == f2) { this.unsetEnemies("hungary", f1); }
+	  if (this.returnControllingPower("genoa") == f1) { this.unsetEnemies("genoa", f2); }
+	  if (this.returnControllingPower("genoa") == f2) { this.unsetEnemies("genoa", f1); }
+	  if (this.returnControllingPower("scotland") == f1) { this.unsetEnemies("scotland", f2); }
+	  if (this.returnControllingPower("scotland") == f2) { this.unsetEnemies("scotland", f1); }
+
 	  this.displayWarBox();
 
 	  return 1;
@@ -12357,6 +12371,17 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  let f2 = mv[2];
 
   	  this.unsetAllies(f1, f2);
+
+	  // also unset any minor allied powers
+	  if (this.returnControllingPower("venice") == f1) { this.unsetAllies("venice", f2); }
+	  if (this.returnControllingPower("venice") == f2) { this.unsetAllies("venice", f1); }
+	  if (this.returnControllingPower("hungary") == f1) { this.unsetAllies("hungary", f2); }
+	  if (this.returnControllingPower("hungary") == f2) { this.unsetAllies("hungary", f1); }
+	  if (this.returnControllingPower("genoa") == f1) { this.unsetAllies("genoa", f2); }
+	  if (this.returnControllingPower("genoa") == f2) { this.unsetAllies("genoa", f1); }
+	  if (this.returnControllingPower("scotland") == f1) { this.unsetAllies("scotland", f2); }
+	  if (this.returnControllingPower("scotland") == f2) { this.unsetAllies("scotland", f1); }
+
 	  this.game.queue.splice(qe, 1);
 
 	  this.displayWarBox();
@@ -12567,6 +12592,16 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
     	    this.displayHudPopup("war", `${this.returnFactionName(f1)} declares war on ${this.returnFactionName(f2)}`);
 	  }
 
+	  // also set any minor allied powers
+	  if (this.returnControllingPower("venice") == f1) { this.setEnemies("venice", f2); }
+	  if (this.returnControllingPower("venice") == f2) { this.setEnemies("venice", f1); }
+	  if (this.returnControllingPower("hungary") == f1) { this.setEnemies("hungary", f2); }
+	  if (this.returnControllingPower("hungary") == f2) { this.setEnemies("hungary", f1); }
+	  if (this.returnControllingPower("genoa") == f1) { this.setEnemies("genoa", f2); }
+	  if (this.returnControllingPower("genoa") == f2) { this.setEnemies("genoa", f1); }
+	  if (this.returnControllingPower("scotland") == f1) { this.setEnemies("scotland", f2); }
+	  if (this.returnControllingPower("scotland") == f2) { this.setEnemies("scotland", f1); }
+
 	  this.displayWarBox();
 
 	  return 1;
@@ -12583,6 +12618,16 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  if ((f1 == "papacy" && f2 == "hapsburg") || (f1 == "hapsburg" && f2 == "papacy") && this.game.state.round == this.game.state.henry_viii_pope_approves_divorce_round == this.game.state.round) { return 1; }
 
   	  this.setAllies(f1, f2);
+
+	  // also set any minor allied powers
+	  if (this.returnControllingPower("venice") == f1) { this.setAllies("venice", f2); }
+	  if (this.returnControllingPower("venice") == f2) { this.setAllies("venice", f1); }
+	  if (this.returnControllingPower("hungary") == f1) { this.setAllies("hungary", f2); }
+	  if (this.returnControllingPower("hungary") == f2) { this.setAllies("hungary", f1); }
+	  if (this.returnControllingPower("genoa") == f1) { this.setAllies("genoa", f2); }
+	  if (this.returnControllingPower("genoa") == f2) { this.setAllies("genoa", f1); }
+	  if (this.returnControllingPower("scotland") == f1) { this.setAllies("scotland", f2); }
+	  if (this.returnControllingPower("scotland") == f2) { this.setAllies("scotland", f1); }
 
 	  return 1;
 
@@ -14240,12 +14285,12 @@ try {
 	    if (space != "metz" && space != "liege" && this.game.spaces[space].language != "german" && this.game.spaces[space].language != "italian") { 
 	      this.updateLog("NOTE: only Metz, Liege and German and Italian spaces may change control in the 2P game");
 	    } else {
-	      this.updateLog(this.returnFactionName(faction) + " controls " + this.returnSpaceName(space));
-	      this.game.spaces[space].political = faction;
+	      this.updateLog(this.returnFactionName(this.returnControllingPower(faction)) + " controls " + this.returnSpaceName(space));
+	      this.game.spaces[space].political = this.returnControllingPower(faction);
 	    }
 	  } else {
-	    this.updateLog(this.returnFactionName(faction) + " controls " + this.returnSpaceName(space));
-	    this.game.spaces[space].political = faction;
+	    this.updateLog(this.returnFactionName(this.returnControllingPower(faction)) + " controls " + this.returnSpaceName(space));
+	    this.game.spaces[space].political = this.returnControllingPower(faction);
 	  }
 
 
