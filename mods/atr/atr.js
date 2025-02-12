@@ -101,6 +101,7 @@ class ATR extends ModTemplate {
 		atr_obj.totalFees = blk.totalFees
 		atr_obj.totalFeesNew = blk.totalFeesNew;
 		atr_obj.totalFeesAtr = blk.totalFeesAtr;
+		atr_obj.totalFeesCumulative = blk.totalFeesCumulative;
 		atr_obj.avgTotalFees = blk.avgTotalFees;
 		atr_obj.avgTotalFeesNew = blk.avgTotalFeesNew;
 		atr_obj.avgTotalFeesAtr = blk.avgTotalFeesAtr;
@@ -124,6 +125,8 @@ class ATR extends ModTemplate {
 		atr_obj.treasury = blk.treasury;
 		atr_obj.graveyard = blk.graveyard;
 
+		console.log("blk: ", blk);
+
 		let utxo = null;
 		if (type == 'old') {
 			atr_obj.utxo = '-';
@@ -131,11 +134,13 @@ class ATR extends ModTemplate {
 		} else {
 			utxo = await this.fetchBalanceSnapshot('');
 			atr_obj.utxo = utxo;
-			atr_obj.total_supply = utxo+blk.treasury+blk.graveyard+blk.totalFees+blk.previousBlockUnpaid+blk.totalFeesAtr;
+			atr_obj.total_supply = utxo+blk.treasury+blk.graveyard+blk.totalFees+blk.previousBlockUnpaid;
 		}
 
 		let fullblock = JSON.parse(blk.toJson());
 		atr_obj.previous_block_hash = fullblock.previous_block_hash;
+
+		console.log("atr_obj: ", atr_obj);
 
 		return atr_obj;
 	}
