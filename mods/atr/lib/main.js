@@ -24,6 +24,8 @@ class Main {
 			let block = this.mod.blocks[i];
 			let blockslot = (i + 1);
 
+			console.log("main.js block: ", block);
+
 			document.querySelector(`.blocktable .table-header .blockslot${blockslot}`).innerHTML = block.id;
 			
 			document.querySelectorAll(`.blocktable .total_fees .blockslot${blockslot}`).forEach(function(item,index){
@@ -34,6 +36,9 @@ class Main {
 			document.querySelector(`.blocktable .avg_total_fees .blockslot${blockslot}`).innerHTML = (block.avgTotalFees).toLocaleString();
 			document.querySelector(`.blocktable .avg_total_fees_new .blockslot${blockslot}`).innerHTML = (block.avgTotalFeesNew).toLocaleString();
 			document.querySelector(`.blocktable .avg_total_fees_atr .blockslot${blockslot}`).innerHTML = (block.avgTotalFeesAtr).toLocaleString();
+
+			document.querySelector(`.blocktable .total_fees_cumulative .blockslot${blockslot}`).innerHTML = (block.totalFeesCumulative).toLocaleString();
+
 			document.querySelector(`.blocktable .total_payout_routing .blockslot${blockslot}`).innerHTML = (block.totalPayoutRouting).toLocaleString();
 			document.querySelector(`.blocktable .total_payout_mining .blockslot${blockslot}`).innerHTML = (block.totalPayoutMining).toLocaleString();
 			document.querySelector(`.blocktable .total_payout_treasury .blockslot${blockslot}`).innerHTML = (block.totalPayoutTreasury).toLocaleString();
