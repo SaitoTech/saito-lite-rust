@@ -215,6 +215,29 @@
 }
 
 
+/***********************
+ * 
+ * GAme stake info
+ * 
+ **********************/
+.stake-info-overlay {
+  width: min(400px, 80vw);
+  height: min(200px, 70vh);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 2rem;
+  padding: 2rem;
+}
+
+.stake-info-overlay .h3 {
+  font-size: 3rem;
+}
+
+.stake-info-overlay .player-table {
+  margin: 1rem;
+}
+
 /*******************/
 /* A welcome image  */
 /*******************/

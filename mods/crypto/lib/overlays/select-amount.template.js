@@ -40,11 +40,7 @@ module.exports = (app, mod, form) => {
 
   let warning_msg = "(0 network fees)";
   if (fee){
-    if (mod.gm?.opengame) {
-      warning_msg = `(${fee} ${form?.ticker} per round)`;
-    } else {
-      warning_msg = `(${fee} ${form?.ticker} at end of game)`;
-    }
+    warning_msg = `(${fee} ${form?.ticker})`;
   }
 
   html +=  `<div class="crypto_msg"><div></div><div class="select_max">Max: ${mod.max_balance}</div></div></div>`;

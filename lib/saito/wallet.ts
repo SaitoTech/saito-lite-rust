@@ -10,6 +10,8 @@ import S from 'saito-js/saito';
 import SaitoWallet from 'saito-js/lib/wallet';
 import BalanceSnapshot from 'saito-js/lib/balance_snapshot';
 import { WalletSlip } from 'saito-js/lib/wallet';
+import Decimal from 'decimal.js';
+
 
 const CryptoModule = require('../templates/cryptomodule');
 
@@ -1424,9 +1426,9 @@ export default class Wallet extends SaitoWallet {
 
     public convertSaitoToNolan(amount = '0.0') {
         let nolan = 0;
-        let num = Number(amount);
-        if (num > 0) {
-            nolan = num * this.nolan_per_saito; // 100,000,000
+        let num = Decimal(amount);
+        if (Number(amount) > 0) {
+            nolan = Number(num.times(this.nolan_per_saito).toFixed(0)); // 100,000,000
         }
 
         return BigInt(nolan);

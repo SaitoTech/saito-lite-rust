@@ -3,11 +3,7 @@ module.exports = (app, mod, sobj) => {
   let warning_msg = "(0 network fees)";
   let fee = mod.includeFeeInMax(sobj.ticker);
   if (fee){
-    if (mod.gm?.opengame) {
-      warning_msg = `(${fee} ${sobj.ticker} per round)`;
-    } else {
-      warning_msg = `(${fee} ${sobj.ticker} at end of game)`;
-    }
+    warning_msg = `(${fee} ${sobj.ticker})`;
   }
 
 	return `  
@@ -16,7 +12,7 @@ module.exports = (app, mod, sobj) => {
     <h2 class="auth_title">Enable In-Game Crypto</h2>
     <div class="stake-input-container">
       <div class="stake">${sobj.stake} ${sobj.ticker}</div>
-      <div class="crypto_msg">${sobj.game_mod.crypto_msg}</div>
+      <!--div class="crypto_msg">${sobj.game_mod.crypto_msg}</div!-->
     </div>
     <div class="crypto-stake-confirm-container">
       <input type="checkbox" checked name="crypto-stake-confirm-input" id="approve-crypto-stake-confirm-input">
