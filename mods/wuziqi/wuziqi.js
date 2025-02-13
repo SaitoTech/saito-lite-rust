@@ -315,18 +315,7 @@ class Wuziqi extends GameTemplate {
 						'\t' +
 						this.game.player;
 					// Add this move to the stack
-					this.prependMove(mv);
-
-					// If we have a winner
-					if (winner != 'no winner') {
-						// If not only add a 'round over' message to the stack.
-						this.prependMove('roundover\t' + this.game.player);
-					}
-
-					//If board full
-					if (!this.canPlayTile()) {
-						this.prependMove('draw\t' + this.game.player);
-					}
+					this.addMove(mv);
 
 					// And send on chain.
 					this.endTurn();
@@ -472,7 +461,7 @@ class Wuziqi extends GameTemplate {
 					}
 				}
 
-				return 1;
+				return 0;
 			}
 			if (mv[0] == 'place') {
 				let player = parseInt(mv[3]);
@@ -491,12 +480,26 @@ class Wuziqi extends GameTemplate {
 					this.animatePlay(cell);
 				}
 
+				// If we have a winner
+				if (winner != 'no winner') {
+					// If not only add a 'round over' message to the stack.
+					this.game.queue = ['roundover\t' + player];
+					return 1;
+				}
+
+				//If board full
+				if (!this.canPlayTile()) {
+					this.game.queue = ['draw\t' + player];
+					return 1;
+				}
+
 				this.game.target = this.returnNextPlayer(player);
 
 				this.playerbox.setActive(this.game.target);
 
 				// Remove this item from the queue.
 				this.game.queue.splice(this.game.queue.length - 1, 1);
+
 			}
 		}
 

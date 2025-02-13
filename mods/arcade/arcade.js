@@ -1160,6 +1160,7 @@ class Arcade extends ModTemplate {
 			return;
 		}
 
+//<<<<<<<<<<<<<<
 		if (this.isAvailableGame(game) || game.msg?.options['open-table']) {
 			//
 			// Don't add the same player twice!
