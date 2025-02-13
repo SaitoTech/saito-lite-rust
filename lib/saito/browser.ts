@@ -409,11 +409,11 @@ class Browser {
 		);
 
 		window.onpopstate = (event)=> {
-			console.log("Browser navigation: ", event?.state);
+			//console.log("Browser navigation: ", event?.state);
 			if (event.state){
 				this.popBackFn(event);	
 			}else{
-				console.log(event);
+				//console.log(event);
 			}
 		}
 

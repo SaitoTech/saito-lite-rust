@@ -819,6 +819,13 @@ class SettlersGameloop {
 
         this.game.stats.dice[roll]++; //Keep count of the rolls
         this.game.stats.dicePlayer[roll][player-1]++;
+        
+        for (let r in this.game.stats.famine){
+          this.game.stats.famine[r]++;
+        }        
+        this.game.stats.famine[roll] = 0;
+
+        console.log("Settlers roll: ", roll, this.game.stats.famine);
 
         // board animation
         this.animateDiceRoll(roll);

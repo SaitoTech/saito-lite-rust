@@ -696,6 +696,8 @@ class Settlers extends GameTemplate {
 			stats.dicePlayer[i] = array;
 		}
 
+		stats.famine = {};
+
 		for (let r of this.returnResources()) {
 			let array = new Array(this.game.players.length);
 			array.fill(0);
