@@ -51,6 +51,7 @@ class League extends ModTemplate {
 		this.icon_fa = 'fas fa-user-friends';
 		this.debug = false;
 		this.last_prune = 0;
+		this.finished_games = [];
 
 		app.connection.on('league-render-into', (league_id, container) => {
 			if (!app.BROWSER) {
@@ -997,14 +998,20 @@ class League extends ModTemplate {
 		//
 		// small grace period
 		//
-		if (
-			is_gameover &&
-			(txmsg.reason == 'cancellation' ||
+		if (is_gameover){
+			if(txmsg.reason == 'cancellation' ||
 				txmsg.reason?.includes('Wins:') ||
 				txmsg.reason?.includes('Scores: '))
-		) {
-			console.log("Don't process");
-			return;
+		 	{
+				console.log("Don't process");
+				return;
+			}
+			if (this.finished_games.includes(txmsg.game_id)){
+				console.warn("Game over already processed");
+				return;
+			}else{
+				this.finished_games.push(txmsg.game_id);
+			}
 		}
 
 		//
