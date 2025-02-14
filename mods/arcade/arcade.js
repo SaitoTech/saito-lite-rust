@@ -976,14 +976,14 @@ class Arcade extends ModTemplate {
 	async changeGameStatus(game_id, newStatus) {
 		let game = this.returnGame(game_id);
 
-		console.log(`Change game status from ${game.msg.request} to ${newStatus}`);
-
-		if (game?.msg?.request == 'over') {
-			return;
-		}
-
 		//Move game to different list
 		if (game) {
+			console.log(`Change game status from ${game.msg.request} to ${newStatus}`);
+
+			if (game?.msg?.request == 'over') {
+				return;
+			}
+
 			this.removeGame(game_id);
 			this.addGame(game, newStatus);
 		}
