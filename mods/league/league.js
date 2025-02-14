@@ -636,6 +636,7 @@ class League extends ModTemplate {
 			for (let league of sqlResults) {
 				await league_self.updateLeague(league);
 			}
+			console.log("Loaded leagues into memory");
 		}
 	}
 
@@ -1161,7 +1162,7 @@ class League extends ModTemplate {
 	/////////////////////
 	/////////////////////
 	async getRelevantLeagues(game, target_league = '') {
-		let sql = `SELECT *
+		/*let sql = `SELECT *
                FROM leagues
                WHERE game = $game
                  AND (admin = "" OR id = $target)
@@ -1170,6 +1171,7 @@ class League extends ModTemplate {
 		let params = { $game: game, $target: target_league };
 
 		let sqlResults = await this.app.storage.queryDatabase(sql, params, 'league');
+		*/
 
 		let localLeagues = this.leagues.filter((l) => {
 			if (l.game === game) {
@@ -1180,7 +1182,7 @@ class League extends ModTemplate {
 			return false;
 		});
 
-		return sqlResults || localLeagues;
+		return /*sqlResults ||*/ localLeagues;
 	}
 
 	async getPlayersFromLeague(league_id, players) {
@@ -1380,11 +1382,26 @@ class League extends ModTemplate {
 
 			//console.log(tweetContent);
 
+			let now = new Date().getTime();
+
 			let obj = {
 				module: 'RedSquare',
 				request: 'create tweet',
 				data: { text: tweetContent, mentions: players }
 			};
+
+			if (league?.tweetID) {
+				if (now - league.tweetTS > 1000*60*60*4){
+					// Start a new thread if it has been at least 4 hours
+					delete league.tweetID;
+					delete league.tweetTS;
+				}else{
+					league.tweetTS = now;
+					obj.data.parent_id = league.tweetID;
+					obj.data.thread_id = league.tweetID;
+					obj.data.signature = league.tweetID;
+				}
+			}
 
 			let newtx = await this.app.wallet.createUnsignedTransaction();
 			for (let player of players){
@@ -1395,6 +1412,12 @@ class League extends ModTemplate {
 
 			await newtx.sign();
 			await this.app.network.propagateTransaction(newtx);
+
+			if (!league?.tweetID){
+				league.tweetID = newtx.signature;
+				league.tweetTS = now;
+			}
+
 		}
 	}
 
