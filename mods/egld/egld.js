@@ -37,12 +37,13 @@ class EGLDModule extends CryptoModule {
         }
   }
 
+
   async activate() {
     try {
         console.log("activating egld ///");
         await this.setupNetwork();
 
-        if (this.account_created == 0){
+        if (this.account_created == 0) {
             await this.getAddress();
             await this.generateAccount();
             this.save();
@@ -52,7 +53,8 @@ class EGLDModule extends CryptoModule {
     } catch (error) {
         console.error("Error activate:", error);
     }
-  }
+}
+
 
   respondTo(type, obj) {
     let self = this
@@ -62,21 +64,31 @@ class EGLDModule extends CryptoModule {
     }
   }
 
-  async getAddress() {
-      try {
-        let mnemonic =  Mnemonic.fromString(this.app.options.wallet.seed.mnemonic);
+async getAddress() {
+    try {
+        // Use EGLD mnemonic text if it exists, otherwise use wallet seed
+        let mnemonic = this.egld?.mnemonic_text ? 
+            Mnemonic.fromString(this.egld.mnemonic_text) : 
+            Mnemonic.fromString(this.app.options.wallet.seed.mnemonic);
+            
         this.secretKey = mnemonic.deriveKey(0);
         const publicKey = this.secretKey.generatePublicKey();
         this.address_obj = publicKey.toAddress();
 
-        this.egld.mnemonic_text = mnemonic.text;
+        // Store the mnemonic text if we used seedphrase
+        if (!this.egld.mnemonic_text) {
+            this.egld.mnemonic_text = mnemonic.text;
+        }
+        
         this.egld.address = this.address = this.destination = this.address_obj.toBech32();
-
-        console.log(this.egld.address);
-      } catch (error) {
+        
+    } catch (error) {
         console.error("Error creating EGLD address:", error);
-      }
-  }
+        throw error;
+    }
+}
+
+
 
   async generateAccount() {
       try {
@@ -451,8 +463,7 @@ class EGLDModule extends CryptoModule {
                 this.address = this.egld.address;
                 this.destination = this.egld.address;
                 
-                await this.getAddress(this.egld.mnemonic_text);
-                //await this.updateAccount();
+                await this.getAddress();
               }
             }
         } catch (error) {
