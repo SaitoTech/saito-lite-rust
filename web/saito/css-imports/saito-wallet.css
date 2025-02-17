@@ -56,13 +56,6 @@
   font-size: 18px;
 }
 
-.input-elem {
-  width: 99%;
-  height: 35px;
-  padding: 7px 10px;
-  position: relative;
-}
-
 #copy-deposit-add {
   position: absolute;
   top: 54%;
@@ -149,9 +142,12 @@
 
 .withdraw-identicon-container {
   display: flex;
-  gap: 1rem;
   align-items: center;
 }
+
+.withdraw-identicon-container .saito-identicon { 
+  margin: 0.5rem
+ }
 
 #saito-withdraw-overlay {
   min-width: 32vw;
@@ -163,19 +159,6 @@
   overflow: hidden;
 }
 
-.withdraw-address-cont {
-  position: relative;
-}
-
-.withdraw-address-cont i {
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 2.5rem;
-  cursor: pointer;
-  z-index: 2;
-}
 
 .mixin-withdraw-token-wrapper {
   margin-bottom: 2rem;
@@ -207,11 +190,12 @@
 }
 
 .input-elem {
-  width: 100% !important;
-  height: 45px;
-  padding: 10px 10px !important;
+  min-height: 35px;
+  width: 99%;
+  padding: 0px 5px;
   color: var(--saito-color-contrast);
 }
+
 
 .info-cont {
   display: flex;
@@ -475,7 +459,7 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  left: 1rem;
+  left: 0.5rem;
 }
 
 .token-dropdown select {
@@ -488,17 +472,19 @@
 }
 
 .withdraw-address-cont {
-  position: relative; 
-}
-
-/* unfinished changes, waiting testing */
-.saito-overlay-form-input input {
-  border: none;
-  background: var(--saito-light-shim);
-  color: var(--saito-gray-mid);
-  font-size: 1.6rem;
   background: var(--background-color-main);
   border: 1px solid var(--border-color-general-dividers);
+  display: grid;
+  grid-template-columns: 1fr min-content;
+  align-items: center;
+}
+
+.saito-overlay-form-input input {
+  color: var(--saito-gray-mid);
+  font-size: 1.6rem;
+  border: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Hide arrows, Chrome, Safari, Edge, Opera */
@@ -513,18 +499,24 @@
   -moz-appearance: textfield;
 }
 
-.withdraw-options-cont {
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--saito-font-color);
+.withdraw-options-cont, .withdraw-address-cont i { 
   cursor: pointer;
+  margin: 1rem;
+  margin-left: 0.5rem;
+  font-size: 2.5rem;
 }
 
-.withdraw-options-cont span {
+.withdraw-options-cont {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.withdraw-options-cont span{
   font-size: 1.6rem;
 }
+
+
 
 
 .withdrawl-notes {
@@ -632,12 +624,13 @@
 
 .dropdown-cont {
   display: flex;
-  gap: 1rem;
   justify-content: space-between;
 }
 
 .dropdown-cont .saito-overlay-form-input {
-  width: 30%;
+  flex: 1;
+  margin: 0;
+  max-width: fit-content;
 }
 
 .withdraw-info-cont {
@@ -647,7 +640,7 @@
 }
 
 .withdraw-info-cont .withdraw-info-title {
-  width: 11rem;
+  max-width: 11rem;
   display: block;
 }
 
@@ -741,6 +734,7 @@
   }
 
   #saito-withdraw-overlay {
-    min-width: 92vw;
+    min-width: unset;
+    width: min(60rem, 92vw);
   }
 }
