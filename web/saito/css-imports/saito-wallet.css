@@ -503,6 +503,34 @@
   -moz-appearance: textfield;
 }
 
+.saito-overlay-form-input input {
+  autocomplete: off;
+}
+
+/* Fully override Chrome's autofill styling */
+.saito-overlay-form-input input:-webkit-autofill,
+.saito-overlay-form-input input:-webkit-autofill:hover,
+.saito-overlay-form-input input:-webkit-autofill:focus,
+.saito-overlay-form-input input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--font-color-primary) !important;
+  caret-color: var(--font-color-primary) !important;
+  background-color: var(--saito-background-color) !important;
+  border: none !important;
+  outline: none !important;
+  -webkit-box-shadow: 0 0 0px 1000px var(--saito-background-color) inset !important;
+  box-shadow: 0 0 0px 1000px var(--saito-background-color) inset !important;
+}
+
+/* Ensure styles apply in ALL states */
+.saito-overlay-form-input input {
+  border: none !important;
+  outline: none !important;
+  background-color: var(--saito-background-color) !important;
+}
+.saito-overlay-form-input input:-webkit-autofill {
+  border: 1px solid transparent !important;
+}
+
 .withdraw-options-cont, .withdraw-address-cont i { 
   cursor: pointer;
   margin: 1rem;
