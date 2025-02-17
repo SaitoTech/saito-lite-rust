@@ -322,6 +322,7 @@ font imports
   /*Border padding*/ 
   --border-padding-sidebar-style: var(--border-padding-normal);
   --border-padding-overlay-post: var(--border-padding-ultra-wide);
+  --border-padding-qr-code: var(--border-padding-normal);
   /*thickness*/
   --border-thickness-general-dividers: var(--border-thickness-thin);
   --border-thickness-sidebar-menu: none;

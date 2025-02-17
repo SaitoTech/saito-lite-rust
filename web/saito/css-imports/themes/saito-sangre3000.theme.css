@@ -137,12 +137,14 @@ html[data-theme="sangre3000"] {
   --border-radius-leaderboard-ranking: var(--border-radius-comfortable);
   --border-radius-offset: 0.3rem;
   /* BORDER THICKNESS */
+  --border-padding-qr-code: 0;
   --border-thickness-button-primary: var(--border-thickness-thin);
   --border-thickness-button-hover-primary: var(--border-thickness-thin);
   --border-thickness-identicon: var(--border-thickness-none);
   --border-thickness-overlay-post: var(--border-thickness-fat);
   --border-thickness-overlay-menu: var(--border-thickness-fat);
   --border-thickness-modal-menu: var(--border-thickness-fat);
+  --border-thickness-qr-code: var(--border-thickness-fat); /* for contrast to be able to scan */
   /* BORDER COLORS */
   --border-color-general-dividers-dark: var(--color-primary);
   --border-color-button-wallet-control: var(--color-complement);
