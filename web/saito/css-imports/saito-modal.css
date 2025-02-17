@@ -452,19 +452,30 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 .qr-share-overlay{
-  padding: 1rem;
+  padding: 2rem;
   border: var(--saito-border);
-  background-color: beige;
   width: max-content;
 }
 
 .qr-share-header {
   font-size: 3rem;
-  color: black;
   display: flex;
   justify-content: center;
 }
 
-#qr-share-link{
-  padding: 1rem;
+#qr-share-link {
+  margin: 2rem;
 }
+
+
+#qr-share-link img {
+  height: auto;
+  max-width: 24rem;
+  width: 24vh;
+  border: var(--border-thickness-qr-code) solid var(--border-color-qr-code);
+  padding: var(--border-padding-qr-code);
+  border-radius: var(--border-radius-qr-code);
+  background: var(--background-color-qr-code);
+}
+
+
