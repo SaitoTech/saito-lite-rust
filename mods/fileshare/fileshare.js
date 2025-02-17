@@ -2,6 +2,7 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 const FileShareOverlay = require('./lib/fileshare-overlay');
 const FileReceiveOverlay = require('./lib/filereceive-overlay');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
+const InvitationLink = require('./../../lib/saito/ui/modals/saito-link/saito-link');
 const HomePage = require('./index');
 
 class Fileshare extends ModTemplate {
@@ -751,7 +752,7 @@ class Fileshare extends ModTemplate {
 
 		this.addNavigationProtections();
 
-		let data = {
+		let data_obj = {
 			publicKey: this.publicKey,
 			id: fileId,
 			name: this.outgoing_files[fileId].file.name.replace(/\s+/g, ''),
@@ -759,14 +760,29 @@ class Fileshare extends ModTemplate {
 			type: this.outgoing_files[fileId].file.type
 		};
 
-		let base64obj = this.app.crypto.stringToBase64(JSON.stringify(data));
+		let base64obj = this.app.crypto.stringToBase64(JSON.stringify(data_obj));
 
-		let url1 = window.location.origin + '/fileshare/';
+		let data = {
+			name: "File",
+			path: "/fileshare",
+			file: base64obj
+		}
+
+		let file_invitation_link = new InvitationLink(this.app, this, data);
+
+		file_invitation_link.share_to_chat = false;
+		file_invitation_link.share_to_redsquare = false;
+
+		file_invitation_link.render(true);
+
+
+		/*let url1 = window.location.origin + '/fileshare/';
 
 		let link = `${url1}?file=${base64obj}`;
 
 		navigator.clipboard.writeText(link);
 		siteMessage('Invite link copied to clipboard', 2500);
+		*/
 	}
 }
 

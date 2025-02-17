@@ -135,10 +135,14 @@ stats overlay
 	font-weight: bold;
 }
 
+.settlers-number {
+	width: calc(100% / 14);
+	text-align: center;
+}
+
 .settlers-dice-numbers {
 	display: flex;
 	justify-content: space-around;
-	margin-bottom: 1rem;
 }
 
 
@@ -182,6 +186,10 @@ stats overlay
 	display: flex;
 	flex-direction: column;
 	gap: 0.25rem;
+}
+
+.settlers-state-container hr {
+	margin: 1rem;
 }
 
 .settlers-stats-player {
@@ -460,6 +468,7 @@ stats overlay
 	display: grid;
 	grid-template-columns: 12rem repeat(auto-fit, minmax(5rem, 1fr));
 	align-items: center;
+	margin-bottom: 0.5rem;
 }
 
 .settlers-stat-num-alt {

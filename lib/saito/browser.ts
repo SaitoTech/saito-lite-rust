@@ -409,11 +409,11 @@ class Browser {
 		);
 
 		window.onpopstate = (event)=> {
-			console.log("Browser navigation: ", event?.state);
+			//console.log("Browser navigation: ", event?.state);
 			if (event.state){
 				this.popBackFn(event);	
 			}else{
-				console.log(event);
+				//console.log(event);
 			}
 		}
 
@@ -736,6 +736,17 @@ class Browser {
 	generateQRCode(data, qrid = 'qrcode') {
 		const QRCode = require('./../helpers/qrcode');
 		let obj = document.getElementById(qrid);
+
+		if (typeof data === "object"){
+			data.width=256;
+	        data.height=256;
+	        data.colorDark="#000000";
+		    data.colorLight="#ffffff";
+		    data.correctLevel=QRCode.CorrectLevel.H;
+		}
+
+		console.log(data);
+
 		return new QRCode(obj, data);
 	}
 

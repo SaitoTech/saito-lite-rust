@@ -176,7 +176,7 @@
   max-width: 20rem;
   width: 20vh;
   border: var(--border-thickness-qr-code) solid var(--border-color-qr-code);
-  padding: 0.5rem;
+  padding: var(--border-padding-qr-code);
   border-radius: var(--border-radius-qr-code);
   background: var(--background-color-qr-code);
 }
