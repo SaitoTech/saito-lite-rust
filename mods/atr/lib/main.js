@@ -37,7 +37,8 @@ class Main {
 			document.querySelector(`.blocktable .avg_total_fees_new .blockslot${blockslot}`).innerHTML = (block.avgTotalFeesNew).toLocaleString();
 			document.querySelector(`.blocktable .avg_total_fees_atr .blockslot${blockslot}`).innerHTML = (block.avgTotalFeesAtr).toLocaleString();
 
-			document.querySelector(`.blocktable .total_fees_cumulative .blockslot${blockslot}`).innerHTML = (block.totalFeesCumulative).toLocaleString();
+			// temporarily commented until related rust changes goes live
+			//document.querySelector(`.blocktable .total_fees_cumulative .blockslot${blockslot}`).innerHTML = (block.totalFeesCumulative).toLocaleString();
 
 			document.querySelector(`.blocktable .total_payout_routing .blockslot${blockslot}`).innerHTML = (block.totalPayoutRouting).toLocaleString();
 			document.querySelector(`.blocktable .total_payout_mining .blockslot${blockslot}`).innerHTML = (block.totalPayoutMining).toLocaleString();
