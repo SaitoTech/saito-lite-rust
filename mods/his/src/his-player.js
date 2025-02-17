@@ -2688,13 +2688,13 @@ if (relief_siege == 1) {
     // and not removed from the deck.
     //
     if (this.game.state.removed.includes(card)) {
-      if (his_self.game.player_last_card == "034") {
-        his_self.addMove("SETVAR\tstate\tevents\tintervention_naval_avoid_battle_possible\t0");
-        his_self.addMove("SETVAR\tstate\tevents\tintervention_naval_intercept_possible\t0");
-        his_self.addMove("SETVAR\tstate\tevents\tintervention_post_naval_battle_possible\t0");
+      if (this.game.player_last_card == "034") {
+        this.addMove("SETVAR\tstate\tevents\tintervention_naval_avoid_battle_possible\t0");
+        this.addMove("SETVAR\tstate\tevents\tintervention_naval_intercept_possible\t0");
+        this.addMove("SETVAR\tstate\tevents\tintervention_post_naval_battle_possible\t0");
       }       
       if (this.game.player_last_card == "037") {
-        his_self.addMove("SETVAR\tstate\tevents\tintervention_on_events_possible\t0");
+        this.addMove("SETVAR\tstate\tevents\tintervention_on_events_possible\t0");
       }   
       this.endTurn();
       return;

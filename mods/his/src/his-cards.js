@@ -5321,11 +5321,13 @@ console.log("and we have Siege Mining...");
 	    if (lmv[0] == "move") {
 	      let source = lmv[3];
 	      let destination = lmv[4];
-	      if (his_self.game.spaces[source].pass) {
-	        for (let z = 0; z < his_self.game.spaces[source].pass.length; z++) {
-		  if (his_self.game.spaces[source].pass[z] == destination) {
-		    is_move_over_pass = true;
-		  }
+	      if (his_self.game.spaces[source]) {
+	        if (his_self.game.spaces[source].pass) {
+	          for (let z = 0; z < his_self.game.spaces[source].pass.length; z++) {
+		    if (his_self.game.spaces[source].pass[z] == destination) {
+		      is_move_over_pass = true;
+		    }
+	          }
 	        }
 	      }
 	    }
@@ -5458,9 +5460,15 @@ console.log("and we have Siege Mining...");
       menuOptionActivated:  function(his_self, menu, player, faction) {
 	// only triggered by Holy Roman Emperor
 	if (menu === "event") {
-          his_self.addMove("gout_stops_charles_v\t"+faction);
-          his_self.endTurn();
-	  return 1;
+	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+	    if (his_self.game.deck[0].fhand[i].includes('032')) {
+	      let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+              his_self.addMove("gout_stops_charles_v\t"+f);
+  	      his_self.addMove(`discard\t${f}\t032`);
+              his_self.endTurn();
+	      return 1;
+	    }
+	  }
 	}
 
 	if (menu === "assault") {
@@ -5568,12 +5576,12 @@ console.log("and we have Siege Mining...");
 
           his_self.game.queue.splice(qe, 1);
 
-
 	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
 	    if (his_self.game.queue[i] == "event\thapsburg\t002") {
 	      his_self.game.queue[i] = "ops\thapsburg\t002\t5";
 	    }
 	  }
+	  his_self.updateLog(his_self.returnFactionName(triggering_faction) + " triggers Gout");
 	  his_self.displayModal(his_self.returnFactionName(triggering_faction) + " triggers Gout");
 
 	  return 1;
@@ -12784,10 +12792,11 @@ if (space.key == "milan") {
 	    his_self.game.deck[0].cards["063"] = his_self.game.deck[0].discards["063"];
 	    delete his_self.game.deck[0].discards["063"];
 	    if (his_self.game.player == his_self.returnPlayerCommandingFaction("england")) {
-              let fhand_idx = his_self.returnFactionHandIdx(p, "england");
+              let fhand_idx = his_self.returnFactionHandIdx(his_self.game.player, "england");
 	      his_self.game.deck[0].fhand[fhand_idx].push("063");
 	    }
 	  }
+	  his_self.game.queue.splice(qe, 1);
 	  return 1;
 	}
 

@@ -12620,14 +12620,15 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
   	  this.setAllies(f1, f2);
 
 	  // also set any minor allied powers
-	  if (this.returnControllingPower("venice") == f1) { this.setAllies("venice", f2); }
-	  if (this.returnControllingPower("venice") == f2) { this.setAllies("venice", f1); }
-	  if (this.returnControllingPower("hungary") == f1) { this.setAllies("hungary", f2); }
-	  if (this.returnControllingPower("hungary") == f2) { this.setAllies("hungary", f1); }
-	  if (this.returnControllingPower("genoa") == f1) { this.setAllies("genoa", f2); }
-	  if (this.returnControllingPower("genoa") == f2) { this.setAllies("genoa", f1); }
-	  if (this.returnControllingPower("scotland") == f1) { this.setAllies("scotland", f2); }
-	  if (this.returnControllingPower("scotland") == f2) { this.setAllies("scotland", f1); }
+	  // setting allies with minor powers de-activates them from othres....
+	  //if (this.returnControllingPower("venice") == f1) { this.setAllies("venice", f2); }
+	  //if (this.returnControllingPower("venice") == f2) { this.setAllies("venice", f1); }
+	  //if (this.returnControllingPower("hungary") == f1) { this.setAllies("hungary", f2); }
+	  //if (this.returnControllingPower("hungary") == f2) { this.setAllies("hungary", f1); }
+	  //if (this.returnControllingPower("genoa") == f1) { this.setAllies("genoa", f2); }
+	  //if (this.returnControllingPower("genoa") == f2) { this.setAllies("genoa", f1); }
+	  //if (this.returnControllingPower("scotland") == f1) { this.setAllies("scotland", f2); }
+	  //if (this.returnControllingPower("scotland") == f2) { this.setAllies("scotland", f1); }
 
 	  return 1;
 

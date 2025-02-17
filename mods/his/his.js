@@ -9115,11 +9115,13 @@ console.log("and we have Siege Mining...");
 	    if (lmv[0] == "move") {
 	      let source = lmv[3];
 	      let destination = lmv[4];
-	      if (his_self.game.spaces[source].pass) {
-	        for (let z = 0; z < his_self.game.spaces[source].pass.length; z++) {
-		  if (his_self.game.spaces[source].pass[z] == destination) {
-		    is_move_over_pass = true;
-		  }
+	      if (his_self.game.spaces[source]) {
+	        if (his_self.game.spaces[source].pass) {
+	          for (let z = 0; z < his_self.game.spaces[source].pass.length; z++) {
+		    if (his_self.game.spaces[source].pass[z] == destination) {
+		      is_move_over_pass = true;
+		    }
+	          }
 	        }
 	      }
 	    }
@@ -9252,9 +9254,15 @@ console.log("and we have Siege Mining...");
       menuOptionActivated:  function(his_self, menu, player, faction) {
 	// only triggered by Holy Roman Emperor
 	if (menu === "event") {
-          his_self.addMove("gout_stops_charles_v\t"+faction);
-          his_self.endTurn();
-	  return 1;
+	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+	    if (his_self.game.deck[0].fhand[i].includes('032')) {
+	      let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+              his_self.addMove("gout_stops_charles_v\t"+f);
+  	      his_self.addMove(`discard\t${f}\t032`);
+              his_self.endTurn();
+	      return 1;
+	    }
+	  }
 	}
 
 	if (menu === "assault") {
@@ -9362,12 +9370,12 @@ console.log("and we have Siege Mining...");
 
           his_self.game.queue.splice(qe, 1);
 
-
 	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
 	    if (his_self.game.queue[i] == "event\thapsburg\t002") {
 	      his_self.game.queue[i] = "ops\thapsburg\t002\t5";
 	    }
 	  }
+	  his_self.updateLog(his_self.returnFactionName(triggering_faction) + " triggers Gout");
 	  his_self.displayModal(his_self.returnFactionName(triggering_faction) + " triggers Gout");
 
 	  return 1;
@@ -16578,10 +16586,11 @@ if (space.key == "milan") {
 	    his_self.game.deck[0].cards["063"] = his_self.game.deck[0].discards["063"];
 	    delete his_self.game.deck[0].discards["063"];
 	    if (his_self.game.player == his_self.returnPlayerCommandingFaction("england")) {
-              let fhand_idx = his_self.returnFactionHandIdx(p, "england");
+              let fhand_idx = his_self.returnFactionHandIdx(his_self.game.player, "england");
 	      his_self.game.deck[0].fhand[fhand_idx].push("063");
 	    }
 	  }
+	  his_self.game.queue.splice(qe, 1);
 	  return 1;
 	}
 
@@ -16843,12 +16852,16 @@ console.log("DELETING Z: " + z);
         for (let z = 0; z < this.game.spaces[space].units[f].length; z++) {
           this.game.spaces[space].units[f][z].locked = 0;
           this.game.spaces[space].units[f][z].lost_field_battle = 0;
+          if (this.game.spaces[space].units[f][z].spacekey) { this.game.spaces[space].units[f][z].spacekey = ""; }
+          if (this.game.spaces[space].units[f][z].destination) { this.game.spaces[space].units[f][z].destination = ""; }
         }
       }
     }
     for (let space in this.game.navalspaces) {
       for (let f in this.game.navalspaces[space].units) {
         for (let z = 0; z < this.game.navalspaces[space].units[f].length; z++) {
+          this.game.navalspaces[space].units[f][z].spacekey = "";
+          this.game.navalspaces[space].units[f][z].destination = "";
           this.game.navalspaces[space].units[f][z].locked = 0;
           this.game.navalspaces[space].units[f][z].lost_naval_battle = 0;
         }
@@ -36425,14 +36438,15 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
   	  this.setAllies(f1, f2);
 
 	  // also set any minor allied powers
-	  if (this.returnControllingPower("venice") == f1) { this.setAllies("venice", f2); }
-	  if (this.returnControllingPower("venice") == f2) { this.setAllies("venice", f1); }
-	  if (this.returnControllingPower("hungary") == f1) { this.setAllies("hungary", f2); }
-	  if (this.returnControllingPower("hungary") == f2) { this.setAllies("hungary", f1); }
-	  if (this.returnControllingPower("genoa") == f1) { this.setAllies("genoa", f2); }
-	  if (this.returnControllingPower("genoa") == f2) { this.setAllies("genoa", f1); }
-	  if (this.returnControllingPower("scotland") == f1) { this.setAllies("scotland", f2); }
-	  if (this.returnControllingPower("scotland") == f2) { this.setAllies("scotland", f1); }
+	  // setting allies with minor powers de-activates them from othres....
+	  //if (this.returnControllingPower("venice") == f1) { this.setAllies("venice", f2); }
+	  //if (this.returnControllingPower("venice") == f2) { this.setAllies("venice", f1); }
+	  //if (this.returnControllingPower("hungary") == f1) { this.setAllies("hungary", f2); }
+	  //if (this.returnControllingPower("hungary") == f2) { this.setAllies("hungary", f1); }
+	  //if (this.returnControllingPower("genoa") == f1) { this.setAllies("genoa", f2); }
+	  //if (this.returnControllingPower("genoa") == f2) { this.setAllies("genoa", f1); }
+	  //if (this.returnControllingPower("scotland") == f1) { this.setAllies("scotland", f2); }
+	  //if (this.returnControllingPower("scotland") == f2) { this.setAllies("scotland", f1); }
 
 	  return 1;
 
@@ -42015,13 +42029,13 @@ if (relief_siege == 1) {
     // and not removed from the deck.
     //
     if (this.game.state.removed.includes(card)) {
-      if (his_self.game.player_last_card == "034") {
-        his_self.addMove("SETVAR\tstate\tevents\tintervention_naval_avoid_battle_possible\t0");
-        his_self.addMove("SETVAR\tstate\tevents\tintervention_naval_intercept_possible\t0");
-        his_self.addMove("SETVAR\tstate\tevents\tintervention_post_naval_battle_possible\t0");
+      if (this.game.player_last_card == "034") {
+        this.addMove("SETVAR\tstate\tevents\tintervention_naval_avoid_battle_possible\t0");
+        this.addMove("SETVAR\tstate\tevents\tintervention_naval_intercept_possible\t0");
+        this.addMove("SETVAR\tstate\tevents\tintervention_post_naval_battle_possible\t0");
       }       
       if (this.game.player_last_card == "037") {
-        his_self.addMove("SETVAR\tstate\tevents\tintervention_on_events_possible\t0");
+        this.addMove("SETVAR\tstate\tevents\tintervention_on_events_possible\t0");
       }   
       this.endTurn();
       return;
