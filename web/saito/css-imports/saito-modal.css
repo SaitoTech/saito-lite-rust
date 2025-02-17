@@ -450,3 +450,21 @@ This alows for a header with a header with title to be added without extra CSS
   height: 100%;
   overflow: auto;
 }
+
+.qr-share-overlay{
+  padding: 1rem;
+  border: var(--saito-border);
+  background-color: beige;
+  width: max-content;
+}
+
+.qr-share-header {
+  font-size: 3rem;
+  color: black;
+  display: flex;
+  justify-content: center;
+}
+
+#qr-share-link{
+  padding: 1rem;
+}

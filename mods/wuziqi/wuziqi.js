@@ -445,6 +445,7 @@ class Wuziqi extends GameTemplate {
 
 					// Add a game over message to the stack.
 					this.game.queue.push('gameover\t' + winner);
+					return 1;
 				} else {
 					this.stopClock();
 					// Initiate next round.

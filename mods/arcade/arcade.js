@@ -107,7 +107,7 @@ class Arcade extends ModTemplate {
 			let game = this.returnGame(game_id);
 			if (game) {
 				console.log(game);
-				this.sendJoinTransaction({ tx: game, game_name: 'open_table' });
+				this.sendJoinTransaction({ tx: game, game_name: 'open_table' }, { add_player: true });
 			}
 		});
 	}
@@ -596,6 +596,11 @@ class Arcade extends ModTemplate {
 		try {
 			if (conf == 0) {
 				if (txmsg.module === 'Arcade') {
+					if (this.hasSeenTransaction(tx)) {
+						console.log("Don't double process transactions in Arcade");
+						return;
+					}
+
 					if (this.debug) {
 						console.log('ON CONFIRMATION:', JSON.parse(JSON.stringify(txmsg)));
 					}
@@ -714,6 +719,8 @@ class Arcade extends ModTemplate {
 		//
 		if (message?.data && message?.request === 'arcade spv update') {
 			let tx = new Transaction(undefined, message.data);
+
+			this.hasSeenTransaction(tx);
 
 			let txmsg = tx.returnMessage();
 
@@ -976,14 +983,14 @@ class Arcade extends ModTemplate {
 	async changeGameStatus(game_id, newStatus) {
 		let game = this.returnGame(game_id);
 
-		console.log(`Change game status from ${game.msg.request} to ${newStatus}`);
-
-		if (game?.msg?.request == 'over') {
-			return;
-		}
-
 		//Move game to different list
 		if (game) {
+			console.log(`Change game status from ${game.msg.request} to ${newStatus}`);
+
+			if (game?.msg?.request == 'over') {
+				return;
+			}
+
 			this.removeGame(game_id);
 			this.addGame(game, newStatus);
 		}
@@ -1115,7 +1122,7 @@ class Arcade extends ModTemplate {
 		return newtx;
 	}
 
-	async sendJoinTransaction(invite, update_options = "") {
+	async sendJoinTransaction(invite, update_options = '') {
 		//
 		// Create Transaction
 		//
@@ -1137,12 +1144,13 @@ class Arcade extends ModTemplate {
 	}
 
 	async receiveJoinTransaction(tx) {
-		// console.log("receiveJoinTransaction", tx);
 		if (!tx || !tx.signature) {
 			return;
 		}
 
 		let txmsg = tx.returnMessage();
+
+		//console.log("JOIN TRANSACTION from: ", tx.from[0].publicKey, txmsg);
 
 		//Transaction must be signed
 		if (!txmsg.invite_sig) {
@@ -1160,14 +1168,20 @@ class Arcade extends ModTemplate {
 			return;
 		}
 
-//<<<<<<<<<<<<<<
-		if (this.isAvailableGame(game) || game.msg?.options['open-table']) {
-			//
-			// Don't add the same player twice!
-			//
-			if (!game.msg.players.includes(tx.from[0].publicKey)) {
+		if (!game.msg.players.includes(tx.from[0].publicKey)) {
+			if (
+				this.isAvailableGame(game) ||
+				(game.msg?.options['open-table'] && txmsg?.update_options?.add_player)
+			) {
+				//
+				// Don't add the same player twice!
+				//
 				if (txmsg.update_options) {
-					console.log(`Join TX updates the invite options -- ${txmsg.update_options}!`, game.msg.options, txmsg.options);
+					console.log(
+						`Join TX updates the invite options -- ${txmsg.update_options}!`,
+						game.msg.options,
+						txmsg.options
+					);
 					Object.assign(game.msg.options[txmsg.update_options], txmsg.options);
 				}
 
@@ -1189,7 +1203,14 @@ class Arcade extends ModTemplate {
 
 				//Update UI
 				this.app.connection.emit('arcade-invite-manager-render-request');
+			} else {
+				if (tx.isFrom(this.publicKey)) {
+					salert('Game not available right now...');
+					return;
+				}
 			}
+		} else {
+			console.log('Player already added');
 		}
 
 		// If this is an already initialized table game... stop
@@ -1576,8 +1597,7 @@ class Arcade extends ModTemplate {
 */
 	}
 
-
-   /************************************************************
+	/************************************************************
    // functions to manipulate the local games list
    ************************************************************/
 
@@ -2076,7 +2096,7 @@ class Arcade extends ModTemplate {
 
 		//We want to send a message to the players to add us to the game.accept list so they route their game moves to us as well
 		game_msg.game_id = game_id;
-		if (watch_live){
+		if (watch_live) {
 			game_msg.send_state = true;
 		}
 
@@ -2095,7 +2115,6 @@ class Arcade extends ModTemplate {
 		}
 
 		game_mod.sendFollowTx(game_msg);
-
 	}
 }
 

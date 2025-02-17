@@ -70,13 +70,13 @@ module.exports = (app, mod, invite) => {
 		html += `
 	        <div class="arcade-game-playerbox saito-table-row`;
 
-		if (mod.publicKey === invite.originator) {
-			html += ` available_slot">  
-	      			<div class="saito-identicon-box empty-slot"><i class="fa-solid fa-link"></i>`;
-		} else {
+		//if (mod.publicKey === invite.originator) {
+		//	html += ` available_slot">  
+	   //   			<div class="saito-identicon-box empty-slot"><i class="fa-solid fa-link"></i>`;
+		//} else {
 			html += `">  
 	      			<div class="saito-identicon-box empty-slot">`;
-		}
+		//}
 
 		html += `</div>
 	    			<div class="saito-address">open player slot</div>	
@@ -145,6 +145,7 @@ module.exports = (app, mod, invite) => {
 		} else {
 			if (invite.players.includes(mod.publicKey)) {
 				if (mod.publicKey === invite.originator || mod.isAcceptedGame(invite.game_id)) {
+					html += `<div id="arcade-game-controls-invite-join" class="saito-button saito-button-primary"><i class="fa-solid fa-link"></i>share</div>`;
 					html += `<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-secondary">cancel invite</div>`;
 				} else {
 					html += `<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-secondary">leave invite</div>`;
