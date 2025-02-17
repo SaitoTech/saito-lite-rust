@@ -161,6 +161,12 @@ class JoinGameOverlay {
 			};
 		}
 
+		if (document.getElementById('arcade-game-controls-invite-join')) {
+			document.getElementById('arcade-game-controls-invite-join').onclick = (e) => {
+				this.mod.showShareLink(this.invite.game_id);	
+			};
+		}
+
 		if (document.getElementById('arcade-game-controls-watch-game')) {
 			document.getElementById('arcade-game-controls-watch-game').onclick = (e) => {
 				this.app.connection.emit('league-overlay-remove-request');
@@ -179,12 +185,12 @@ class JoinGameOverlay {
 			};
 		}
 
-		Array.from(document.querySelectorAll('.available_slot')).forEach((emptySlot) => {
+		/*Array.from(document.querySelectorAll('.available_slot')).forEach((emptySlot) => {
 			emptySlot.onclick = () => {
 				this.mod.showShareLink(this.invite.game_id, false);
 				this.overlay.remove();
 			};
-		});
+		});*/
 	}
 }
 
