@@ -66,9 +66,13 @@ class PokerQueue {
 					this.game.state.button_player = this.game.players.length;
 				}
 
-				this.game.state.small_blind_player = this.game.state.button_player - 1;
-				if (this.game.state.small_blind_player < 1) {
-					this.game.state.small_blind_player = this.game.players.length;
+				if (this.game.players.length > 2){
+					this.game.state.small_blind_player = this.game.state.button_player - 1;
+					if (this.game.state.small_blind_player < 1) {
+						this.game.state.small_blind_player = this.game.players.length;
+					}
+				}else{
+					this.game.state.small_blind_player = this.game.state.button_player;
 				}
 
 				this.game.state.big_blind_player = this.game.state.small_blind_player - 1;

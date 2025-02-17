@@ -14,8 +14,8 @@ class PokerUI {
     }
 
 
-    if (player == this.game.state.button_player && player == this.game.state.big_blind_player) {
-      return 'dealer / big blind';
+    if (player == this.game.state.button_player && player == this.game.state.small_blind_player) {
+      return 'dealer / small blind';
     }
 
     if (player == this.game.state.button_player) {
