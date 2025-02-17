@@ -464,11 +464,12 @@
 
 .token-dropdown select {
   height: 45px;
-  padding: 0rem 3rem;
+  padding: 0rem 1rem 0 3rem;
   border: none;
   background: none;
   font-size: 1.6rem;
   color: var(--saito-font-color);
+  width: 100%;
 }
 
 .withdraw-address-cont {
@@ -485,6 +486,9 @@
   border: none;
   overflow: hidden;
   text-overflow: ellipsis;
+  width: 99%;
+  margin-left: 2px;
+  background-color: #0000 !important;
 }
 
 /* Hide arrows, Chrome, Safari, Edge, Opera */
