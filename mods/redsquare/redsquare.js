@@ -1865,16 +1865,17 @@ class RedSquare extends ModTemplate {
     let liked_tweet = this.returnTweet(txmsg.data.signature);
 
     //
-    // set as curated if liked by moderator
-    //
-    if (this.app.modules.moderate(liked_tweet.tx) == 1) {
-      liked_tweet.curated = 1;
-    }
-
-    //
     // save optional likes
     //
     if (liked_tweet?.tx) {
+
+      //
+      // set as curated if liked by moderator
+      //
+      if (this.app.modules.moderate(liked_tweet.tx) == 1) {
+         liked_tweet.curated = 1;
+      }
+
       if (!liked_tweet.tx.optional) {
         liked_tweet.tx.optional = {};
       }
