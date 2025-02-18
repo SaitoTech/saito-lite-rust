@@ -289,6 +289,19 @@ class Arcade extends ModTemplate {
 
 	async onPeerServiceUp(app, peer, service = {}) {
 		if (!app.BROWSER) {
+
+			if (this.games?.offline){
+				for (let j = 0; j < this.games.offline.length; j++){
+					if (this.games.offline[j].from[0].publicKey == peer.publicKey){
+						let game = this.games.offline[j];
+						console.log("Mark game invite online again!");
+						this.notifyPeers(this.games.offline[j]);
+						this.removeGame(game.signature);
+						this.addGame(game, "open");
+					}
+				}
+			}
+
 			return;
 		}
 
@@ -685,25 +698,17 @@ class Arcade extends ModTemplate {
 
 			let txs = [];
 			let peers = await app.network.getPeers();
-			//For testing, remove when functional
-			//console.log(peers);
-			//for (let i = 0; i < peers.length; i++) {
-			//	console.log(peers[i].publicKey);
-			//}
 
 			for (let key in this.games) {
 				for (let g of this.games[key]) {
 					let pkey = g.from[0].publicKey;
 					let success = false;
 					for (let i = 0; i < peers.length; i++) {
-						if (peers[i].publicKey === pkey) {
+						if (peers[i].publicKey === pkey && peers[i]?.status !== "disconnected") {
 							txs.push(g.serialize_to_web(this.app));
 							success = true;
 							break;
 						}
-					}
-					if (!success) {
-						console.log('hide invite from offline peer');
 					}
 				}
 			}
@@ -769,6 +774,11 @@ class Arcade extends ModTemplate {
 					//Trigger UI update in game
 					app.connection.emit('arcade-reject-challenge', txmsg.game_id);
 				}
+
+
+				if (txmsg.request == "offline"){
+					await this.receiveOfflineTransaction(tx);
+				}
 			} else {
 				if (txmsg.request === 'stopgame') {
 					await this.receiveCloseTransaction(tx);
@@ -794,6 +804,32 @@ class Arcade extends ModTemplate {
 		}
 
 		return super.handlePeerTransaction(app, newtx, peer, mycallback);
+	}
+
+
+	async onConnectionUnstable(app, publicKey){
+		if (this.app.BROWSER == 1) {
+			return;
+		}
+
+		// Only care about open, public invites
+		for (let g of this.games["open"]){
+			if (publicKey == g.from[0].publicKey){
+				let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+				newtx.msg = {
+					module: "Arcade",
+					request: "offline",
+					game_id: g.signature
+				}
+
+				await newtx.sign();
+
+				this.notifyPeers(newtx);
+
+				this.removeGame(g.signature);
+				this.addGame(g, "offline");
+			}
+		}
 	}
 
 	//
@@ -1361,6 +1397,26 @@ class Arcade extends ModTemplate {
 			}
 		}
 	}
+
+	
+	async receiveOfflineTransaction(tx){
+
+		let txmsg = tx.returnMessage();
+
+		if (this.app.BROWSER){
+			for (let j = 0;  j < this.games.open.length; j++){
+				if (this.games.open[j].signature == txmsg.game_id){
+					this.games.open.splice(j, 1);
+					this.app.connection.emit('arcade-invite-manager-render-request');
+					break;
+				}
+			}
+		}
+
+		return 0;
+	}
+
+
 
 	/////////////////////////////////////////////////////////////
 	// CHANGE == toggle a game invite between private and public
