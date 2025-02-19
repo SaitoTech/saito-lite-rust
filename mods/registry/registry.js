@@ -202,20 +202,33 @@ class Registry extends ModTemplate {
 		});
 
 		if (missing_keys.length == 0) {
+			console.log("No missing keys");
 			mycallback(found_keys);
 			return 1;
 		}
 
-		this.queryKeys(this.peers[0], missing_keys, (identifiers) => {
-			//
-			// This callback is executed in the browser
-			//
-			for (let key in identifiers) {
-				registry_self.cached_keys[key] = identifiers[key];
-				found_keys[key] = identifiers[key];
-			}
-			mycallback(found_keys);
-		});
+		if (this.publicKey == this.registry_publickey){
+			console.log("I am the registry");
+			this.fetchIdentifiersFromDatabase(missing_keys, (identifiers) => {
+				for (let key in identifiers) {
+					registry_self.cached_keys[key] = identifiers[key];
+					found_keys[key] = identifiers[key];
+				}
+				mycallback(found_keys);
+			});
+		}else{
+			console.log("My peer is the registry");
+			this.queryKeys(this.peers[0], missing_keys, (identifiers) => {
+				//
+				// This callback is executed in the browser
+				//
+				for (let key in identifiers) {
+					registry_self.cached_keys[key] = identifiers[key];
+					found_keys[key] = identifiers[key];
+				}
+				mycallback(found_keys);
+			});
+		}
 	}
 
 	respondTo(type = '') {
