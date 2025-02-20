@@ -850,6 +850,29 @@ class RedSquare extends ModTemplate {
             return;
           }
 
+/////////////>>>>>>>>>>>>>>>>
+          if (txmsg.request == "curatedTweets") {
+            console.log(" ************  Fetch more curated tweets....", txmsg.data);
+
+            let tweets_to_return = [];
+
+            for (let i = 0; i < this.curated_tweets.length; i++){
+              if (txmsg.data?.updated_earlier_than && txmsg.data?.updated_earlier_than <= this.curated_tweets[i].updated_at){
+                tweets_to_return = this.cached_tweets.slice(i, 10);
+                break;
+              }
+              if (txmsg.data?.updated_later_than && txmsg.data?.updated_later_than <= this.curated_tweets[i].updated_at){
+                tweets_to_return = this.cached_tweets.slice(0, i);
+                break;
+              }
+            }
+
+            if (mycallback){
+              mycallback(tweets_to_return);
+              return 0;
+            }
+          }
+
           if (txmsg.request == 'returnTweets') {
             console.log('I received tweets from my colleague!!!');
 
@@ -1011,6 +1034,12 @@ class RedSquare extends ModTemplate {
     let peers_returned = 0;
 
     //console.log(`RS timestamp: ${new Date(this.tweets_earliest_ts)}`);
+
+    if (this.curated){
+      this.loadCuratedTweets(created_at, mycallback);
+      return 1;
+    }
+
 
     for (let i = 0; i < this.peers.length; i++) {
       //
@@ -1186,6 +1215,61 @@ class RedSquare extends ModTemplate {
     }
 
     return count;
+  }
+
+  async loadCuratedTweets(created_at = 'earlier', mycallback){
+        console.log("Load curated tweets!");
+        let obj = {
+          field1: 'RedSquare',
+        };
+        if (created_at == 'earlier') {
+          obj.updated_earlier_than = this.tweets_earliest_ts;
+        } else if (created_at == 'later') {
+          obj.updated_later_than = this.tweets_latest_ts;
+        } else {
+          console.error('Unsupported time restraint in rS');
+        }
+
+        for (let i = 0; i < this.peers.length; i++) {
+          if (this.peers[i].publicKey !== this.publicKey){
+            console.log(this.peers[i].peer);
+            let tx = await this.app.wallet.createUnsignedTransaction(this.peers[i].publicKey);
+            tx.msg = {
+              module: this.name,
+              request: "curatedTweets",
+              data: obj,
+            }
+
+            console.log(tx.msg);
+            await tx.sign();
+            this.app.network.sendTransactionWithCallback(tx, (tweets) => {
+              //process returned tweets....
+              let count = 0;
+  
+              for (let z = 0; z <= tweets.length; z++){
+                let newtx = new Transaction();
+                newtx.deserialize_from_web(this.app, tweets[z]);
+                if (!newtx?.optional) {
+                  newtx.optional = {};
+                }
+                newtx.optional.data_source = 'server_cache_subsequent';
+                if (newtx.updated_at < this.tweets_earliest_ts) {
+                  this.tweets_earliest_ts = newtx.updated_at;
+                }
+                if (newtx.updated_at > this.tweets_latest_ts) {
+                  this.tweets_latest_ts = newtx.updated_at;
+                }
+                let added = this.addTweet(newtx, 'server_cache_subsequent');
+                count += added;
+              }
+
+              mycallback(count, this.peers[i]);
+
+            }, this.peers[i].peer.peerIndex);
+          }
+        }
+
+
   }
 
   async loadTweets2(created_at = 'earlier', mycallback) {
@@ -2784,6 +2868,37 @@ class RedSquare extends ModTemplate {
     this.saveOptions();
   }
 
+  curateTweet(tweet, looser = false){
+    if (tweet?.flagged){
+      return 0;
+    }
+
+    if (tweet?.curated){
+      return 1;
+    }
+
+    let mod_score = this.app.modules.moderate(tweet.tx);
+    let is_anonymous_user = !(this.app.keychain.returnIdentifierByPublicKey(tweet.user.publicKey, false));
+
+    if (looser){
+      is_anonymous_user = false;
+    }
+
+    //console.log(tweet.text, tweet.num_replies, tweet.num_likes, is_anonymous_user, mod_score);
+
+    if (tweet.num_replies > 0 && mod_score != -1 && is_anonymous_user == false) {
+      return 1
+    }
+
+    if (tweet.num_likes > 1 && mod_score != -1 && is_anonymous_user == false) {
+      return 1
+    }
+
+    if (mod_score == 1) {
+      return 1
+    }
+  }
+
   cacheRecentTweets() {
     if (this.app.BROWSER) {
       return;
@@ -2796,41 +2911,8 @@ class RedSquare extends ModTemplate {
     this.cached_tweets = [];
 
     for (let tweet of this.tweets) {
-      if (tweet?.flagged) {
-        continue;
-      }
 
-      //
-      // we want the server to show mostly new stuff in its cached_tweets cache
-      // since people still want to view the latest tweets, but we are going to
-      // loop through after adding and pull up the first tweet with an image or
-      // link, to add some visual oomph to the initial load...
-      //
-
-      let score = tweet?.curated || 0;
-
-      if (score == 0) {
-
-        let mod_score = this.app.modules.moderate(tweet.tx);
-        let is_anonymous_user = !(this.app.keychain.returnIdentifierByPublicKey(tweet.user.publicKey, false));
-
-        //console.log(tweet.text, tweet.num_replies, tweet.num_likes, is_anonymous_user, mod_score);
-
-        if (tweet.num_replies > 0 && mod_score != -1 && is_anonymous_user == false) {
-          score = 1;
-        }
-
-        if (tweet.num_likes > 1 && mod_score != -1 && is_anonymous_user == false) {
-          score = 1;
-        }
-
-        if (mod_score == 1) {
-          score = 1;
-        }
-
-      }
-
-      if (score > 0) {
+      if (this.curateTweet(tweet)) {
         this.curated_tweets.push(tweet);
 
         //
@@ -2845,6 +2927,29 @@ class RedSquare extends ModTemplate {
     }
 
     console.log('### Cached Tweets -- ', this.curated_tweets.length);
+
+    if (this.curated_tweets.length < 10){
+      console.warn("### Fallback curation");
+      for (let i = 0; this.curated_tweets.length < 10 && i < this.tweets.length; i++){
+        if (!this.curateTweet(this.tweets[i]) &&
+            this.curateTweet(this.tweets[i], true)) {
+
+          this.curated_tweets.push(this.tweets[i]);
+
+          //
+          // update tweet source
+          //
+          this.tweets[i].tx.optional.source = {};
+          this.tweets[i].tx.optional.source.type = 'curated_fallback';
+          this.tweets[i].tx.optional.source.node = this.publicKey;
+
+          this.cached_tweets.push(this.tweets[i].tx.serialize_to_web(this.app));
+        }
+      }
+
+      console.log('### Cached Tweets -- ', this.curated_tweets.length);      
+    }
+
     console.log('###');
 
   }

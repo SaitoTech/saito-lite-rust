@@ -195,6 +195,9 @@ class TweetManager {
 			//Fire up the intersection observer
 			this.attachEvents();
 			this.mode = new_mode;
+			if (this.mod.curated_tweets < 10){
+				this.fetchTweets();
+			}
 
 			return;
 		}
