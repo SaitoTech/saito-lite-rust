@@ -694,7 +694,7 @@ class Arcade extends ModTemplate {
 		if (message.request === 'arcade invite list') {
 			// Process stuff on server side
 
-			// maybe do some filtering ???
+			this.purgeOldGames();
 
 			let txs = [];
 			let peers = await app.network.getPeers();
@@ -1750,13 +1750,15 @@ class Arcade extends ModTemplate {
 			});
 		}
 
-		//Second pass for my open invites
-		let cutoff = now - this.invite_cutoff;
-		for (let g = this.games.mine.length - 1; g >= 0; g--) {
-			if (!this.isAcceptedGame(this.games.mine[g].signature)) {
-				if (this.games.mine[g].timestamp < cutoff) {
-					siteMessage('Game invite timed out...', 4000);
-					this.games.mine.splice(g, 1);
+		if (this.app.BROWSER){
+			//Second pass for my open invites
+			let cutoff = now - this.invite_cutoff;
+			for (let g = this.games.mine.length - 1; g >= 0; g--) {
+				if (!this.isAcceptedGame(this.games.mine[g].signature)) {
+					if (this.games.mine[g].timestamp < cutoff) {
+						siteMessage('Game invite timed out...', 4000);
+						this.games.mine.splice(g, 1);
+					}
 				}
 			}
 		}
