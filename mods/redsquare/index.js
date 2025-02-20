@@ -1,6 +1,6 @@
 module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
 
-  let x = recent_tweets.slice(0, 3);
+  let x = recent_tweets.slice(0, 10);
 
   let html = `
 

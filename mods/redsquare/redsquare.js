@@ -361,6 +361,16 @@ class RedSquare extends ModTemplate {
                 if (tx?.optional?.data_source == 'server_cache') {
                   return 0;
                 }
+
+                //
+                // baseline curation
+                //
+                if (tx?.optional?.num_replies > 0) {
+                  return 0;
+                }
+                if (tx?.optional?.num_likes > 1) {
+                  return 0;
+                }
             }
 
             return -1;
@@ -399,8 +409,8 @@ class RedSquare extends ModTemplate {
 
     if (!app.BROWSER) {
       //limit: 40,
-      let ts = Date.now() - 7 * 24 * 60 * 60 * 1000;
-      await this.app.storage.loadTransactions(
+      let ts = Date.now() - 14 * 24 * 60 * 60 * 1000;
+      this.app.storage.loadTransactions(
         {
           field1: 'RedSquare',
           flagged: 0,
@@ -409,11 +419,17 @@ class RedSquare extends ModTemplate {
           updated_later_than: ts
         },
         (txs) => {
+
+          let keylist = [];
+
           for (let i = 0; i < txs.length; i++) {
             try {
+              if (!keylist.includes(txs[i].from[0].publicKey)){
+                keylist.push(txs[i].from[0].publicKey);
+              }
+
               if (!txs[i].optional?.parent_id) {
-                //Server only checks blacklist / saito-moderation-app skips BROWSER=0
-                if (this.app.modules.moderate(txs[i], this.name) > -1) {
+                if (this.app.modules.moderate(txs[i]) > -1) {
                   this.addTweet(txs[i], 'server_load');
                 }
               }
@@ -422,8 +438,22 @@ class RedSquare extends ModTemplate {
             }
           }
 
-          // Build initial list to share
-          this.cacheRecentTweets();
+          //if this isn't installed we are in big trouble anyways!
+          let rMod = this.app.modules.returnModule('Registry');
+          if (rMod){
+            console.log(keylist);
+            rMod.fetchManyIdentifiers(keylist, (answer) => {
+              // Build initial list to share
+              this.cacheRecentTweets();
+            });
+          }
+
+          this.app.connection.on("modtools-lists-updated", ()=>{
+            //
+            // Maybe need a more forceful reset if someone is getting blacklisted...
+            //
+            this.cacheRecentTweets(true);
+          });
         },
         'localhost'
       );
@@ -932,12 +962,15 @@ class RedSquare extends ModTemplate {
 
       if (txmsg.request === 'create tweet') {
         await this.receiveTweetTransaction(blk, tx, conf, this.app);
-        this.addTweet(tx, 'receiveTweet');
-        this.cacheRecentTweets();
+        if (this.addTweet(tx, 'receiveTweet')){
+          this.cacheRecentTweets();
+        }
       }
       if (txmsg.request === 'like tweet') {
         await this.receiveLikeTransaction(blk, tx, conf, this.app);
-        this.cacheRecentTweets();
+        if (Math.random() < 0.15){
+          this.cacheRecentTweets();  
+        }
       }
       if (txmsg.request === 'flag tweet') {
         await this.receiveFlagTransaction(blk, tx, conf, this.app);
@@ -949,12 +982,7 @@ class RedSquare extends ModTemplate {
 
       if (this.app.BROWSER) {
         this.addNotification(tx);
-      } else {
-        // How often should we re-analyze our set of tweets for which ones to promote???
-        if (Math.random() < 0.05) {
-          this.cacheRecentTweets();
-        }
-      }
+      } 
     }
   }
 
@@ -1469,19 +1497,9 @@ class RedSquare extends ModTemplate {
     let tweet = new Tweet(this.app, this, tx, '.tweet-manager');
     tweet.data_source = source;
 
-    //
-    // if we are in curated mode, check for trollish behavior
-    //
-    if (tweet.parent_id) {
-      if (this.app.modules.moderate(tweet.tx, this.name) == -1) {
-        return;
-      }
-      if (
-        this.app.keychain.returnIdentifierByPublicKey(tweet.user.publicKey).indexOf('Anon') == 0 &&
-        tweet.num_likes == 0
-      ) {
-        return;
-      }
+    if (this.app.modules.moderate(tweet.tx, this.name) == -1) {
+      console.log("RS-mod nope out for blacklisted");
+      return 0;
     }
 
     //
@@ -1711,6 +1729,10 @@ class RedSquare extends ModTemplate {
     }
   }
 
+  //
+  // To toggle between curated and unfiltered in the browser
+  //
+  // 
   reset() {
     let current = this.curated_tweets.length;
 
@@ -1872,7 +1894,7 @@ class RedSquare extends ModTemplate {
       //
       // set as curated if liked by moderator
       //
-      if (this.app.modules.moderate(liked_tweet.tx) == 1) {
+      if (this.app.modules.moderate(tx) == 1) {
          liked_tweet.curated = 1;
       }
 
@@ -2017,6 +2039,14 @@ class RedSquare extends ModTemplate {
     //
 
     if (retweeted_tweet?.tx) {
+
+      //
+      // set as curated if liked by moderator
+      //
+      if (this.app.modules.moderate(tx) == 1) {
+         retweeted_tweet.curated = 1;
+      }
+
       //
       // Put the updated_at timestamp in the tx, in case it isn't there (wasn't read from archive)
       //
@@ -2553,9 +2583,7 @@ class RedSquare extends ModTemplate {
           siteMessage('One of your tweets was flagged for review', 10000);
         }
       }
-    } else {
-      this.cacheRecentTweets();
-    }
+    } 
 
     return;
   }
@@ -2762,13 +2790,10 @@ class RedSquare extends ModTemplate {
     }
 
     console.log('###');
-    console.log('### Caching Tweets');
-    console.log('###');
+    console.log('### Caching Tweets -- ', this.tweets.length);
 
     this.curated_tweets = [];
-    let temp_array = [];
-    let img_bonus_used = 0;
-    let number_of_tweets_with_positive_score = 0;
+    this.cached_tweets = [];
 
     for (let tweet of this.tweets) {
       if (tweet?.flagged) {
@@ -2781,40 +2806,15 @@ class RedSquare extends ModTemplate {
       // loop through after adding and pull up the first tweet with an image or
       // link, to add some visual oomph to the initial load...
       //
-      let score = 0;
 
-      //
-      // older curation algorithm pushed content around based on its content,
-      // resulting in older content always being pushed to the top of the feed
-      // which is... not precisely what we want, but close.
-      //
-      //score += tweet.num_likes;
-      //score += 2*tweet.num_retweets;
-      //score += 5*tweet.num_replies;
-      //score += 10*this.app.modules.moderate(tweet.tx);
-      //
-      //if (this.app.modules.moderate(tweet.tx) == 1) {
-      //  score = 1;
-      //}
-
-      //
-      // we don't need to run tweets through the moderate function
-      // multiple times if we have already processed them and marked
-      // them as curated....
-      //
-      if (tweet.curated == 1) {
-        score = 1;
-      }
+      let score = tweet?.curated || 0;
 
       if (score == 0) {
-        let mod_score = this.app.modules.moderate(tweet.tx);
-        let is_anonymous_user = true;
 
-        if (
-          this.app.keychain.returnIdentifierByPublicKey(tweet.user.publicKey).indexOf('Anon') != 0
-        ) {
-          is_anonymous_user = false;
-        }
+        let mod_score = this.app.modules.moderate(tweet.tx);
+        let is_anonymous_user = !(this.app.keychain.returnIdentifierByPublicKey(tweet.user.publicKey, false));
+
+        //console.log(tweet.text, tweet.num_replies, tweet.num_likes, is_anonymous_user, mod_score);
 
         if (tweet.num_replies > 0 && mod_score != -1 && is_anonymous_user == false) {
           score = 1;
@@ -2828,76 +2828,25 @@ class RedSquare extends ModTemplate {
           score = 1;
         }
 
-        if (tweet.images?.length > 0) {
-          if (img_bonus_used == 0 && score == 1) {
-            score += 5;
-            img_bonus_used = 1;
-          }
-        }
       }
-
-      //if (this.app.keychain.returnIdentifierByPublicKey(tweet.tx.from[0].publicKey)){
-      //  score += 2;
-      //}
-      //for (let key in tweet.retweeters){
-      //  score += 8*this.app.modules.moderate(tweet.tx);
-      //  if (this.app.keychain.returnIdentifierByPublicKey(key)){
-      //    score++;
-      //  }
-      //}
 
       if (score > 0) {
-        number_of_tweets_with_positive_score++;
-        temp_array.push({ tweet, score: 1 });
+        this.curated_tweets.push(tweet);
+
+        //
+        // update tweet source
+        //
+        tweet.tx.optional.source = {};
+        tweet.tx.optional.source.type = 'curated';
+        tweet.tx.optional.source.node = this.publicKey;
+
+        this.cached_tweets.push(tweet.tx.serialize_to_web(this.app));
       }
     }
 
-    //
-    // display by timestamp
-    //
-    //temp_array.sort((a, b) => {
-    //  return b.tx.timestamp - a.tx.timestamp;
-    //});
+    console.log('### Cached Tweets -- ', this.curated_tweets.length);
+    console.log('###');
 
-    //
-    // 2nd pass in case not enough curated
-    //
-    if (number_of_tweets_with_positive_score < 3) {
-      for (let tweet of this.tweets) {
-        if (tweet.curated == 0) {
-          if (tweet.num_likes > 0) {
-            number_of_tweets_with_positive_score++;
-            temp_array.push({ tweet, score: 1 });
-          } else {
-            if (tweet.num_retweets > 0) {
-              number_of_tweets_with_positive_score++;
-              temp_array.push({ tweet, score: 1 });
-            }
-          }
-        }
-      }
-    }
-
-    let added_tweets = 0;
-    for (let i = 0; added_tweets < 10 && i < temp_array.length; i++) {
-      added_tweets++;
-      this.curated_tweets.push(temp_array[i].tweet);
-    }
-
-    //
-    // update cache
-    //
-    this.cached_tweets = [];
-    for (let tweet of this.curated_tweets) {
-      //
-      // update tweet source
-      //
-      tweet.tx.optional.source = {};
-      tweet.tx.optional.source.type = 'curated';
-      tweet.tx.optional.source.node = this.publicKey;
-
-      this.cached_tweets.push(tweet.tx.serialize_to_web(this.app));
-    }
   }
 
   ///////////////

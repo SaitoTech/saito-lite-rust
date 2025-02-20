@@ -574,6 +574,10 @@ class League extends ModTemplate {
 	async loadLeagues() {
 		let league_self = this;
 		if (this.app.BROWSER) {
+
+			//
+			// Browsers cache data for relevant leagues
+			//
 			if (this.app.options?.leagues) {
 				if (this.debug) {
 					console.log(
@@ -626,7 +630,7 @@ class League extends ModTemplate {
 				this.app.options.leagues = [];
 			}
 		} else {
-			//Do we need to make sure the service node has all the data in memory??
+
 			let sqlResults = await this.app.storage.queryDatabase(
 				`SELECT *
          FROM leagues
