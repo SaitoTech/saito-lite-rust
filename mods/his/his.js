@@ -13483,7 +13483,7 @@ if (space.key == "milan") {
 	  let connected = false;
 	  if (!his_self.isBesieged(space)) {
             for (let i = 0; i < space.ports.length; i++) {
-              let sea = space.ports[i];
+              let sea = his_self.game.navalspaces[space.ports[i]];
               for (let z = 0; z < sea.ports.length; z++) {
                 if (his_self.returnFactionControllingSpace(sea.ports[z]) == "ottoman") {
                   connected = true;
