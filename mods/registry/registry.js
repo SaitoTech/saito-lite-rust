@@ -208,7 +208,7 @@ class Registry extends ModTemplate {
 		}
 
 		if (this.publicKey == this.registry_publickey){
-			console.log("I am the registry");
+			//console.log("I am the registry");
 			this.fetchIdentifiersFromDatabase(missing_keys, (identifiers) => {
 				for (let key in identifiers) {
 					registry_self.cached_keys[key] = identifiers[key];
@@ -217,7 +217,7 @@ class Registry extends ModTemplate {
 				mycallback(found_keys);
 			});
 		}else{
-			console.log("My peer is the registry");
+			//console.log("My peer is the registry");
 			this.queryKeys(this.peers[0], missing_keys, (identifiers) => {
 				//
 				// This callback is executed in the browser
@@ -329,7 +329,10 @@ class Registry extends ModTemplate {
 	 */
 	queryKeys(peer, keys, mycallback) {
 		if (!peer?.peerIndex) {
-			console.log('No peer');
+			//console.log('No peer');
+			if (mycallback){
+				mycallback({});
+			}
 			return;
 		}
 

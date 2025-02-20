@@ -441,8 +441,8 @@ class RedSquare extends ModTemplate {
           //if this isn't installed we are in big trouble anyways!
           let rMod = this.app.modules.returnModule('Registry');
           if (rMod){
-            console.log(keylist);
             rMod.fetchManyIdentifiers(keylist, (answer) => {
+              console.log(`Prepopulated registry with ${Object.entries(answer).length} cached usernames...`);
               // Build initial list to share
               this.cacheRecentTweets();
             });
