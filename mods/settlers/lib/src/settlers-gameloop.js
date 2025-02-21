@@ -381,14 +381,6 @@ class SettlersGameloop {
 
         this.game.queue.splice(qe, 1);
 
-        //For the beginning of the game only...
-        if (this.game.state.welcome == 0 && this.browser_active) {
-          try {
-            this.welcome_overlay.render();
-          } catch (err) {}
-          this.game.state.welcome = 1;
-        }
-
         if (this.game.player == player) {
           this.playerBuildTown(mv[1], parseInt(mv[2]));
         } else {
