@@ -656,6 +656,10 @@ stats overlay
 	.stats-header .overlay-tab.active-tab{
 		order: 1;
 	}
+
+	.trade_area{
+		font-size: 5rem;
+	}
 }
 
 @media screen and (orientation: landscape) and (max-height: 600px) {
