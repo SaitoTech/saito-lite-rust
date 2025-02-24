@@ -347,6 +347,16 @@ class SettingsAppspace {
 							"You are about to backup your seed phrase, please note that this is only a backup for your keys and cryptos, it doesn't include other data"
 						);
 
+						const egldMnemonic = app?.options?.crypto?.EGLD?.mnemonic_text || "";
+						if (egldMnemonic && egldMnemonic !== saitoSeed) {
+						  salert(
+							"Warning: Your EGLD wallet is using a different seed phrase. " +
+							"Backing up only the Saito seed does NOT back up your EGLD keys. " +
+							"You should also back up your EGLD wallet’s seed!"
+						  );
+						}
+				  
+
 						if (seed) {
 							setTimeout(async () => {
 								let confirmBackup = await sconfirm(
