@@ -438,9 +438,9 @@ class RedSquare extends ModTemplate {
             }
           }
 
-          //if this isn't installed we are in big trouble anyways!
           let rMod = this.app.modules.returnModule('Registry');
-          if (rMod){
+          //Run this now if we are the registry!
+          if (rMod?.registry_publickey == this.publicKey) {
             rMod.fetchManyIdentifiers(keylist, (answer) => {
               console.log(`Prepopulated registry with ${Object.entries(answer).length} cached usernames...`);
               // Build initial list to share
@@ -768,6 +768,34 @@ class RedSquare extends ModTemplate {
       if (!this.curated && this.manager) {
         this.manager.fetchTweets();
       }
+    }
+
+    if (service.service === "registry"){
+
+      if (this.curated_tweets.length > 10){
+        return;
+      }
+
+      //Query the registry for keys and curate the tweets!
+
+      let keylist = [];
+      
+      for (let i = 0; i < this.tweets.length; i++) {
+        if (!keylist.includes(this.tweets[i].tx.from[0].publicKey)){
+          keylist.push(this.tweets[i].tx.from[0].publicKey);
+        }
+      }
+      
+      let rMod = this.app.modules.returnModule('Registry');
+      //Run this now if we are the registry!
+      if (rMod) {
+        rMod.fetchManyIdentifiers(keylist, (answer) => {
+          console.log(`Prepopulated registry with ${Object.entries(answer).length} cached usernames...`);
+          // Build initial list to share
+          this.cacheRecentTweets();
+        });
+      }
+
     }
 
     //
