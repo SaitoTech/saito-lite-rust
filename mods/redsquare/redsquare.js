@@ -701,15 +701,23 @@ class RedSquare extends ModTemplate {
       
       console.log(`### Connected to Registry, checking ${keylist.length} keys...`);
 
-      let rMod = this.app.modules.returnModule('Registry');
-      //Run this now if we are the registry!
-      if (rMod) {
-        rMod.fetchManyIdentifiers(keylist, (answer) => {
-          console.log(`Prepopulated registry with ${Object.entries(answer).length} cached usernames...`);
-          // Build initial list to share
-          this.cacheRecentTweets();
-        });
-      }
+      //
+      // First, this code block has to go in onPeerServiceUp because we need to be connected
+      // to the Registry before we can query the keys and use registered user name for curation
+      // Second, RedSquare < Registry alphabetically, so we need to async this so that Registry module
+      // can save it's peer and the call to query the identifier can actually be sent over the network
+      //
+      setTimeout(()=> {
+        let rMod = this.app.modules.returnModule('Registry');
+        //Run this now if we are the registry!
+        if (rMod) {
+          rMod.fetchManyIdentifiers(keylist, (answer) => {
+            console.log(`Prepopulated registry with ${Object.entries(answer).length} cached usernames...`);
+            // Build initial list to share
+            this.cacheRecentTweets();
+          });
+        }
+      }, 250);
 
     }
 
