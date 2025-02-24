@@ -446,6 +446,8 @@ class RedSquare extends ModTemplate {
               // Build initial list to share
               this.cacheRecentTweets();
             });
+          }else{
+            console.log(`### C - Redsquare online with ${this.tweets.length} tweets in memory, but have to wait for registry to curate...`);
           }
 
           this.app.connection.on("modtools-lists-updated", ()=>{
@@ -678,6 +680,39 @@ class RedSquare extends ModTemplate {
   // when peer connects //
   ////////////////////////
   async onPeerServiceUp(app, peer, service = {}) {
+
+    //Redsquare service node requires Registry service node...
+    if (service.service === "registry" && !this.app.BROWSER) {
+
+      if (this.curated_tweets.length > 10){
+        return;
+      }
+
+      //Query the registry for keys and curate the tweets!
+
+      let keylist = [];
+      
+      for (let i = 0; i < this.tweets.length; i++) {
+        if (!keylist.includes(this.tweets[i].tx.from[0].publicKey)){
+          keylist.push(this.tweets[i].tx.from[0].publicKey);
+        }
+      }
+      
+      console.log(`### Connected to Registry, checking ${keylist.length} keys...`);
+            
+      let rMod = this.app.modules.returnModule('Registry');
+      //Run this now if we are the registry!
+      if (rMod) {
+        rMod.fetchManyIdentifiers(keylist, (answer) => {
+          console.log(`Prepopulated registry with ${Object.entries(answer).length} cached usernames...`);
+          // Build initial list to share
+          this.cacheRecentTweets();
+        });
+      }
+
+    }
+
+
     //
     // avoid network overhead if in other apps
     //
@@ -768,34 +803,6 @@ class RedSquare extends ModTemplate {
       if (!this.curated && this.manager) {
         this.manager.fetchTweets();
       }
-    }
-
-    if (service.service === "registry"){
-
-      if (this.curated_tweets.length > 10){
-        return;
-      }
-
-      //Query the registry for keys and curate the tweets!
-
-      let keylist = [];
-      
-      for (let i = 0; i < this.tweets.length; i++) {
-        if (!keylist.includes(this.tweets[i].tx.from[0].publicKey)){
-          keylist.push(this.tweets[i].tx.from[0].publicKey);
-        }
-      }
-      
-      let rMod = this.app.modules.returnModule('Registry');
-      //Run this now if we are the registry!
-      if (rMod) {
-        rMod.fetchManyIdentifiers(keylist, (answer) => {
-          console.log(`Prepopulated registry with ${Object.entries(answer).length} cached usernames...`);
-          // Build initial list to share
-          this.cacheRecentTweets();
-        });
-      }
-
     }
 
     //
