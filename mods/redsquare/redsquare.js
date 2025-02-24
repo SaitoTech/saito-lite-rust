@@ -1080,8 +1080,8 @@ class RedSquare extends ModTemplate {
     //console.log(`RS timestamp: ${new Date(this.tweets_earliest_ts)}`);
 
     if (this.curated){
-      this.loadCuratedTweets(created_at, mycallback);
-      return 1;
+      //this.loadCuratedTweets(created_at, mycallback);
+      return 0;
     }
 
 
