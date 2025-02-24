@@ -348,7 +348,7 @@ class SettingsAppspace {
 						);
 
 						const egldMnemonic = app?.options?.crypto?.EGLD?.mnemonic_text || "";
-						if (egldMnemonic && egldMnemonic !== saitoSeed) {
+						if (egldMnemonic && egldMnemonic !== seed) {
 						  salert(
 							"Warning: Your EGLD wallet is using a different seed phrase. " +
 							"Backing up only the Saito seed does NOT back up your EGLD keys. " +
