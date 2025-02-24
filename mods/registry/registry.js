@@ -210,6 +210,7 @@ class Registry extends ModTemplate {
 		if (this.publicKey == this.registry_publickey){
 			console.log("I am the registry, check my db");
 			this.fetchIdentifiersFromDatabase(missing_keys, (identifiers) => {
+				console.log(">>>>>>>>>>>>>>>>>>>>");
 				for (let key in identifiers) {
 					registry_self.cached_keys[key] = identifiers[key];
 					found_keys[key] = identifiers[key];
@@ -728,13 +729,13 @@ class Registry extends ModTemplate {
 
 			//No peer found...
 			return 0;
-		} else if (mycallback && found_check.length > 0) {
+		} else if (mycallback) {
 			//
 			// This is run by either the main service node or the proper registry node
 			//
 			//console.log("REGISTRY: run DB callback on found keys", found_keys);
 			mycallback(found_keys);
-			return 1;
+			return found_check.length > 0;
 		}
 	}
 

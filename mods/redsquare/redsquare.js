@@ -441,8 +441,9 @@ class RedSquare extends ModTemplate {
           let rMod = this.app.modules.returnModule('Registry');
           //Run this now if we are the registry!
           if (rMod?.registry_publickey == this.publicKey) {
+            console.log(`### C - Redsquare online with ${this.tweets.length} tweets in memory and I am registry so check names...`);
             rMod.fetchManyIdentifiers(keylist, (answer) => {
-              console.log(`Prepopulated registry with ${Object.entries(answer).length} cached usernames...`);
+              console.log(`### C -- Prepopulated registry with ${Object.entries(answer).length} cached usernames...`);
               // Build initial list to share
               this.cacheRecentTweets();
             });
@@ -699,7 +700,7 @@ class RedSquare extends ModTemplate {
       }
       
       console.log(`### Connected to Registry, checking ${keylist.length} keys...`);
-            
+
       let rMod = this.app.modules.returnModule('Registry');
       //Run this now if we are the registry!
       if (rMod) {
