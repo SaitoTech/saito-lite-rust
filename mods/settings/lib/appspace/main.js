@@ -351,8 +351,7 @@ class SettingsAppspace {
 						if (egldMnemonic && egldMnemonic !== seed) {
 						  salert(
 							"Warning: Your EGLD wallet is using a different seed phrase. " +
-							"Backing up only the Saito seed does NOT back up your EGLD keys. " +
-							"You should also back up your EGLD wallet’s seed!"
+							"Backing up only the Saito seed does NOT back up your EGLD keys. " 
 						  );
 						}
 				  
