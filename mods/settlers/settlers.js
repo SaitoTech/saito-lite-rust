@@ -480,18 +480,36 @@ class Settlers extends GameTemplate {
 				return;
 			}
 
-			if (this.app.browser.isMobileBrowser() && window.innerHeight > window.innerWidth) {
-				trade_btn.innerHTML = `<i class="fa-solid fa-users"></i>`;
+			const openTrade = (e) => {
+				if (this.game.state.ads[this.game.player - 1].offer || this.game.state.ads[this.game.player - 1].ask) {
+          			this.showTradeOverlay(this.game.player,  
+          			 this.game.state.ads[this.game.player - 1].ask,
+            		 this.game.state.ads[this.game.player - 1].offer
+          			);
+				}else{
+					this.trade_overlay.render();	
+				}
 			}
 
-			trade_btn.onclick = (e) => {
-				if (this.app.browser.isMobileBrowser() && window.innerHeight > window.innerWidth) {
+			trade_btn.onclick = openTrade;
+
+			if (this.app.browser.isMobileBrowser() && window.innerHeight > window.innerWidth) {
+				trade_btn.innerHTML = `<i class="fa-solid fa-users"></i>`;
+
+				const showPlayerBoxes = () => {
 					if (document.querySelector('.game-playerbox-manager').style.display == 'flex') {
 						document.querySelector('.game-playerbox-manager').style.display = 'none';
+						trade_btn.onclick = showPlayerBoxes;
+						trade_btn.innerHTML = `<i class="fa-solid fa-users"></i>`;
 						return;
 					} else {
 						document.querySelector('.game-playerbox-manager').style.display = 'flex';
 						try {
+							// Swap to trade functionality
+
+							trade_btn.innerHTML = `<i class="fa-solid fa-money-bill-transfer"></i>`;
+							trade_btn.onclick = openTrade;
+
 							//
 							// close playerboxen on back-click
 							//
@@ -499,23 +517,20 @@ class Settlers extends GameTemplate {
 							$('.game-playerbox-manager').on('click', () => {
 								console.log('Hide playerboxes in mobile');
 								document.querySelector('.game-playerbox-manager').style.display = 'none';
+								trade_btn.onclick = showPlayerBoxes;
+								trade_btn.innerHTML = `<i class="fa-solid fa-users"></i>`;
 							});
 						} catch (err) {
 							console.error('ERROR 485023: ' + err);
 						}
 					}
-				} else {
 
-					if (this.game.state.ads[this.game.player - 1].offer || this.game.state.ads[this.game.player - 1].ask) {
-              			this.showTradeOverlay(this.game.player,  
-              			 this.game.state.ads[this.game.player - 1].ask,
-                		 this.game.state.ads[this.game.player - 1].offer
-              			);
-					}else{
-						this.trade_overlay.render();	
-					}
 				}
-			};
+
+				trade_btn.onclick = showPlayerBoxes;
+
+			}
+
 		}
 	}
 

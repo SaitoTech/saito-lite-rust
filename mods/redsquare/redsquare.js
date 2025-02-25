@@ -438,14 +438,17 @@ class RedSquare extends ModTemplate {
             }
           }
 
-          //if this isn't installed we are in big trouble anyways!
           let rMod = this.app.modules.returnModule('Registry');
-          if (rMod){
+          //Run this now if we are the registry!
+          if (rMod?.registry_publickey == this.publicKey) {
+            console.log(`### C - Redsquare online with ${this.tweets.length} tweets in memory and I am registry so check names...`);
             rMod.fetchManyIdentifiers(keylist, (answer) => {
-              console.log(`Prepopulated registry with ${Object.entries(answer).length} cached usernames...`);
+              console.log(`### C -- Prepopulated registry with ${Object.entries(answer).length} cached usernames...`);
               // Build initial list to share
               this.cacheRecentTweets();
             });
+          }else{
+            console.log(`### C - Redsquare online with ${this.tweets.length} tweets in memory, but have to wait for registry to curate...`);
           }
 
           this.app.connection.on("modtools-lists-updated", ()=>{
@@ -678,6 +681,47 @@ class RedSquare extends ModTemplate {
   // when peer connects //
   ////////////////////////
   async onPeerServiceUp(app, peer, service = {}) {
+
+    //Redsquare service node requires Registry service node...
+    if (service.service === "registry" && !this.app.BROWSER) {
+
+      if (this.curated_tweets.length > 10){
+        return;
+      }
+
+      //Query the registry for keys and curate the tweets!
+
+      let keylist = [];
+      
+      for (let i = 0; i < this.tweets.length; i++) {
+        if (!keylist.includes(this.tweets[i].tx.from[0].publicKey)){
+          keylist.push(this.tweets[i].tx.from[0].publicKey);
+        }
+      }
+      
+      console.log(`### Connected to Registry, checking ${keylist.length} keys...`);
+
+      //
+      // First, this code block has to go in onPeerServiceUp because we need to be connected
+      // to the Registry before we can query the keys and use registered user name for curation
+      // Second, RedSquare < Registry alphabetically, so we need to async this so that Registry module
+      // can save it's peer and the call to query the identifier can actually be sent over the network
+      //
+      setTimeout(()=> {
+        let rMod = this.app.modules.returnModule('Registry');
+        //Run this now if we are the registry!
+        if (rMod) {
+          rMod.fetchManyIdentifiers(keylist, (answer) => {
+            console.log(`Prepopulated registry with ${Object.entries(answer).length} cached usernames...`);
+            // Build initial list to share
+            this.cacheRecentTweets();
+          });
+        }
+      }, 250);
+
+    }
+
+
     //
     // avoid network overhead if in other apps
     //
@@ -1037,7 +1081,7 @@ class RedSquare extends ModTemplate {
 
     if (this.curated){
       this.loadCuratedTweets(created_at, mycallback);
-      return 1;
+      return 0;
     }
 
 
@@ -1232,7 +1276,6 @@ class RedSquare extends ModTemplate {
 
         for (let i = 0; i < this.peers.length; i++) {
           if (this.peers[i].publicKey !== this.publicKey){
-            console.log(this.peers[i].peer);
             let tx = await this.app.wallet.createUnsignedTransaction(this.peers[i].publicKey);
             tx.msg = {
               module: this.name,
@@ -1240,29 +1283,32 @@ class RedSquare extends ModTemplate {
               data: obj,
             }
 
-            console.log(tx.msg);
             await tx.sign();
             this.app.network.sendTransactionWithCallback(tx, (tweets) => {
-              //process returned tweets....
-              let count = 0;
-  
+              //unpack and mark as curated...
+              let txs = [];
               for (let z = 0; z <= tweets.length; z++){
-                let newtx = new Transaction();
-                newtx.deserialize_from_web(this.app, tweets[z]);
-                if (!newtx?.optional) {
-                  newtx.optional = {};
+                let tx = new Transaction();
+                tx.deserialize_from_web(storage_self.app, tweets[z]);
+                if (!tx.optional.source) {
+                  tx.optional.source = {};
                 }
-                newtx.optional.data_source = 'server_cache_subsequent';
-                if (newtx.updated_at < this.tweets_earliest_ts) {
-                  this.tweets_earliest_ts = newtx.updated_at;
-                }
-                if (newtx.updated_at > this.tweets_latest_ts) {
-                  this.tweets_latest_ts = newtx.updated_at;
-                }
-                let added = this.addTweet(newtx, 'server_cache_subsequent');
-                count += added;
+                tx.optional.source.type = 'curated_list';
+                tx.optional.source.node = this.peers[i].publicKey;
+                txs.push(tx);
               }
 
+              //process returned tweets....
+              let count = 0;
+
+              if (txs.lenght > 0){
+                count = this.processTweetsFromPeer(this.peers[i], txs);
+              }else{
+                if (created_at === 'earlier') {
+                  this.peers[i].tweets_earliest_ts = 0;
+                }
+              }
+              
               mycallback(count, this.peers[i]);
 
             }, this.peers[i].peer.peerIndex);

@@ -272,7 +272,6 @@ h2+p {
     align-items: center;
     padding: 1.5rem;
     border-radius: 7px;
-    background: linear-gradient(135deg, rgba(154, 142, 142, 0.133) 0%, #fff0 100%);
     transition: transform 0.2s ease;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
@@ -359,7 +358,7 @@ h2+p {
 @media (orientation: portrait) {
     .saito-text-container {
         position: absolute;
-        animation: slideTextMobile 2s ease-out 1.5s forwards;
+        animation: slideTextMobile 4s ease-out 1.5s forwards;
         margin: 0;
         left: 0;
         bottom: 133vh;
@@ -452,7 +451,7 @@ object.saito-text {
         bottom: calc(var(--vh) * 110);
         left: 0;
         transform-origin: initial;
-        animation: slideTextLandscape 1s ease-out 1.5s forwards;
+        animation: slideTextLandscape 2s ease-out 1.5s forwards;
         transform: translateY(10%);
     }
 
