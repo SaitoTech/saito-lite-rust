@@ -234,7 +234,7 @@
     if (c === "battle-of-mohacs") {
       let t = "The Ottoman subjugation of Hungary-Bohemia forces the Hapsburg Empire to intervene on the side of Christian Europe and in pre-emptive defense of Vienna";
       if (this.areEnemies("hapsburg", "ottoman")) {  
-      t = "The Ottoman subjugation of Hungary-Bohemia prompts a Hapsburg-Hungarian Alliance in defense of Christian Europe and th city of Vienna";
+      t = "The Ottoman subjugation of Hungary-Bohemia prompts a Hapsburg-Hungarian Alliance in defense of Christian Europe and the city of Vienna";
       }
       this.welcome_overlay.renderCustom({
         title : "War between the Hapsburg and Ottoman Empires" ,
@@ -604,7 +604,7 @@
     if (c === "battle-of-mohacs") {
       let t = "The Ottoman subjugation of Hungary-Bohemia forces the Hapsburg Empire to intervene on the side of Christian Europe and in pre-emptive defense of Vienna";
       if (this.areEnemies("hapsburg", "ottoman")) {  
-        t = "The Ottoman subjugation of Hungary-Bohemia prompts a Hapsburg-Hungarian Alliance in defense of Christian Europe and th city of Vienna";
+        t = "The Ottoman subjugation of Hungary-Bohemia prompts a Hapsburg-Hungarian Alliance in defense of Christian Europe and the city of Vienna";
       }
       this.hud_popup.render({
         title : "War between the Hapsburg and Ottoman Empires" ,

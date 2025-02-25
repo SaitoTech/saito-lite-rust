@@ -1253,12 +1253,30 @@
   async playerBorrowSquadrons(his_self, faction, mycallback) {
 
     let terms = [];
+    let io = his_self.returnDiplomacyImpulseOrder(faction);
+
+    //
+    // check factions with squadrons
+    //
+    let factions_with_squadrons = {};
+    for (let spacekey in his_self.game.spaces) {
+      if (his_self.game.spaces[key].ports) {
+	for (let f in his_self.game.spaces[key].units) {
+	  if (!factions_with_squadrons[f]) {
+	    for (let z = 0; z < his_self.game.spaces[key].units[f].length; z++) {
+	      if (his_self.game.spaces[key].units[f][z].type == "squadron") {
+	        factions_with_squadrons[f] = 1;
+	      }
+	    }
+	  }
+        }
+      }
+    }
 
     let msg = `${his_self.returnFactionName(faction)} - Get Squadrons from Whom: `;
-    let io = his_self.returnDiplomacyImpulseOrder(faction);
     let html = '<ul>';
     for (let i = 0; i < io.length; i++) {
-      if (faction != io[i] && io[i] != "protestant") {
+      if (factions_with_squadrons.includes(faction) && faction != io[i] && io[i] != "protestant") {
         html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
       }
     }

@@ -1794,13 +1794,13 @@ if (this.game.state.events.society_of_jesus == 1) {
     for (f in faction_map) { 
       if (this.returnPlayerCommandingFaction(f) != attacker_player) {
         for (let i = 0; i < space.units[f].length; i++) {
-	  if (space.units[f][i].type == "regular" || space.units[f][i].type == "mercenary" || space.units[f][i].type == "cavalry" || space.units[f][i].army_leader == true) {
+	  if (space.units[f][i].type == "regular" || space.units[f][i].type == "mercenary" || space.units[f][i].type == "cavalry" || space.units[f][i].army_leader) {
 	    if (anyone_in_relief_force == false) {
               available_units.push({ faction : f , unit_idx : i , type : space.units[f][i].type });
 	      if (space.units[f][i].besieged == 1) { units_to_move.push( { faction : f , idx : i } ); }
 	    } else {
 if (relief_siege == 1) {
-	      if (space.units[f][i].relief_force == 0) {
+	      if (space.units[f][i].relief_force != 1) {
                 available_units.push({ faction : f , unit_idx : i , type : space.units[f][i].type });
 	        if (space.units[f][i].besieged == 1) { units_to_move.push( { faction : f , idx : i } ); }
 	      } 
@@ -3727,7 +3727,9 @@ return;
               if (his_self.isSpaceConnectedToCapitalSpringDeployment(space, faction, 1, source_spacekey)) {
                 if (!his_self.isSpaceFactionCapital(space, faction)) {
 		  if (his_self.game.state.events.schmalkaldic_league == 0) {
-		    if (his_self.isSpaceElectorate(space.key)) { return 0; }
+		    if (his_self.isSpaceElectorate(space.key)) {
+		      return 0;
+		    }
 		  }
                   return 1;
 		}
@@ -5072,6 +5074,8 @@ does_units_to_move_have_unit = true; }
 
 
   playerEvaluateFortification(attacker, faction, spacekey, post_battle=0, relief_siege=0) {
+
+console.log("Relief Siege? " + relief_siege);
 
     let his_self = this;
 
