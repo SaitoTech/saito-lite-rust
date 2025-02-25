@@ -1080,7 +1080,7 @@ class RedSquare extends ModTemplate {
     //console.log(`RS timestamp: ${new Date(this.tweets_earliest_ts)}`);
 
     if (this.curated){
-      //this.loadCuratedTweets(created_at, mycallback);
+      this.loadCuratedTweets(created_at, mycallback);
       return 0;
     }
 
@@ -1276,7 +1276,6 @@ class RedSquare extends ModTemplate {
 
         for (let i = 0; i < this.peers.length; i++) {
           if (this.peers[i].publicKey !== this.publicKey){
-            console.log(this.peers[i].peer);
             let tx = await this.app.wallet.createUnsignedTransaction(this.peers[i].publicKey);
             tx.msg = {
               module: this.name,
@@ -1284,29 +1283,32 @@ class RedSquare extends ModTemplate {
               data: obj,
             }
 
-            console.log(tx.msg);
             await tx.sign();
             this.app.network.sendTransactionWithCallback(tx, (tweets) => {
-              //process returned tweets....
-              let count = 0;
-  
+              //unpack and mark as curated...
+              let txs = [];
               for (let z = 0; z <= tweets.length; z++){
-                let newtx = new Transaction();
-                newtx.deserialize_from_web(this.app, tweets[z]);
-                if (!newtx?.optional) {
-                  newtx.optional = {};
+                let tx = new Transaction();
+                tx.deserialize_from_web(storage_self.app, tweets[z]);
+                if (!tx.optional.source) {
+                  tx.optional.source = {};
                 }
-                newtx.optional.data_source = 'server_cache_subsequent';
-                if (newtx.updated_at < this.tweets_earliest_ts) {
-                  this.tweets_earliest_ts = newtx.updated_at;
-                }
-                if (newtx.updated_at > this.tweets_latest_ts) {
-                  this.tweets_latest_ts = newtx.updated_at;
-                }
-                let added = this.addTweet(newtx, 'server_cache_subsequent');
-                count += added;
+                tx.optional.source.type = 'curated_list';
+                tx.optional.source.node = this.peers[i].publicKey;
+                txs.push(tx);
               }
 
+              //process returned tweets....
+              let count = 0;
+
+              if (txs.lenght > 0){
+                count = this.processTweetsFromPeer(this.peers[i], txs);
+              }else{
+                if (created_at === 'earlier') {
+                  this.peers[i].tweets_earliest_ts = 0;
+                }
+              }
+              
               mycallback(count, this.peers[i]);
 
             }, this.peers[i].peer.peerIndex);
