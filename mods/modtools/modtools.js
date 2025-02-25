@@ -211,21 +211,38 @@ class ModTools extends ModTemplate {
 		//
 		// modtools -- share whitelists / blacklists
 		//
-		if (service.service === 'modtools' && this.canPeerModerate(peer.publicKey)) {
-			app.network.sendRequestAsTransaction(
-				'modtools',
-				{ request: 'load' },
-				(res) => {
-					if (res?.blacklist?.length) {
-						modtools_self.addPeerBlacklist(peer.publicKey, res.blacklist);
-					}
+		if (service.service === 'modtools') {
 
-					if (res?.whitelist?.length) {
-						modtools_self.addPeerWhitelist(peer.publicKey, res.whitelist);
-					}
-				},
-				peer.peerIndex
-			);
+			//
+			// Make sure our connected node is not! blacklisted!
+			//
+			if (this.app.BROWSER) {
+				if (this.isBlacklisted(peer.publicKey)) {
+					this.unblacklistAddress(peer.publicKey);
+				}
+			}
+
+			//
+			// If we trust the peer (node or browser),
+			// request the black/white lists and add them to our own
+			// 
+			if (this.canPeerModerate(peer.publicKey)){
+				app.network.sendRequestAsTransaction(
+					'modtools',
+					{ request: 'load' },
+					(res) => {
+						if (res?.blacklist?.length) {
+							modtools_self.addPeerBlacklist(peer.publicKey, res.blacklist);
+						}
+
+						if (res?.whitelist?.length) {
+							modtools_self.addPeerWhitelist(peer.publicKey, res.whitelist);
+						}
+					},
+					peer.peerIndex
+				);
+
+			}
 		}
 	}
 
@@ -573,7 +590,6 @@ class ModTools extends ModTemplate {
 		}
 
 		let add = data.publicKey;
-
 
 		if (!this.blacklisted_publickeys.includes(add) && add !== this.publicKey) {
 
