@@ -546,10 +546,7 @@ class ModTools extends ModTemplate {
 
 		for (let i = 0; i < list.length; i++) {
 			if (list[i].hop < this.max_hops) {
-				// If I added, and removed, don't accept it just echoing back at me
-				if (list[i].moderator !== this.publicKey){
-					this.blacklistAddress(list[i]);
-				}
+				this.blacklistAddress(list[i]);
 			}
 		}
 	}
@@ -578,7 +575,7 @@ class ModTools extends ModTemplate {
 		let add = data.publicKey;
 
 
-		if (!this.blacklisted_publickeys.includes(add)) {
+		if (!this.blacklisted_publickeys.includes(add) && add !== this.publicKey) {
 
 			this.blacklisted_publickeys.push(add);
 
@@ -726,6 +723,10 @@ class ModTools extends ModTemplate {
 		}
 
 		if (!obj?.moderator) {
+			return false;
+		}
+
+		if (obj.publicKey == this.publicKey){
 			return false;
 		}
 
