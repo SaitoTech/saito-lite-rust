@@ -155,6 +155,23 @@ class RedSquareMain {
         }
       }
     });
+
+
+    this.app.connection.on('saito-blacklist', (obj) => {
+
+      let target_key = obj?.publicKey;
+
+      if (!target_key) {
+        return;
+      }
+
+      for (let tweet of this.mod.tweets){
+        if (tweet.tx.isFrom(target_key)){
+          tweet.hideTweet();
+        }
+      }
+
+    });
   }
 
   render() {

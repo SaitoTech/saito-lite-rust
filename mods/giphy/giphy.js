@@ -176,7 +176,7 @@ class Giphy extends ModTemplate {
 
 		const searchGif = () => {
 			let value = gif_input_search.value;
-			console.log(gif_input_search.value, 'value');
+			console.log(gif_input_search.value, 'giphy search value');
 			document.querySelector('.saito-gif-content').innerHTML = '';
 			//this.loader.render(this.app, this.mod, "saito-gif-content");
 
@@ -201,10 +201,10 @@ class Giphy extends ModTemplate {
 
 		//add focus to search bar
 		if (gif_input_search) {
-			gif_input_search.onkeydown = (e) => {
-				if (e.keyCode === 13) {
+			gif_input_search.oninput = (e) => {
+				//if (e.keyCode === 13) {
 					searchGif();
-				}
+				//}
 			};
 
 			gif_input_search.onclick = (e) => {

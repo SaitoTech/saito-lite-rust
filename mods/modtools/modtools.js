@@ -211,21 +211,38 @@ class ModTools extends ModTemplate {
 		//
 		// modtools -- share whitelists / blacklists
 		//
-		if (service.service === 'modtools' && this.canPeerModerate(peer.publicKey)) {
-			app.network.sendRequestAsTransaction(
-				'modtools',
-				{ request: 'load' },
-				(res) => {
-					if (res?.blacklist?.length) {
-						modtools_self.addPeerBlacklist(peer.publicKey, res.blacklist);
-					}
+		if (service.service === 'modtools') {
 
-					if (res?.whitelist?.length) {
-						modtools_self.addPeerWhitelist(peer.publicKey, res.whitelist);
-					}
-				},
-				peer.peerIndex
-			);
+			//
+			// Make sure our connected node is not! blacklisted!
+			//
+			if (this.app.BROWSER) {
+				if (this.isBlacklisted(peer.publicKey)) {
+					this.unblacklistAddress(peer.publicKey);
+				}
+			}
+
+			//
+			// If we trust the peer (node or browser),
+			// request the black/white lists and add them to our own
+			// 
+			if (this.canPeerModerate(peer.publicKey)){
+				app.network.sendRequestAsTransaction(
+					'modtools',
+					{ request: 'load' },
+					(res) => {
+						if (res?.blacklist?.length) {
+							modtools_self.addPeerBlacklist(peer.publicKey, res.blacklist);
+						}
+
+						if (res?.whitelist?.length) {
+							modtools_self.addPeerWhitelist(peer.publicKey, res.whitelist);
+						}
+					},
+					peer.peerIndex
+				);
+
+			}
 		}
 	}
 
@@ -546,10 +563,7 @@ class ModTools extends ModTemplate {
 
 		for (let i = 0; i < list.length; i++) {
 			if (list[i].hop < this.max_hops) {
-				// If I added, and removed, don't accept it just echoing back at me
-				if (list[i].moderator !== this.publicKey){
-					this.blacklistAddress(list[i]);
-				}
+				this.blacklistAddress(list[i]);
 			}
 		}
 	}
@@ -577,8 +591,7 @@ class ModTools extends ModTemplate {
 
 		let add = data.publicKey;
 
-
-		if (!this.blacklisted_publickeys.includes(add)) {
+		if (!this.blacklisted_publickeys.includes(add) && add !== this.publicKey) {
 
 			this.blacklisted_publickeys.push(add);
 
@@ -726,6 +739,10 @@ class ModTools extends ModTemplate {
 		}
 
 		if (!obj?.moderator) {
+			return false;
+		}
+
+		if (obj.publicKey == this.publicKey){
 			return false;
 		}
 
