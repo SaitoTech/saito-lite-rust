@@ -78,7 +78,7 @@
   .potholder {
     padding: unset;
     padding-top: 15rem;
-    margin-left: 21.5rem;
+    margin-left: 23.5rem;
     transform: skew(-50deg);
     font-size: 2rem;
     width: unset;
@@ -87,6 +87,11 @@
     overflow: visible;
     align-items: flex-start;
   }
+
+  .potholder.squeeze {
+    margin-left: 21.5rem;
+  }
+
   .potholder .line2 {
     font-size: 3rem;
   }

@@ -103,7 +103,7 @@ class Poker extends GameTableTemplate {
 		//
 		// initialize game state
 		//
-		if (this.game.deck.length == 0) {
+		if (!this.game?.state) {
 			this.game.state = this.returnState(this.game.players.length);
 			this.initializeGameStake(this.game.crypto, this.game.stake);
 			this.game.stats = this.returnStats();

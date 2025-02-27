@@ -963,7 +963,7 @@ class Arcade extends ModTemplate {
 					);
 				}
 
-				await this.changeGameStatus(txmsg.game_id, 'close');
+				this.changeGameStatus(txmsg.game_id, 'close');
 			} else {
 				if (this.debug) {
 					console.log(
@@ -986,7 +986,7 @@ class Arcade extends ModTemplate {
 			if (this.publicKey == game.msg.originator) {
 				siteMessage('Your game invite was declined', 5000);
 			}
-			await this.changeGameStatus(txmsg.game_id, 'close');
+			this.changeGameStatus(txmsg.game_id, 'close');
 		}
 
 		this.app.connection.emit('arcade-close-game', txmsg.game_id);
@@ -1016,7 +1016,7 @@ class Arcade extends ModTemplate {
 		});
 	}
 
-	async changeGameStatus(game_id, newStatus) {
+	changeGameStatus(game_id, newStatus) {
 		let game = this.returnGame(game_id);
 
 		//Move game to different list
@@ -1045,7 +1045,7 @@ class Arcade extends ModTemplate {
 
 		//In case we arrive at gameover without close game
 		this.app.connection.emit('arcade-close-game', txmsg.game_id);
-		await this.changeGameStatus(txmsg.game_id, 'over');
+		this.changeGameStatus(txmsg.game_id, 'over');
 
 		let winner = txmsg.winner || null;
 		console.log('Winner:', winner);
@@ -1068,7 +1068,7 @@ class Arcade extends ModTemplate {
 	async receiveCloseTransaction(tx) {
 		let txmsg = tx.returnMessage();
 		this.app.connection.emit('arcade-close-game', txmsg.game_id);
-		await this.changeGameStatus(txmsg.game_id, 'close');
+		this.changeGameStatus(txmsg.game_id, 'close');
 	}
 
 	async receiveGameStepTransaction(tx) {
@@ -1355,7 +1355,7 @@ class Arcade extends ModTemplate {
 		//
 		// Mark the game as accept, i.e. active
 		//
-		await this.changeGameStatus(txmsg.game_id, 'active');
+		this.changeGameStatus(txmsg.game_id, 'active');
 
 		//
 		// If I am a player in the game, let's start it initializing
