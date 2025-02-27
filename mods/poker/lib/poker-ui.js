@@ -139,7 +139,7 @@ class PokerUI {
 
     if (this.game.crypto && this.game.crypto !== "CHIPS"){
       // Could add a test for an option to should crypto by default (either globally or just a toggle here)
-      stack_html += `<div class="crypto-hover-balance">${credit} ${this.game.crypto}</div>`;
+      stack_html += `<div class="crypto-hover-balance">${credit} <span class="smaller-font">${this.game.crypto}</span></div>`;
     }
 
     this.playerbox.updateIcons(stack_html, player);

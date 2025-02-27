@@ -88,13 +88,15 @@
     align-items: flex-start;
   }
 
-  .potholder.squeeze {
-    margin-left: 21.5rem;
-  }
-
   .potholder .line2 {
     font-size: 3rem;
   }
+
+  .potholder.squeeze .line3{
+    white-space: nowrap;
+  }
+
+
 }
 
 .pulse {
