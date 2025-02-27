@@ -41,6 +41,20 @@
 	font-size: 0.8em;
 }
 
+.game-playerbox-icons .crypto-hover-balance {
+	position: absolute;
+	display: none;
+	border: 1px solid white;
+	bottom: calc(100% + 1.5rem);
+	border-radius: 1rem;
+	padding: 0.5rem;
+	font-size: 24px;
+	background-color: #020;
+}
+
+.saito-user:hover > .game-playerbox-icons .crypto-hover-balance {
+	display: block;
+}
 
 .game-playerbox {
 	width: 100%;
