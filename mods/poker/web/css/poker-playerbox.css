@@ -58,15 +58,17 @@
 
 .game-playerbox {
 	width: 100%;
-	max-width: min(250px, 50vw);
+	max-width: min(280px, 50vw);
 	border: 1px solid #fff3;
-	min-height: 10rem;
+	min-height: 12rem;
 	color: white;
 	background-color: #020E;
 	position: relative;
-	border-radius: 2rem;
+	border-radius: 1.5rem;
 	transition: all 0.5s;
 	margin: auto; /* auto-center in grid */
+	padding: 1.2rem;
+	gap: 0.5rem;
 }
 
 .game-playerbox.folded {
@@ -86,6 +88,12 @@
 
 .game-playerbox-head .saito-user > .saito-userline {
 	text-transform: lowercase;
+	align-items: flex-end;
+}
+
+.saito-user > .saito-identicon-box {
+	justify-self: center;
+	align-self: center;
 }
 
 .game-playerbox-graphics {
