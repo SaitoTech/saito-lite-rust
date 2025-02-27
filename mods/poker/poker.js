@@ -34,7 +34,6 @@ class Poker extends GameTableTemplate {
 
 		this.minPlayers = 2;
 		this.maxPlayers = 6;
-		this.settlement = [];
 
 		this.stats = new PokerStats(app, this);
 		this.board = new GameBoard(app, this);
