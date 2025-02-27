@@ -691,6 +691,7 @@
 
 #withdraw-step-one .input-elem {
   color: var(--font-color-primary);
+  width: 100%;
 }
 
 #withdraw-step-one .input-elem.disabled {
