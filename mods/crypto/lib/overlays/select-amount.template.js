@@ -1,5 +1,4 @@
 module.exports = (app, mod, form) => {
-  console.log("Select amount", form?.ticker);
 	let html = `
 
     <div class="game-crypto-transfer-manager-container" id="stake-crypto-request-container">
@@ -22,13 +21,15 @@ module.exports = (app, mod, form) => {
         html +=  `
                  <div class="token-dropdown"><select class="withdraw-select-crypto" id="stake-select-crypto">`;
         for (let ticker in mod.balances){
+
+          // Legacy fallback
           if (!form?.ticker){
             console.log("Set initial ticker");
             form.ticker = ticker;
-            mod.max_balance = parseFloat(mod.balances[ticker].balance);
           }
 
           if (form.ticker == ticker) {
+            mod.max_balance = parseFloat(mod.balances[ticker].balance);
             fee = mod.includeFeeInMax(ticker);            
           }
 
