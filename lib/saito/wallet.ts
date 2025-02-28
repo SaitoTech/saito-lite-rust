@@ -209,14 +209,9 @@ export default class Wallet extends SaitoWallet {
                 // }
             }
 
-            returnIsActivated() {
+            // Native $SAITO doesn't need to be installed/activated to become available
+            isActivated() {
                 return true;
-            }
-
-            onIsActivated() {
-                return new Promise((resolve, reject) => {
-                    resolve(null);
-                });
             }
 
             async formatBalance(precision = 2) {
@@ -515,7 +510,7 @@ export default class Wallet extends SaitoWallet {
         const allMods = this.returnInstalledCryptos();
         const activeMods = [];
         for (let i = 0; i < allMods.length; i++) {
-            if (allMods[i].returnIsActivated()) {
+            if (allMods[i].isActivated()) {
                 activeMods.push(allMods[i]);
             }
         }

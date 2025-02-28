@@ -5,23 +5,20 @@ TransactionComputer, UserSecretKey, Mnemonic  } = require("@multiversx/sdk-core"
 const PeerService = require('saito-js/lib/peer_service').default;
 
 class EGLDModule extends CryptoModule {
-    constructor(app, mod) {
+    constructor(app, ticker) {
         super(app);
         this.app = app;
         this.ticker = "EGLD";
         this.name = "EGLD";
         this.categories = "Cryptocurrency";
         this.balance = 0;
-        this.egld = {};
         this.base_url = null;
         this.network_provider_url = null;
         this.explorer_url = null;
         this.apiNetworkProvider = null;
         this.proxyNetworkProvider = null;
         this.networkConfig = null;
-        this.account_created = 0;
         this.account = null;
-        this.nonce = 0;
         this.address_obj = null;
         this.secretKey = null;
     }
@@ -29,7 +26,11 @@ class EGLDModule extends CryptoModule {
   async initialize(app) {
         try {
             await super.initialize(app);
-            await this.load();    
+
+            if (this.options?.mnemonic_text){
+                await this.getAddress(this.options.mnemonic_text);
+            }
+
             await this.setupNetwork();
             this.app.connection.emit('header-update-balance');
         } catch (error) {
@@ -42,7 +43,7 @@ class EGLDModule extends CryptoModule {
         console.log("activating egld ///");
         await this.setupNetwork();
 
-        if (this.account_created == 0){
+        if (!this.options?.mnemonic_text){
             await this.getAddress();
             await this.generateAccount();
             this.save();
@@ -68,8 +69,8 @@ class EGLDModule extends CryptoModule {
         const publicKey = this.secretKey.generatePublicKey();
         this.address_obj = publicKey.toAddress();
 
-        this.egld.mnemonic_text = mnemonic.text;
-        this.egld.address = this.address = this.destination = this.address_obj.toBech32();
+        this.options.mnemonic_text = mnemonic.text;
+        this.options.address = this.address = this.destination = this.address_obj.toBech32();
       } catch (error) {
         console.error("Error creating EGLD address:", error);
       }
@@ -81,13 +82,12 @@ class EGLDModule extends CryptoModule {
             let account = new Account(this.address_obj);
             this.account = account;
 
-            this.egld.balance = this.balance = this.account.balance;
-            this.egld.nonce = this.nonce = this.account.nonce;
+            this.options.balance = this.balance = this.account.balance;
+            this.options.nonce = this.account.nonce;
 
             if (this.account != null) {
                 await this.showBackupWalletMsg();
-                this.account_created = 1;
-                this.egld.isActivated = true;
+                this.options.isActivated = true;
             }
 
             //console.log("generateAccount account: ", this.account);
@@ -112,9 +112,9 @@ class EGLDModule extends CryptoModule {
             const accOnNetwork = await this.apiNetworkProvider.getAccount(this.address_obj);
             this.account.update(accOnNetwork);
 
-            this.egld.bigIntBalance = BigInt(this.account.balance.toNumber())
-            this.egld.balance = this.balance = this.convertAtomicToEgld(this.egld.bigIntBalance);
-            this.egld.nonce = this.nonce = this.account.nonce;
+            this.options.bigIntBalance = BigInt(this.account.balance.toNumber())
+            this.options.balance = this.balance = this.convertAtomicToEgld(this.options.bigIntBalance);
+            this.options.nonce = this.account.nonce;
 
             // console.log("updateAccount account: ", this.account);
             // console.log("updateAccount account balance bigint: ", this.balance);
@@ -192,7 +192,7 @@ class EGLDModule extends CryptoModule {
     async getNonce(){
         try {
             await this.updateAccount();
-            return this.nonce;
+            return this.options.nonce;
         } catch (error) {
             console.error("Error getNonce:", error);
         }
@@ -233,7 +233,7 @@ class EGLDModule extends CryptoModule {
 
                     const trans_hash = row.txHash;
                     const sender_html = `
-                        <a class="history-tx-link" href="${this.egld.explorer_url}/transactions/${trans_hash}" target="_blank">
+                        <a class="history-tx-link" href="${this.options.explorer_url}/transactions/${trans_hash}" target="_blank">
                             <div class="history-tx-id">${trans_hash}</div>
                             <i class="fa-solid fa-arrow-up-right-from-square"></i>
                         </a>`;
@@ -263,10 +263,10 @@ class EGLDModule extends CryptoModule {
             console.log("inside sendPayment ////");
             console.log("amount, recipient, unique_hash: ", amount , recipient , unique_hash);
 
-            console.log("this.egld: ", this.egld);
+            console.log("this.egld: ", this.options);
 
             if (this.address_obj == null) {
-                await this.load();    
+                this.load();    
             }
 
             // update account to get latest nonce
@@ -278,7 +278,7 @@ class EGLDModule extends CryptoModule {
                 sender: this.address_obj,
                 receiver: Address.newFromBech32(recipient),
                 chainID: "1",
-                nonce: this.egld.nonce,
+                nonce: this.options.nonce,
                 gasLimit: 50000,
                 //data: "SAITO multiwallet transfer"
             };
@@ -435,43 +435,6 @@ class EGLDModule extends CryptoModule {
         }
     }
 
-    async load(){
-        try {
-            if (this.app?.options?.crypto?.EGLD) {
-              this.egld = this.app.options.crypto.EGLD;
-              //console.log("EGLD OPTIONS: " + JSON.stringify(this.app.options.crypto.EGLD));
-              if (this.egld.mnemonic_text) {
-                this.is_initialized = 1;
-                this.account_created = 1;
-                this.options = this.egld;
-                this.balance = this.egld.balance;
-                this.address = this.egld.address;
-                this.destination = this.egld.address;
-                
-                await this.getAddress(this.egld.mnemonic_text);
-                //await this.updateAccount();
-              }
-            }
-        } catch (error) {
-            console.error("Error load options:", error);
-        }
-    }
-
-    save() {
-        try {
-            if (!this.app.options?.crypto?.EGLD) {
-                this.app.options.crypto = {};
-                this.app.options.crypto.EGLD = {};
-            }
-            this.app.options.address = this.egld.address;
-            this.app.options.destination = this.egld.destination; 
-            this.app.options.balance = this.egld.balance; 
-            this.app.options.crypto.EGLD = this.egld;
-            this.app.storage.saveOptions();
-        } catch (error) {
-            console.error("Error save options:", error);
-        }
-    }
 
     getEnv(){
         try {
@@ -489,13 +452,13 @@ class EGLDModule extends CryptoModule {
     async setupNetwork(){
         try {
             let this_self = this;
-            //console.log("this_self.egld.base_url:", this_self.egld.base_url);    
-            if (this_self.egld.base_url == null) {
+
+            if (this_self.options.base_url == null) {
                 await this_self.sendFetchEnvTransaction(async function (res){
                     if (typeof res == 'object' && Object.keys(res).length > 0) {
-                        this_self.base_url = this_self.egld.base_url = res.base_url;
-                        this_self.explorer_url = this_self.egld.explorer_url = res.explorer_url;
-                        this_self.network_provider_url = this_self.egld.network_provider_url = res.network_provider_url;
+                        this_self.base_url = this_self.options.base_url = res.base_url;
+                        this_self.explorer_url = this_self.options.explorer_url = res.explorer_url;
+                        this_self.network_provider_url = this_self.options.network_provider_url = res.network_provider_url;
 
                         await this_self.initiateNetwork();
                     } else {
@@ -514,12 +477,12 @@ class EGLDModule extends CryptoModule {
         try {
             if (this.apiNetworkProvider == null) {
                 // console.log("initiateNetwork: ////");
-                // console.log("base_url:", this.egld.base_url);
-                // console.log("base_url:", this.egld.explorer_url);
-                // console.log("base_url:", this.egld.network_provider_url);
+                // console.log("base_url:", this.options.base_url);
+                // console.log("base_url:", this.options.explorer_url);
+                // console.log("base_url:", this.options.network_provider_url);
 
-                this.apiNetworkProvider = new ApiNetworkProvider(this.egld.base_url, { clientName: "multiversx-your-client-name" });
-                this.proxyNetworkProvider = new ProxyNetworkProvider(this.egld.network_provider_url, { clientName: "multiversx-your-client-name" });
+                this.apiNetworkProvider = new ApiNetworkProvider(this.options.base_url, { clientName: "multiversx-your-client-name" });
+                this.proxyNetworkProvider = new ProxyNetworkProvider(this.options.network_provider_url, { clientName: "multiversx-your-client-name" });
                 this.networkConfig = await this.apiNetworkProvider.getNetworkConfig();
             }
         } catch(err) {

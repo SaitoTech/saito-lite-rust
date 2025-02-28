@@ -129,7 +129,7 @@ class Mixin extends ModTemplate {
       this.mods.push(crypto_module);
       this.app.modules.mods.push(crypto_module);
       if (mixin_self.account_created !== 0) {
-        if (crypto_module.returnIsActivated()) {
+        if (crypto_module.isActivated()) {
           await this.fetchSafeUtxoBalance();
         }
       }

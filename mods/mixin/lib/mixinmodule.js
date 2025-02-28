@@ -105,7 +105,7 @@ class MixinModule extends CryptoModule {
 				});
 		} else {
 			
-			if (this.is_initialized == 0 || this.destination == "" || this.destination == null) {
+			if (this.destination == "" || this.destination == null) {
 				this.app.connection.emit('create-mixin-account', this_self.ticker);
 				await this.mixin.createDepositAddress(this_self.asset_id);
 				await this.showBackupWallet();
