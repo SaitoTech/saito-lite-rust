@@ -1193,6 +1193,7 @@ export default class Wallet extends SaitoWallet {
                 if (this.app.options.wallet.backup_required_msg) {
                     this.app.options.wallet.backup_required_msg = 0;
                     await this.saveWallet();
+                    console.log("Clear flashing reminder from wallet.ts");
                     this.app.connection.emit('saito-header-update-message', {});
                 }
 
