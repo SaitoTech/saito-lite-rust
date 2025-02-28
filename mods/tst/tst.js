@@ -83,28 +83,9 @@ class TST extends CryptoModule {
 		return 0;
 	}
 
-	async renderModalSelectCrypto(app, mod, cryptomod) {
-		return WarningTemplate(await this.returnAddress());
-	}
-
 
 	async returnWithdrawalFeeForAddress(address="", callback){
 		callback(0.005);
-	}
-
-	attachEventsModalSelectCrypto(app, mod, cryptomod) {
-		try {
-			let dotgo = document.getElementById('dot-warning-confirm');
-			if (dotgo) {
-				dotgo.onclick = (e) => {
-					cryptomod.modal_overlay.hide();
-					app.connection.emit('header-update-balance');
-				};
-			}
-		} catch (err) {
-			console.log('ERROR ACTIVATING: ' + err);
-		}
-		return;
 	}
 
 	respondTo(type = '', obj) {

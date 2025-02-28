@@ -2,7 +2,6 @@ import Peer from './peer';
 
 import * as JSON from 'json-bigint';
 const getUuid = require('uuid-by-string');
-const ModalSelectCrypto = require('./ui/modals/select-crypto/select-crypto');
 import Transaction from './transaction';
 import Slip from './slip';
 import { Saito } from '../../apps/core';
