@@ -60,13 +60,17 @@ this.updateLog(`###############`);
 	  this.game.queue.push("ACKNOWLEDGE\tThe Advent of Winter");
 	  this.game.queue.push("show_overlay\twinter_phase");
 	  this.game.queue.push("action_phase");
-	  this.game.queue.push("check_interventions"); // players check and report cards that need to trigger waiting/check
-	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 
 //if (this.game.options.scenario != "is_testing") {
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("NOTIFY\tSpring Deployment is about to start...");
 //}
+
+	  //
+	  // n.b. check interventions flags if Venetian Informant is playable
+	  //
+	  this.game.queue.push("check_interventions"); // players check and report cards that need to trigger waiting/check
+	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 
 	  if (this.game.players.length == 2) {
 
@@ -110,6 +114,7 @@ this.updateLog(`###############`);
 	        //this.game.queue.push("ACKNOWLEDGE\tProceed to Diplomatic Proposals");
 
   	        this.game.queue.push("card_draw_phase");
+
 
 	        if (this.game.players.length == 3) {
                   this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(["france","papacy","protestant"]));
@@ -717,16 +722,54 @@ this.updateLog(`###############`);
 
 	}
 
+	if (mv[0] === "winter_retreat_move_units_to_fortresses_faction_array") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  this.endTurn();
+
+	  return 0;
+
+	}
 
 	if (mv[0] === "retreat_to_winter_spaces") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  if (this.game.players.length == 3) {
+            this.game.queue.push("winter_retreat_move_units_to_fortresses_faction_array\t"+JSON.stringify(["france","papacy","protestant"]));
+            this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+            this.game.queue.push("winter_retreat_move_units_to_fotresses_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england"]));
+            this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+          }
+          
+          if (this.game.players.length == 4) {
+            this.game.queue.push("winter_retreat_move_units_to_fortresses_faction_array\t"+JSON.stringify(["papacy","protestant"]));
+            this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+            this.game.queue.push("winter_retreat_move_units_to_fortresses_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england","france"]));
+            this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+            return 1;
+          }
+          
+          if (this.game.players.length >= 5) {
+	    this.game.queue.push("winter_retreat_move_units_to_fortresses_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england","france","papacy"]));
+	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	  }
+
+
+
+
+
+
 
 	  let his_self = this;
 	  let moves = [];
 
-	  this.game.queue.splice(qe, 1);
 
 	  //
-	  // move stranded naval leaders back to capital port
+	  // we have handled naval retreat, so we move stranded naval leaders back to capital port
+	  // in case there are any still floating around. this is a sanity check rather than something
+	  // we particularly want to have in the code here.
 	  //
 	  for (let spacekey in this.game.navalspaces) {
 	    let ns = this.game.navalspaces[spacekey];
@@ -4030,6 +4073,7 @@ console.log("----------------------------");
 	  let attacker_comes_from_this_spacekey = mv[3];
 	  let defender = mv[4];
           let space = this.game.spaces[spacekey];
+	  let all_have_lost_field_battle = true;
 
           //
           // you cannot retreat if besieged, so check if besieged, and one besieged unit 
@@ -4041,24 +4085,35 @@ console.log("----------------------------");
             }
           }
 
+          for (let x = 0; x < space.units[defender].length; x++) {
+	    if (space.units[defender][x].lost_field_battle == 0) { 
+	      all_have_lost_field_battle = false;
+	    }
+	  }
+
+
           //
           // roll dice to see if avoid battle is an option
           //
-          let abr = this.rollDice(6) + this.rollDice(6);
-          let highest_battle_rating = 0;
-          if (space != null) {
-            for (let i = 0; i > space.units[defender].length; i++) {
-              let u = space.units[defender][i];
-              if (parseInt(u.battle_rating) > highest_battle_rating) { highest_battle_rating = parseInt(u.battle_rating); }            
+	  if (!all_have_lost_field_battle) {
+            let abr = this.rollDice(6) + this.rollDice(6);
+            let highest_battle_rating = 0;
+            if (space != null) {
+              for (let i = 0; i > space.units[defender].length; i++) {
+                let u = space.units[defender][i];
+                if (parseInt(u.battle_rating) > highest_battle_rating) { highest_battle_rating = parseInt(u.battle_rating); }            
+              }
+              abr += parseInt(highest_battle_rating);
+              if (abr >= 9) {
+                this.updateLog(this.returnFactionName(defender) + " avoid battle roll succeeds: " + abr);
+              } else {
+                this.updateLog(this.returnFactionName(defender) + " avoid battle roll fails: " + abr);
+                return 1;
+              }
             }
-            abr += parseInt(highest_battle_rating);
-            if (abr >= 9) {
-              this.updateLog(this.returnFactionName(defender) + " avoid battle roll succeeds: " + abr);
-            } else {
-              this.updateLog(this.returnFactionName(defender) + " avoid battle roll fails: " + abr);
-              return 1;
-            }
-          } 
+          } else {
+            this.updateLog(this.returnFactionName(defender) + " - routed troops may avoid battle...");
+	  }
 
 	  let player_factions = this.returnPlayerFactions(this.game.player)
 
@@ -7605,6 +7660,18 @@ try {
 	  if (his_self.game.state.field_battle.attacker_hits > his_self.game.state.field_battle.defender_hits) {
 	    winner = his_self.game.state.field_battle.attacker_faction;
 	  }
+
+	  //
+	  // mark losers for avoid-battle purposes
+	  //
+	  for (let f in his_self.game.state.field_battle.faction_map) {
+	    if (his_self.game.state.field_battle.faction_map[f] == his_self.game.state.field_battle.defender_faction) {
+	      for (let z = 0; z < space.units[f].length; z++) {
+		space.units[f][z].lost_field_battle = 1;
+	      }
+	    }
+	  }
+
 
 	  //
 	  // calculate units remaining
@@ -11389,6 +11456,9 @@ defender_hits - attacker_hits;
 	  // Return leaders and units to fortified spaces (suffering attrition if there is no clear path to such a space)
 	  this.game.queue.push("retreat_to_winter_spaces");
 
+
+
+
 	  // Return naval units to the nearest port - do this before retreat_to_winter_spaces so that we don't move
 	  // naval leaders to Algiers etc. before their ships have the option of retreating to a specific port with
 	  // them.
@@ -11480,6 +11550,14 @@ defender_hits - attacker_hits;
 
 	    for (let z = 0; z < this.game.deck[0].fhand.length; z++) {
 	      for (let i = 0; i < this.game.deck[0].fhand[z].length; i++) {
+
+		//
+		// venetian informant
+		//
+	        if (this.game.deck[0].fhand[z][i] == "109") {
+                  this.addMove("SETVAR\tstate\tevents\tintervention_venetian_informant_possible\t1");
+		}
+
 	        //
 	        // Professional Rowers permits naval_intercept and naval_avoid_battle and post-naval-battle
 	        //
@@ -11661,10 +11739,67 @@ defender_hits - attacker_hits;
 
 	}
 
+        if (mv[0] === "vinformant_spring_deployment") {
 
+	  this.game.queue.splice(qe, 1);
+
+console.log("vinformant: " + this.game.state.events.intervention_venetian_informant_possible);
+
+	  if (this.game.state.events.intervention_venetian_informant_possible == 1) {
+	    this.game.state.events.intervention_venetian_informant_possible = 0;
+	  } else {
+	    return 1;
+	  }
+
+	  //
+	  //
+	  //
+	  let do_i_have_it = false;
+	  let which_faction = "";
+
+	  for (let z = 0; z < this.game.deck[0].fhand.length; z++) {
+	    for (let i = 0; i < this.game.deck[0].fhand[z].length; i++) {
+	      if (this.game.deck[0].fhand[z][i] == "109") {
+	        do_i_have_it = true;
+	        which_faction = this.game.state.players_info[this.game.player-1].factions[z];
+	      }
+	    }
+	  }
+
+	  if (do_i_have_it) {
+
+            let html  = `<ul>`;
+                html += `<li class="card" id="109">yes</li>`;
+                html += `<li class="card" id="skip">no</li>`;
+                html += `</ul>`;
+
+            this.updateStatusWithOptions(`${his_self.returnFactionName(which_faction)}: do you wish to play ${his_self.popup("109")}`, html);
+            this.attachCardboxEvents(async (user_choice) => {
+
+	      if (user_choice == "skip") {
+		his_self.endTurn();
+	      } else {
+                his_self.addMove("discard\t"+which_faction+"\t109");
+                his_self.addMove("venetian_informant\t"+which_faction);
+                his_self.addMove("NOTIFY\t"+his_self.returnFactionName(which_faction)+" plays " + his_self.popup("109"));
+                his_self.endTurn();
+	      };
+
+	    });
+	  }
+
+	  return 0;
+
+	}
 
 
         if (mv[0] === "spring_deployment_phase") {
+
+	  if (this.game.state.events.intervention_venetian_informant_possible == 1) {
+	    this.game.queue.push("vinformant_spring_deployment");
+	    return 1;
+
+	  }
 
 	  this.game.queue.splice(qe, 1);
 
