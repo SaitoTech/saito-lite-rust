@@ -43,16 +43,15 @@ class MixinModule extends CryptoModule {
 	}
 
 	async activate() {
-		let this_self = this;
+
 		if (this.mixin.account_created == 0) {
-			this.app.connection.emit('create-mixin-account', this_self.ticker);
+			this.app.connection.emit('header-install-crypto', this.ticker);
 			await this.mixin.createAccount(async (res) => {
 				if (Object.keys(res).length > 0) {
-					await this.mixin.createDepositAddress(this_self.asset_id);
-					await super.activate();
-					await this_self.showBackupWallet();
+					await this.mixin.createDepositAddress(this.asset_id);
+					super.activate();
 				} else {
-					salert('Having problem generating key for ' + ' ' + this_self.ticker);
+					salert('Having problem generating key for ' + ' ' + this.ticker);
 					await this.app.wallet.setPreferredCrypto('SAITO', 1);
 					this.app.connection.emit('header-update-balance');
 					this.app.connection.emit('update_identifier', this.publicKey);
@@ -60,26 +59,12 @@ class MixinModule extends CryptoModule {
 			});
 		} else {
 			if (this.destination == '' || this.destination == null) {
-				this.app.connection.emit('create-mixin-account', this_self.ticker);
-				await this.mixin.createDepositAddress(this_self.asset_id);
-				await this.showBackupWallet();
+				this.app.connection.emit('header-install-crypto', this.ticker);
+				await this.mixin.createDepositAddress(this.asset_id);
 			}
 
-			await super.activate();
+			super.activate();
 		}
-	}
-
-	async showBackupWallet() {
-		this.app.options.wallet.backup_required = 1;
-		await this.app.wallet.saveWallet();
-
-		let msg = `Your wallet has added new crypto keys. 
-		Unless you backup your wallet, you may lose these keys. 
-		Do you want help backing up your wallet?`;
-		this.app.connection.emit('saito-backup-render-request', {
-			msg: msg,
-			title: 'BACKUP YOUR WALLET'
-		});
 	}
 
 	hasReceivedPayment(amount, sender, receiver, timestamp, unique_hash) {
@@ -339,14 +324,6 @@ class MixinModule extends CryptoModule {
 		return status;
 	}
 
-	/**
-	 * Abstract method which should get withdrawl fee
-	 * @abstract
-	 * @return {Function} Callback function
-	 */
-	returnWithdrawalFee(asset_id, recipient) {
-		return this.mixin.checkWithdrawalFee(asset_id, recipient);
-	}
 
 	returnNetworkInfo() {
 		return this.mixin.returnNetworkInfo(this.asset_id);
@@ -393,7 +370,7 @@ class MixinModule extends CryptoModule {
 		if (typeof user_data.user_id != 'undefined') {
 			return mycallback(0);
 		} else {
-			let fee = await this.returnWithdrawalFee(this.asset_id, recipient);
+			let fee = await this.mixin.checkWithdrawalFee(this.asset_id, recipient);
 			return mycallback(fee);
 		}
 	}
@@ -510,12 +487,6 @@ class MixinModule extends CryptoModule {
 
 	async returnUtxo(state = 'unspent', limit = 500, order = 'DESC', callback = null) {
 		return await this.mixin.fetchUtxo(state, limit, order, callback);
-	}
-
-	async getMixinUser(address = '', callback = null) {
-		return await this.mixin.sendFetchUserTransaction({ address: address }, function (res) {
-			return callback(res);
-		});
 	}
 
 	async getMixinAddress(publicKey, ticker, callback = null) {

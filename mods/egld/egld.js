@@ -42,16 +42,17 @@ class EGLDModule extends CryptoModule {
 
   async activate() {
     try {
-      console.log('activating egld ///');
+
+      this.app.connection.emit('header-install-crypto', this.ticker);
       await this.setupNetwork();
 
       if (!this.options?.mnemonic_text) {
         await this.getAddress();
         await this.generateAccount();
-        this.save();
       }
 
       await super.activate();
+
     } catch (error) {
       console.error('Error activate:', error);
     }
@@ -94,11 +95,6 @@ class EGLDModule extends CryptoModule {
         this.options.balance = this.balance = this.account.balance;
         this.options.nonce = this.account.nonce;
 
-        if (this.account != null) {
-          await this.showBackupWalletMsg();
-          this.options.isActivated = true;
-        }
-
         //console.log("generateAccount account: ", this.account);
       }
     } catch (error) {
@@ -131,23 +127,6 @@ class EGLDModule extends CryptoModule {
       }
     } catch (error) {
       console.error('Error updating EGLD account:', error);
-    }
-  }
-
-  async showBackupWalletMsg() {
-    try {
-      this.app.options.wallet.backup_required = 1;
-      await this.app.wallet.saveWallet();
-
-      let msg = `Your wallet has added new crypto keys. 
-            Unless you backup your wallet, you may lose these keys. 
-            Do you want help backing up your wallet?`;
-      this.app.connection.emit('saito-backup-render-request', {
-        msg: msg,
-        title: 'BACKUP YOUR WALLET'
-      });
-    } catch (error) {
-      console.error('Error backup wallet:', error);
     }
   }
 
