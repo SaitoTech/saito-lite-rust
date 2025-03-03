@@ -91,8 +91,9 @@ export default class Wallet extends SaitoWallet {
                 this.name = 'Saito';
                 this.description = 'Saito';
                 this.balance = '0.0';
-                this.publicKey = publicKey;
-                this.destination = publicKey;
+                this.address = publicKey;
+                
+                this.options.isActivated = true;
             }
 
             async returnBalance() {
@@ -100,14 +101,11 @@ export default class Wallet extends SaitoWallet {
                 return this.app.wallet.convertNolanToSaito(x);
             }
 
-            async returnPublicKey() {
-                return this.publicKey || await this.app.wallet.getPublicKey();
-            }
-
             async returnAddress() {
-                return this.publicKey || await this.app.wallet.getPublicKey();
+                return this.address || await this.app.wallet.getPublicKey();
             }
 
+            //returns a Promise!
             returnPrivateKey() {
                 return this.app.wallet.getPrivateKey();
             }

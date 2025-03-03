@@ -150,10 +150,6 @@ class Mixin extends ModTemplate {
       }
     }
 
-    /*if (service.service === "mixin" && this.app.BROWSER == 0 && this.account_created == 0) {
-      this.createAccount();
-    }*/
-  
   }
 
 
@@ -343,7 +339,7 @@ class Mixin extends ModTemplate {
         for (let i = 0; i < this.mods.length; i++) {
           if (this.mods[i].asset_id === asset_id) {
             this.mods[i].address = address[0].destination;
-            this.mods[i].destination = address[0].destination;
+            //this.mods[i].destination = address[0].destination;
             this.mods[i].save();
 
             await this.sendSaveUserTransaction({
@@ -380,7 +376,7 @@ class Mixin extends ModTemplate {
       for (let i = 0; i < this.mods.length; i++) {
         if (this.mods[i].asset_id === asset_id) {
           if ((utxo.data).length > 0) {
-            this.mods[i].destination = address[0].destination;
+            this.mods[i].address = address[0].destination;
 	    //  removing save here for debugging purposes -- June 21, '24
             this.mods[i].save();
           }

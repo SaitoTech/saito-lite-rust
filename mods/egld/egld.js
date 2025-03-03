@@ -80,7 +80,7 @@ class EGLDModule extends CryptoModule {
       this.address_obj = publicKey.toAddress();
 
       this.options.mnemonic_text = mnemonic.text;
-      this.options.address = this.address = this.destination = this.address_obj.toBech32();
+      this.options.address = this.address = this.address_obj.toBech32();
     } catch (error) {
       console.error('Error creating EGLD address:', error);
     }

@@ -58,7 +58,7 @@ class MixinModule extends CryptoModule {
 				}
 			});
 		} else {
-			if (this.destination == '' || this.destination == null) {
+			if (!this.address) {
 				this.app.connection.emit('header-install-crypto', this.ticker);
 				await this.mixin.createDepositAddress(this.asset_id);
 			}
@@ -205,10 +205,10 @@ class MixinModule extends CryptoModule {
 	 * @return {String} Pubkey/address
 	 */
 	returnAddress() {
-		if (this.destination === '') {
+		if (!this.address) {
 			return 'unknown address';
 		}
-		return this.destination + '|' + this.mixin.mixin.user_id + '|' + 'mixin';
+		return this.address + '|' + this.mixin.mixin.user_id + '|' + 'mixin';
 	}
 
 	formatAddress(address) {
@@ -635,7 +635,7 @@ class MixinModule extends CryptoModule {
 	}
 
 	async fetchPendingDeposits(callback = null) {
-		return await this.mixin.fetchPendingDeposits(this.asset_id, this.destination, callback);
+		return await this.mixin.fetchPendingDeposits(this.asset_id, this.address, callback);
 	}
 }
 
