@@ -10,6 +10,8 @@ import S from 'saito-js/saito';
 import SaitoWallet from 'saito-js/lib/wallet';
 import BalanceSnapshot from 'saito-js/lib/balance_snapshot';
 import { WalletSlip } from 'saito-js/lib/wallet';
+import Decimal from 'decimal.js';
+
 
 const CryptoModule = require('../templates/cryptomodule');
 
@@ -23,11 +25,9 @@ export default class Wallet extends SaitoWallet {
 
     default_fee = 0;
 
-    version = 5.663;
+    version = 5.667; //saito-js 0.2.55
 
     nolan_per_saito = 100000000;
-
-    seed_object: {mnemonic: any, seed: Buffer};
 
     cryptos = new Map<string, any>();
     public saitoCrypto: any;
@@ -373,8 +373,6 @@ export default class Wallet extends SaitoWallet {
                     console.log('preserving slips without a wallet reset..... : '+slips.length);
                     await this.addSlips(slips);
                 }
-
-             
             }
 
 
@@ -410,11 +408,6 @@ export default class Wallet extends SaitoWallet {
         ////////////////
         if (!privateKey || !publicKey) {
             await this.resetWallet();
-        }
-
-        if(!this.app.options.wallet.seed){
-            let privateKey = await this.getPrivateKey();
-            let seed = this.app.options.wallet.seed = this.app.crypto.generateSeedFromPrivateKey(privateKey)
         }
     }
 
@@ -1401,12 +1394,9 @@ export default class Wallet extends SaitoWallet {
                     return err.name;
                 }
             } else if (privatekey != '') {
+                // privatekey used for wallet importing
                 try {
-                    let publicKey = this.app.crypto.generatePublicKey(privatekey);
-                   const result =  this.app.crypto.generateSeedFromPrivateKey(privatekey)
-
-                   this.seed_object = result
-                   console.log('seed, ', result);
+                    publicKey = this.app.crypto.generatePublicKey(privatekey);
                     await this.setPublicKey(publicKey);
                     await this.setPrivateKey(privatekey);
                     this.app.options.wallet.version = this.version;
@@ -1414,6 +1404,7 @@ export default class Wallet extends SaitoWallet {
                     this.app.options.wallet.outputs = [];
                     this.app.options.wallet.spends = [];
                     this.app.options.wallet.pending = [];
+
                     await this.app.storage.resetOptionsFromKey(publicKey);
                     await this.fetchBalanceSnapshot(publicKey);
                 } catch (err) {
@@ -1435,9 +1426,9 @@ export default class Wallet extends SaitoWallet {
 
     public convertSaitoToNolan(amount = '0.0') {
         let nolan = 0;
-        let num = Number(amount);
-        if (num > 0) {
-            nolan = num * this.nolan_per_saito; // 100,000,000
+        let num = Decimal(amount);
+        if (Number(amount) > 0) {
+            nolan = Number(num.times(this.nolan_per_saito).toFixed(0)); // 100,000,000
         }
 
         return BigInt(nolan);

@@ -625,7 +625,14 @@ class Videocall extends ModTemplate {
 
 		let from = tx.from[0].publicKey;
 
+		//Update calendar event
 		this.addCallParticipant(txmsg.call_id, from);
+
+		//Check if we have a broken stun connection
+		if (!this.stun.hasConnection(from)) {
+			console.log("Videocall: reset stun peer connection for new join");
+			this.stun.removePeerConnection(from);
+		}
 
 		//We are getting a tx for the call we are in
 		if (this?.room_obj?.call_id === txmsg.call_id) {

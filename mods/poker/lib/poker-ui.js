@@ -14,8 +14,8 @@ class PokerUI {
     }
 
 
-    if (player == this.game.state.button_player && player == this.game.state.big_blind_player) {
-      return 'dealer / big blind';
+    if (player == this.game.state.button_player && player == this.game.state.small_blind_player) {
+      return 'dealer / small blind';
     }
 
     if (player == this.game.state.button_player) {
@@ -123,16 +123,26 @@ class PokerUI {
     if (amount !== -1){
       credit = this.convertChipsToCrypto(amount);
     }else{
-      let html = `<div class="poker-player-stake">${this.game.state.player_pot[player - 1]}</div>`;
-      this.playerbox.replaceGraphics(html, ".poker-player-stake", player); 
+      amount = this.game.state.player_credit[player - 1];
+
+      //let html = `<div class="poker-player-stake">${this.game.state.player_pot[player - 1]}</div>`;
+      // If we show player-pot outside the player box
+      //this.playerbox.replaceGraphics(html, ".poker-player-stake", player); 
     }
 
-    let chips = this.game.crypto || ('CHIP' + credit !== 1 ? 'S' : '');
+    let chips = 'CHIP';
+    if (amount !== 1){
+      chips += "S";
+    } 
 
-    this.playerbox.updateIcons(
-      `<div class="poker-stack-balance">${credit}</div><div class="poker-stack-units">${chips}</div>`,
-      player
-    );
+    let stack_html = stack_html = `<div class="poker-stack-balance">${amount}</div><div class="poker-stack-units">${chips}</div>`;
+
+    if (this.game.crypto && this.game.crypto !== "CHIPS"){
+      // Could add a test for an option to should crypto by default (either globally or just a toggle here)
+      stack_html += `<div class="crypto-hover-balance">${credit} <span class="smaller-font">${this.game.crypto}</span></div>`;
+    }
+
+    this.playerbox.updateIcons(stack_html, player);
 
   }
 

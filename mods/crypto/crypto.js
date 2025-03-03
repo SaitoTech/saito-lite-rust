@@ -96,48 +96,38 @@ class Crypto extends ModTemplate {
 			};
 
 			for (let ticker in ac) {
-				menu.submenus.push({
-					parent: 'game-crypto',
-					text: ticker,
-					id: 'game-crypto-' + ticker,
-					class: 'game-crypto-ticker',
-					callback: async (app, game_mod) => {
-						this.attachStyleSheets();
+				if (!gm.game?.crypto || gm.game.crypto == ticker){
+					menu.submenus.push({
+						parent: 'game-crypto',
+						text: ticker,
+						id: 'game-crypto-' + ticker,
+						class: 'game-crypto-ticker',
+						callback: async (app, game_mod) => {
+							this.attachStyleSheets();
 
-						this.max_balance = ac[ticker];
-						this.min_balance = game_mod?.opengame ? this.max_balance : -1;
+							this.max_balance = ac[ticker];
+							this.min_balance = game_mod?.opengame ? this.max_balance : -1;
 
-						if (
-							game_mod.game.crypto &&
-							game_mod.game.crypto != 'CHIPS'
-						) {
+							if (
+								game_mod.game.crypto &&
+								game_mod.game.crypto != 'CHIPS'
+							) {
 
-							if (typeof game_mod.game.stake === "object"){
-								let str = "";
-								for (let i in game_mod.game.stake){
-									if (i !== 'min'){
-										str += `${game_mod.app.keychain.returnUsername(i)}: ${game_mod.game.stake[i]} ${game_mod.game.crypto} / `
-									}
-								}
-								str = str.substring(0, str.length - 3);
-								salert(`${str} staked on this game`);
-							}else{
-								salert(
-									`${game_mod.game.stake} ${game_mod.game.crypto} staked on this game!`
-								);
+								game_mod.showStakeOverlay();
+							
+								return;
 							}
-							return;
+
+							this.overlay.ticker = ticker;
+
+							this.overlay.render((ticker, amount) => {
+								game_mod.menu.hideSubMenus();
+								game_mod.proposeGameStake(ticker, amount);
+								app.browser.logMatomoEvent('StakeCrypto', 'viaGameMenu', ticker);
+							});
 						}
-
-						this.overlay.ticker = ticker;
-
-						this.overlay.render((ticker, amount) => {
-							game_mod.menu.hideSubMenus();
-							game_mod.proposeGameStake(ticker, amount);
-							app.browser.logMatomoEvent('StakeCrypto', 'viaGameMenu', ticker);
-						});
-					}
-				});
+					});
+				}
 			}
 
 

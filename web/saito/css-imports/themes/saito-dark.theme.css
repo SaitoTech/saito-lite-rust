@@ -96,9 +96,11 @@ html[data-theme="dark"] {
   --border-radius-modal-menu: var(--border-radius-soft);
   --border-radius-sidebar-chat-manager: var(--border-radius-soft);
   /* BORDER THICKNESS */
+  --border-padding-qr-code: 0;
   --border-thickness-modal-menu: 0px;
   --border-thickness-button-primary: var(--border-thickness-thin);
   --border-thickness-button-hover-primary: var(--border-thickness-thin);
+  --border-thickness-qr-code: var(--border-thickness-fat); /* for contrast to be able to scan */
   /* BORDER COLORS */
   --border-color-general-dividers: var(--saito-border-color);
   --border-color-general-dividers-dark: var(--color-primary);
@@ -115,7 +117,7 @@ html[data-theme="dark"] {
   --border-color-chat-popup-docked: var(--color-primary);
   --border-color-selection-box: var(--color-highlight);
   --border-color-form-input-checkbox: var(--color-contrast);
-  --border-color-qr-code: var(--border-color-general-dividers);
+  --border-color-qr-code: var(--saito-white);
   /* BACKGROUNDS */
   /* General Background Colors */
   --background-color-sidebar-left: var(--color-shadow-bubble-light);

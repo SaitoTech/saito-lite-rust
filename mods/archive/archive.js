@@ -478,7 +478,7 @@ try {
 		newObj.signature = obj?.signature || obj?.sig || tx?.signature || '';
 		newObj.tx = tx.serialize_to_web(this.app);
 		newObj.tx_size = newObj.tx.length;
-		newObj.updated_at = new Date().getTime();
+		newObj.updated_at = obj?.timestamp || tx?.updated_at || new Date().getTime();
 
 		if (!newObj.signature) {
 			console.warn('No tx signature for archive update:', tx);

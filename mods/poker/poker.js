@@ -34,7 +34,6 @@ class Poker extends GameTableTemplate {
 
 		this.minPlayers = 2;
 		this.maxPlayers = 6;
-		this.settlement = [];
 
 		this.stats = new PokerStats(app, this);
 		this.board = new GameBoard(app, this);
@@ -99,13 +98,12 @@ class Poker extends GameTableTemplate {
 		//
 		// CHIPS or CRYPTO ?
 		//
-		// force settlement unless set to false
-		this.settleNow = true;
+		this.settleNow = false;
 
 		//
 		// initialize game state
 		//
-		if (this.game.deck.length == 0) {
+		if (!this.game?.state) {
 			this.game.state = this.returnState(this.game.players.length);
 			this.initializeGameStake(this.game.crypto, this.game.stake);
 			this.game.stats = this.returnStats();

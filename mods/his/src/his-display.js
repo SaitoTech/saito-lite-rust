@@ -2895,15 +2895,6 @@ console.log("ERROR DISPLAYING NEW WORLD STUFF: " + JSON.stringify(err));
 
   displayNavalSpace(key) {
 
-
-console.log("^");
-console.log("^");
-console.log("^");
-console.log("DISPLAY NAVAL SPACE!");
-console.log("^");
-console.log("^");
-console.log("^");
-
     if (this.game.spaces[key]) { this.displaySpace(key); return; }
     if (!this.game.navalspaces[key]) { return; }
 

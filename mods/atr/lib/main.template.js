@@ -214,6 +214,22 @@ module.exports = (app, mod) => {
                 <td class="blockslot9"></td>
                 <td class="blockslot10"></td>
             </tr>
+            <!--
+            temporarily commented until related rust changes goes live
+            <tr class="total_fees_cumulative">
+                <td>total_fees_cumulative</td>
+                <td class="blockslot1"></td>
+                <td class="blockslot2"></td>
+                <td class="blockslot3"></td>
+                <td class="blockslot4"></td>
+                <td class="blockslot5"></td>
+                <td class="blockslot6"></td>
+                <td class="blockslot7"></td>
+                <td class="blockslot8"></td>
+                <td class="blockslot9"></td>
+                <td class="blockslot10"></td>
+            </tr>
+            -->
             <tr class="total_fees total_supply_value">
                 <td>total_fees</td>
                 <td class="blockslot1"></td>

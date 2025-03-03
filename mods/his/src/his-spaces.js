@@ -78,13 +78,19 @@
       for (let f in this.game.spaces[space].units) {
         for (let z = 0; z < this.game.spaces[space].units[f].length; z++) {
           this.game.spaces[space].units[f][z].locked = 0;
+          this.game.spaces[space].units[f][z].lost_field_battle = 0;
+          if (this.game.spaces[space].units[f][z].spacekey) { this.game.spaces[space].units[f][z].spacekey = ""; }
+          if (this.game.spaces[space].units[f][z].destination) { this.game.spaces[space].units[f][z].destination = ""; }
         }
       }
     }
     for (let space in this.game.navalspaces) {
       for (let f in this.game.navalspaces[space].units) {
         for (let z = 0; z < this.game.navalspaces[space].units[f].length; z++) {
+          this.game.navalspaces[space].units[f][z].spacekey = "";
+          this.game.navalspaces[space].units[f][z].destination = "";
           this.game.navalspaces[space].units[f][z].locked = 0;
+          this.game.navalspaces[space].units[f][z].lost_naval_battle = 0;
         }
       }
     }
@@ -460,6 +466,7 @@
     // • free of enemy units (including naval units and leaders)
     // • free of unrest.
     //
+
     let res = this.returnNearestSpaceWithFilter(
 
       space.key ,
@@ -2206,7 +2213,15 @@ if (x) {
 	      if (searched_spaces[nn[i].neighbour]) {
 		// don't add to pending as we've transversed before
 	      } else {
-      	        pending_spaces[nn[i].neighbour] = { hops : (hops+1) , key : this.game.spaces[key].neighbours[i] , overseas : nn[i].overseas };
+		if (!pending_spaces[nn[i].neighbour]) {
+      	          pending_spaces[nn[i].neighbour] = { hops : (hops+1) , key : this.game.spaces[key].neighbours[i] , overseas : nn[i].overseas };
+	        } else {
+		  if (pending_spaces[key].overseas == false) {
+		    if (this.game.spaces[key].neighbours.includes(nn[i].neighbour)) {    
+		      pending_spaces[nn[i].neighbour].overseas = false;
+		    }
+		  }
+		}
 	      }
     	    }
 	  }
@@ -2759,7 +2774,7 @@ if (x) {
       home: "france",
       political: "france",
       ports: ["channel"],
-      religion: "channelc",
+      religion: "catholic",
       neighbours: ["boulogne","paris","tours","nantes"],
       language: "french",
       type: "key"

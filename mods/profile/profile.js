@@ -29,7 +29,7 @@ class Profile extends ModTemplate {
 		app.connection.on('profile-fetch-content-and-update-dom',
 			async (key) => {
 
-				console.log('profile-fetch-content-and-update-dom --- ' + key);
+				//console.log('profile-fetch-content-and-update-dom --- ' + key);
 
 				// 
 				// If not cached, check archives
@@ -37,7 +37,7 @@ class Profile extends ModTemplate {
 				if (!this.cache[key]) {
 					this.cache[key] = {};
 					
-					console.log("PROFILE: Need to cache -- ",key);
+					//console.log("PROFILE: Need to cache -- ",key);
 
 					if (this.app.keychain.isWatched(key)) {
 
@@ -47,7 +47,7 @@ class Profile extends ModTemplate {
 
 							this.cache[key] = await this.fetchProfileFromArchive(returned_key);
 
-							console.log("PROFILE: async fetches for watched key finished");
+							//console.log("PROFILE: async fetches for watched key finished");
 						
 						}
 
@@ -61,7 +61,7 @@ class Profile extends ModTemplate {
 									//Go reverse order for oldest first
 									for (let i = txs.length - 1; i >= 0; i--) {
 										let txmsg = txs[i].returnMessage();
-										console.log("Remote Archive Profile TX: ", txmsg);
+										//console.log("Remote Archive Profile TX: ", txmsg);
 										Object.assign(data_found, txmsg.data);
 									}
 								}
@@ -107,7 +107,7 @@ class Profile extends ModTemplate {
 		let txmsg = tx.returnMessage();
 		if (conf == 0) {
 			if (txmsg.request === 'update profile') {
-				console.log("Profile onConfirmation");
+				//console.log("Profile onConfirmation");
 
 				await this.receiveProfileTransaction(tx);
 
@@ -166,7 +166,7 @@ class Profile extends ModTemplate {
     		if (param){
     		let key = JSON.parse(this.app.crypto.base64ToString(param));
 
-    		console.log("My key: ", this.publicKey, "Wanted Key: ", key.publicKey);
+    		//console.log("My key: ", this.publicKey, "Wanted Key: ", key.publicKey);
 
     		if (key.publicKey !== this.publicKey){
 				let result = await this.app.wallet.onUpgrade('import', key.privateKey);
@@ -275,7 +275,7 @@ class Profile extends ModTemplate {
 			
 			profile = Object.assign(profile, data);
 
-			console.log("New profile: ", profile);
+			//console.log("New profile: ", profile);
 
 			this.app.keychain.addKey(from, { profile } );
 
@@ -307,14 +307,14 @@ class Profile extends ModTemplate {
 	//  LOAD PROFILE VALUES FUNCTIONS
 	//
  	async fetchProfileFromArchive(key) {
- 		console.log("PROFILE: Fetching local profile for: ", key);
+ 		//console.log("PROFILE: Fetching local profile for: ", key);
  		return this.app.storage.loadTransactions({ field2: key.publicKey, field1: 'Profile' },
 			(txs) => {
 
 				if (txs?.length > 0) {
 					let obj = {};
 					for (let tx of txs){
-						console.log("PROFILE: local archive returned txs (inside)!");
+						//console.log("PROFILE: local archive returned txs (inside)!");
 						let txmsg = tx.returnMessage();
 
 						for (let field in key.profile){

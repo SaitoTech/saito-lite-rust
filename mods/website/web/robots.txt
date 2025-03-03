@@ -2,5 +2,7 @@ User-agent: Twitterbot
 Disallow:
 
 User-agent: * 
+Disallow: /explorer/
+Disallow: /atr/
 #Allow: /*.html$
 #Disallow: /*

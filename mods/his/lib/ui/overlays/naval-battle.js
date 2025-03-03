@@ -162,14 +162,16 @@ try {
 
 				el.onclick = (e) => {
 
+					let hits_left = hits_to_assign - hits_assigned;
 					let this_unit_type = e.currentTarget.getAttribute('data-unit-type');
+
 					if (hits_left == 1 && this_unit_type == "squadron") {
-						alert("Squadrons take 2 hits to destroy...");
+						alert("You must assign your last hit to a Corsair...");
 						return;
 					}
 					if (hits_left == 2 && this_unit_type == "corsair") {
 						if (undestroyed_corsairs <= 1 && undestroyed_squadrons > 0) {
-							alert("Only One Corsair Remains - You Must Target a Squadron...");
+							alert("You must assign your last two hits to a Squadron...");
 							return;
 						}
 					}
@@ -188,7 +190,7 @@ try {
 					if (unit_type === 'squadron') {
 						hits_assigned++;
 					}
-					let hits_left = hits_to_assign - hits_assigned;
+					hits_left = hits_to_assign - hits_assigned;
 
 					if (hits_left > 0) {
 						this.mod.updateStatus(

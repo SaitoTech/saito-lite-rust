@@ -29,6 +29,10 @@
     width: 475px;
     height: 750px;
 }
+.option.persia { top: unset; left: unset; }
+.option.ireland { top: unset; left: unset; }
+.option.egypt { top: unset; left: unset; }
+
 .ireland , .revolt_in_ireland {
     top: 800px;
     left: 4125px;
