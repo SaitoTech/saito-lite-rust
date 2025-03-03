@@ -117,6 +117,7 @@ class PathsOfGlory extends GameTemplate {
 	  game_mod.confirm_moves = 0;
           game_mod.saveGamePreference('his_expert_mode', 1);
           reloadWindow(300);
+	}
       }
     });
     this.menu.addSubMenuOption("game-game", {
@@ -7884,6 +7885,7 @@ console.log("Attacker Advances!");
   }
 
   returnFactionName(faction="") { return this.returnPlayerName(faction); }
+
   returnPlayerName(faction="") {
     if (faction == "central") { return "Central Powers"; }
     return "Allies";
@@ -7936,6 +7938,7 @@ alert("Player Playing Post Combat Retreat!");
 
     this.attachCardboxEvents((action) => {
 
+      this.guns_overlay.remove();
       this.updateStatus("selected");
 
       if (action === "guns") {
@@ -8644,7 +8647,7 @@ alert("Player Playing Post Combat Retreat!");
 
 
 
-  playerPlayStrategicRedeployment(faction, value) {
+  playerPlayStrategicRedeployment(faction, card, value) {
 
     let paths_self = this;
 
@@ -8652,7 +8655,7 @@ alert("Player Playing Post Combat Retreat!");
       for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
         let unit = paths_self.game.spaces[key].units[z];
 	if (faction == paths_self.returnPowerOfUnit(unit)) {
-	  if (unit.type == "core" && value >= 1) { 
+	  if (unit.type == "corps" && value >= 1) { 
 	    return 1;
 	  }
 	  if (unit.type == "army" && value >= 4) {
@@ -8699,7 +8702,9 @@ alert("Player Playing Post Combat Retreat!");
 	  },
           false
         );
-      }
+      },
+      null,
+      true
     );
 
 //    this.addMove(`sr\t${faction}\t${value}`);

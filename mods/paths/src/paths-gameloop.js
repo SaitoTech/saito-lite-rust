@@ -67,7 +67,7 @@ this.updateLog(`###############`);
 
 	  if (this.game.player === this.returnPlayerOfFaction("central")) {
 	    if (this.game.deck[0].hand.includes("cp01")) {
-	      this.addMove("Central Powers start with Guns of August");
+	      this.addMove("NOTIFY\tCentral Powers start with Guns of August!");
               this.addMove("DEAL\t1\t1\t1"); // deal random other card
 	      this.endTurn()
 	    } else {
