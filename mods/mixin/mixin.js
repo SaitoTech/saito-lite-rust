@@ -137,12 +137,25 @@ class Mixin extends ModTemplate {
   }
 
 
-  onPeerServiceUp(app, peer, service = {}) {
-    let mixin_self = this;
-    if (service.service === "mixin" && this.app.BROWSER == 0 && this.account_created == 0) {
-      this.createAccount();
+  async onPeerServiceUp(app, peer, service = {}) {
+    if (!peer.hasService('mixin')) {
+      return;
     }
+
+    if (service.service === "mixin" && !this.account_created) {
+      let c = await this.app.wallet.returnPreferredCrypto();
+      if (c?.chain_id) {
+        console.log("user has 3rd party crypto but no mixin account");
+        this.createAccount();
+      }
+    }
+
+    /*if (service.service === "mixin" && this.app.BROWSER == 0 && this.account_created == 0) {
+      this.createAccount();
+    }*/
+  
   }
+
 
   async createAccount(callback = null){
     if (this.account_created == 0) {

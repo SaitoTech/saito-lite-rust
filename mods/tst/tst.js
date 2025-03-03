@@ -2,13 +2,12 @@ const CryptoModule = require('../../lib/templates/cryptomodule');
 
 class TST extends CryptoModule {
 	constructor(app) {
-		super(app, 'TST');
-		this.name = 'TST';
+		super(app, "TST");
+
 		this.slug = 'tst';
-		this.ticker = 'TST';
+
 		this.description =
 			'This module implement CryptoModule functions without moving tokens';
-		this.categories = 'Cryptocurrency';
 		this.information =
 			'This is some important information you may care to read about when enabling the TST crypto module';
 		this.warning = 'The TST crypto module wishes you to read this warning';

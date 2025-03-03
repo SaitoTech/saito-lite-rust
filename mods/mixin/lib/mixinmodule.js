@@ -28,56 +28,18 @@ const WAValidator = require('multicoin-address-validator');
 
 class MixinModule extends CryptoModule {
 	constructor(app, ticker, mixin_mod, asset_id) {
-		super(app);
+		super(app, ticker);
 
-		this.app = app;
-		this.ticker = ticker;
-		this.name = ticker;
-		this.categories = 'Cryptocurrency';
 		this.mixin = mixin_mod;
 
 		this.asset_id = asset_id;
 		this.chain_id = '';
-		this.icon_url = '';
-		this.balance = '0.0';
+
 		this.balance_timestamp_last_fetched = 0;
 		this.minimum_delay_between_balance_queries = 4000;
-		this.deposit_entries = {};
-		this.tag = '';
-		this.price_btc = 0;
-		this.price_usd = 0;
-		this.change_btc = 0;
-		this.change_usd = 0;
-		this.asset_key = 0;
-		this.mixin_id = '';
-		this.reserve = '';
+
 		this.confirmations = 100;
-		this.capitalization = 0;
-		this.liquidity = '';
 
-		return this;
-	}
-
-	onPeerServiceUp(app, peer, service = {}) {
-		if (!peer.hasService('mixin')) {
-			return;
-		}
-
-		if (this.mixin) {
-			if (this.app.wallet.preferred_crypto !== 'SAITO' && this.app.wallet.preferred_crypto !== '') {
-				if (this.mixin.account_created == 0) {
-					//
-					// not every crypto should trigger account creation
-					//
-					let c = this.app.modules.returnModule(this.app.wallet.preferred_crypto);
-					if (!c.asset_id) {
-						return;
-					}
-					console.log('trying to install module -- create account requires network up though...?');
-					this.mixin.createAccount();
-				}
-			}
-		}
 	}
 
 	async activate() {

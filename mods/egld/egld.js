@@ -14,19 +14,14 @@ const {
 const PeerService = require('saito-js/lib/peer_service').default;
 
 class EGLDModule extends CryptoModule {
-  constructor(app, ticker) {
-    super(app);
-    this.app = app;
-    this.ticker = 'EGLD';
-    this.name = 'EGLD';
-    this.categories = 'Cryptocurrency';
-    this.balance = 0;
-    this.base_url = null;
-    this.network_provider_url = null;
-    this.explorer_url = null;
+  constructor(app) {
+    super(app, "EGLD");
+
+    // For interacting with the network api
     this.apiNetworkProvider = null;
     this.proxyNetworkProvider = null;
     this.networkConfig = null;
+
     this.account = null;
     this.address_obj = null;
     this.secretKey = null;
@@ -62,7 +57,6 @@ class EGLDModule extends CryptoModule {
     }
   }
 
-  // Don't over write with a new key!!!
   async getAddress(mnemonic_text = null) {
     try {
       let mnemonic = null;
@@ -459,10 +453,9 @@ class EGLDModule extends CryptoModule {
       if (this_self.options.base_url == null) {
         await this_self.sendFetchEnvTransaction(async function (res) {
           if (typeof res == 'object' && Object.keys(res).length > 0) {
-            this_self.base_url = this_self.options.base_url = res.base_url;
-            this_self.explorer_url = this_self.options.explorer_url = res.explorer_url;
-            this_self.network_provider_url = this_self.options.network_provider_url =
-              res.network_provider_url;
+            this_self.options.base_url = res.base_url;
+            this_self.options.explorer_url = res.explorer_url;
+            this_self.options.network_provider_url = res.network_provider_url;
 
             await this_self.initiateNetwork();
           } else {
@@ -481,9 +474,6 @@ class EGLDModule extends CryptoModule {
     try {
       if (this.apiNetworkProvider == null) {
         // console.log("initiateNetwork: ////");
-        // console.log("base_url:", this.options.base_url);
-        // console.log("base_url:", this.options.explorer_url);
-        // console.log("base_url:", this.options.network_provider_url);
 
         this.apiNetworkProvider = new ApiNetworkProvider(this.options.base_url, {
           clientName: 'multiversx-your-client-name'
