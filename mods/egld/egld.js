@@ -66,11 +66,18 @@ class EGLDModule extends CryptoModule {
   async getAddress(mnemonic_text = null) {
     try {
       let mnemonic = null;
-      if (mnemonic_text == null) {
-        // Generate Ed25519 key pair
-        mnemonic = Mnemonic.generate();
-      } else {
+
+      // Load from my wallet if none provided
+      if (!mnemonic_text) {
+        mnemonic_text = this.options?.mnemonic_text;
+      }
+
+      // 
+      if (mnemonic_text) {
         mnemonic = Mnemonic.fromString(mnemonic_text);
+      } else {
+        // Generate Ed25519 key pair
+        mnemonic = Mnemonic.generate();        
       }
 
       this.secretKey = mnemonic.deriveKey(0);
