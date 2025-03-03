@@ -36,9 +36,7 @@ class EGLDModule extends CryptoModule {
     try {
       await super.initialize(app);
 
-      if (this.options?.mnemonic_text) {
-        await this.getAddress(this.options.mnemonic_text);
-      }
+      await this.getAddress();
 
       await this.setupNetwork();
       this.app.connection.emit('header-update-balance');
@@ -64,6 +62,7 @@ class EGLDModule extends CryptoModule {
     }
   }
 
+  // Don't over write with a new key!!!
   async getAddress(mnemonic_text = null) {
     try {
       let mnemonic = null;

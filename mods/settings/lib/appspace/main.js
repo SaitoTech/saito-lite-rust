@@ -339,6 +339,78 @@ class SettingsAppspace {
 				};
 			}
 
+			if (document.getElementById('backup-seed-btn')) {
+				document.getElementById('backup-seed-btn').onclick = async (e) => {
+					try {
+						const seed = await app.options.wallet.seed.mnemonic;
+						await sconfirm(
+							"You are about to backup your seed phrase, please note that this is only a backup for your keys and cryptos, it doesn't include other data"
+						);
+
+						const egldMnemonic = app?.options?.crypto?.EGLD?.mnemonic_text || "";
+						if (egldMnemonic && egldMnemonic !== seed) {
+						  salert(
+							"Warning: Your EGLD wallet is using a different seed phrase. " +
+							"Backing up only the Saito seed does NOT back up your EGLD keys. " 
+						  );
+						}
+				  
+
+						if (seed) {
+							setTimeout(async () => {
+								let confirmBackup = await sconfirm(
+									`${seed}`
+								);
+							}, 500)
+
+						}
+					} catch (err) {
+						salert('Error generating seed phrase: ' + err.message);
+						console.error('Error in backup seed:', err);
+					}
+				};
+			}
+
+			if (document.getElementById('import-seed-btn')) {
+				document.getElementById('import-seed-btn').onclick = async (e) => {
+					try {
+						let mnemonic = await sprompt('Enter your seed phrase:');
+						if (mnemonic) {
+							if (mnemonic.trim().split(/\s+/g).length == 24) {
+								const privateKey = this.app.crypto.getPrivateKeyFromSeed(mnemonic);
+								let result = await app.wallet.onUpgrade(
+									'import',
+									privateKey
+								);
+								console.log(privateKey, "private key from seed")
+								if (result === true) {
+									let c = await sconfirm(
+										'Success! Confirm to reload'
+									);
+									if (c) {
+										reloadWindow(300);
+									}
+								} else {
+									let err = result;
+									salert('Something went wrong: ' + err.name);
+								}
+
+							} else {
+								salert('Error importing seed phrase: ' + "Invalid seed phrase");
+							}
+
+						} else {
+
+							salert('Error importing seed phrase: ' + "No seed phrase found")
+
+						}
+					} catch (err) {
+						salert('Error importing seed phrase: ' + err.message);
+						console.error('Error in import seed:', err);
+					}
+				};
+			}
+
 			document.getElementById('nuke-account-btn').onclick = async (e) => {
 				let confirmation = await sconfirm(
 					'This will reset/nuke your account, do you wish to proceed?'
