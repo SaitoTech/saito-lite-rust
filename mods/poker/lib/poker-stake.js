@@ -62,16 +62,19 @@ class PokerStake {
 
   //
   // returns "1 CHIP" or "2.412 SAITO" or "1.423 CHIPS" etc.
+  // 
+  // temporarily breaking this because we think CHIPS is always better...
   //
   formatWager(numChips, includeTicker = true) {
-    let chips = this.game.crypto || 'CHIPS';
+    //let chips = this.game.crypto || 'CHIPS';
+    let chips = 'CHIPS';
     if (chips === 'CHIPS') {
       if (numChips == 1) {
         chips = 'CHIP';
       }
     }
 
-    let wager = this.convertChipsToCrypto(numChips);
+    let wager = numChips; //this.convertChipsToCrypto(numChips);
 
     if (includeTicker) {
       wager += ' ' + chips;
@@ -126,10 +129,10 @@ class PokerStake {
 
               console.log(`crypto -- ${i}->${j}: ${this.game.players[i]}\t${this.game.players[j]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
 
-              this.settlement.push(
+              this.game.queue.push(
                 `RECEIVE\t${this.game.players[i]}\t${this.game.players[j]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`
               );
-              this.settlement.push(
+              this.game.queue.push(
                 `SEND\t${this.game.players[i]}\t${this.game.players[j]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`
               );
             }
@@ -160,10 +163,6 @@ class PokerStake {
       msg += '...';
     }
 
-    for (let i = 0; i < this.settlement.length; i++) {
-      this.game.queue.push(this.settlement[i]);
-    }
-
     //
     // We will calculate vpip here, before resetting the next round
     // If a player voluntarily added money to the pot, +1
@@ -185,7 +184,6 @@ class PokerStake {
     }
 
     this.updateStatus(msg);
-    this.settlement = [];
     this.game.queue.push(`ROUNDOVER\t${JSON.stringify(winner_array)}\t${method}`);
   }
 
@@ -196,23 +194,28 @@ class PokerStake {
     let add_debt_button = false;
     html += `<div class="player-table">`;
     for (let i = 0; i < this.game.state.debt.length; i++){
-      html += `<div class="player-bet-info">${this.app.keychain.returnUsername(this.game.players[i])}: `;
+      html += `<div>${this.app.keychain.returnUsername(this.game.players[i])}</div>`;
+      let amount = this.game.stake;
+      let status = "has staked";
+
       if (this.game.state.debt[i] > 0){
         add_debt_button = true;
-        html += `owes ${this.formatWager(this.game.state.debt[i])}`
+        status = `owes`;
+        amount = this.convertChipsToCrypto(this.game.state.debt[i]);
       }else if (this.game.state.debt[i] < 0){
-        html += `is owed ${this.formatWager(-this.game.state.debt[i])}`
+        status = `is owed`;
+        amount = this.convertChipsToCrypto(-this.game.state.debt[i]);
       }else{
         let winnings = this.game.state.player_credit[i] + this.game.state.player_pot[i] - this.game.chips;
         if (winnings > 0){
-          html += `has won ${this.formatWager(winnings)}`;
-        }else if (winnings < 0){
-          html += `has lost ${this.formatWager(-winnings)}`;
-        }else{
-
+          status = `has won`;
+          amount = this.convertChipsToCrypto(winnings);
+        }else if (winnings  < 0){
+          status = `has lost`;
+          amount = this.convertChipsToCrypto(-winnings);
         }
       }
-      html += "</div>";
+      html += `<div>${status}</div><div>${amount} ${this.game.crypto}</div>`;
     }
 
     html += "</div>";
