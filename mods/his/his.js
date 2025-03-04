@@ -23969,8 +23969,8 @@ this.updateLog(`###############`);
 	  this.game.queue.push("action_phase");
 
 //if (this.game.options.scenario != "is_testing") {
-//	  this.game.queue.push("spring_deployment_phase");
-//	  this.game.queue.push("NOTIFY\tSpring Deployment is about to start...");
+	  this.game.queue.push("spring_deployment_phase");
+	  this.game.queue.push("NOTIFY\tSpring Deployment is about to start...");
 //}
 
 	  //
