@@ -101,6 +101,7 @@
     //
     // reset variables that permit intervention
     //
+    this.game.state.events.intervention_venetian_informant_possible = 0;
     this.game.state.events.intervention_on_movement_possible = 0;
     this.game.state.events.intervention_on_events_possible = 0;
     this.game.state.events.intervention_on_assault_possible = 0;
@@ -152,6 +153,7 @@
     this.game.state.events.ottoman_piracy_attempts = 0;
     this.game.state.events.ottoman_piracy_seazones = [];
 
+    this.game.state.events.intervention_venetian_informant_possible = 0;
     this.game.state.events.intervention_on_movement_possible = 0;
     this.game.state.events.intervention_on_events_possible = 0;
     this.game.state.events.intervention_on_assault_possible = 0;

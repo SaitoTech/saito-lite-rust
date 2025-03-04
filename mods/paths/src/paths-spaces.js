@@ -50,6 +50,68 @@
     }
   }
 
+
+
+  checkSupply(faction, key) {
+
+    this.game.spaces[key].supply = {};
+
+    let pending = [key];
+    let examined = {};
+    let alignment = "allies";
+
+    if (faction == "cp") { alignment = "central"; }
+
+    let sources = [];
+    if (faction == "cp") { sources = ["essen","breslau","sofia","constantinople"]; }
+    if (faction == "ap") { sources = ["london"]; }
+    if (faction == "ru") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
+    if (faction == "ro") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
+    if (faction == "sb") { 
+      sources = ["moscow","petrograd","kharkov","caucasus","london"]; 
+      if (this.returnControlOfSpace("salonika') == "allies") { sources["sb"].push("salonika"); }
+    }
+
+    while (pending.length > 0) {
+
+      let spacekey = pending[0];
+      pending.splice(0, 1);
+
+      //
+      // if spacekey is a source we have a supply-line
+      //
+      if (sources.includes(spacekey)) { return 1; }
+
+      //
+      // mark space as examined
+      //
+      examined[spacekey] = true;
+
+      //
+      // add neighbours to pending if...
+      //
+      for (let n in this.game.spaces[spacekey].neighbours) {
+        if (!examined[n)) { 
+
+	  let does_have_enemy_units = false;
+	  let does_have_enemy_control = false;
+	  let route_through_this_space = true;
+
+	  if (this.game.spaces[n].units.length > 0) {
+	    if (this.returnPowerOfUnit(this.game.spaces[n].units[0] != alignment)) { does_have_enemy_units = true; }
+	  }
+
+	  if (route_through_this_space == true) {
+	    pending.push(n); 
+	  }
+
+	}
+      }
+
+    }
+
+
+
   returnControlOfSpace(key) {
     let space = this.game.spaces[key];
     if (space.control) { return space.control; }

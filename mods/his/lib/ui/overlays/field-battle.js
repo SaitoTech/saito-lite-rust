@@ -257,7 +257,7 @@ try {
 					unit_type = res.attacker_units[i];
 					faction_name = res.attacker_units_faction[i];
 					previously_besieged_unit = res.attacker_units_relief_force[i];
-					if (previously_besieged_unit) {
+					if (!previously_besieged_unit) {
 						unit_status = " (besieged)";
 					}
 				} else {
