@@ -1105,6 +1105,10 @@ class Server {
         express.get('/test-api/status', async (req, res) => {
             res.send({});
         });
+    express.get('/test-api/balances', async (req, res) => {
+      let balances = await S.getInstance().getBalanceSnapshot([]);
+      res.send(balances);
+    });
     }
 }
 
