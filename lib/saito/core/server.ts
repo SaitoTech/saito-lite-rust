@@ -29,7 +29,6 @@ var cors = require('cors');
 const expressApp = express();
 expressApp.use(cors());
 
-
 const webserver = new Ser(expressApp);
 
 export class NodeSharedMethods extends CustomSharedMethods {
@@ -73,10 +72,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
 
             socket.on('message', (buffer: any) => {
                 try {
-                    S.getLibInstance().process_msg_buffer_from_peer(
-                        buffer,
-                        peer_index
-                    );
+                    S.getLibInstance().process_msg_buffer_from_peer(buffer, peer_index);
                 } catch (e) {
                     console.error(e);
                 }
@@ -97,11 +93,10 @@ export class NodeSharedMethods extends CustomSharedMethods {
                 }
             });
             socket.on('open', () => {
-                S.getLibInstance().process_new_peer(peer_index, url)
+                S.getLibInstance()
+                    .process_new_peer(peer_index, url)
                     .then(() => {
-                        console.log(
-                            'connected to : ' + url + ' with peer index : ' + peer_index
-                        );
+                        console.log('connected to : ' + url + ' with peer index : ' + peer_index);
                     });
             });
         } catch (e) {
@@ -125,8 +120,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
         }
     }
 
-    flushData(key: string): void {
-    }
+    flushData(key: string): void {}
 
     readValue(key: string): Uint8Array {
         try {
@@ -178,12 +172,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
                 return res.arrayBuffer();
             })
             .then((buffer: ArrayBuffer) => {
-                console.log(
-                    'block data fetched for ' +
-					url +
-					' with size : ' +
-					buffer.byteLength
-                );
+                console.log('block data fetched for ' + url + ' with size : ' + buffer.byteLength);
                 return new Uint8Array(buffer);
             })
             .catch((err) => {
@@ -192,21 +181,15 @@ export class NodeSharedMethods extends CustomSharedMethods {
             });
     }
 
-    async processApiCall(
-        buffer: Uint8Array,
-        msgIndex: number,
-        peerIndex: bigint
-    ): Promise<void> {
-        // console.log(
-        //   "NodeMethods.processApiCall : peer= " + peerIndex + " with size : " + buffer.byteLength
-        // );
+    async processApiCall(buffer: Uint8Array, msgIndex: number, peerIndex: bigint): Promise<void> {
+    // console.log(
+    //   "NodeMethods.processApiCall : peer= " + peerIndex + " with size : " + buffer.byteLength
+    // );
         const mycallback = async (response_object) => {
             // console.log("response_object ", response_object);
             await S.getInstance().sendApiSuccess(
                 msgIndex,
-                response_object
-                    ? Buffer.from(JSON.stringify(response_object), 'utf-8')
-                    : Buffer.alloc(0),
+                response_object ? Buffer.from(JSON.stringify(response_object), 'utf-8') : Buffer.alloc(0),
                 peerIndex
             );
         };
@@ -243,12 +226,9 @@ export class NodeSharedMethods extends CustomSharedMethods {
 
     async saveWallet(): Promise<void> {
         if (this.app.options.wallet && this.app.wallet) {
-            this.app.options.wallet.publicKey =
-				await this.app.wallet.getPublicKey();
-            this.app.options.wallet.privateKey =
-				await this.app.wallet.getPrivateKey();
-            this.app.options.wallet.balance =
-				await this.app.wallet.getBalance();
+            this.app.options.wallet.publicKey = await this.app.wallet.getPublicKey();
+            this.app.options.wallet.privateKey = await this.app.wallet.getPrivateKey();
+            this.app.options.wallet.balance = await this.app.wallet.getBalance();
         }
     }
 
@@ -271,13 +251,14 @@ export class NodeSharedMethods extends CustomSharedMethods {
         return list;
     }
 
-    sendNewVersionAlert(
-        major: number,
-        minor: number,
-        patch: number,
-        peerIndex: bigint
-    ): void {
-        console.error('This is an older version', 'current version: ', this.app.wallet.version, ' expected version: ', major);
+    sendNewVersionAlert(major: number, minor: number, patch: number, peerIndex: bigint): void {
+        console.error(
+            'This is an older version',
+            'current version: ',
+            this.app.wallet.version,
+            ' expected version: ',
+            major
+        );
     }
 
     ensureBlockDirExists(path: string): void {
@@ -327,7 +308,7 @@ class Server {
     }
 
     initializeWebSocketServer() {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
         const ws = require('ws');
 
         const wss = new ws.WebSocketServer({
@@ -348,15 +329,23 @@ class Server {
         });
         wss.on('connection', (socket: any, request: any) => {
             const { pathname } = parse(request.url);
-            console.log('connection established : ', (request.headers['x-forwarded-for'] || request.socket.remoteAddress));
-            S.getLibInstance().get_next_peer_index()
+            console.log(
+                'connection established : ',
+                request.headers['x-forwarded-for'] || request.socket.remoteAddress
+            );
+            S.getLibInstance()
+                .get_next_peer_index()
                 .then((peer_index: bigint) => {
-                    console.log('adding new peer : ' + (request.headers['x-forwarded-for'] || request.socket.remoteAddress) + ' as ' + peer_index);
+                    console.log(
+                        'adding new peer : ' +
+              (request.headers['x-forwarded-for'] || request.socket.remoteAddress) +
+              ' as ' +
+              peer_index
+                    );
                     S.getInstance().addNewSocket(socket, peer_index);
 
                     socket.on('message', (buffer: any) => {
-                        S.getLibInstance()
-                            .process_msg_buffer_from_peer(new Uint8Array(buffer), peer_index);
+                        S.getLibInstance().process_msg_buffer_from_peer(new Uint8Array(buffer), peer_index);
                     });
                     socket.on('close', () => {
                         S.getLibInstance().process_peer_disconnection(peer_index);
@@ -366,9 +355,11 @@ class Server {
                         S.getLibInstance().process_peer_disconnection(peer_index);
                     });
 
-                    return S.getLibInstance().process_new_peer(peer_index, request.headers['x-forwarded-for'] || request.socket.remoteAddress);
+                    return S.getLibInstance().process_new_peer(
+                        peer_index,
+                        request.headers['x-forwarded-for'] || request.socket.remoteAddress
+                    );
                 });
-
         });
 
         this.app.modules.onWebSocketServer(webserver);
@@ -391,38 +382,32 @@ class Server {
             this.server.name = this.app.options.server.name || '';
 
             this.server.sendblks =
-				typeof this.app.options.server.sendblks == 'undefined'
-				    ? 1
-				    : this.app.options.server.sendblks;
+        typeof this.app.options.server.sendblks == 'undefined'
+            ? 1
+            : this.app.options.server.sendblks;
             this.server.sendtxs =
-				typeof this.app.options.server.sendtxs == 'undefined'
-				    ? 1
-				    : this.app.options.server.sendtxs;
+        typeof this.app.options.server.sendtxs == 'undefined' ? 1 : this.app.options.server.sendtxs;
             this.server.sendgts =
-				typeof this.app.options.server.sendgts == 'undefined'
-				    ? 1
-				    : this.app.options.server.sendgts;
+        typeof this.app.options.server.sendgts == 'undefined' ? 1 : this.app.options.server.sendgts;
             this.server.receiveblks =
-				typeof this.app.options.server.receiveblks == 'undefined'
-				    ? 1
-				    : this.app.options.server.receiveblks;
+        typeof this.app.options.server.receiveblks == 'undefined'
+            ? 1
+            : this.app.options.server.receiveblks;
             this.server.receivetxs =
-				typeof this.app.options.server.receivetxs == 'undefined'
-				    ? 1
-				    : this.app.options.server.receivetxs;
+        typeof this.app.options.server.receivetxs == 'undefined'
+            ? 1
+            : this.app.options.server.receivetxs;
             this.server.receivegts =
-				typeof this.app.options.server.receivegts == 'undefined'
-				    ? 1
-				    : this.app.options.server.receivegts;
+        typeof this.app.options.server.receivegts == 'undefined'
+            ? 1
+            : this.app.options.server.receivegts;
         }
 
         //
         // sanity check
         //
         if (this.server.host === '' || this.server.port === 0) {
-            console.log(
-                'Not starting local server as no hostname / port in options file'
-            );
+            console.log('Not starting local server as no hostname / port in options file');
             return;
         }
 
@@ -432,8 +417,7 @@ class Server {
         if (this.app.options.server.endpoint != null) {
             this.server.endpoint.port = this.app.options.server.endpoint.port;
             this.server.endpoint.host = this.app.options.server.endpoint.host;
-            this.server.endpoint.protocol =
-				this.app.options.server.endpoint.protocol;
+            this.server.endpoint.protocol = this.app.options.server.endpoint.protocol;
             this.server.endpoint.publicKey = this.app.options.server.publicKey;
         } else {
             const { host, port, protocol, publicKey } = this.server;
@@ -461,10 +445,7 @@ class Server {
         //
         // save options
         //
-        this.app.options.server = Object.assign(
-            this.app.options.server,
-            this.server
-        );
+        this.app.options.server = Object.assign(this.app.options.server, this.server);
         console.log('SAVE OPTIONS IN SERVER 2');
         this.app.storage.saveOptions();
 
@@ -621,11 +602,7 @@ class Server {
                 return;
             }
 
-            if (
-                block.block_type === BlockType.Full ||
-				!block.hasKeylistTxs(keylist)
-            ) {
-
+            if (block.block_type === BlockType.Full || !block.hasKeylistTxs(keylist)) {
                 const liteblock = block.generateLiteBlock(keylist);
                 const buffer = Buffer.from(liteblock.serialize());
 
@@ -669,14 +646,10 @@ class Server {
                 console.log(
                     `lite block fetch : block  = ${req.params.bhash} key = ${pkey} with txs : ${newblk.transactions.length}`
                 );
-                console.log(
-                    `liteblock : ${bsh} from disk txs count = : ${newblk.transactions.length}`
-                );
+                console.log(`liteblock : ${bsh} from disk txs count = : ${newblk.transactions.length}`);
                 console.log(
                     'valid txs : ' +
-					newblk.transactions.filter(
-					    (tx) => tx.type !== TransactionType.SPV
-					).length
+            newblk.transactions.filter((tx) => tx.type !== TransactionType.SPV).length
                 );
                 const buffer2 = Buffer.from(newblk.serialize());
 
@@ -697,7 +670,6 @@ class Server {
                     res.sendStatus(400);
                 }
                 return;
-
             } catch (error) {
                 console.error(error);
             }
@@ -752,10 +724,7 @@ class Server {
                 console.log('fetching balance snapshot with keys : ', keys);
 
                 const snapshot = await S.getInstance().getBalanceSnapshot(keys);
-                res.setHeader(
-                    'Content-Disposition',
-                    'attachment; filename=' + snapshot.file_name
-                );
+                res.setHeader('Content-Disposition', 'attachment; filename=' + snapshot.file_name);
                 res.end(snapshot.toString());
             } catch (error) {
                 console.error(error);
@@ -801,7 +770,6 @@ class Server {
         //     console.log("ERROR: server cannot feed out block");
         //   }
         // });
-
 
         expressApp.get('/lite-block-disk/:bhash/:pkey?', async (req, res) => {
             if (req.params.bhash == null) {
@@ -869,9 +837,9 @@ class Server {
                 html += '<div><h4>hash</h4></div><div>' + bsh + '</div>';
                 html += '<div><h4>creator</h4></div><div>' + block.creator + '</div>';
                 html +=
-					'<div><h4>source</h4></div><div><a href="/explorer/blocksource?hash=' +
-					bsh +
-					'">click to view source</a></div>';
+          '<div><h4>source</h4></div><div><a href="/explorer/blocksource?hash=' +
+          bsh +
+          '">click to view source</a></div>';
                 html += '</div>';
 
                 if (block.transactions.length > 0) {
@@ -889,29 +857,29 @@ class Server {
                         var tmptx = block.transactions[mt];
                         tmptx.id = mt;
 
-                        var tx_fees = (0);
+                        var tx_fees = 0;
                         //if (tmptx.fees_total == "") {
 
                         //
                         // sum inputs
                         //
-                        let inputs = (0);
+                        let inputs = 0;
                         if (tmptx.from != null) {
                             for (let v = 0; v < tmptx.from.length; v++) {
-                                inputs += (tmptx.from[v].amount);
+                                inputs += tmptx.from[v].amount;
                             }
                         }
 
                         //
                         // sum outputs
                         //
-                        let outputs = (0);
+                        let outputs = 0;
                         for (let v = 0; v < tmptx.to.length; v++) {
                             //
                             // only count non-gt transaction outputs
                             //
                             if (tmptx.to[v].type != 1 && tmptx.to[v].type != 2) {
-                                outputs += (tmptx.to[v].amount);
+                                outputs += tmptx.to[v].amount;
                             }
                         }
 
@@ -928,9 +896,11 @@ class Server {
                             tx_from = 'block stake tx';
                         }
 
-                        html += `<div><a onclick="showTransaction('tx-` + tmptx.id + `');">` + mt + `</a></div>`;
-                        html += `<div><a onclick="showTransaction('tx-` + tmptx.id + `');">` + tx_from + `</a></div>`;
-                        html += '<div>' + ((tx_fees) * (nolan_per_saito)) + '</div>';
+                        html +=
+              `<div><a onclick="showTransaction('tx-` + tmptx.id + `');">` + mt + `</a></div>`;
+                        html +=
+              `<div><a onclick="showTransaction('tx-` + tmptx.id + `');">` + tx_from + `</a></div>`;
+                        html += '<div>' + tx_fees * nolan_per_saito + '</div>';
                         html += '<div>' + tmptx.type + '</div>';
                         if (tmptx.type == 0) {
                             if (tmptx.msg?.module) {
@@ -945,11 +915,11 @@ class Server {
                         if (tmptx.type > 1) {
                             html += '<div> </div>';
                         }
-                        html += '<div class="hidden txbox tx-' + tmptx.id + '">' + JSON.stringify(tmptx) + '</div>';
+                        html +=
+              '<div class="hidden txbox tx-' + tmptx.id + '">' + JSON.stringify(tmptx) + '</div>';
                     }
                     html += '</div>';
                 }
-
 
                 let obj = JSON.stringify({ html: html });
                 if (!res.finished) {
@@ -1084,7 +1054,7 @@ class Server {
     provideTesterAPI(express: any) {
         express.get('/test-api/block/latest', async (req, res) => {
             let hash = await this.app.blockchain.getLastBlockHash();
-            console.log('test-api : fetching latest block : '+hash);
+            console.log('test-api : fetching latest block : ' + hash);
             let block = await S.getInstance().getBlock(hash);
             if (block) {
                 // @ts-ignore
@@ -1105,10 +1075,10 @@ class Server {
         express.get('/test-api/status', async (req, res) => {
             res.send({});
         });
-    express.get('/test-api/balances', async (req, res) => {
-      let balances = await S.getInstance().getBalanceSnapshot([]);
-      res.send(balances);
-    });
+        express.get('/test-api/balances', async (req, res) => {
+            let balances = await S.getInstance().getBalanceSnapshot([]);
+            res.send(balances);
+        });
     }
 }
 
