@@ -572,16 +572,6 @@ console.log("\n\n\n\n");
 	  this.removeCardFromGame("009");
 	  this.removeCardFromGame("008");
 
-
-// TESTING HACK
-	  for (let z = 0; z < this.game.spaces["athens"].units["ottoman"].length; z++) {
-	    let u = this.game.spaces["athens"].units["ottoman"][z];
-	    if (u.type == "squadron") {
-	      u.owner = "france";
-	      this.setAllies("france", "ottoman");
-	    }
-	  }
-
       }
 
       if (this.game.options.scenario === "is_testing") {

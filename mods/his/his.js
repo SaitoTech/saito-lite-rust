@@ -2916,16 +2916,6 @@ console.log("\n\n\n\n");
 	  this.removeCardFromGame("009");
 	  this.removeCardFromGame("008");
 
-
-// TESTING HACK
-	  for (let z = 0; z < this.game.spaces["athens"].units["ottoman"].length; z++) {
-	    let u = this.game.spaces["athens"].units["ottoman"][z];
-	    if (u.type == "squadron") {
-	      u.owner = "france";
-	      this.setAllies("france", "ottoman");
-	    }
-	  }
-
       }
 
       if (this.game.options.scenario === "is_testing") {
@@ -36914,7 +36904,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-cardnum = 1;
+//cardnum = 1;
 //if (f == "france") { cardnum = 0; }
 //if (f == "papacy") { cardnum = 0; }
 //if (f == "hapsburg") { cardnum = 1; }
@@ -36924,7 +36914,7 @@ cardnum = 1;
 
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
-//    	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
+    	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
 
 		//
