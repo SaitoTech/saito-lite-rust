@@ -247,29 +247,10 @@ class Browser {
 				// if crypto is provided switch over
 				//
 				if (pair[0] === 'crypto') {
-					let preferred_crypto_found = 0;
-					const available_cryptos =
-						this.app.wallet.returnInstalledCryptos();
-					for (let i = 0; i < available_cryptos.length; i++) {
-						if (available_cryptos[i].ticker) {
-							if (
-								available_cryptos[i].ticker.toLowerCase() ===
-								pair[1].toLowerCase()
-							) {
-								preferred_crypto_found = 1;
-								await this.app.wallet.setPreferredCrypto(
-									available_cryptos[i].ticker
-								);
-							}
-						}
-					}
-
-					if (preferred_crypto_found == 0) {
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
+					if (!(await this.app.wallet.setPreferredCrypto(pair[1]))){
 						salert(
 							`Your compile does not contain a ${pair[1].toUpperCase()} module. Visit the AppStore or contact us about getting one built!`
-						);
+						);						
 					}
 				}
 			}

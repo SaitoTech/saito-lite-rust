@@ -499,49 +499,47 @@ export default class Wallet extends SaitoWallet {
   returnCryptoModuleByTicker(ticker) {
     const mods = this.returnInstalledCryptos();
     for (let i = 0; i < mods.length; i++) {
-      if (mods[i].ticker === ticker) {
+      // be case insensitive, just in case
+      if (mods[i].ticker.toUpperCase() === ticker.toUpperCase()) {
         return mods[i];
       }
     }
     throw 'Module Not Found: ' + ticker;
   }
 
+  /**
+   * 
+   * @return 1 if successful, 0 if not. Catches the Module not found error and displays it
+   */ 
   async setPreferredCrypto(ticker) {
-    const mods = this.returnInstalledCryptos();
-
-    for (let i = 0; i < mods.length; i++) {
-      if (mods[i].ticker === ticker) {
-        this.preferred_crypto = ticker;
-        console.log('Activating cryptomod: ' + ticker);
-        await mods[i].activate();
-        await this.saveWallet();
-        return;
-      }
+    try {
+      let c_mod = this.returnCryptoModuleByTicker(ticker);
+      this.preferred_crypto = ticker.toUpperCase();
+      console.log('Activating cryptomod: ' + ticker);
+      await c_mod.activate();
+      await this.saveWallet();
+      return 1;
+    } catch (err) {
+      console.error(err);
     }
+    return 0;
   }
 
-  async returnPreferredCrypto() {
+  returnPreferredCrypto() {
     try {
       return this.returnCryptoModuleByTicker(this.preferred_crypto);
     } catch (err) {
       if (err.startsWith('Module Not Found:')) {
-        await this.setPreferredCrypto('SAITO');
-        return this.returnCryptoModuleByTicker(this.preferred_crypto);
+        this.setPreferredCrypto('SAITO');
+        return this.returnCryptoModuleByTicker('SAITO');
       } else {
         throw err;
       }
     }
   }
 
-  async returnPreferredCryptoTicker() {
-    try {
-      const pc = await this.returnPreferredCrypto();
-      if (pc != null && pc != undefined) {
-        return pc.ticker;
-      }
-    } catch (err) {
-      return '';
-    }
+  returnPreferredCryptoTicker() {
+    return this?.preferred_crypto || 'SAITO';
   }
 
   async returnCryptoAddressByTicker(ticker = 'SAITO') {
