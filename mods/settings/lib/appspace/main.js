@@ -178,22 +178,22 @@ class SettingsAppspace {
 		try {
 			// Add this new event handler near the start of attachEvents
 			document.getElementById('default-fee-input').onchange = (e) => {
-				let saitoValue = parseFloat(e.target.value);
+				let newDefaultFee = parseFloat(e.target.value);
 				let precision = e.target.value.split('.')[1]?.length || 0;
 				
-				if (saitoValue < 0 || saitoValue > 7000000000 || precision > 9) {
+				if (newDefaultFee < 0 || newDefaultFee > 7000000000 || precision > 9) {
 					siteMessage('Entry invalid if it is negative, bigger than 7,000,000,000 or has more than nine units of precision.', 1000);
-					e.target.value = app.wallet.convertNolanToSaito(app.wallet.default_fee);
+					e.target.value = app.wallet.convertNolanToSaito(Number(app.options.wallet.default_fee));
 					return;
 				}
 
 				// Convert SAITO to nolan for storage
-				app.wallet.default_fee = app.wallet.convertSaitoToNolan(saitoValue.toString());
+				app.options.wallet.default_fee = app.wallet.convertSaitoToNolan(newDefaultFee.toString());
+				app.wallet.default_fee = BigInt(app.options.wallet.default_fee);
 				app.options.wallet = app.options.wallet || {};
-				app.options.wallet.default_fee = saitoValue; // Store display value in options
 				app.storage.saveOptions();
 				
-				siteMessage(`Default fee updated to: ${saitoValue}`, 1000);
+				siteMessage(`Default fee updated to: ${app.wallet.convertNolanToSaito(BigInt(app.options.wallet.default_fee)).toString()} SAITO`, 1000);
 			};
 
 			let settings_appspace = document.querySelector('.settings-appspace');

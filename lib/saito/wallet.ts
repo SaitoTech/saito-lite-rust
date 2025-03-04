@@ -20,7 +20,7 @@ export default class Wallet extends SaitoWallet {
     preferred_crypto = 'SAITO';
     preferred_txs = [];
 
-    default_fee = BigInt(0);
+    default_fee = BigInt(0);  // in nolan
 
     version = 5.667; //saito-js 0.2.55
 
@@ -82,11 +82,11 @@ export default class Wallet extends SaitoWallet {
         let publicKey = await this.getPublicKey();
         this.publicKey = publicKey;
 
-        // Convert stored SAITO value to nolan or default to 0
+        // set default fee from options
         let storedFee = this.app.options.wallet.default_fee;
-        this.default_fee = (!storedFee || isNaN(Number(storedFee))) ? 
-            0n : 
-            storedFee;
+        this.default_fee = (!storedFee) ? 
+            BigInt(0) : 
+            BigInt(storedFee);
 
         // add ghost crypto module so Saito interface available
         class SaitoCrypto extends CryptoModule {
@@ -311,7 +311,7 @@ export default class Wallet extends SaitoWallet {
 						this.preferred_crypto;
                     this.app.options.wallet.preferred_txs = this.preferred_txs;
                     this.app.options.wallet.version = this.version;
-                    this.app.options.wallet.default_fee = this.default_fee;
+                    this.app.options.wallet.default_fee = this.default_fee.toString();
                     this.app.options.wallet.slips = [];
 
                     // if (this.app.options.wallet.slips) {
@@ -486,7 +486,7 @@ export default class Wallet extends SaitoWallet {
         this.app.options.wallet.preferred_crypto = this.preferred_crypto;
         this.app.options.wallet.preferred_txs = this.preferred_txs;
         this.app.options.wallet.version = this.version;
-        this.app.options.wallet.default_fee = this.default_fee;
+        this.app.options.wallet.default_fee = this.default_fee.toString();
 
         try {
             this.app.options.pending_txs = await this.getPendingTransactions();
