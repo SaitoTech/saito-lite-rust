@@ -1,5 +1,4 @@
 // @ts-nocheck
-
 import screenfull, { element } from 'screenfull';
 import { getDiffieHellman } from 'crypto';
 import React from 'react';
@@ -10,9 +9,7 @@ const sanitizer = require('sanitizer');
 const linkifyHtml = require('markdown-linkify');
 const emoji = require('node-emoji');
 const UserMenu = require('./ui/modals/user-menu/user-menu');
-const Deposit = require('./ui/saito-crypto/overlays/deposit');
-const Withdraw = require('./ui/saito-crypto/overlays/withdraw');
-const History = require('./ui/saito-crypto/overlays/history');
+const SaitoCrypto = require('./ui/saito-crypto/saito-crypto');
 const debounce = require('lodash/debounce');
 const SaitoMentions = require('./ui/saito-mentions/saito-mentions');
 
@@ -274,21 +271,9 @@ class Browser {
 			}
 
 			//
-			// crypto overlays, add so events will listen. this assumes
-			// games do not have saito-header installed.
+			// crypto overlays, add so events will listen
 			//
-			this.deposit_overlay = new Deposit(
-				this.app,
-				this.app.modules.returnActiveModule()
-			);
-			this.withdrawal_overlay = new Withdraw(
-				this.app,
-				this.app.modules.returnActiveModule()
-			);
-			this.history_overlay = new History(
-				this.app,
-				this.app.modules.returnActiveModule()
-			);
+			this.saito_crypto = new SaitoCrypto(this.app, this.app.modules.returnActiveModule());
 
 			//
 			// check if we are already open in another tab -

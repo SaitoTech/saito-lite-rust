@@ -994,14 +994,7 @@ class GameTestSuite extends GameTemplate {
     game_self.endTurn();
     */
 
-		let current_balance =
-			await game_self.crypto_transfer_manager.returnBalance(
-				app,
-				game_self,
-				address,
-				ticker,
-				function () {}
-			);
+		let current_balance = 0;
 		game_self.updateStatus(`you have ${current_balance} ${ticker}`);
 	}
 
