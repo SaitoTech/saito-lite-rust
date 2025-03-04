@@ -944,24 +944,25 @@ class Server {
             // res.setHeader("Cache-Control", "private, no-cache, no-store, must-revalidate");
             // res.setHeader("expires","-1");
             // res.setHeader("pragma","no-cache");
-            const client_options_file = this.web_dir + 'client.options';
-            if (!fs.existsSync(client_options_file)) {
-                const fd = fs.openSync(client_options_file, 'w');
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                fs.writeSync(
-                    fd,
-                    // @ts-ignore
-                    this.app.storage.getClientOptions(),
-                    // @ts-ignore
-                    this.server_file_encoding
-                );
-                fs.closeSync(fd);
-            }
-            if (!res.finished) {
-                return res.sendFile(client_options_file);
-            }
-            return;
+            // @ts-ignore
+            res.send(this.app.storage.getClientOptions());
+            // const client_options_file = this.web_dir + 'client.options';
+            // if (!fs.existsSync(client_options_file)) {
+            //     const fd = fs.openSync(client_options_file, 'w');
+            //     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //     // @ts-ignore
+            //     fs.writeSync(
+            //         fd,
+            //         // @ts-ignore
+            //         this.app.storage.getClientOptions(),
+            //         // @ts-ignore
+            //         this.server_file_encoding
+            //     );
+            //     fs.closeSync(fd);
+            // }
+            // if (!res.finished) {
+            //     return res.sendFile(client_options_file);
+            // }
         });
 
         expressApp.get('/r', (req, res) => {
