@@ -9,6 +9,10 @@ class GunsOverlay {
 		this.overlay = new SaitoOverlay(app, mod, true, false, false);
 	}
 
+	remove() {
+		this.overlay.remove();
+	}
+
 	hide() {
 		this.overlay.hide();
 	}

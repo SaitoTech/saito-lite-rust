@@ -2209,7 +2209,6 @@ console.log("selected: " + spacekey);
 
 	  if (his_self.game.player === his_self.returnPlayerOfFaction("papacy")) {
 
-
    	    let msg = "Choose Protestant Card to Discard:";
             let html = '<ul>';
 	    for (let i = 0; i < cards.length; i++) {
@@ -6910,7 +6909,8 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 
 	  for (let key in his_self.game.spaces) {
 	    let space = his_self.game.spaces[key];
-	    if (space.home == "protestant") { if (his_self.game.state.raiders['protestant'] == 0 && space.ports.length > 0) { if (space.religion == "protestant") { valid_for_protestant = true; } } }
+	    let skip_keys = ["innsbruck","linz","vienna","graz","zurich","basel"];
+	    if (space.home == "protestant" || (space.language == "german" && !skip_keys.includes(key))) { if (his_self.game.state.raiders['protestant'] == 0 && space.ports.length > 0) { if (space.religion == "protestant") { valid_for_protestant = true; } } }
 	    if (space.home == "england") { if (his_self.game.state.raiders['england'] == 0 && space.ports.length > 0) { if (space.religion == "protestant") { valid_for_england = true; } } }
 	    if (space.home == "france") { if (his_self.game.state.raiders['france'] == 0 && space.ports.length > 0) { if (space.religion == "protestant") { valid_for_france = true; } } }
 	  }
@@ -6939,6 +6939,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 
 	    his_self.addMove("display_new_world");
             his_self.game.queue.push("SETVAR\tstate\traiders\t"+action+"\t1");
+            his_self.game.queue.push("NOTIFY\tHuguenot Raiders active for "+his_self.returnFactionName(action));
             his_self.endTurn();
 
 	  });
@@ -8189,6 +8190,8 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	}
 
 	//
+	// spaces contains all spaces with Ottoman Cavalry
+	//
 	// two hops !
 	//
 	for (let i = 0; i < spaces.length; i++) {
@@ -8211,16 +8214,10 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	for (let i = 0; i < neighbours.length; i++) {
 	  let s = his_self.game.spaces[neighbours[i]];
 	  for (let ii = 0; ii < s.neighbours.length; ii++) {
-	    if (his_self.isSpaceControlled(s.neighbours[ii], "ottoman")) {
-	      if (!neighbours.includes(s.neighbours[ii])) {
-		neighbours.push(s.neighbours[ii]);
-	      }
-	    } else {
-	      for (let iii = 0; iii < enemies.length; iii++) {
-	        if (his_self.isSpaceControlled(s.neighbours[ii], enemies[iii])) {
-		  valid_target_factions.push(enemies[iii]);
-	          valid_spaces_with_enemies.push(neighbours[ii]);
-	        }
+	    for (let iii = 0; iii < enemies.length; iii++) {
+	      if (his_self.isSpaceControlled(s.neighbours[ii], enemies[iii])) {
+		valid_target_factions.push(enemies[iii]);
+	        valid_spaces_with_enemies.push(neighbours[ii]);
 	      }
 	    }
 	  }
@@ -9365,6 +9362,11 @@ if (space.key == "milan") {
       onEvent : function(his_self, faction) {
 
 	let p = his_self.returnPlayerOfFaction(faction);
+
+	for (let z = 0; z < his_self.game.queue.length; z++) {
+	  let c = his_self.game.queue[z].split("\t");
+	  if (c[0] == "cards_left") { c.splice(z, 1); }
+	}
       
         his_self.game.queue.push("cards_left\t"+faction+"\t"+(parseInt(his_self.game.state.cards_left[faction])+2));
         his_self.game.queue.push("hand_to_fhand\t1\t"+p+"\t"+faction+"\t1");
@@ -11620,7 +11622,8 @@ if (space.key == "milan") {
 	  //
 	  if (r >= 4) {
 
-	    his_self.updateLog(leader_name + " removed from game");
+	    his_self.updateLog(leader_name + " removed from game...");
+	    salert(leader_name + " removed from game...");
 
 	    if (leader_found) {
 	      his_self.game.spaces[s].units[faction].splice(idx, 1);
@@ -11632,7 +11635,8 @@ if (space.key == "milan") {
 	  //
 	  } else {
 
-	    his_self.updateLog(leader_name + " removed from game until next turn");
+	    his_self.updateLog(leader_name + " removed until next turn...");
+	    salert(leader_name + " removed until next turn...");
 
             if (s !== "") {
               idx = his_self.returnIndexOfPersonageInSpace(faction, leader, s);
@@ -12201,16 +12205,14 @@ if (space.key == "milan") {
           let faction_giving = mv[2];
           let cards = JSON.parse(mv[3]);
 
-	  his_self.deck_overlay.render("Venetian Informant", cards);
-          
           let p1 = his_self.returnPlayerOfFaction(faction_taking);
           let p2 = his_self.returnPlayerOfFaction(faction_giving);
           
           if (his_self.game.player == p1) {
-
 	    for (let i = 0; i < cards.length; i++) {
 	      his_self.updateLog(his_self.returnFactionName(faction_giving) + ": " + his_self.popup(cards[i]));
 	    }
+	    his_self.deck_overlay.render("Venetian Informant", cards);
           }
 
           his_self.game.queue.splice(qe, 1);

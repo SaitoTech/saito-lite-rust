@@ -1570,14 +1570,22 @@
     return luis;
   }
 
-  doesOtherFactionHaveNavalUnitsInSpace(exclude_faction, key) {
+  doesOtherFactionHaveNavalUnitsInSpace(exclude_faction, key, ignore_independent_factions=0) {
     if (this.game.spaces[key]) {
       for (let f in this.game.spaces[key].units) {
 	if (f != exclude_faction) {
           if (this.game.spaces[key].units[f]) {
             for (let i = 0; i < this.game.spaces[key].units[f].length; i++) {
               if (this.game.spaces[key].units[f][i].type === "squadron" || this.game.spaces[key].units[f][i].type === "corsair") {
-  	        return 1;
+		if (ignore_independent_factions == 1) {
+		  if (f == "independent") {}
+		  if (f == "venice") { if (this.returnControllingPower("venice") != "venice") { return 1; }}
+		  if (f == "genoa") { if (this.returnControllingPower("genoa") != "genoa") { return 1; }}
+		  if (f == "hungary") { if (this.returnControllingPower("hungary") != "hungary") { return 1; }}
+		  if (f == "scotland") { if (this.returnControllingPower("scotland") != "scotland") { return 1; }}
+		} else {
+  	          return 1;
+		}
               }
             }
 	  }
@@ -1591,7 +1599,15 @@
           if (this.game.navalspaces[key].units[f]) {
             for (let i = 0; i < this.game.navalspaces[key].units[f].length; i++) {
               if (this.game.navalspaces[key].units[f][i].type === "squadron" || this.game.navalspaces[key].units[f][i].type === "corsair") {
-  	        return 1;
+		if (ignore_independent_factions == 1) {
+		  if (f == "independent") {}
+		  if (f == "venice") { if (this.returnControllingPower("venice") != "venice") { return 1; }}
+		  if (f == "genoa") { if (this.returnControllingPower("genoa") != "genoa") { return 1; }}
+		  if (f == "hungary") { if (this.returnControllingPower("hungary") != "hungary") { return 1; }}
+		  if (f == "scotland") { if (this.returnControllingPower("scotland") != "scotland") { return 1; }}
+		} else {
+  	          return 1;
+		}
               }
             }
 	  }
@@ -1865,7 +1881,6 @@ try {
 
 	    let any_unfriendly_ships = false;
 
-
 	    let ignore_hostiles = false;
 
 	    if (this.game.state.spring_deploy_across_passes.includes(faction) && is_spring_deployment == 1) { ignore_hostiles = true; }
@@ -1873,7 +1888,7 @@ try {
 	    if (navalspace.ports) {
 	      if (faction != "") {
 	        for (let z = 0; z < navalspace.ports.length; z++) {
-	          if (this.doesOtherFactionHaveNavalUnitsInSpace(faction, navalspace.ports[z])) {
+	          if (this.doesOtherFactionHaveNavalUnitsInSpace(faction, navalspace.ports[z], 1)) { // 1 = ignore independent/unaligned
 		    if (this.game.state.events.spring_preparations != faction) {
 	              if (ignore_hostiles == false) {
 		        any_unfriendly_ships = true;
@@ -2138,8 +2153,6 @@ try {
     if (s) {
       if (s.ports.length > 0) {
 	if (transit_seas) {
-
-
 	  for (let i = 0; i < s.ports.length; i++) {
 	    if (this.doesNavalSpaceHaveFriendlyShip(s.ports[i], faction)) {
 	      vns.push(s.ports[i]);
