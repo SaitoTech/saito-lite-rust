@@ -41,7 +41,7 @@
 
 .settings-appspace-user-details {
 	display: grid;
-	grid-template-columns: 8rem min-content;
+	grid-template-columns: 10rem min-content;
 	grid-template-rows: repeat(3, 1fr);
 	grid-column-gap: 1.5rem;
 	grid-row-gap: 1.5rem;
