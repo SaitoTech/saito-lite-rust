@@ -89,8 +89,8 @@ export default class Wallet extends SaitoWallet {
         return this.app.wallet.convertNolanToSaito(x);
       }
 
-      async returnAddress() {
-        return this.address || (await this.app.wallet.getPublicKey());
+      returnAddress() {
+        return this.address;
       }
 
       //returns a Promise!
@@ -220,6 +220,7 @@ export default class Wallet extends SaitoWallet {
         return nf.format(balance_as_float).toString();
       }
 
+      //typically async
       validateAddress(address) {
         return this.app.wallet.isValidPublicKey(address);
       }
@@ -530,7 +531,9 @@ export default class Wallet extends SaitoWallet {
       return this.returnCryptoModuleByTicker(this.preferred_crypto);
     } catch (err) {
       if (err.startsWith('Module Not Found:')) {
-        this.setPreferredCrypto('SAITO');
+        console.warn(`Preferred crypto (${this.preferred_crypto}) not installed!`);
+        //Shouldn't need to await because native crypto is seemless
+        this.preferred_crypto = 'SAITO';
         return this.returnCryptoModuleByTicker('SAITO');
       } else {
         throw err;
@@ -542,14 +545,14 @@ export default class Wallet extends SaitoWallet {
     return this?.preferred_crypto || 'SAITO';
   }
 
-  async returnCryptoAddressByTicker(ticker = 'SAITO') {
+  returnCryptoAddressByTicker(ticker = 'SAITO') {
     try {
       if (ticker === 'SAITO') {
         return this.publicKey;
       } else {
         const cmod = this.returnCryptoModuleByTicker(ticker);
         if (cmod) {
-          return await cmod.returnAddress();
+          return cmod.returnAddress();
         }
         console.log(`Crypto Module (${ticker}) not found`);
       }
@@ -569,7 +572,7 @@ export default class Wallet extends SaitoWallet {
       let mods = this.returnActivatedCryptos();
       for (let i = 0; i < mods.length; i++) {
         ticker = mods[i].ticker;
-        let address = await mods[i].returnAddress();
+        let address = mods[i].returnAddress();
         let balance = await mods[i].returnBalance();
         if (!cryptos[ticker]) {
           cryptos[ticker] = { address, balance };
@@ -612,7 +615,7 @@ export default class Wallet extends SaitoWallet {
     let cryptomods = this.returnInstalledCryptos();
     for (let i = 0; i < cryptomods.length; i++) {
       if (cryptomods[i].ticker === ticker) {
-        if ((await cryptomods[i].returnAddress()) === address) {
+        if (cryptomods[i].returnAddress() === address) {
           // cache the results, so i know if payments are new
           cryptomods[i].balance = balance;
           this.app.wallet.cryptos[ticker] = {
@@ -637,8 +640,8 @@ export default class Wallet extends SaitoWallet {
   }
 
   async returnPreferredCryptoBalance() {
-    const cryptomod = await this.returnPreferredCrypto();
-    return await this.checkBalance(await cryptomod.returnAddress(), cryptomod.ticker);
+    const cryptomod = this.returnPreferredCrypto();
+    return await this.checkBalance(cryptomod.returnAddress(), cryptomod.ticker);
   }
 
   /**
@@ -687,7 +690,7 @@ export default class Wallet extends SaitoWallet {
         //       - not our own publickey
         //
 
-        if (senders[i] === (await cryptomod.returnAddress())) {
+        if (senders[i] === cryptomod.returnAddress()) {
           // Need to save before we await, otherwise there is a race condition
           await this.savePreferredCryptoTransaction(
             senders,
@@ -733,7 +736,7 @@ export default class Wallet extends SaitoWallet {
         } else {
           console.warn('Cannot send payment from wrong crypto address');
           console.log(cryptomod.name);
-          console.log(senders[i], await cryptomod.returnAddress());
+          console.log(senders[i], cryptomod.returnAddress());
         }
       }
     } else {
@@ -1298,15 +1301,6 @@ export default class Wallet extends SaitoWallet {
     }
 
     return string;
-  }
-
-  public async isAddressValid(address, ticker) {
-    try {
-      let pc = await this.returnPreferredCrypto();
-      return await pc.validateAddress(address, ticker);
-    } catch (err) {
-      console.error("Error 'isAddressValid' wallet.ts: ", err);
-    }
   }
 
   public async setKeyList(keylist: string[]): Promise<void> {

@@ -52,7 +52,7 @@ class MixinModule extends CryptoModule {
 					super.activate();
 				} else {
 					salert('Having problem generating key for ' + ' ' + this.ticker);
-					await this.app.wallet.setPreferredCrypto('SAITO', 1);
+					await this.app.wallet.setPreferredCrypto('SAITO');
 					this.app.connection.emit('header-update-balance');
 					this.app.connection.emit('update_identifier', this.publicKey);
 				}
@@ -618,11 +618,11 @@ class MixinModule extends CryptoModule {
 		return bal.toString();
 	}
 
-	async validateAddress(address, ticker) {
+	validateAddress(address) {
 		// suported cryptos by validator package
 		//https://www.npmjs.com/package/multicoin-address-validator?activeTab=readme
 		try {
-			return WAValidator.validate(address, ticker);
+			return WAValidator.validate(address, this.ticker);
 		} catch (err) {
 			console.error("Error 'validateAddress' MixinModule: ", err);
 		}

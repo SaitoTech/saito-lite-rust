@@ -561,6 +561,10 @@ class EGLDModule extends CryptoModule {
     }
   }
 
+  validateAddress(address) {
+    return Address.isValid(address);
+  }
+
   respondTo(type = '', obj) {
     try {
       if (type == 'crypto-logo') {

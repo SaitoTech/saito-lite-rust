@@ -2,7 +2,6 @@ const saito = require("./../../lib/saito/saito");
 const MixinModule = require("./lib/mixinmodule");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const fetch = require("node-fetch");
-const { v4: uuidv4 } = require("uuid");
 const axios = require("axios");
 const JSON = require("json-bigint");
 const PeerService = require("saito-js/lib/peer_service").default;
@@ -143,7 +142,10 @@ class Mixin extends ModTemplate {
     }
 
     if (service.service === "mixin" && !this.account_created) {
-      let c = await this.app.wallet.returnPreferredCrypto();
+      
+      // We should never execute this code...
+      // but just in case
+      let c = this.app.wallet.returnPreferredCrypto();
       if (c?.chain_id) {
         console.log("user has 3rd party crypto but no mixin account");
         this.createAccount();

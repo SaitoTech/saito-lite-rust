@@ -64,7 +64,7 @@ class GameTestSuite extends GameTemplate {
 		//
 		if (this.game.options.crypto != undefined) {
 			this.game.crypto = this.game.options.crypto;
-			let crypto_key = await this.app.wallet.returnCryptoAddressByTicker(
+			let crypto_key = this.app.wallet.returnCryptoAddressByTicker(
 				this.game.crypto
 			);
 			this.addMove(
