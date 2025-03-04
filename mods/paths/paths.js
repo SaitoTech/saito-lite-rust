@@ -6885,9 +6885,6 @@ spaces['athens'] = {
 
   onNewTurn() {
 
-    this.game.state.rp['central'] = {};
-    this.game.state.rp['allies'] = {};
-
     this.game.state.mandated_offensives = {};
     this.game.state.mandated_offensives.central = "";
     this.game.state.mandated_offensives.allies = "";
@@ -7037,7 +7034,7 @@ this.updateLog(`###############`);
 
 	  if (this.game.player === this.returnPlayerOfFaction("central")) {
 	    if (this.game.deck[0].hand.includes("cp01")) {
-	      this.addMove("Central Powers start with Guns of August");
+	      this.addMove("NOTIFY\tCentral Powers start with Guns of August!");
               this.addMove("DEAL\t1\t1\t1"); // deal random other card
 	      this.endTurn()
 	    } else {
@@ -7260,14 +7257,25 @@ try {
   	if (mv[0] === "rp") {
 
 	  let faction = mv[1];
-	  let key = mv[2];
-	  let value = mv[3];
+	  let card = mv[2];
 
-	  if (!this.game.state.rp[faction][key]) { this.game.state.rp[faction][key] = 0; }
-	  this.game.state.rp[faction][key] += parseInt(value);
+    	  let c = this.deck[card];
+    
+    	  for (let key in c.sr) {
+            if (faction == "central") {
+              if (!this.game.state.rp["central"][key]) { this.game.state.rp["central"][key] = 0; }
+              this.game.state.rp["central"][key] += c.sr[key];
+            }
+            if (faction == "allies") {
+              if (!this.game.state.rp["allies"][key]) { this.game.state.rp["allies"][key] = 0; }
+              this.game.state.rp["allies"][key] += c.sr[key];
+            }
+          } 
 
+	  this.updateLog(this.returnFactionName(faction) + " plays " + this.popup(card) + " for Replacement Points");
           this.game.queue.splice(qe, 1);
 	  return 1;
+
 	}
 
         if (mv[0] === "resolve") {
@@ -8516,14 +8524,21 @@ alert("Player Playing Post Combat Retreat!");
     //
     this.cardbox.hide();
 
-    let html = `<ul>`;
+    //
+    //
+    //
     for (let key in c.sr) {
-      html    += `<li class="card" id="${key}">${key} - ${c.sr[key]}</li>`;
+      if (faction == "central") {
+        if (!this.game.state.replacement_points["central"][key]) { this.game.state.replacement_points["central"][key] = 0; }
+	this.game.state.replacement_points["central"][key] += c.sr[key];
+      }
+      if (faction == "allies") {
+        if (!this.game.state.replacement_points["allies"][key]) { this.game.state.replacement_points["allies"][key] = 0; }
+	this.game.state.replacement_points["allies"][key] += c.sr[key];
+      }
     }
-    html    += `</ul>`;
 
-    this.updateStatusWithOptions(`Add Strategic Redeployments:`, html, true);
-    this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayCard(faction, card); });
+    this.updateStatus("adding replacement points...");
     this.attachCardboxEvents((action) => {
       this.addMove("rp\tfaction\t${action}\t${c.sr[key]}");
       this.endTurn();

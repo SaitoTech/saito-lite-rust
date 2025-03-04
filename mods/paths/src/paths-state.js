@@ -5,9 +5,6 @@
 
   onNewTurn() {
 
-    this.game.state.rp['central'] = {};
-    this.game.state.rp['allies'] = {};
-
     this.game.state.mandated_offensives = {};
     this.game.state.mandated_offensives.central = "";
     this.game.state.mandated_offensives.allies = "";
