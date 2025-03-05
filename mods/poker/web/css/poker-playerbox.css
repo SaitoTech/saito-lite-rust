@@ -69,6 +69,10 @@
 	margin: auto; /* auto-center in grid */
 	padding: 1.2rem;
 	gap: 0.5rem;
+	border-radius: 0.5rem;
+    padding: 2rem;
+    max-width: 350px;
+    transform: scale(1.1);
 }
 
 .game-playerbox.folded {
