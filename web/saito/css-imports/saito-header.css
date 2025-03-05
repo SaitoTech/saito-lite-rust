@@ -255,10 +255,11 @@
 .pubkey-containter {
   display: flex;
   flex-direction: row;
-  width: 90%;
+  max-width: 75%;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  gap: 0.5rem;
 }
 
 .pubkey-containter:hover i {
@@ -273,6 +274,7 @@
   align-items: center;
   gap: 1rem;
   justify-content: space-around;
+  width: 100%;
 }
 
 .wallet-balance {
@@ -283,7 +285,6 @@
 }
 
 .profile-public-key {
-  width: 55%;
   font-size: 1.7rem;
   white-space: nowrap;
   overflow: hidden;
@@ -528,6 +529,11 @@
   line-height: 3rem;
 }
 
+
+.hide-for-fade-in {
+  opacity: 0;
+  transition: opacity 4s;
+}
 
 @media screen and (max-width: 620px) {
   .saito-header-hamburger-contents {

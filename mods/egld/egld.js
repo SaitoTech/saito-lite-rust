@@ -34,7 +34,6 @@ class EGLDModule extends CryptoModule {
       await this.getAddress();
 
       await this.setupNetwork();
-      this.app.connection.emit('header-update-balance');
     } catch (error) {
       console.error('Error initialize:', error);
     }
@@ -43,7 +42,10 @@ class EGLDModule extends CryptoModule {
   async activate() {
     try {
 
-      this.app.connection.emit('header-install-crypto', this.ticker);
+      if (!this.isActivated()){
+        this.app.connection.emit('header-install-crypto', this.ticker);  
+      }
+      
       await this.setupNetwork();
 
       if (!this.options?.mnemonic_text) {

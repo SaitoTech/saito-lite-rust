@@ -70,7 +70,19 @@ export default class Wallet extends SaitoWallet {
   async initialize() {
     let privateKey = await this.getPrivateKey();
     let publicKey = await this.getPublicKey();
+
+    ////////////////
+    // new wallet //
+    ////////////////
+    if (!privateKey || !publicKey) {
+      await this.resetWallet();
+
+      privateKey = await this.getPrivateKey();
+      publicKey = await this.getPublicKey();
+    }
+
     this.publicKey = publicKey;
+    console.log("Initialize Wallet -- ", publicKey);
 
     // add ghost crypto module so Saito interface available
     class SaitoCrypto extends CryptoModule {
@@ -378,12 +390,6 @@ export default class Wallet extends SaitoWallet {
         this.setKeyList(this.app.keychain.returnWatchedPublicKeys());
       });
     }
-    ////////////////
-    // new wallet //
-    ////////////////
-    if (!privateKey || !publicKey) {
-      await this.resetWallet();
-    }
   }
 
   constructor(wallet: any) {
@@ -518,6 +524,8 @@ export default class Wallet extends SaitoWallet {
       console.log('Activating cryptomod: ' + ticker);
       await c_mod.activate();
       await this.saveWallet();
+      // if UI is enabled, will re-render the qr code, ticker, and balance in the hamburger menu
+      this.app.connection.emit('header-update-crypto');
       return 1;
     } catch (err) {
       console.error(err);

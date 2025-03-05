@@ -53,7 +53,6 @@ class MixinModule extends CryptoModule {
 				} else {
 					salert('Having problem generating key for ' + ' ' + this.ticker);
 					await this.app.wallet.setPreferredCrypto('SAITO');
-					this.app.connection.emit('header-update-balance');
 				}
 			});
 		} else {
@@ -120,7 +119,7 @@ class MixinModule extends CryptoModule {
 			this.balance_timestamp_last_fetched = new Date().getTime();
 			await this.mixin.fetchSafeUtxoBalance(this.asset_id);
 
-			this.app.connection.emit('header-update-balance');
+			this.app.connection.emit('header-update-crypto');
 		}
 		return this.balance;
 	}
