@@ -1053,7 +1053,6 @@ class Mixin extends ModTemplate {
 
           await this.app.wallet.setPreferredCrypto('SAITO', 1);
           this.app.connection.emit("header-update-balance");
-          this.app.connection.emit('update_identifier', this.publicKey);
         }
       }
     }

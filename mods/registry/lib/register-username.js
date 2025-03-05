@@ -107,7 +107,7 @@ class RegisterUsername {
 
 									// Change Saito-header / Settings page
 									this.app.connection.emit(
-										'update_identifier',
+										'registry-update-identifier',
 										this.mod.publicKey
 									);
 

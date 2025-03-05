@@ -54,7 +54,6 @@ class MixinModule extends CryptoModule {
 					salert('Having problem generating key for ' + ' ' + this.ticker);
 					await this.app.wallet.setPreferredCrypto('SAITO');
 					this.app.connection.emit('header-update-balance');
-					this.app.connection.emit('update_identifier', this.publicKey);
 				}
 			});
 		} else {

@@ -427,8 +427,7 @@ export default class Wallet extends SaitoWallet {
     if (!this.app.options.wallet) {
       this.app.options.wallet = {};
     }
-    this.app.options.wallet.backup_required = 0;
-    this.app.options.wallet.backup_required_msg = 0;
+    this.app.options.wallet.backup_required = false;
 
     // in-game crypto transfer preferences
     if (!this.app.options.gameprefs) {
@@ -1047,8 +1046,8 @@ export default class Wallet extends SaitoWallet {
       if (this.app.BROWSER == 1) {
         let publicKey = await this.getPublicKey();
 
-        if (this.app.options.wallet.backup_required_msg) {
-          this.app.options.wallet.backup_required_msg = 0;
+        if (this.app.options.wallet?.backup_required) {
+          this.app.options.wallet.backup_required = false;
           await this.saveWallet();
           console.log('Clear flashing reminder from wallet.ts');
           this.app.connection.emit('saito-header-update-message', {});
