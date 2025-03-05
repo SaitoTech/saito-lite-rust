@@ -8,7 +8,7 @@ const WelcomeOverlay = require('./lib/ui/overlays/welcome');
 
 const PathsRules = require('./lib/core/rules.template');
 const PathsOptions = require('./lib/core/advanced-options.template');
-const PathsingularOption = require('./lib/core/options.template');
+const PathsSingularOption = require('./lib/core/options.template');
 
 const htmlTemplate = require('./lib/core/game-html.template').default;
 const JSON = require('json-bigint');
@@ -65,7 +65,7 @@ class PathsOfGlory extends GameTemplate {
     //
     // players
     this.minPlayers 	 = 2;
-    this.maxPlayers 	 = 6;
+    this.maxPlayers 	 = 2;
 
   }
 

@@ -359,7 +359,6 @@ try {
 	  // returns to this, so we only want to clear this once
 	  // it is not possible to execute any more combat.
 	  //
-
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
 
@@ -369,7 +368,10 @@ try {
               return 0;
             }
           );
-          if (options.length == 0) { return 1; }
+          if (options.length == 0) {
+	    this.game.queue.splice(qe, 1);
+	    return 1;
+	  }
 
 	  if (this.game.player == player) {
 	    this.playerPlayCombat(faction);
