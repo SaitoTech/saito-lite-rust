@@ -96,9 +96,9 @@ export default class Wallet extends SaitoWallet {
         this.options.isActivated = true;
       }
 
-      async returnBalance() {
-        let x = await this.app.wallet.getBalance();
-        return this.app.wallet.convertNolanToSaito(x);
+      // Native $SAITO doesn't need to be installed/activated to become available
+      isActivated() {
+        return true;
       }
 
       returnAddress() {
@@ -210,27 +210,12 @@ export default class Wallet extends SaitoWallet {
         // }
       }
 
-      // Native $SAITO doesn't need to be installed/activated to become available
-      isActivated() {
-        return true;
+
+      async checkBalance() {
+        let x = await this.app.wallet.getBalance();
+        this.balance = this.app.wallet.convertNolanToSaito(x);
       }
 
-      async formatBalance(precision = 2) {
-        let balance = await this.returnBalance();
-
-        if (typeof balance == 'undefined') {
-          balance = '0.00';
-        }
-
-        let locale = window.navigator?.language ? window.navigator?.language : 'en-US';
-        let nf = new Intl.NumberFormat(locale, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: precision
-        });
-
-        let balance_as_float = parseFloat(balance);
-        return nf.format(balance_as_float).toString();
-      }
 
       //typically async
       validateAddress(address) {
@@ -552,6 +537,11 @@ export default class Wallet extends SaitoWallet {
     return this?.preferred_crypto || 'SAITO';
   }
 
+  returnPreferredCryptoAddress() {
+    let preferred_crypto = this.returnPreferredCrypto();
+    return preferred_crypto.returnCachedAddress();
+  }
+
   returnCryptoAddressByTicker(ticker = 'SAITO') {
     try {
       if (ticker === 'SAITO') {
@@ -580,7 +570,9 @@ export default class Wallet extends SaitoWallet {
       for (let i = 0; i < mods.length; i++) {
         ticker = mods[i].ticker;
         let address = mods[i].returnAddress();
-        let balance = await mods[i].returnBalance();
+        await mods[i].checkBalance();
+        let balance = mods[i].returnBalance();
+
         if (!cryptos[ticker]) {
           cryptos[ticker] = { address, balance };
         }
@@ -597,59 +589,13 @@ export default class Wallet extends SaitoWallet {
     return cryptos;
   }
 
-  async returnPreferredCryptoBalances(addresses = [], mycallback = null, ticker = '') {
-    if (ticker == '') {
-      ticker = this.preferred_crypto;
-    }
-    const cryptomod = this.returnCryptoModuleByTicker(ticker);
-    const returnObj = [];
-    const balancePromises = [];
-    for (let i = 0; i < addresses.length; i++) {
-      balancePromises.push(cryptomod.returnBalance(addresses[i]));
-    }
-    const balances = await Promise.all(balancePromises);
-    for (let i = 0; i < addresses.length; i++) {
-      returnObj.push({ address: addresses[i], balance: balances[i] });
-    }
-    if (mycallback != null) {
-      mycallback(returnObj);
-    }
-    return returnObj;
-  }
-
-  async savePreferredCryptoBalance(ticker, address, balance) {
-    // if this is my address...
-    let cryptomods = this.returnInstalledCryptos();
-    for (let i = 0; i < cryptomods.length; i++) {
-      if (cryptomods[i].ticker === ticker) {
-        if (cryptomods[i].returnAddress() === address) {
-          // cache the results, so i know if payments are new
-          cryptomods[i].balance = balance;
-          this.app.wallet.cryptos[ticker] = {
-            address: address,
-            balance: balance
-          };
-        }
-      }
-    }
-  }
-
-  /*** courtesy function to simplify balance checks for a single address w/ ticker ***/
-  async checkBalance(address, ticker) {
-    const robj = await this.returnPreferredCryptoBalances([address], null, ticker);
-    if (robj.length < 1) {
-      return 0;
-    }
-    if (robj[0].balance) {
-      return robj[0].balance;
-    }
-    return 0;
-  }
-
   async returnPreferredCryptoBalance() {
     const cryptomod = this.returnPreferredCrypto();
-    return await this.checkBalance(cryptomod.returnAddress(), cryptomod.ticker);
+    await cryptomod.checkBalance();
+    return cryptomod.returnBalance();
   }
+
+
 
   /**
    * Sends payments to the addresses provided if this user is the corresponding

@@ -7,7 +7,6 @@
 
  returnAddress()
  returnPrivateKey()
- async returnBalance(address = "")
  async sendPayment(amount="", recipient="", unique_hash="")
  async receivePayment(amount="", sender="", recipient="", timestamp=0, unique_hash="")
 
@@ -106,22 +105,20 @@ class MixinModule extends CryptoModule {
 	 * @abstract
 	 * @return {Number}
 	 */
-	async returnBalance() {
-		//console.log('Query balance for ' + this.ticker);
-		if (
-			new Date().getTime() - this.balance_timestamp_last_fetched >
+	async checkBalance() {
+		let now = new Date().getTime();
+		if (now - this.balance_timestamp_last_fetched >
 			this.minimum_delay_between_balance_queries
 		) {
-			// console.log(
-			// 	'Return Balance: ',
-			// 	this.balance_timestamp_last_fetched
-			// );
-			this.balance_timestamp_last_fetched = new Date().getTime();
+			console.log('MixinModule Query balance for ' + this.ticker);
+
+			this.balance_timestamp_last_fetched = now;
+
 			await this.mixin.fetchSafeUtxoBalance(this.asset_id);
 
-			this.app.connection.emit('header-update-crypto');
+		}else{
+			console.log("MixinModule warning: too soon to query balance updates");
 		}
-		return this.balance;
 	}
 
 	/**
@@ -602,19 +599,6 @@ class MixinModule extends CryptoModule {
 		return null;
 	}
 
-	async formatBalance(precision = 2) {
-		let balance = await this.returnBalance();
-		// previous implmentation was causing rounding off issues
-		// 0.745 was being rounded off to 0.75
-		// find first non zero value's postion after decimal
-		let pos = balance > 0 ? Math.abs(Math.floor(Math.log10(Number(balance)))) : 0;
-		pos += precision;
-
-		let bal = Number(balance);
-		bal = bal.toFixed(pos);
-		bal = parseFloat(bal);
-		return bal.toString();
-	}
 
 	validateAddress(address) {
 		// suported cryptos by validator package

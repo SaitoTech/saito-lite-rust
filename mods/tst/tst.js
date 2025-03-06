@@ -46,17 +46,10 @@ class TST extends CryptoModule {
 		return await this.app.wallet.returnPrivateKey();
 	}
 
-	//
-	// fetches and returns the balance at the web3 crypto addresses
-	//
-	// @param {String} address in which to check balance
-	// @return {Array} Array of {address: {String}, balance: {Int}}
-	//
-	async returnBalance(address = '') {
-		return this.balance;
-		//return '100.00000000';
+	async checkBalance(){
+		return 0;
 	}
-
+	
 	//
 	// sends a payment in amount requested to the specified address if possible
 	//

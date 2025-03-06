@@ -13,6 +13,14 @@ const {
 } = require('@multiversx/sdk-core');
 const PeerService = require('saito-js/lib/peer_service').default;
 
+////  !!!!!!!!!!!!!!!!!!!!!!!!!
+
+///  don't forget to store this.balance as a string!
+
+//  !!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
 class EGLDModule extends CryptoModule {
   constructor(app) {
     super(app, "EGLD");
@@ -132,26 +140,11 @@ class EGLDModule extends CryptoModule {
     }
   }
 
-  async returnBalance() {
-    try {
-      await this.updateAccount();
-      return this.balance;
-    } catch (error) {
-      console.error('Error returning balance:', error);
-    }
+
+  async checkBalance() {
+    return this.updateAccount();
   }
 
-  formatBalance() {
-    try {
-      const balanceStr = this.balance.toString();
-      if (balanceStr.includes('e-')) {
-        return '0.00';
-      }
-      return this.balance;
-    } catch (error) {
-      console.error('Error formatBalance:', error);
-    }
-  }
 
   formatReadableNum(num) {
     try {
