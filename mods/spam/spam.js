@@ -11,7 +11,8 @@ class Spam extends ModTemplate {
 		this.description = 'Tool to generate spam txs';
 		this.categories = 'Core Utilities Messaging';
 		this.class = 'utility';
-		this.publickey = '';
+		this.to = '';
+		this.payment = 0;
 		this.loop_start = 0;
 		this.frequency = 1; //no of tx per period
 		this.period = 1000;
@@ -44,12 +45,13 @@ class Spam extends ModTemplate {
 
 		let start = document.querySelector('.start');
 		start.onclick = (e) => {
-			this_mod.frequency = document.querySelector('#frequency').value;
-			this_mod.period = document.querySelector('#period').value * 1000;
-			this_mod.publicKey = document.querySelector('#publicKey').value;
-			this_mod.fee = document.querySelector('#fee').value;
+			this_mod.frequency = document.querySelector('#spam-frequency').value;
+			this_mod.period = document.querySelector('#spam-period').value * 1000;
+			this_mod.to = document.querySelector('#spam-to').value;
+			this_mod.payment = document.querySelector('#spam-payment').value;
+			this_mod.fee = document.querySelector('#spam-fee').value;
 
-			console.log(this.publicKey, this.fee, 'fee');
+			console.log(this.to, this.fee, 'fee');
 
 			document.querySelector('.spam-loop-count').innerHTML =
 				this_mod.loop_count;
@@ -80,8 +82,8 @@ class Spam extends ModTemplate {
 			document.querySelector('.spam-loop-count').innerHTML = '0';
 			document.querySelector('.spam-loop-dot').style.backgroundColor =
 				'red';
-			document.querySelector('#frequency').value = 1;
-			document.querySelector('#period').value = 1;
+			document.querySelector('#spam-frequency').value = 1;
+			document.querySelector('#spam-period').value = 1;
 			this_mod.changeLoopStatus();
 		};
 	}
@@ -146,8 +148,8 @@ class Spam extends ModTemplate {
 		}
 
 		let newtx = await this.app.wallet.createUnsignedTransaction(
-			this.publicKey,
-			BigInt(0),
+			this.to,
+			BigInt(this.payment),
 			BigInt(this.fee)
 		);
 		newtx.msg = obj;
@@ -176,3 +178,4 @@ class Spam extends ModTemplate {
 }
 
 module.exports = Spam;
+
