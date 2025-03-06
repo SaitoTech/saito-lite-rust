@@ -177,7 +177,7 @@ class SettingsAppspace {
 
 		try {
 			// Add this new event handler near the start of attachEvents
-			document.getElementById('default-fee-input').onchange = (e) => {
+			document.getElementById('profile-default-fee-input').onchange = (e) => {
 				let newDefaultFee = parseFloat(e.target.value);
 				let precision = e.target.value.split('.')[1]?.length || 0;
 				

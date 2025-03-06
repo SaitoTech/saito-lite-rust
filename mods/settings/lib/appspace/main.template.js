@@ -82,10 +82,10 @@ module.exports  = (app, mod, main) => {
             </div>
 
             <div>Default Fee:</div>
-            <div class="pubkey-containter">
+            <div class="default-fee-containter">
               <input type="number" 
-                     id="default-fee-input" 
-                     class="profile-public-key" 
+                     id="profile-default-fee-input" 
+                     class="profile-default-fee" 
                      step="0.000000001" 
                      min="0" 
                      value="${app.wallet.convertNolanToSaito(app.wallet.default_fee)}"

@@ -68,6 +68,11 @@
 	width: 38rem;
 }
 
+.profile-default-fee {
+    width: 100% !important;
+    padding: 0.66rem 1rem !important;
+}
+
 .settings-appspace-modules {
 	display: grid;
 	grid-gap: 1.5rem;
