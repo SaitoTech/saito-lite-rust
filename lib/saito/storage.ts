@@ -5,7 +5,7 @@ import Block from './block';
 const localforage = require('localforage');
 import fs from 'fs';
 import path from 'path';
-const JsStore = require('jsstore')
+const JsStore = require('jsstore');
 import S from 'saito-js/saito';
 
 

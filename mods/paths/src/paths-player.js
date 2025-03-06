@@ -9,6 +9,7 @@
   }
 
   returnFactionName(faction="") { return this.returnPlayerName(faction); }
+
   returnPlayerName(faction="") {
     if (faction == "central") { return "Central Powers"; }
     return "Allies";
@@ -61,6 +62,7 @@ alert("Player Playing Post Combat Retreat!");
 
     this.attachCardboxEvents((action) => {
 
+      this.guns_overlay.remove();
       this.updateStatus("selected");
 
       if (action === "guns") {
@@ -638,14 +640,21 @@ alert("Player Playing Post Combat Retreat!");
     //
     this.cardbox.hide();
 
-    let html = `<ul>`;
+    //
+    //
+    //
     for (let key in c.sr) {
-      html    += `<li class="card" id="${key}">${key} - ${c.sr[key]}</li>`;
+      if (faction == "central") {
+        if (!this.game.state.replacement_points["central"][key]) { this.game.state.replacement_points["central"][key] = 0; }
+	this.game.state.replacement_points["central"][key] += c.sr[key];
+      }
+      if (faction == "allies") {
+        if (!this.game.state.replacement_points["allies"][key]) { this.game.state.replacement_points["allies"][key] = 0; }
+	this.game.state.replacement_points["allies"][key] += c.sr[key];
+      }
     }
-    html    += `</ul>`;
 
-    this.updateStatusWithOptions(`Add Strategic Redeployments:`, html, true);
-    this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayCard(faction, card); });
+    this.updateStatus("adding replacement points...");
     this.attachCardboxEvents((action) => {
       this.addMove("rp\tfaction\t${action}\t${c.sr[key]}");
       this.endTurn();
@@ -769,7 +778,7 @@ alert("Player Playing Post Combat Retreat!");
 
 
 
-  playerPlayStrategicRedeployment(faction, value) {
+  playerPlayStrategicRedeployment(faction, card, value) {
 
     let paths_self = this;
 
@@ -777,7 +786,7 @@ alert("Player Playing Post Combat Retreat!");
       for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
         let unit = paths_self.game.spaces[key].units[z];
 	if (faction == paths_self.returnPowerOfUnit(unit)) {
-	  if (unit.type == "core" && value >= 1) { 
+	  if (unit.type == "corps" && value >= 1) { 
 	    return 1;
 	  }
 	  if (unit.type == "army" && value >= 4) {
@@ -824,7 +833,9 @@ alert("Player Playing Post Combat Retreat!");
 	  },
           false
         );
-      }
+      },
+      null,
+      true
     );
 
 //    this.addMove(`sr\t${faction}\t${value}`);

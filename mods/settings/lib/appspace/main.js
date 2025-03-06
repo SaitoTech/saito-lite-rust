@@ -176,8 +176,27 @@ class SettingsAppspace {
 		let mod = this.mod;
 
 		try {
-			let settings_appspace =
-				document.querySelector('.settings-appspace');
+			// Add this new event handler near the start of attachEvents
+			document.getElementById('profile-default-fee-input').onchange = (e) => {
+				let newDefaultFee = parseFloat(e.target.value);
+				let precision = e.target.value.split('.')[1]?.length || 0;
+				
+				if (newDefaultFee < 0 || newDefaultFee > 7000000000 || precision > 9) {
+					siteMessage('Entry invalid if it is negative, bigger than 7,000,000,000 or has more than nine units of precision.', 1000);
+					e.target.value = app.wallet.convertNolanToSaito(Number(app.options.wallet.default_fee));
+					return;
+				}
+
+				// Convert SAITO to nolan for storage
+				app.options.wallet.default_fee = app.wallet.convertSaitoToNolan(newDefaultFee.toString());
+				app.wallet.default_fee = BigInt(app.options.wallet.default_fee);
+				app.options.wallet = app.options.wallet || {};
+				app.storage.saveOptions();
+				
+				siteMessage(`Default fee updated to: ${app.wallet.convertNolanToSaito(BigInt(app.options.wallet.default_fee)).toString()} SAITO`, 1000);
+			};
+
+			let settings_appspace = document.querySelector('.settings-appspace');
 			if (settings_appspace) {
 				for (let i = 0; i < app.modules.mods.length; i++) {
 					if (

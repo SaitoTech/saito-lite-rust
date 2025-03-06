@@ -18,8 +18,8 @@ class PokerStake {
     if (this.game.options.stake) {
       this.game.stake = this.game.options.stake;
     }
-    if (this.game.options.blind_mod) {
-      this.game.blind_mod = this.game.options.blind_mode;
+    if (this.game.options.blind_mode) {
+      this.game.blind_mode = this.game.options.blind_mode;
     }
 
     this.game.state.round = 1;
