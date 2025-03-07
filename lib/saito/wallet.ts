@@ -1,16 +1,13 @@
-import Peer from './peer';
-
+import Decimal from 'decimal.js';
 import * as JSON from 'json-bigint';
+import BalanceSnapshot from 'saito-js/lib/balance_snapshot';
+import SaitoWallet, { WalletSlip } from 'saito-js/lib/wallet';
+import S from 'saito-js/saito';
+import { Saito } from '../../apps/core';
+import Slip from './slip';
+import Transaction from './transaction';
 const getUuid = require('uuid-by-string');
 const ModalSelectCrypto = require('./ui/modals/select-crypto/select-crypto');
-import Transaction from './transaction';
-import Slip from './slip';
-import { Saito } from '../../apps/core';
-import S from 'saito-js/saito';
-import SaitoWallet from 'saito-js/lib/wallet';
-import BalanceSnapshot from 'saito-js/lib/balance_snapshot';
-import { WalletSlip } from 'saito-js/lib/wallet';
-import Decimal from 'decimal.js';
 
 
 const CryptoModule = require('../templates/cryptomodule');
@@ -23,9 +20,9 @@ export default class Wallet extends SaitoWallet {
     preferred_crypto = 'SAITO';
     preferred_txs = [];
 
-    default_fee = 0;
+    default_fee = BigInt(0);  // in nolan
 
-    version = 5.667; //saito-js 0.2.55
+    version = 5.668; //saito-js 0.2.57
 
     nolan_per_saito = 100000000;
 
@@ -34,18 +31,19 @@ export default class Wallet extends SaitoWallet {
 
     public async createUnsignedTransactionWithDefaultFee(
         publicKey = '',
-        amount = BigInt(0)
+        amount = BigInt(0),
+        default_fee = this.default_fee
     ): Promise<Transaction> {
         if (publicKey == '') {
             publicKey = await this.getPublicKey();
         }
-        return this.createUnsignedTransaction(publicKey, amount, BigInt(0));
+        return this.createUnsignedTransaction(publicKey, amount, default_fee);
     }
 
     public async createUnsignedTransaction(
         publicKey = '',
         amount = BigInt(0),
-        fee = BigInt(0),
+        fee = this.default_fee,
         force_merge = false
     ): Promise<Transaction> {
         if (publicKey == '') {
@@ -62,7 +60,7 @@ export default class Wallet extends SaitoWallet {
     public async createUnsignedTransactionWithMultiplePayments(
         keys: string[],
         amounts: bigint[],
-        fee: bigint = BigInt(0)
+        fee: bigint = this.default_fee  
     ): Promise<Transaction> {
         return S.getInstance().createTransactionWithMultiplePayments(
             keys,
@@ -80,10 +78,15 @@ export default class Wallet extends SaitoWallet {
 
 
     async initialize() {
-
         let privateKey = await this.getPrivateKey();
         let publicKey = await this.getPublicKey();
         this.publicKey = publicKey;
+
+        // set default fee from options
+        let storedFee = this.app.options.wallet.default_fee;
+        this.default_fee = (!storedFee) ? 
+            BigInt(0) : 
+            BigInt(storedFee);
 
         // add ghost crypto module so Saito interface available
         class SaitoCrypto extends CryptoModule {
@@ -115,7 +118,7 @@ export default class Wallet extends SaitoWallet {
 
             returnWithdrawalFeeForAddress(address = '', mycallback = null) {
                 if (mycallback) {
-                    mycallback(0);
+                    //mycallback(0);
                 }
             }
 
@@ -308,7 +311,7 @@ export default class Wallet extends SaitoWallet {
 						this.preferred_crypto;
                     this.app.options.wallet.preferred_txs = this.preferred_txs;
                     this.app.options.wallet.version = this.version;
-                    this.app.options.wallet.default_fee = this.default_fee;
+                    this.app.options.wallet.default_fee = this.default_fee.toString();
                     this.app.options.wallet.slips = [];
 
                     // if (this.app.options.wallet.slips) {
@@ -483,7 +486,7 @@ export default class Wallet extends SaitoWallet {
         this.app.options.wallet.preferred_crypto = this.preferred_crypto;
         this.app.options.wallet.preferred_txs = this.preferred_txs;
         this.app.options.wallet.version = this.version;
-        this.app.options.wallet.default_fee = this.default_fee;
+        this.app.options.wallet.default_fee = this.default_fee.toString();
 
         try {
             this.app.options.pending_txs = await this.getPendingTransactions();
