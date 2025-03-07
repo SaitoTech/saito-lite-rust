@@ -19,6 +19,8 @@ export default class Wallet extends SaitoWallet {
   publicKey;
 
   preferred_crypto = 'SAITO';
+
+  // Array of Objects { sig, ts }
   preferred_txs = [];
 
   default_fee = 0;
@@ -82,7 +84,7 @@ export default class Wallet extends SaitoWallet {
     }
 
     this.publicKey = publicKey;
-    console.log("Initialize Wallet -- ", publicKey);
+    console.log('Initialize Wallet -- ', publicKey);
 
     // add ghost crypto module so Saito interface available
     class SaitoCrypto extends CryptoModule {
@@ -210,12 +212,10 @@ export default class Wallet extends SaitoWallet {
         // }
       }
 
-
       async checkBalance() {
         let x = await this.app.wallet.getBalance();
         this.balance = this.app.wallet.convertNolanToSaito(x);
       }
-
 
       //typically async
       validateAddress(address) {
@@ -281,7 +281,7 @@ export default class Wallet extends SaitoWallet {
 
           // this.app.options.wallet = this.wallet;
           this.app.options.wallet.preferred_crypto = this.preferred_crypto;
-          this.app.options.wallet.preferred_txs = this.preferred_txs;
+          //this.app.options.wallet.preferred_txs = this.preferred_txs;
           this.app.options.wallet.version = this.version;
           this.app.options.wallet.default_fee = this.default_fee;
           this.app.options.wallet.slips = [];
@@ -499,9 +499,9 @@ export default class Wallet extends SaitoWallet {
   }
 
   /**
-   * 
+   *
    * @return 1 if successful, 0 if not. Catches the Module not found error and displays it
-   */ 
+   */
   async setPreferredCrypto(ticker) {
     try {
       let c_mod = this.returnCryptoModuleByTicker(ticker);
@@ -595,8 +595,6 @@ export default class Wallet extends SaitoWallet {
     return cryptomod.returnBalance();
   }
 
-
-
   /**
    * Sends payments to the addresses provided if this user is the corresponding
    * sender. Will not send if similar payment was found after the given timestamp.
@@ -631,10 +629,15 @@ export default class Wallet extends SaitoWallet {
     }
 
     // only send if hasn't been sent before
+    let unique_tx_hash = this.generatePreferredCryptoTransactionHash(
+      senders,
+      receivers,
+      amounts,
+      unique_hash,
+      ticker
+    );
 
-    if (
-      !this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
-    ) {
+    if (!this.doesPreferredCryptoTransactionExist(unique_tx_hash)) {
       console.log('preferred crypto transaction does not already exist');
       const cryptomod = this.returnCryptoModuleByTicker(ticker);
       for (let i = 0; i < senders.length; i++) {
@@ -645,34 +648,14 @@ export default class Wallet extends SaitoWallet {
 
         if (senders[i] === cryptomod.returnAddress()) {
           // Need to save before we await, otherwise there is a race condition
-          await this.savePreferredCryptoTransaction(
-            senders,
-            receivers,
-            amounts,
-            unique_hash,
-            ticker
-          );
+          await this.savePreferredCryptoTransaction(unique_tx_hash);
           try {
-            let unique_tx_hash = this.generatePreferredCryptoTransactionHash(
-              senders,
-              receivers,
-              amounts,
-              unique_hash,
-              ticker
-            );
             const hash = await cryptomod.sendPayment(amounts[i], receivers[i], unique_tx_hash, fee);
             //
             // hash is "" if unsuccessful, trace_id if successful
             //
             if (hash === '') {
-              console.log('Deleting preferred crypto transaction');
-              this.deletePreferredCryptoTransaction(
-                senders,
-                receivers,
-                amounts,
-                unique_hash,
-                ticker
-              );
+              this.deletePreferredCryptoTransaction(unique_tx_hash);
             }
 
             if (mycallback) {
@@ -682,8 +665,8 @@ export default class Wallet extends SaitoWallet {
           } catch (err) {
             // it failed, delete the transaction
             console.log('sendPayment ERROR: payment failed....\n' + err);
-            this.deletePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);
-            //mycallback({err: err});
+            this.deletePreferredCryptoTransaction(unique_tx_hash);
+            mycallback({err: err});
             return;
           }
         } else {
@@ -724,11 +707,17 @@ export default class Wallet extends SaitoWallet {
       return;
     }
 
-    if (
-      !this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
-    ) {
+    let unique_tx_hash = this.generatePreferredCryptoTransactionHash(
+      senders,
+      receivers,
+      amounts,
+      unique_hash,
+      ticker
+    );
+
+    if (!this.doesPreferredCryptoTransactionExist(unique_tx_hash)) {
       const cryptomod = this.returnCryptoModuleByTicker(ticker);
-      await this.savePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);
+      await this.savePreferredCryptoTransaction(unique_tx_hash);
       try {
         let amounts_to_send = [];
         let to_addresses = [];
@@ -741,8 +730,7 @@ export default class Wallet extends SaitoWallet {
         // hash is "" if unsuccessful, trace_id if successful
         //
         if (hash === '') {
-          console.log('Deleting preferred crypto transaction');
-          this.deletePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);
+          this.deletePreferredCryptoTransaction(unique_tx_hash);
         }
 
         if (mycallback) {
@@ -752,7 +740,7 @@ export default class Wallet extends SaitoWallet {
       } catch (err) {
         // it failed, delete the transaction
         console.log('sendPayments ERROR: payment failed....\n' + err);
-        this.deletePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);
+        this.deletePreferredCryptoTransaction(unique_tx_hash);
         mycallback({ err: err });
         return;
       }
@@ -807,9 +795,7 @@ export default class Wallet extends SaitoWallet {
     //
     // if payment already received, return
     //
-    if (
-      this.doesPreferredCryptoTransactionExist(senders, receivers, amounts, unique_hash, ticker)
-    ) {
+    if (this.doesPreferredCryptoTransactionExist(unique_tx_hash)) {
       mycallback();
       console.log('our preferred crypto transaction exists!');
       return 1;
@@ -831,7 +817,7 @@ export default class Wallet extends SaitoWallet {
         amounts[0],
         senders[0],
         receivers[0],
-        timestamp - 3,
+        timestamp - 30,
         unique_tx_hash
       ); // subtract 3 seconds in case system time is slightly off
     };
@@ -855,7 +841,7 @@ export default class Wallet extends SaitoWallet {
       if (result) {
         // The transaction was found, we're done.
         console.log('TRANSACTION FOUND');
-        this.savePreferredCryptoTransaction(senders, receivers, amounts, unique_hash, ticker);
+        this.savePreferredCryptoTransaction(unique_tx_hash);
         mycallback(result);
       } else {
         // The transaction was not found.
@@ -901,20 +887,15 @@ export default class Wallet extends SaitoWallet {
     );
   }
 
-  async savePreferredCryptoTransaction(senders = [], receivers = [], amounts, unique_hash, ticker) {
-    let sig = this.generatePreferredCryptoTransactionHash(
-      senders,
-      receivers,
-      amounts,
-      unique_hash,
-      ticker
-    );
+  async savePreferredCryptoTransaction(unique_tx_hash) {
     this.preferred_txs.push({
-      sig: sig,
+      sig: unique_tx_hash,
       ts: new Date().getTime()
     });
+
+    // trim old transactions
     for (let i = this.preferred_txs.length - 1; i >= 0; i--) {
-      if (this.preferred_txs[i].timestamp < new Date().getTime() - 100000000) {
+      if (this.preferred_txs[i].ts < new Date().getTime() - 100000000) {
         this.preferred_txs.splice(i, 1);
       }
     }
@@ -924,32 +905,20 @@ export default class Wallet extends SaitoWallet {
     return 1;
   }
 
-  doesPreferredCryptoTransactionExist(senders = [], receivers = [], amounts, unique_hash, ticker) {
-    const sig = this.generatePreferredCryptoTransactionHash(
-      senders,
-      receivers,
-      amounts,
-      unique_hash,
-      ticker
-    );
+  doesPreferredCryptoTransactionExist(unique_tx_hash) {
     for (let i = 0; i < this.preferred_txs.length; i++) {
-      if (this.preferred_txs[i].signature === sig) {
+      if (this.preferred_txs[i].sig === unique_tx_hash) {
         return 1;
       }
     }
     return 0;
   }
 
-  deletePreferredCryptoTransaction(senders = [], receivers = [], amounts, unique_hash, ticker) {
-    const sig = this.generatePreferredCryptoTransactionHash(
-      senders,
-      receivers,
-      amounts,
-      unique_hash,
-      ticker
-    );
+  deletePreferredCryptoTransaction(unique_tx_hash) {
+    console.log('Deleting preferred crypto transaction');
+
     for (let i = 0; i < this.preferred_txs.length; i++) {
-      if (this.preferred_txs[i].signature === sig) {
+      if (this.preferred_txs[i].sig === unique_tx_hash) {
         this.preferred_txs.splice(i, 1);
       }
     }
