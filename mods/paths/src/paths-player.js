@@ -157,6 +157,7 @@ alert("Player Playing Post Combat Retreat!");
 
       if (action === "event") {
 	alert("event");
+	this.endTurn();
       }
 
     });
@@ -172,6 +173,7 @@ alert("Player Playing Post Combat Retreat!");
 	  if (this.returnPowerOfUnit(this.game.spaces[key].units[0]) != faction) {
   	    for (let i = 0; i < this.game.spaces[key].neighbours.length; i++) {
 	      let n = this.game.spaces[key].neighbours[i];
+console.log("key: " + n);
 	      if (this.game.spaces[n].activated_for_combat == 1) { return 1; }
 	    }
 	  }
@@ -230,6 +232,7 @@ alert("Player Playing Post Combat Retreat!");
 	  if (paths_self.game.spaces[key].units.length > 0) {
 	    if (paths_self.returnPowerOfUnit(paths_self.game.spaces[key].units[0]) != faction) {
   	      for (let i = 0; i < paths_self.game.spaces[key].neighbours.length; i++) {
+console.log("key: " + key);
 	        let n = paths_self.game.spaces[key].neighbours[i];
 	        if (paths_self.game.spaces[n].activated_for_combat == 1) { return 1; }
 	      }

@@ -1594,7 +1594,7 @@ spaces['czernowitz'] = {
     control: "central" ,
     top: 1524 ,
     left: 3048 , 
-    neighbours: ["munkacs", "stanislau", "tarnopol", "kamenestspodolski"] ,
+    neighbours: ["munkacs", "stanislau", "tarnopol", "kamenetspodolski"] ,
     terrain : "normal" ,
     vp : true , 
    }
@@ -1604,7 +1604,7 @@ spaces['tarnopol'] = {
     control: "central" ,
     top: 1371 ,
     left: 3049 , 
-    neighbours: ["stanislau", "lemberg", "dubno", "kamenestspodolski", "czernowitz"] ,
+    neighbours: ["stanislau", "lemberg", "dubno", "kamenetspodolski", "czernowitz"] ,
     terrain : "normal" ,
     vp : false , 
    }
@@ -2032,7 +2032,7 @@ spaces['dubno'] = {
     control: "allies" ,
       top: 1252 ,
       left: 3189 ,
-      neighbours: ["tarnopol", "rovno", "zhitomir", "lutsk", "kamenestspodolski"] ,
+      neighbours: ["tarnopol", "rovno", "zhitomir", "lutsk", "kamenetspodolski"] ,
       terrain : "normal" ,
       vp : false ,
 }
@@ -2082,7 +2082,7 @@ spaces['vinnitsa'] = {
     control: "allies" ,
       top: 1373 ,
       left: 3404 ,
-      neighbours: ["uman", "kamenestspodolski", "zhmerinka", "belayatserkov"] ,
+      neighbours: ["uman", "kamenetspodolski", "zhmerinka", "belayatserkov"] ,
       terrain : "normal" ,
       vp : false ,
 }
@@ -2102,7 +2102,7 @@ spaces['zhmerinka'] = {
     control: "allies" ,
       top: 1544 ,
       left: 3329 ,
-      neighbours: ["kamenestspodolski", "vinnitsa", "jassy", "kishinev"] ,
+      neighbours: ["kamenetspodolski", "vinnitsa", "jassy", "kishinev"] ,
       terrain : "normal" ,
       vp : false ,
 }
