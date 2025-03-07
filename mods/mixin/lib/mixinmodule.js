@@ -19,6 +19,30 @@
  through.
 
 
+ Uses Mixin API:
+ ----------------
+ createAccount()
+ createDepositAddress()
+
+ fetchSafeUtxoBalance()
+ fetchUtxo()
+ fetchSafeSnapshots()
+ fetchPendingDeposits()
+
+ sendInNetworkTransferRequest()
+ sendExternalNetworkTransferRequest()
+
+ returnNetworkInfo()
+ checkWithdrawalFee()
+
+ sendFetchUserTransaction()
+ sendFetchUserByPublicKeyTransaction()
+ sendFetchAddressByUserIdTransaction()
+
+ deposit[]
+ mixin.privatekey
+ mixin.user_id
+
 
  **********************************************************************************/
 const CryptoModule = require('./../../../lib/templates/cryptomodule');
@@ -62,42 +86,6 @@ class MixinModule extends CryptoModule {
 
 			super.activate();
 		}
-	}
-
-	hasReceivedPayment(amount, sender, receiver, timestamp, unique_hash) {
-		console.log('**********************************************************');
-		console.log('amount, sender, receiver, timestamp, unique_hash');
-		console.log(amount, sender, receiver, timestamp, unique_hash);
-
-		let trace_id = getUuid(unique_hash);
-
-		for (let i = 0; i < this.mixin.deposits.length; i++) {
-			if (this.mixin.deposits[i].trace_id === trace_id) {
-				return 1;
-			}
-		}
-
-		for (let i = 0; i < this.options.transfers_inbound.length; i++) {
-			if (
-				this.options.transfers_inbound[i].amount === amount &&
-				this.options.transfers_inbound[i].timestamp >= timestamp
-			) {
-				return 1;
-			}
-		}
-		return 0;
-	}
-
-	hasSentPayment(amount, sender, receiver, timestamp, unique_hash) {
-		for (let i = 0; i < this.options.transfers_outbound.length; i++) {
-			if (
-				this.options.transfers_outbound[i].amount === amount &&
-				this.options.transfers_outbound[i].timestamp >= timestamp
-			) {
-				return 1;
-			}
-		}
-		return 0;
 	}
 
 	/**
@@ -553,6 +541,7 @@ class MixinModule extends CryptoModule {
 		}
 	}
 
+	// Return history
 	async getAddressByUserId(user_id, asset_id) {
 		let address = null;
 		await this.mixin.sendFetchAddressByUserIdTransaction(
@@ -608,12 +597,6 @@ class MixinModule extends CryptoModule {
 		} catch (err) {
 			console.error("Error 'validateAddress' MixinModule: ", err);
 		}
-	}
-
-	async fetchTransaction(transaction_id) {
-		return await this.mixin.fetchSafeTransaction(transaction_id, function (res) {
-			console.log('inside miximodule fetchTransaction ///', res);
-		});
 	}
 
 	async fetchPendingDeposits(callback = null) {

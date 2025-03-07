@@ -296,7 +296,7 @@ export default class Crypto {
 		return bal.toString();
 	}*/
 	// from saito/wallet.ts
-	async formatBalance(balance, precision = 2) {
+	formatBalance(balance, precision = 2) {
 		if (typeof balance == 'undefined') {
 			balance = '0.00';
 		}
