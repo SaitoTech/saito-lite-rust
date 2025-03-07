@@ -2016,6 +2016,9 @@ class Arcade extends ModTemplate {
 			data.game = accepted_game.msg.game;
 			data.game_id = this.app.crypto.hash(game_sig).slice(-6);
 			data.path = '/arcade/';
+			if (accepted_game.msg?.options?.crypto){
+				data.crypto = accepted_game.msg.options.crypto;
+			}
 		} else {
 			return;
 		}

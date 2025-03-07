@@ -16,14 +16,13 @@ class CryptoSelectAmount {
 		};
 	}
 
-	async render(mycallback = null) {
+	render(mycallback = null) {
 		if (mycallback != null) {
 			this.callback = mycallback;
 		}
 
-		//It is so stupid to have to make everything async...
 		if (!this?.ticker){
-			this.ticker = await this.app.wallet.returnPreferredCryptoTicker();
+			this.ticker = this.app.wallet.returnPreferredCryptoTicker();
 		}
 
 		this.overlay.show(CryptoSelectAmountTemplate(this.app, this.mod, this));

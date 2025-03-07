@@ -286,7 +286,6 @@ class Blackjack extends GameTableTemplate {
 		this.game.queue.push(
 			'DECK\t1\t' + JSON.stringify(this.returnPokerDeck())
 		);
-		//this.game.queue.push("BALANCE\t0\t"+this.publicKey+"\t"+"SAITO");
 	}
 
 	/*

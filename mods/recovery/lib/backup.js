@@ -21,6 +21,8 @@ class Backup {
 				let msg = null;
 				if (typeof obj.msg != 'undefined') {
 					msg = obj.msg;
+					app.options.wallet.backup_required = msg;
+					app.wallet.saveWallet();
 				}
 
 				this.render();
@@ -40,9 +42,6 @@ class Backup {
 		this.modal_overlay.callback_on_close = () => {
 			this_self.callBackFunction();
 		}
-
-		this_self.app.options.wallet.backup_required_msg = 1;
-		this_self.app.wallet.saveWallet();
 
 		this.attachEvents();
 	}
@@ -90,7 +89,7 @@ class Backup {
 		siteMessage('wallet backup successful', 10000);
 		
 		setTimeout(async function(){
-			this_self.app.options.wallet.backup_required_msg = 0;
+			this_self.app.options.wallet.backup_required = false;
 			await this_self.app.wallet.saveWallet();
 			await this_self.close();
 
@@ -102,7 +101,7 @@ class Backup {
 
 	callBackFunction(){
 		let this_self = this;
-		if (this.app.options.wallet.backup_required_msg == 1) {
+		if (this.app.options.wallet?.backup_required) {
 			this_self.app.connection.emit(
 				'saito-header-update-message',
 				{
@@ -121,7 +120,7 @@ class Backup {
 	}
 
 	async showLoaderOverlay(msg = null){
-		this.app.options.wallet.backup_required_msg = 0;
+		this.app.options.wallet.backup_required = false;
 		await this.app.wallet.saveWallet();
 
 		document.querySelector('#saito-overlay-form-header-title').innerHTML = 
