@@ -1,5 +1,4 @@
 // @ts-nocheck
-
 import screenfull, { element } from 'screenfull';
 import { getDiffieHellman } from 'crypto';
 import React from 'react';
@@ -10,9 +9,7 @@ const sanitizer = require('sanitizer');
 const linkifyHtml = require('markdown-linkify');
 const emoji = require('node-emoji');
 const UserMenu = require('./ui/modals/user-menu/user-menu');
-const Deposit = require('./ui/saito-crypto/overlays/deposit');
-const Withdraw = require('./ui/saito-crypto/overlays/withdraw');
-const History = require('./ui/saito-crypto/overlays/history');
+const SaitoCrypto = require('./ui/saito-crypto/saito-crypto');
 const debounce = require('lodash/debounce');
 const SaitoMentions = require('./ui/saito-mentions/saito-mentions');
 
@@ -247,29 +244,10 @@ class Browser {
 				// if crypto is provided switch over
 				//
 				if (pair[0] === 'crypto') {
-					let preferred_crypto_found = 0;
-					const available_cryptos =
-						this.app.wallet.returnInstalledCryptos();
-					for (let i = 0; i < available_cryptos.length; i++) {
-						if (available_cryptos[i].ticker) {
-							if (
-								available_cryptos[i].ticker.toLowerCase() ===
-								pair[1].toLowerCase()
-							) {
-								preferred_crypto_found = 1;
-								await this.app.wallet.setPreferredCrypto(
-									available_cryptos[i].ticker
-								);
-							}
-						}
-					}
-
-					if (preferred_crypto_found == 0) {
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
+					if (!(await this.app.wallet.setPreferredCrypto(pair[1]))){
 						salert(
 							`Your compile does not contain a ${pair[1].toUpperCase()} module. Visit the AppStore or contact us about getting one built!`
-						);
+						);						
 					}
 				}
 			}
@@ -293,21 +271,9 @@ class Browser {
 			}
 
 			//
-			// crypto overlays, add so events will listen. this assumes
-			// games do not have saito-header installed.
+			// crypto overlays, add so events will listen
 			//
-			this.deposit_overlay = new Deposit(
-				this.app,
-				this.app.modules.returnActiveModule()
-			);
-			this.withdrawal_overlay = new Withdraw(
-				this.app,
-				this.app.modules.returnActiveModule()
-			);
-			this.history_overlay = new History(
-				this.app,
-				this.app.modules.returnActiveModule()
-			);
+			this.saito_crypto = new SaitoCrypto(this.app, this.app.modules.returnActiveModule());
 
 			//
 			// check if we are already open in another tab -

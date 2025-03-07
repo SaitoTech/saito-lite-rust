@@ -40,7 +40,7 @@ module.exports = SendTokensOverlay = {
 				`Do you wish to send ${amount} ${app.wallet.preferred_crypto}/${ticker} to ${recipient}`
 			);
 			if (c) {
-				let sender = await cryptomod.returnAddress();
+				let sender = cryptomod.returnAddress();
 				let hash = await app.wallet.sendPayment(
 					[sender],
 					[recipient],
