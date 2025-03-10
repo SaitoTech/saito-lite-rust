@@ -2930,8 +2930,6 @@ class RedSquare extends ModTemplate {
       is_anonymous_user = false;
     }
 
-    //console.log(tweet.text, tweet.num_replies, tweet.num_likes, is_anonymous_user, mod_score);
-
     if (tweet.num_replies > 0 && mod_score != -1 && is_anonymous_user == false) {
       return 1
     }
