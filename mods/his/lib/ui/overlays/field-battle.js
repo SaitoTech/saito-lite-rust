@@ -244,6 +244,10 @@ try {
 			res.defender_modified_rolls = res.defender_results;
 		}
 
+		let space = this.mod.game.spaces[res.spacekey];
+		let is_besieged = false;
+		if (space.besieged != 0) { is_besieged = true; }
+
 		if (res.attacker_modified_rolls) {
 			for (let i = 0; i < res.attacker_modified_rolls.length; i++) {
 
@@ -257,7 +261,7 @@ try {
 					unit_type = res.attacker_units[i];
 					faction_name = res.attacker_units_faction[i];
 					previously_besieged_unit = res.attacker_units_relief_force[i];
-					if (!previously_besieged_unit) {
+					if (!previously_besieged_unit && is_besieged == true) {
 						unit_status = " (besieged)";
 					}
 				} else {

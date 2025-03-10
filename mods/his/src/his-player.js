@@ -1248,6 +1248,9 @@ if (this.game.state.events.society_of_jesus == 1) {
 
     this.updateStatusAndListCards(msg, cards);
     this.attachCardboxEvents(function(card) {
+      if (card == "pass") {
+	this.cardbox.hide();
+      }
       mycallback(card, faction);
     });
 
@@ -2034,6 +2037,7 @@ if (relief_siege == 1) {
     this.game.state.active_card = card;
 
     if (card === "pass") {
+      this.cardbox.hide();
       this.updateStatus("Passing this Round...");
       this.addMove("pass\t"+faction+"\t"+cards_in_hand);
       this.endTurn();

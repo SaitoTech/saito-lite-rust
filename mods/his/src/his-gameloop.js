@@ -3194,7 +3194,8 @@ console.log("----------------------------");
 	  // if this is a defensive interception, the attacker will be
 	  // the active player.
 	  //
-	  if (this.returnControllingPower(attacker) != this.returnControllingPower(this.game.state.active_faction)) {
+	  if (this.returnControllingPower(attacker) != this.returnControllingPower(this.game.state.active_faction) && this.returnPlayerControllingFaction(attacker) != this.returnPlayerControllingFaction(this.game.state.active_faction)) {
+console.log("we move into here...");
 	    defender = attacker;
 	    attacker = this.game.state.active_faction;
 	    attacker_comes_from_this_spacekey = this.game.state.attacker_comes_from_this_spacekey;
@@ -3211,16 +3212,32 @@ console.log("----------------------------");
 	  //
 	  let fluis = 0;
 	  if (defender != "") {
+console.log("defender is : " + defender);
 	    if (defender !== attacker && !this.areAllies(this.game.state.active_faction, defender, 1)) {
-	      fluis += this.returnFactionLandUnitsInSpace(defender, spacekey, 1);
+	      for (let f in this.game.spaces[spacekey].units) {
+		if (this.returnControllingPower(f) == this.returnControllingPower(defender) || this.returnPlayerControllingFaction(f) == this.returnPlayerControllingFaction(defender)) {
+	          fluis += this.returnFactionLandUnitsInSpace(defender, spacekey, 1);
+	        }
+	      }
             }
 	  } else {
 	    for (let f in this.game.spaces[spacekey].units) {
-	      if (f !== attacker && !this.areAllies(this.game.state.active_faction, f, 1)) {
+console.log("examining f: " + f);
+console.log("active faction: " + this.game.state.active_faction);
+
+	      if (f !== attacker && !this.areAllies(attacker, f, 1)) {
+console.log(f + " is not attacker and not allied...");
 	        fluis += this.returnFactionLandUnitsInSpace(f, spacekey, 1);
+console.log("fluis updated to: " + fluis);
 	      }
 	    }
 	  }
+
+console.log("!");
+console.log("!");
+console.log("!");
+console.log("FORTIFICATION CHECK: ");
+console.log("defender fluis: " + fluis);
 
 	  if (fluis == 0) { return 1; }
 
@@ -3231,6 +3248,7 @@ console.log("----------------------------");
 	  let processed_factions = [];
 	  for (let f in this.game.spaces[spacekey].units) {
 
+console.log("defender fluis: " + fluis);
 	    //
 	    // if from interception
 	    //
@@ -3243,6 +3261,8 @@ console.log("----------------------------");
 	    if (processed_factions.includes(f)) { continue; } else { processed_factions.push(f); }
 
 	    if (f !== attacker && (this.areAllies(f, this.returnFactionControllingSpace(spacekey)) || this.isSpaceControlled(spacekey, f)) && !this.areAllies(this.game.state.active_faction, f, 1)) {
+
+console.log("first analysis...");
 
 	      let fluis = this.returnFactionLandUnitsInSpace(f, spacekey, 1); // include minor allies
 
@@ -3288,6 +3308,7 @@ console.log("----------------------------");
 		    }
 
 	          } else {
+console.log("second analysis...");
 
 		    //
 		    // major or independent power - some player decides
@@ -3299,6 +3320,7 @@ console.log("----------------------------");
 
 
 		    } else {
+console.log("third analysis...");
 
 	              //
 		      // independent key
@@ -3328,6 +3350,7 @@ console.log("----------------------------");
 	      //
 	      // no land units (skip)
 	      //
+console.log("fourth analysis...");
 
 	    }
 
@@ -5627,6 +5650,7 @@ console.log("menu option!");
 
 	if (mv[0] === "naval_battle") {
 
+
 	  //
 	  // people are still moving stuff in
 	  //
@@ -5663,6 +5687,7 @@ console.log("menu option!");
           let calculate_rolls = function(faction) {
 	    let rolls = 0;
 	    let units = [];
+	    let owners = [];
             for (let i = 0; i < space.units[faction].length; i++) {
 	      if (space.units[faction][i].personage == false) {
 		if (space.units[faction][i].land_or_sea === "sea" || space.units[faction][i].land_or_sea === "both") {
@@ -5670,11 +5695,16 @@ console.log("menu option!");
 		  if (space.units[faction][i].type === "squadron") {
 	            rolls++;
 		  }
+		  if (space.units[faction][i].owner != faction) {
+		    owners.push(space.units[faction][i].owner);
+		  } else {
+		    owners.push(faction);
+		  }
 	          units.push(space.units[faction][i].key);
 	        }
 	      }
 	    }
-	    return { rolls : rolls , units : units };
+	    return { rolls : rolls , units : units , owners : owners};
           }
 	  //
 	  // calculate highest battle ranking
@@ -5829,6 +5859,8 @@ try {
 	  let defender_units = [];
 	  let attacker_units_faction = [];
 	  let defender_units_faction = [];
+	  let attacker_units_owners = [];
+	  let defender_units_owners = [];
 	  if (is_battle_in_port) { defender_rolls++; defender_units.push('port defense'); defender_units_faction.push(defender_faction); }
 	  let attacker_highest_battle_rating = 0;
 	  let defender_highest_battle_rating = 0;
@@ -5837,12 +5869,13 @@ try {
 
 	  for (let f in faction_map) {
 	    if (faction_map[f] === attacker_faction) {
-
 	      let x = calculate_rolls(f);
-
 	      attacker_rolls += x.rolls;
+	      attacker_units_owners.push(...x.owners);
 	      attacker_units.push(...x.units);
-	      for (let i = 0; i < x.rolls; i++) { attacker_units_faction.push(f); }
+	      for (let i = 0; i < x.rolls; i++) { 
+		attacker_units_faction.push(f);
+	      }
 	      if (calculate_highest_battle_rating(f) > attacker_highest_battle_rating) {
 		attacker_highest_battle_rating = calculate_highest_battle_rating(f);
 	      }
@@ -5858,6 +5891,7 @@ try {
 	      let x = calculate_rolls(f);
 	      defender_rolls += x.rolls;
 	      defender_units.push(...x.units);
+	      defender_units_owners.push(...x.owners);
 	      for (let i = 0; i < x.rolls; i++) { defender_units_faction.push(f); }
 
 	      if (calculate_highest_battle_rating(f) > defender_highest_battle_rating) {
@@ -5951,6 +5985,8 @@ try {
 	  his_self.game.state.naval_battle.defender_units = defender_units;
 	  his_self.game.state.naval_battle.attacker_units_faction = attacker_units_faction;
 	  his_self.game.state.naval_battle.defender_units_faction = defender_units_faction;
+	  his_self.game.state.naval_battle.attacker_units_owners = attacker_units_owners;
+	  his_self.game.state.naval_battle.defender_units_owners = defender_units_owners;
 	  his_self.game.state.naval_battle.attacker_rolls = attacker_rolls;
 	  his_self.game.state.naval_battle.defender_rolls = defender_rolls;
 	  his_self.game.state.naval_battle.attacker_modified_rolls = attacker_modified_rolls;
@@ -11776,6 +11812,8 @@ console.log("vinformant: " + this.game.state.events.intervention_venetian_inform
             this.updateStatusWithOptions(`${his_self.returnFactionName(which_faction)}: do you wish to play ${his_self.popup("109")}`, html);
             this.attachCardboxEvents(async (user_choice) => {
 
+	      this.updateStatus("selected...");
+
 	      if (user_choice == "skip") {
 		his_self.endTurn();
 	      } else {
@@ -14931,7 +14969,6 @@ try {
 
 	  let is_attacker = true;
 	  if (his_self.areAllies(faction, his_self.game.state.naval_battle.defender_faction)) { is_attacker = false; }
-
 
           //
           // add five bonus rolls

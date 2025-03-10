@@ -861,6 +861,9 @@ console.log("\n\n\n\n");
 
 	  this.addRegular("hapsburg", "graz", 4);
 
+	  //this.game.spaces["salonika"].units["ottoman"][1].owner = "france";
+	  //this.setAllies("france", "ottoman");
+
 	  this.removeCardFromGame("009");
 	  this.removeCardFromGame("008");
       }

@@ -346,6 +346,8 @@ try {
 			let roll = res.attacker_modified_rolls[modified_rolls_idx];
 			let unit_type = res.attacker_units[i];
 			let faction_name = res.attacker_units_faction[i];
+			let faction_owner = faction_name;
+			if (res.attacker_units_owners.length > i) { faction_owner = res.attacker_units_owners[i]; }
 			let how_many_hits = 1;
 			if (unit_type === 'squadron') {
 				how_many_hits = 2;
@@ -391,6 +393,8 @@ try {
 					roll = '?';
 					rrclass = '';
 				}
+
+				if (faction_owner != faction_name) { faction_name = faction_name + " / " + faction_owner; }
 
 				let html = `
               <div class="naval-battle-row ${assignable}" data-unit-type="${unit_type}" data-faction="${faction_name}">
@@ -443,6 +447,8 @@ try {
 			let roll = res.defender_modified_rolls[modified_rolls_idx];
 			let unit_type = res.defender_units[i];
 			let faction_name = res.defender_units_faction[i];
+			let faction_owner = faction_name;
+			if (res.defender_units_owners.length > i) { faction_owner = res.defender_units_owners[i]; }
 			let how_many_hits = 1;
 			if (unit_type === 'squadron') {
 				how_many_hits = 2;
@@ -488,6 +494,8 @@ try {
 					roll = '?';
 					rrclass = '';
 				}
+
+				if (faction_owner != faction_name) { faction_name = faction_name + " / " + faction_owner; }
 
 				let html = `
               <div class="naval-battle-row ${assignable}" data-unit-type="${unit_type}" data-faction="${faction_name}">

@@ -11778,6 +11778,7 @@ if (space.key == "milan") {
 
 
 	      if (attacker != "") {
+                his_self.addMove("remove_siege\t"+spacekey);
                 his_self.addMove("treachery\t"+attacker+"\t"+spacekey);
 	        his_self.addMove("assault\t"+attacker+"\t"+spacekey);
                 his_self.endTurn();
