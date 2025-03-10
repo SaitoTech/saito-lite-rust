@@ -66,7 +66,7 @@ NOTE: This event fires whenever a peer has completed its handshake and has verif
 #### UPDATE BALANCE
 
 ```javascript
-app.connection.on('header-update-balance', () => {});
+app.connection.on('header-update-crypto', () => {});
 ```
 
 wallet - reference to the Saito wallet object
@@ -76,7 +76,7 @@ NOTE: This event fires whenever a wallet receives or spends SAITO over the block
 #### UPDATE IDENTIFIER
 
 ```javascript
-app.connection.on('update_identifier', (key) => {});
+app.connection.on('registry-update-identifier', (key) => {});
 ```
 
 key - reference to the updated Saito key object

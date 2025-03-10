@@ -48,8 +48,7 @@ class Crypto extends ModTemplate {
 
 			await this.app.wallet.setPreferredCrypto(sobj.ticker);
 
-			let cryptomod = this.app.wallet.returnCryptoModuleByTicker(sobj.ticker);
-			let current_balance = await cryptomod.returnBalance();
+			let current_balance = Number(await this.app.wallet.returnPreferredCryptoBalance());
 
 			let needed_balance = (typeof sobj.stake == "object") ? parseFloat(sobj.stake.min) : parseFloat(sobj.stake);
 

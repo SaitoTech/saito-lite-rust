@@ -52,8 +52,8 @@ class QRScanner extends ModTemplate {
 		//
 		// and scan when asked
 		//
-		this.app.connection.on('scanner-start-scanner', () => {
-			this.startScanner();
+		this.app.connection.on('scanner-start-scanner', (callback = null) => {
+			this.startScanner(callback);
 		});
 	}
 
@@ -73,20 +73,6 @@ class QRScanner extends ModTemplate {
 					icon: 'fas fa-expand',
 					rank: 110,
 					callback: function (app, id) {
-						app.connection.emit('scanner-start-scanner', {});
-					}
-				}
-			];
-		}
-
-		if (type === 'withdraw') {
-			return [
-				{
-					text: 'Scan',
-					icon: 'fas fa-expand',
-					rank: 110,
-					callback: async function (app, id, callback) {
-						qr_self.scanner_callback = callback;
 						app.connection.emit('scanner-start-scanner', {});
 					}
 				}
