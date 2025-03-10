@@ -127,7 +127,7 @@ export default class Wallet extends SaitoWallet {
 
       returnWithdrawalFeeForAddress(address = '', mycallback = null) {
         if (mycallback) {
-          mycallback(0);
+          mycallback(this.app.wallet.convertNolanToSaito(this.app.wallet.default_fee));
         }
       }
 
@@ -357,6 +357,10 @@ export default class Wallet extends SaitoWallet {
         }
       }
 
+      // We have loaded or upgraded the wallet and know our preferred crypto
+      // we call this here to activate it
+      await this.setPreferredCrypto(this.preferred_crypto);
+
       //
       // filter and resend pending txs
       //
@@ -516,6 +520,7 @@ export default class Wallet extends SaitoWallet {
    * @return 1 if successful, 0 if not. Catches the Module not found error and displays it
    */
   async setPreferredCrypto(ticker) {
+
     try {
       let c_mod = this.returnCryptoModuleByTicker(ticker);
       this.preferred_crypto = ticker.toUpperCase();
