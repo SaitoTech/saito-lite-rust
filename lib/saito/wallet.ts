@@ -111,6 +111,10 @@ export default class Wallet extends SaitoWallet {
         this.options.isActivated = true;
       }
 
+      returnLogo(){
+        return '/saito/img/touch/pwa-192x192.png';
+      }
+
       // Native $SAITO doesn't need to be installed/activated to become available
       isActivated() {
         return true;
@@ -356,10 +360,6 @@ export default class Wallet extends SaitoWallet {
           await this.addSlips(slips);
         }
       }
-
-      // We have loaded or upgraded the wallet and know our preferred crypto
-      // we call this here to activate it
-      await this.setPreferredCrypto(this.preferred_crypto);
 
       //
       // filter and resend pending txs

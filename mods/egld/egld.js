@@ -368,6 +368,7 @@ class EGLDModule extends CryptoModule {
 
   async returnWithdrawalFeeForAddress(address, callback) {
     try {
+
       let fee = BigInt(this.networkConfig.MinGasLimit * this.networkConfig.MinGasPrice);
       console.log('egld fee;', fee);
       return callback(this.convertAtomicToEgld(fee));
@@ -433,14 +434,14 @@ class EGLDModule extends CryptoModule {
 
             await this_self.initiateNetwork();
           } else {
-            //console.error("Unable to load config from env");
+            console.error("Unable to load config from env");
           }
         });
       } else {
         await this_self.initiateNetwork();
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
@@ -458,7 +459,7 @@ class EGLDModule extends CryptoModule {
         this.networkConfig = await this.apiNetworkProvider.getNetworkConfig();
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
