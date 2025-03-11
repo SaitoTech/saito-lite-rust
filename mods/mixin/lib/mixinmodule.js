@@ -484,23 +484,20 @@ class MixinModule extends CryptoModule {
 				return;
 			}
 
-			let asset_id = this.getAssetIdByTicker(ticker);
-			console.log('asset_id: ///////////////////////', asset_id);
-		
 			// if it doesnt exist fetch it from node db
 			await this.mixin.sendFetchUserByPublicKeyTransaction(
 				{
 					publicKey: publicKey,
-					asset_id: asset_id
+					asset_id: this.asset_id
 				},
 				function (res) {
 					console.log('miximodule res: ', res);
 					if (res.length > 0) {
 						for (let i = 0; i < res.length; i++) {
-							console.log(res[i].asset_id, ' - ', asset_id, ' - ', res[i].asset_id == asset_id);
-							if (res[i].asset_id == asset_id) {
+							console.log(res[i].asset_id, ' - ', this_self.asset_id, ' - ', res[i].asset_id == this_self.asset_id);
+							if (res[i].asset_id == this_self.asset_id) {
 								// save address to keychain if publickey exists in keychain
-								this_self.app.keychain.addCryptoAddress(publicKey, ticker, res[i].address);
+								this_self.app.keychain.addCryptoAddress(publicKey, this_self.ticker, res[i].address);
 								return res[i].address;
 							}
 						}
@@ -530,27 +527,6 @@ class MixinModule extends CryptoModule {
 			}
 		);
 		return address;
-	}
-
-	getAssetIdByTicker(ticker) {
-		let available_cryptos = this.app.wallet.returnInstalledCryptos();
-		console.log(available_cryptos);
-		for (let i = 0; i < available_cryptos.length; i++) {
-			console.log(
-				available_cryptos[i].ticker,
-				' - ',
-				ticker,
-				' - ',
-				available_cryptos[i].ticker == ticker
-			);
-			if (available_cryptos[i].ticker == ticker) {
-				if (typeof available_cryptos[i].asset_id != 'undefined') {
-					return available_cryptos[i].asset_id;
-				}
-			}
-		}
-
-		return null;
 	}
 
 	validateAddress(address) {
