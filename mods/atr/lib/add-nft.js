@@ -2,6 +2,7 @@ const AddNftTemplate = require('./add-nft.template');
 const SaitoOverlay = require('./../../../lib/saito/ui/saito-overlay/saito-overlay');
 
 class AddNft {
+
     constructor(app, mod, container = '') {
         this.app = app;
         this.mod = mod;
@@ -13,6 +14,8 @@ class AddNft {
 	this.nft.change  = 0;
 	this.nft.slip    = "";
 	this.nft.id      = "";
+
+	this.utxo = [];
 
     }
 
@@ -50,37 +53,52 @@ class AddNft {
 	}
         document.querySelector('#nfts-deposit').onchange = async (e) => {
 	     nft_self.nft.deposit = e.target.value;      
-alert(JSON.stringify(nft_self));	     
 	}
         document.querySelector('#nfts-change').onchange = async (e) => {
 	     nft_self.nft.change = e.target.value;      
-alert(JSON.stringify(nft_self));	     
 	}
 
         document.querySelector('#create_nft').onclick = async (e) => {
             console.log('create clicked: ');
-alert(JSON.stringify(nft_self));	     
         };
+
+        document.querySelector('.utxo-selection-button').onclick = async (e) => {
+alert("VAL: " + JSON.stringify(e.target.value));
+
+            let utxo_item = this.utxo[parseInt(e.target.value)-1];
+            let block_id = utxo[1];
+            let tx_ordinal = utxo[2];
+            let slip_index = utxo[3];
+            let amount = BigInt(utxo[4]);
+
+	    this.nft.bid = block_id;
+	    this.nft.tid = tx_ordinal;
+	    this.nft.sid = slip_index;
+	    this.nft.amt = amount;
+
+
+        };
+
+	
 
     }
 
 
-
     async renderUtxo() {
-        let utxo = await this.fetchUtxo();
-        console.log("renderUtxo: ", utxo);
-        let html = ``;
-        for (let i=0; i< utxo.length; i++) {
-            let utxo_item = utxo[i];
-            let block_id = utxo_item[1];
-            let tx_ordinal = utxo_item[2];
-            let slip_index = utxo_item[3];
-            let amount = BigInt(utxo_item[4]);
 
-            console.log("utxo amount: ", amount);
+        this.utxo = await this.fetchUtxo();
+
+        let html = ``;
+        for (let i = 0; i < this.utxo.length; i++) {
+
+            let utxo_item = this.utxo[i];
+            let block_id = utxo[1];
+            let tx_ordinal = utxo[2];
+            let slip_index = utxo[3];
+            let amount = BigInt(utxo[4]);
 
             html += `<div class="utxo-div">
-                        <input type="radio" value="" name="utxo-input"> 
+                        <input type="radio" value="${i+1}" class="utxo-selection-button" name="utxo-input"> 
                         <span>${await this.mod.getBalanceString(amount)} SAITO</span>
                         <span>-</span>
                         <span>${block_id} block_id</span>
