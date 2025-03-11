@@ -67,20 +67,19 @@ class AddNft {
              document.querySelector('#nfts-change').value = change.toString();
 
 	}
-        document.querySelector('#nfts-num').onchange = async (e) => {
-	     nft_self.nft.num = e.target.value;      
-	}
+
         document.querySelector('#nfts-deposit').onchange = async (e) => {
 	     nft_self.nft.deposit = e.target.value;      
 
-	     let change = BigInt(nft_self.nft.amt).minus(BigInt(nft_self.nft.deposit)).minus(BigInt(nft_self.nft.fee));
+	     let change = BigInt(nft_self.nft.amt) - BigInt(nft_self.nft.deposit) - BigInt(nft_self.nft.fee);
              document.querySelector('#nfts-change').value = change.toString();
 
 	}
+
         document.querySelector('#nfts-change').onchange = async (e) => {
 	     nft_self.nft.change = e.target.value;      
 
-	     let change = BigInt(nft_self.nft.amt).minus(BigInt(nft_self.nft.deposit)).minus(BigInt(nft_self.nft.fee));
+	     let change = BigInt(nft_self.nft.amt) - BigInt(nft_self.nft.deposit) - BigInt(nft_self.nft.fee);
              document.querySelector('#nfts-change').value = change.toString();
 	}
 
