@@ -120,10 +120,6 @@ export default class Wallet extends SaitoWallet {
         return true;
       }
 
-      returnAddress() {
-        return this.address;
-      }
-
       //returns a Promise!
       returnPrivateKey() {
         return this.app.wallet.getPrivateKey();
@@ -383,6 +379,9 @@ export default class Wallet extends SaitoWallet {
         this.setKeyList(this.app.keychain.returnWatchedPublicKeys());
       });
     }
+
+    await this.saitoCrypto.initialize(this.app);
+
   }
 
   constructor(wallet: any) {
@@ -548,7 +547,7 @@ export default class Wallet extends SaitoWallet {
 
   returnPreferredCryptoAddress() {
     let preferred_crypto = this.returnPreferredCrypto();
-    return preferred_crypto.returnCachedAddress();
+    return preferred_crypto.returnAddress();
   }
 
   returnCryptoAddressByTicker(ticker = 'SAITO') {
@@ -578,7 +577,7 @@ export default class Wallet extends SaitoWallet {
       let mods = this.returnActivatedCryptos();
       for (let i = 0; i < mods.length; i++) {
         ticker = mods[i].ticker;
-        let address = mods[i].returnAddress();
+        let address = mods[i].formatAddress();
         await mods[i].checkBalance();
         let balance = mods[i].returnBalance();
 
@@ -660,7 +659,7 @@ export default class Wallet extends SaitoWallet {
         //       - not our own publickey
         //
 
-        if (senders[i] === cryptomod.returnAddress()) {
+        if (senders[i] === cryptomod.formatAddress()) {
           // Need to save before we await, otherwise there is a race condition
           await this.savePreferredCryptoTransaction(unique_tx_hash);
           try {
@@ -686,7 +685,7 @@ export default class Wallet extends SaitoWallet {
         } else {
           console.warn('Cannot send payment from wrong crypto address');
           console.log(cryptomod.name);
-          console.log(senders[i], cryptomod.returnAddress());
+          console.log(senders[i], cryptomod.formatAddress());
         }
       }
     } else {

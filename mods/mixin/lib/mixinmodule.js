@@ -5,18 +5,9 @@
  Extends the generic web3 crypto module to add auto-support for cryptos that are
  supported by the Mixin module.
 
- returnAddress()
  returnPrivateKey()
  async sendPayment(amount="", recipient="", unique_hash="")
  async receivePayment(amount="", sender="", recipient="", timestamp=0, unique_hash="")
-
-
- TODO:
-
- we currently SEND the payments but do not record if the payment has been a success
- so there are failure modes if the effort to send has been unsuccessful. the same
- trace_id will be sent with each request so we should not have multiple payments
- through.
 
 
  Uses Mixin API:
@@ -180,20 +171,11 @@ class MixinModule extends CryptoModule {
 		}
 	}
 
-	/**
-	 * Abstract method which should get pubkey/address
-	 * @abstract
-	 * @return {String} Pubkey/address
-	 */
-	returnAddress() {
-		if (!this.address) {
-			return 'unknown address';
-		}
+	//
+	// Reference for how we used to package the mixin address bar...
+	//
+	formatAddress() {
 		return this.address + '|' + this.mixin.mixin.user_id + '|' + 'mixin';
-	}
-
-	formatAddress(address) {
-		return address; //+ "|" + this.mixin.mixin.user_id + "|" + "mixin";
 	}
 
 	/**
@@ -225,17 +207,8 @@ class MixinModule extends CryptoModule {
 		sender = split[0];
 
 		//
-		// mixin transfers will be registered with a specific TRACE_ID
-		//
-		// so we can use this TRACE_ID to monitor transactions that have been
-		// made from other accounts.
-		//
-		let trace_id = getUuid(unique_hash);
-
-		//
 		// the mixin module might have a record of this already stored locally
 		//
-
 		console.log('////////////////////////////////////////////////////');
 		console.log('inside receivePayment ///');
 		console.log('amount, sender, timestamp');
@@ -485,7 +458,7 @@ class MixinModule extends CryptoModule {
 			}
 
 			// if it doesnt exist fetch it from node db
-			await this.mixin.sendFetchUserByPublicKeyTransaction(
+			return this.mixin.sendFetchUserByPublicKeyTransaction(
 				{
 					publicKey: publicKey,
 					asset_id: this.asset_id
@@ -504,8 +477,6 @@ class MixinModule extends CryptoModule {
 					}
 				}
 			);
-
-			return null;			
 		} catch (err) {
 			console.error('Error getMixinAddress: ', err);
 			return null;
