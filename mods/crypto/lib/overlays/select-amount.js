@@ -20,6 +20,11 @@ class CryptoSelectAmount {
 		if (mycallback != null) {
 			this.callback = mycallback;
 		}
+
+		if (!this?.ticker){
+			this.ticker = this.app.wallet.returnPreferredCryptoTicker();
+		}
+
 		this.overlay.show(CryptoSelectAmountTemplate(this.app, this.mod, this));
 		this.attachEvents();
 	}

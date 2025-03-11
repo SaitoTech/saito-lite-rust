@@ -1,5 +1,4 @@
 .deal .card, .cardfan .card, .hand .card {
-	position: relative;
 	width: min(15vh,17vw);
 	/*width: 15vw;
 	height: 21vw;*/
@@ -8,15 +7,17 @@
 	max-height: 230px;
 }
 
+.deal .card {
+    position: relative;    
+}
 
 .cardfan .card {
-  position: absolute;
   min-width: 100px;
   min-height: 153px;
 }
 
 .cardfan {
-  top: max(-7rem, -17vw);
+  top: max(-7.5rem, -14vw);
   left: 5px;
   height: calc(1.53 * min(15vh, 17vw));
   width: min(15vh,17vw);
@@ -71,6 +72,9 @@
 
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
+    .cardfan {
+        top: -60px;
+    }
 }
 
 

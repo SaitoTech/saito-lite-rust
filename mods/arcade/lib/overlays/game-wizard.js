@@ -79,7 +79,12 @@ class GameWizard {
 			}
 		} else {
 			console.log("Advanced Options!: ", advancedOptions);
+			let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button saito-button-primary">Accept</div>`;
+			if (!advancedOptions.includes(accept_button)) {
+				advancedOptions += accept_button;
+			}
 			advancedOptions = `<div id="advanced-options-overlay-container">${advancedOptions}</div>`;
+
 			this.meta_overlay = new SaitoOverlay(
 				this.app,
 				this.mod,
@@ -90,13 +95,14 @@ class GameWizard {
 			this.meta_overlay.hide();
 		}
 
+		//Hook for Crypto module (if installed) to add button to attach functionality
 		this.app.modules.renderInto("#arcade-advance-opt");
 
 		this.attachEvents();
 
 		if (this.obj?.skip){
 			if (this.game_mod.maxPlayers === 1){
-				if(!this.game_mod.returnSingularGameOption() && !this.game_mod.returnAdvancedOptions()){
+				if(!this.game_mod.returnSingularGameOption() && !advancedOptions){
 					let btn = document.querySelector(".game-invite-btn");
 					if (btn){
 						btn.click();
@@ -126,15 +132,7 @@ class GameWizard {
 			document.querySelector('.arcade-advance-opt-text');
 		if (advancedOptionsToggle) {
 			advancedOptionsToggle.onclick = (e) => {
-				//Requery advancedOptions on the click so it can dynamically update based on # of players
-				let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button saito-button-primary">Accept</div>`;
-				let advancedOptionsHTML = this.game_mod.returnAdvancedOptions();
-				if (!advancedOptionsHTML.includes(accept_button)) {
-					advancedOptionsHTML += accept_button;
-				}
-				advancedOptionsHTML = ` <div id="advanced-options-overlay-container">${advancedOptionsHTML}</div>`;
-
-				this.meta_overlay.show(advancedOptionsHTML);
+				this.meta_overlay.show();
 				this.game_mod.attachAdvancedOptionsEventListeners();
 				this.meta_overlay.blockClose();
 

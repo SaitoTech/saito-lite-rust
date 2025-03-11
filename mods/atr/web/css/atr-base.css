@@ -212,6 +212,15 @@ body {
   gap: 1.5rem;
 }
 
+.data-table tr.total_supply_value {
+  background-color: #FDEED5;
+}
+.data-table tr.payout_value {
+  background-color: #e0ebf0b0;
+}
+.data-table tr.total_supply.total_supply_value {
+  background-color: #d8c3a2;
+}
 .inputs div {
   flex: 1;
   display: flex;

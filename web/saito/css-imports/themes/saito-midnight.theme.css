@@ -26,7 +26,7 @@ html[data-theme="midnight"] {
   /* almost black, transparent */
   /*SHADOW SELECTION*/
   --shadow-primary-button: var(--shadow-shape-glow-big);
-  --shadow-chat-popup: var(--shadow-shape-glow-big);
+  --shadow-draggable-popup: var(--shadow-shape-glow);
   --box-shadow-sidebar-elements: var(--shadow-shape-flat);
   --shadow-chat-message-bottom: 0px 0px 0px var(--color-shadow-bubble);
   /* flattened and centered the shadow */
@@ -77,7 +77,6 @@ html[data-theme="midnight"] {
   --font-color-module-menu-header: var(--font-color-primary);
   --font-color-overlay-form-header: var(--font-color-primary);
   --font-color-overlay-form-text: var(--font-color-primary);
-  --font-color-overlay-subform-recover: var(--font-color-primary);
   /* BORDER RADIUS */
   --border-radius-text-input: var(--border-radius-soft);
   /*chat module*/
@@ -112,9 +111,11 @@ html[data-theme="midnight"] {
   --border-radius-offset: 0.3rem;
   --border-radius-leaderboard-ranking: var(--border-radius-round);
   /* BORDER THICKNESS */
+  --border-padding-qr-code: 0;
   --border-thickness-button-primary: var(--border-thickness-thin);
   --border-thickness-button-hover-primary: var(--border-thickness-thin);
   --border-thickness-identicon: var(--border-thickness-none);
+  --border-thickness-qr-code: var(--border-thickness-fat); /* for contrast to be able to scan */
   /* BORDER COLORS */
   --border-color-general-dividers-dark: var(--color-primary);
   --border-color-button-primary: var(--color-complement);

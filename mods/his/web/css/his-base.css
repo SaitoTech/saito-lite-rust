@@ -29,6 +29,10 @@
     width: 475px;
     height: 750px;
 }
+.option.persia { top: unset; left: unset; }
+.option.ireland { top: unset; left: unset; }
+.option.egypt { top: unset; left: unset; }
+
 .ireland , .revolt_in_ireland {
     top: 800px;
     left: 4125px;
@@ -221,59 +225,59 @@ img {
 	height: 100px;
 	position: absolute;
 }
-#irish {
+.navalspace.irish {
 	top: 900px;
 	left: 900px;
 }
-#channel {
+.navalspace.channel {
 	top: 1025px;
 	left: 1420px;
 }
-#north {
+.navalspace.north {
 	top: 360px;
 	left: 2150px;
 }
-#baltic {
+.navalspace.baltic {
 	top: 40px;
 	left: 3140px;
 }
-#biscay {
+.navalspace.biscay {
 	top: 1500px;
 	left: 1400px;
 }
-#atlantic {
+.navalspace.atlantic {
 	top: 2880px;
 	left: 1100px;
 }
-#gulflyon {
+.navalspace.gulflyon {
 	top: 2150px;
 	left: 2600px;
 }
-#barbary {
+.navalspace.barbary {
 	top: 2550px;
 	left: 2450px;
 }
-#tyrrhenian {
+.navalspace.tyrrhenian {
 	top: 2100px;
 	left: 3050px;
 }
-#africa {
+.navalspace.africa {
 	top: 2775px;
 	left: 4200px;
 }
-#adriatic {
+.navalspace.adriatic {
 	top: 1800px;
 	left: 3450px;
 }
-#ionian {
+.navalspace.ionian {
 	top: 2385px;
 	left: 3750px;
 }
-#aegean {
+.navalspace.aegean {
 	top: 2500px;
 	left: 4450px;
 }
-#black {
+.navalspace.black {
 	top: 1465px;
 	left: 4750px;
 }

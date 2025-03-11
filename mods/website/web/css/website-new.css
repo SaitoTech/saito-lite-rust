@@ -27,7 +27,8 @@ font imports
 
 :root {
     --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%), linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000), linear-gradient(180deg, #e9ce93, #f71f3d);
-    --vh: 1vh;
+    --vh: calc(var(--vh) * 1);
+    --saito-red: #f71f3d;
 }
 
 
@@ -54,7 +55,7 @@ html {
 body {
     line-height: 1.6;
     font-family: visuelt-light, sans-serif, Arial;
-    min-height: 100vh;
+    min-height: calc(var(--vh) * 100);
     min-height: 100dvh;
     min-height: -webkit-fill-available;
 }
@@ -176,6 +177,7 @@ h2+p {
     position: relative;
     width: 105.3px;
     height: 120.6px;
+    margin-top: 4rem;
 }
 
 .saito-cube {
@@ -215,14 +217,199 @@ h2+p {
 }
 
 .landing-content {
-    position: relative;
-    height: 100vh;
-    width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    gap: 2rem;
+    width: 100%;
+    position: relative;
     overflow: visible;
+    height: 100%;
+}
+
+.feature-cards {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    animation: fadeInCards 1s ease-out 1.75s forwards;
+}
+
+@keyframes fadeInCards {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -60%) scale(1.25);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.25);
+    }
+}
+
+    .card-container {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem;
+        width: 100%;
+    }
+
+.card-link {
+    text-decoration: none;
+    color: inherit;
+    flex: 1;
+    min-width: 250px;
+    max-width: 250px;
+    margin: 0 0.5rem;
+}
+
+.feature-card {
+    position: relative;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    border-radius: 7px;
+    transition: transform 0.2s ease;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--saito-red);
+    z-index: -1;
+    border-radius: 7px;
+  }
+
+.feature-card h1 {
+    margin: 0;
+    font-size: 2rem;
+    color: white;
+    width: 100%;
+    text-align: center;
+}
+
+.feature-icon {
+    width: 64px;
+    height: 64px;
+    margin: auto 0;
+}
+
+.feature-card p {
+    margin: 0;
+    font-size: 1.2rem;
+    line-height: 1.5;
+    color: var(--text-color);
+    width: 100%;
+    text-align: left;
+    min-height: 4.5em;
+}
+
+.card-link:hover .feature-card {
+    transform: translateY(-5px);
+}
+
+/* Mobile styles */
+
+.landing-content {
+    flex-direction: column;
+    height: calc(var(--vh) * 100);
+    position: relative;
+}
+
+.cube-container {
+    display: none;
+    /* Hide main cube */
+}
+
+/* Add background cube for mobile */
+.landing-content::before {
+    content: '';
+    position: fixed;
+    top: calc(var(--vh) * -3);
+    right: calc(var(--vh) * -3);
+    width: calc(var(--vh) * 25);
+    height: calc(var(--vh) * 25);
+    background: url('/saito/img/saito-cube.svg') no-repeat center/contain;
+    opacity: 0;
+    z-index: 0;
+    animation: fadeInBackgroundCube 2s ease-out 0.5s forwards;
+}
+
+@keyframes fadeInBackgroundCube {
+    0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(-100%);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@media (orientation: portrait) {
+    .saito-text-container {
+        position: absolute;
+        animation: slideTextMobile 4s ease-out 1.5s forwards;
+        margin: 0;
+        left: 0;
+        bottom: 133vh;
+    }
+
+    @keyframes slideTextMobile {
+        0% {
+            opacity: 0;
+            bottom: calc(var(--vh) * 110);
+        }
+
+        100% {
+            opacity: 1;
+            bottom: 0;
+        }
+    }
+
+    object.saito-text {
+        transform: none;
+        /* Reset portrait transform */
+        width: 100%;
+    }
+}
+
+@media (max-width: 1400px) {
+    .feature-cards {
+        top: calc(var(--vh) * 42);
+        width: 100%;
+        order: -1;
+        position: absolute;
+        z-index: 1;
+        opacity: 0;
+        animation: fadeInCards 1s ease-out 1.25s forwards;
+    }
+
+    .card-container {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        padding: 1rem;
+        scrollbar-width: none;
+        gap: 1rem;
+    }
+
+    .feature-card {
+        scroll-snap-align: center;
+        margin: 0;
+    }
+
+    /* Add JavaScript to scroll to second card on load */
 }
 
 .saito-text {
@@ -244,51 +431,33 @@ object.saito-text {
     object.saito-text {
         transform: rotate(90deg) translateX(-97%);
         transform-origin: bottom left;
-        width: 200%;
+        width: calc(var(--vh) * 33);
     }
 }
 
 /* Portrait styles (default) */
-.saito-text-container {
-    position: absolute;
-    width: 33vh;
-    bottom: 110vh;
-    left: 0;
-    animation: slideTextPortrait 1s ease-out 1.5s forwards;
-    z-index: 999;
-    max-width: min(25vh, 50vw);
-}
 
-@keyframes slideTextPortrait {
-    0% {
-        bottom: 110vh;
-        opacity: 0;
-    }
-
-    100% {
-        bottom: 0;
-        opacity: 1;
-    }
-}
 
 
 
 /* Landscape styles */
+/* Landscape styles */
 @media (orientation: landscape) {
     .saito-text-container {
+        position: absolute;
         width: 70vw;
         max-width: min(70rem, 50vw);
         height: auto;
-        bottom: 110vh;
+        bottom: calc(var(--vh) * 110);
         left: 0;
         transform-origin: initial;
-        animation: slideTextLandscape 1s ease-out 1.5s forwards;
+        animation: slideTextLandscape 2s ease-out 1.5s forwards;
         transform: translateY(10%);
     }
 
     @keyframes slideTextLandscape {
         0% {
-            bottom: 110vh;
+            bottom: calc(var(--vh) * 110);
             opacity: 0;
         }
 
@@ -339,6 +508,7 @@ object.saito-text {
         opacity: 0;
         animation: fadeInMenu 0.5s ease-out 2.5s forwards;
         /* Start after text animation (1.5s + 1s) */
+        display: none;
     }
 
     .main-header.loaded {
@@ -514,6 +684,16 @@ object.saito-text {
     top: 1.5rem;
 }
 
+.hamburger {
+    cursor: pointer;
+    color: var(--menu-color, #fff);
+    transition: transform 0.3s ease;
+}
+
+.hamburger.active {
+    transform: rotate(180deg);
+}
+
 .hamburger span {
     position: absolute;
     width: 100%;
@@ -558,7 +738,7 @@ object.saito-text {
     background: #fff;
     padding: 4rem 2rem 2rem;
     min-width: 250px;
-    height: 100vh;
+    height: calc(var(--vh) * 100);
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
 }
 
@@ -1120,7 +1300,7 @@ object.saito-text {
 
 #multiwallet {
     background: var(--dreamscape);
-    min-height: 100vh;
+    min-height: calc(var(--vh) * 100);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1216,11 +1396,6 @@ object.saito-text {
     left: 25%;
 }
 
-/* Update nav pip styles to include new section */
-.nav a:nth-child(4) {
-    background-color: rgba(255, 255, 255, 0.3);
-}
-
 .nav a:nth-child(4).active {
     background-color: white;
 }
@@ -1263,5 +1438,62 @@ object.saito-text {
 
     .logo-circle:hover {
         transform: translateX(-50%) scale(1.1);
+    }
+}
+
+/* Hide menu in landing section */
+#landing .desktop-menu,
+#landing .mobile-menu {
+    display: none;
+}
+
+/* Desktop styles */
+@media (min-width: 768px) and (orientation: landscape) {
+    .landing-content::before {
+        content: '';
+        position: fixed;
+        top: calc(var(--vh) * -3);
+        right: calc(var(--vh) * -6);
+        width: calc(var(--vh) * 40);
+        height: calc(var(--vh) * 40);
+        background: url('/saito/img/saito-cube.svg') no-repeat center/contain;
+        opacity: 0;
+        z-index: 0;
+        animation: fadeInBackgroundCube 2s ease-out 0.5s forwards;
+    }
+}
+
+/* Keep existing mobile styles */
+@media (max-width: 768px) or (orientation: portrait) {
+    .landing-content::before {
+        content: '';
+        position: fixed;
+        top: calc(var(--vh) * -3);
+        right: calc(var(--vh) * -3);
+        width: calc(var(--vh) * 25);
+        height: calc(var(--vh) * 25);
+        background: url('/saito/img/saito-cube.svg') no-repeat center/contain;
+        opacity: 0;
+        z-index: 0;
+        animation: fadeInBackgroundCube 2s ease-out 0.5s forwards;
+    }
+}
+
+/* Reset scale and add max-width for mobile */
+@media (max-width: 768px) {
+    .feature-cards {
+        max-width: 800px;
+    }
+
+    @keyframes fadeInCards {
+        0% {
+            opacity: 0;
+            transform: translate(-50%, -60%) scale(1);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
     }
 }

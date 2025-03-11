@@ -21,7 +21,6 @@
 	gap: 1rem;
 	font-size: 2rem;
 	overflow: hidden auto;
-	posiiton: relative;
 	margin-bottom: 0rem;
 	position: relative;
 	padding: 0.2rem;
@@ -233,9 +232,6 @@
 	gap: unset;
 }
 
-.discard-cards-overlay .settlers-items-container .settlers-cards-container img {
-	height: 13rem;
-}
 
 .discard-cards-overlay .settlers-cards-container img.selected {
 	filter: grayscale(50%) brightness(0.7);
@@ -255,10 +251,10 @@
 
 .settlers-dev-card {
 	position: relative;
-	width: min(26rem, 35vw);
-	height: calc(min(26rem, 35vw) * 1.4);
+	width: 26rem;
 	z-index: 1;
 	cursor: pointer;
+	aspect-ratio: 404/566;
 }
 
 .settlers-dev-card:not(.settlers-card-disabled):hover {
@@ -267,24 +263,18 @@
 }
 
 .settlers-dev-card-title {
-	font-size: 18px;
+	font-size: 17px;
 	font-weight: bold;
-	width: 100%;
 	z-index: 2;
 	display: flex;
 	position: absolute;
 	height: 2rem;
 	pointer-events: none;
 	text-transform: uppercase;
-	bottom: min(3.95rem, 5.5vw);
+	bottom: 13%;
 	width: 100%;
 	align-items: center;
 	justify-content: center;
-}
-
-.cardover-cardover .settlers-dev-card-title{
-	bottom: 0;
-	height: 26%;
 }
 
 .settlers-dev-card-text {
@@ -297,11 +287,11 @@
 	justify-content: center;
 	align-items: center;
 	pointer-events: none;
-	bottom: min(2.6rem, 3.5vw);
+	bottom: 9%;
 }
 
 .settlers-dev-card img {
-	position: absolute;
+	position: relative;
 	top: 0rem;
 	left: 0rem;
 	z-index: 0;
@@ -399,7 +389,9 @@
 		gap: 0.2rem;
 	}
 
-	.settlers-items-container .settlers-cards-container img {
+	.settlers-items-container .settlers-cards-container img,
+	.discard-cards-overlay .settlers-items-container .settlers-cards-container img
+	 {
 		height: 8rem;
 	}
 
@@ -437,16 +429,4 @@
 		flex-wrap: wrap;
 	}
 
-	.settlers-dev-card {
-		width: 26rem;
-		height: calc(26rem * 1.4);
-	}
-
-	.settlers-dev-card .settlers-dev-card-title {
-		bottom: 4.25rem;
-	}
-
-	.settlers-dev-card .settlers-dev-card-text {
-		bottom: 2.6rem;
-	}
 }

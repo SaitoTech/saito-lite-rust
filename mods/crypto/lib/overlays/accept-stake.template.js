@@ -1,15 +1,22 @@
 module.exports = (app, mod, sobj) => {
+
+  let warning_msg = "(0 network fees)";
+  let fee = mod.includeFeeInMax(sobj.ticker);
+  if (fee){
+    warning_msg = `(${fee} ${sobj.ticker})`;
+  }
+
 	return `  
   <div class="game-crypto-transfer-manager-container" id="approve-crypto-request-container">
     
     <h2 class="auth_title">Enable In-Game Crypto</h2>
     <div class="stake-input-container">
       <div class="stake">${sobj.stake} ${sobj.ticker}</div>
-      <div class="crypto_msg">${mod.crypto_msg}</div>
+      <!--div class="crypto_msg">${sobj.game_mod.crypto_msg}</div!-->
     </div>
     <div class="crypto-stake-confirm-container">
       <input type="checkbox" checked name="crypto-stake-confirm-input" id="approve-crypto-stake-confirm-input">
-      <label for="approve-crypto-stake-confirm-input" class="commentary">authorize in-game crypto transfer</label>
+      <label for="approve-crypto-stake-confirm-input" class="commentary">authorize in-game crypto transfer ${warning_msg}</label>
     </div>
 
     <div class="crypto-stake-offer-btn-container">

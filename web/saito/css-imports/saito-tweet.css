@@ -153,6 +153,10 @@
   margin: 0 0 0 4.5rem;
 }
 
+.tweet-html-markers {
+  display: none;
+}
+
 .tweet-notice .saito-address {
   display: inline;
   margin-right: 0.3rem;

@@ -1,7 +1,6 @@
 module.exports = (poker, tracked_stats) => {
 
 	let html = `<div class="poker-stats-overlay">
-								<div class="h2">Game Statistics</div>
 								<div class="stats-table">
 								<div class="stats-table-header stats-table-row">
 									<div></div>

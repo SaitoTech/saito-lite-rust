@@ -1,8 +1,23 @@
 class PokerUI {
   returnPlayerRole(player) {
-    if (this.game.state.winners.includes(player)) {
-      return 'Winner!';
+    
+    if (this.game.state.winners.length > 0){
+      if (this.game.state.winners.includes(player)) {
+        return 'Winner!';
+      }else{
+        return `Lost ${this.formatWager(this.game.state.player_pot[player-1])}`;
+      }
     }
+
+    if (this.game.state.flipped){
+      return `${this.formatWager(this.game.state.player_pot[player-1])} in pot`;
+    }
+
+
+    if (player == this.game.state.button_player && player == this.game.state.small_blind_player) {
+      return 'dealer / small blind';
+    }
+
     if (player == this.game.state.button_player) {
       return 'dealer';
     }
@@ -31,10 +46,24 @@ class PokerUI {
     }
   }
 
+  refreshPlayerboxes(){
+      this.playerbox.removeBoxes();
+      this.playerbox.render();
+      this.displayPlayerNotice(this?.status || "", this.game.player);
+
+      $(".game-playerbox-seat-1").appendTo(".mystuff");
+      
+      if (this.game.player == 0){
+        this.observerControls.render();
+      }else{
+        this.observerControls.remove();  
+      }
+  }
+
   displayButton(){
     for (let i = 1; i <= this.game.players.length; i++) {
       if (i == this.game.state.button_player){
-        this.playerbox.updateGraphics(`<div class="dealer-button"></div>`, i); 
+        this.playerbox.updateGraphics(`<div class="dealer-button" title="dealer button">D</div>`, i); 
       }else{
         this.playerbox.updateGraphics('', i); 
       }
@@ -84,19 +113,119 @@ class PokerUI {
   }
 
   // Update the player's role and wager...
-  displayPlayerStack(player) {
+  displayPlayerStack(player, amount = -1) {
     if (!this.browser_active) {
       return;
     }
 
     let credit = this.convertChipsToCrypto(this.game.state.player_credit[player - 1]);
-    let chips = this.game.crypto || ('CHIP' + credit !== 1 ? 'S' : '');
 
-    this.playerbox.updateIcons(
-      `<div class="poker-stack-balance">${credit}</div><div class="poker-stack-units">${chips}</div>`,
-      player
-    );
+    if (amount !== -1){
+      credit = this.convertChipsToCrypto(amount);
+    }else{
+      amount = this.game.state.player_credit[player - 1];
+
+      //let html = `<div class="poker-player-stake">${this.game.state.player_pot[player - 1]}</div>`;
+      // If we show player-pot outside the player box
+      //this.playerbox.replaceGraphics(html, ".poker-player-stake", player); 
+    }
+
+    let chips = 'CHIP';
+    if (amount !== 1){
+      chips += "S";
+    } 
+
+    let stack_html = stack_html = `<div class="poker-stack-balance">${amount}</div><div class="poker-stack-units">${chips}</div>`;
+
+    if (this.game.crypto && this.game.crypto !== "CHIPS"){
+      // Could add a test for an option to should crypto by default (either globally or just a toggle here)
+      stack_html += `<div class="crypto-hover-balance">${credit} <span class="smaller-font">${this.game.crypto}</span></div>`;
+    }
+
+    this.playerbox.updateIcons(stack_html, player);
+
   }
+
+
+  //
+  // We will actually increment player stack / decrement the game pot in this function!!!
+  //
+  async animateWin(amount, winners){ 
+
+    this.animating = true;
+
+    let step_speed = Math.min(200, 1000/amount);
+
+    while (amount >= Object.keys(winners).length && this.animating) {
+  
+      for (let j in winners){
+        j = parseInt(j);
+        this.moveGameElement(this.createGameElement(`<div class="poker-chip"></div>`, ".pot"),
+          `.game-playerbox-${j + 1}`,
+          {
+            callback: () => {
+              this.pot.render(Math.max(0, --amount));
+              this.displayPlayerStack(j + 1, ++winners[j]);
+            },
+            run_all_callbacks: true
+          },
+          (item) => {
+            $(item).remove();
+          });
+        await this.timeout(step_speed);
+      }
+    }
+
+    if (amount > 0) {
+      // ***TO DO: examine possibility of fractional chips
+      // Randomly give the remaining chip to one player
+    }
+
+
+  }
+
+  async animateBet(better, amount, restartQueue = false){
+
+    if (restartQueue){
+      this.halted = 1;
+    }
+
+    let initial_pot = this.pot.render();
+    let initial_stack = this.game.state.player_credit[better-1];
+
+    let step_speed = Math.min(150, 550/amount);
+
+    for (let i = 1; i <= amount; i++){
+
+      this.moveGameElement(this.createGameElement(`<div class="poker-chip"></div>`, `.game-playerbox-${better}`),
+        ".pot",
+        {
+          callback: () => {
+            this.pot.render(++initial_pot);
+            this.displayPlayerStack(better, --initial_stack);
+            this.playerbox.replaceGraphics(`<div class="poker-player-stake">${this.game.state.player_pot[better - 1]+i}</div>`, ".poker-player-stake", better); 
+            this.pot.addPulse();
+          },
+          run_all_callbacks: true
+        },
+        (item) => {
+          if (!restartQueue){
+            $(item).remove(); 
+          }else{
+            $('.animated_elem').remove();
+            this.restartQueue();
+          }
+          
+        });
+      await this.timeout(step_speed);
+    }
+    await this.timeout(500);
+  }
+
+
+  /*
+  This is the core Poker function
+  */
 
   playerTurn() {
     if (this.browser_active == 0) {
@@ -122,6 +251,7 @@ class PokerUI {
       this.game.state.required_pot - this.game.state.player_pot[this.game.player - 1];
 
     if (match_required == 0 && this.game.state.all_in) {
+      poker_self.addMove(`allin`);
       poker_self.endTurn();
       return;
     }

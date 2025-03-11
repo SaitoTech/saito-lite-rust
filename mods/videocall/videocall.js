@@ -382,6 +382,7 @@ class Videocall extends ModTemplate {
 					icon: 'fa-solid fa-cog',
 					prepend: true,
 					callback: function (app) {
+						console.log("***** 1");
 						app.connection.emit('videocall-show-settings');
 					}
 				}
@@ -502,7 +503,9 @@ class Videocall extends ModTemplate {
 					}
 
 					if (txmsg.request === 'peer-left') {
-						this.disconnect(tx.from[0].publicKey);
+						if (!tx.isFrom(this.publicKey)){
+							this.disconnect(tx.from[0].publicKey);	
+						}
 					}
 
 					if (txmsg.request === 'peer-kicked') {
@@ -622,7 +625,14 @@ class Videocall extends ModTemplate {
 
 		let from = tx.from[0].publicKey;
 
+		//Update calendar event
 		this.addCallParticipant(txmsg.call_id, from);
+
+		//Check if we have a broken stun connection
+		if (!this.stun.hasConnection(from)) {
+			console.log("Videocall: reset stun peer connection for new join");
+			this.stun.removePeerConnection(from);
+		}
 
 		//We are getting a tx for the call we are in
 		if (this?.room_obj?.call_id === txmsg.call_id) {
@@ -651,8 +661,10 @@ class Videocall extends ModTemplate {
 		}
 
 		// Process if we saved event but are not in the call!
-
+		let event = this.app.keychain.returnKey(txmsg.call_id, true);
+		
 		if (event){
+			console.log("EVENT!!!", event);
 			// I am in a different call
 			if (this.room_obj?.call_id){
 				siteMessage(`${this.app.keychain.returnUsername(from)} joined ${event.identifier}`);

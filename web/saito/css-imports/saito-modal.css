@@ -25,6 +25,8 @@ This alows for a header with a header with title to be added without extra CSS
   padding: unset;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .saito-contact {
@@ -55,7 +57,7 @@ This alows for a header with a header with title to be added without extra CSS
   filter: brightness(0.7) grayscale(1);
 }
 
-.saito-modal .saito-modal-content {
+.saito-modal-title + .saito-modal-content {
   border-top: 1px solid var(--saito-border-color);
   padding: 0.5rem 0;
 }
@@ -137,8 +139,8 @@ This alows for a header with a header with title to be added without extra CSS
   color: var(--font-color-button-hover-modal-oldschool);
 }
 
-.saito-modal-menu-option>i {
-  float: left;
+.saito-modal-menu-option > i {
+  justify-self: center;
   margin-right: 2rem;
 }
 
@@ -386,7 +388,7 @@ This alows for a header with a header with title to be added without extra CSS
   .saito-modal {
     min-width: unset;
     max-width: unset;
-    padding: 0.5rem;
+    padding: 1rem;
     width: 90vw;
     grid-template-columns: 100%;
   }
@@ -409,11 +411,14 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 @media only screen and (max-width: 768px) {
+  .saito-modal-menu-option{
+    margin: 0 1rem;
+  }
   .saito-modal-menu-option>i {
-    font-size: 2rem;
+    font-size: 2.2rem;
   }
   .saito-modal-menu-option>div {
-    font-size: 1.5rem;
+    font-size: 2rem;
   }
 }
 
@@ -422,7 +427,8 @@ This alows for a header with a header with title to be added without extra CSS
     margin: 0;
   }
   .saito-modal-menu-option {
-    margin: 0 1rem;
+    margin: 0;
+    padding: 1.5rem 1rem;
   }
 }
 
@@ -444,3 +450,32 @@ This alows for a header with a header with title to be added without extra CSS
   height: 100%;
   overflow: auto;
 }
+
+.qr-share-overlay{
+  padding: 2rem;
+  border: var(--saito-border);
+  width: max-content;
+}
+
+.qr-share-header {
+  font-size: 3rem;
+  display: flex;
+  justify-content: center;
+}
+
+#qr-share-link {
+  margin: 2rem;
+}
+
+
+#qr-share-link img {
+  height: auto;
+  max-width: 24rem;
+  width: 24vh;
+  border: var(--border-thickness-qr-code) solid var(--border-color-qr-code);
+  padding: var(--border-padding-qr-code);
+  border-radius: var(--border-radius-qr-code);
+  background: var(--background-color-qr-code);
+}
+
+

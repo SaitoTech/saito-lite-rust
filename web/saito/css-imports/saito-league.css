@@ -256,6 +256,7 @@ span.attention {
 }
 
 .league-overlay-leaderboard {
+	position: relative;
 	min-width: min(40rem, 100%);
 	padding: 0px; // keeps scrolled content from showing above sticky header
 }

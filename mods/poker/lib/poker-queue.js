@@ -11,6 +11,7 @@ class PokerQueue {
 	startRound() {
 		this.updateLog('===============');
 		this.updateLog('Round: ' + this.game.state.round);
+		console.log(JSON.parse(JSON.stringify(this.game.state)));
 
 		for (let i = 0; i < this.game.players.length; i++) {
 			this.updateLog(
@@ -25,7 +26,7 @@ class PokerQueue {
 		this.initializeQueue();
 	}
 
-	handleGameLoop() {
+	async handleGameLoop() {
 		///////////
 		// QUEUE //
 		///////////
@@ -41,7 +42,7 @@ class PokerQueue {
 
 			if (mv[0] === 'winner') {
 				this.game.queue = [];
-				this.game.crypto = null;
+				//this.game.crypto = null;
 				this.settleDebt();
 				this.sendGameOverTransaction(this.game.players[parseInt(mv[1])], 'elimination');
 				return 0;
@@ -55,6 +56,8 @@ class PokerQueue {
 					this.playerbox.updateGraphics('', i);
 				}
 
+				this.updateStatus("dealing new round...");
+
 				this.game.state.round++;
 
 				//Shift dealer, small blind, and big blind
@@ -63,9 +66,13 @@ class PokerQueue {
 					this.game.state.button_player = this.game.players.length;
 				}
 
-				this.game.state.small_blind_player = this.game.state.button_player - 1;
-				if (this.game.state.small_blind_player < 1) {
-					this.game.state.small_blind_player = this.game.players.length;
+				if (this.game.players.length > 2){
+					this.game.state.small_blind_player = this.game.state.button_player - 1;
+					if (this.game.state.small_blind_player < 1) {
+						this.game.state.small_blind_player = this.game.players.length;
+					}
+				}else{
+					this.game.state.small_blind_player = this.game.state.button_player;
 				}
 
 				this.game.state.big_blind_player = this.game.state.small_blind_player - 1;
@@ -108,6 +115,9 @@ class PokerQueue {
 					this.game.stats[this.game.players[i]].hands++;
 				}
 
+
+				this.pot.activate();
+				this.stats.update();
 				this.startRound();
 				return 1;
 			}
@@ -116,18 +126,26 @@ class PokerQueue {
 			// turns "resolve"
 			//
 			if (mv[0] === 'resolve') {
-				let last_mv = this.game.queue[qe - 1].split('\t');
-				if (mv[1] === last_mv[0]) {
-					this.game.queue.splice(qe - 1, 2);
-				} else {
-					console.error('Unexpected resolve in queue');
-					this.game.queue.splice(qe, 1);
+				if (qe > 0){
+					let last_mv = this.game.queue[qe - 1].split('\t');
+					if (mv[1] === last_mv[0]) {
+						this.game.queue.splice(qe - 1, 2);
+						return 1; // Successful
+					}
 				}
+
+				console.error('Unexpected resolve in queue, removing and continuing...');
+				this.game.queue.splice(qe, 1);
+
 				return 1;
 			}
 
 			if (mv[0] === 'checkplayers') {
 				this.game.queue.splice(qe, 1);
+
+				if (this.gameBrowserActive()){
+					$(".folded").removeClass("folded");
+				}
 
 				//Check for end of game -- everyone except 1 player has zero credit...
 				let alive_players = 0;
@@ -235,10 +253,15 @@ class PokerQueue {
 
 					this.updateLog(logMsg);
 
+					// For animating
+					let winners = {};
+					winners[player_left_idx] = this.game.state.player_credit[player_left_idx];
+
 					this.game.state.player_credit[player_left_idx] += total_pot;
 
 					this.game.stats[this.game.players[player_left_idx]].wins++;
 
+					// Poker Stats
 					if (this.game.state.flipped == 0) {
 						if (total_pot == this.game.state.big_blind + this.game.state.small_blind) {
 							// No one called or raised --> walk
@@ -250,6 +273,7 @@ class PokerQueue {
 
 					//So that userline updates with winner
 					this.game.state.winners = [player_left_idx + 1];
+					this.displayPlayers();
 
 					//
 					// everyone settles with winner if needed
@@ -263,28 +287,15 @@ class PokerQueue {
 								if (this.game.state.player_pot[i] > 0) {
 									let amount_to_send = this.convertChipsToCrypto(this.game.state.player_pot[i]);
 
-									if (this.settleNow) {
-										let ts = new Date().getTime();
-										this.rollDice();
-										let uh = this.game.dice;
-										this.settlement.push(
-											`RECEIVE\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`
-										);
-										this.settlement.push(
-											`SEND\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`
-										);
-									} else {
-										this.game.state.debt[i] += this.game.state.player_pot[i];
-										this.game.state.debt[player_left_idx] -= this.game.state.player_pot[i];
-									}
+									console.log(`crypto -- ${i}->${player_left_idx}: ${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${amount_to_send}\t${this.game.crypto}`);
+									this.game.state.debt[i] += this.game.state.player_pot[i];
+									this.game.state.debt[player_left_idx] -= this.game.state.player_pot[i];
 								}
 							}
 						}
 					}
 
 					// if everyone has folded - start a new round
-					this.halted = 1;
-
 					let msg = `${this.game.state.player_names[player_left_idx]} wins the round`;
 					if (this.game.player == player_left_idx + 1) {
 						msg = 'You win the round';
@@ -292,27 +303,32 @@ class PokerQueue {
 						this.cardfan.hide();
 					}
 
+					this.animateWin(total_pot, winners);
+					this.halted = 1; // because not inside the function for now
 					this.playerAcknowledgeNotice(msg, async () => {
+						this.animating = false;
 						this.cardfan.hide();
-						this.pot.render(0);
+						this.pot.clearPot();
 						this.settleLastRound([this.game.players[player_left_idx]], 'fold');
 						this.board.clearTable();
 						await this.timeout(1000);
 						this.restartQueue();
 					});
+					this.setShotClock('.acknowledge');
 
 					return 0;
 				}
-				this.game.state.plays_since_last_raise++;
 
 				//
 				// Is this the end of betting?
 				//
-				if (this.game.state.plays_since_last_raise > this.game.players.length) {
+				if (this.game.state.plays_since_last_raise >= this.game.players.length) {
 					//Is this the end of the hand?
 					if (this.game.state.flipped == 5) {
 						this.playerbox.setInactive();
 
+						console.log("PREPARE FOR SHOWDOWN");
+						
 						this.game.queue = [];
 						let first_scorer = 0;
 
@@ -351,12 +367,14 @@ class PokerQueue {
 					//
 					// we auto-clear without need for player to broadcast
 					//
+					this.game.state.plays_since_last_raise++;
 					this.game.queue.splice(qe, 1);
 					return 1;
 				} else if (this.game.state.player_credit[player_to_go - 1] == 0) {
 					//
 					// we auto-clear without need for player to broadcast
 					//
+					this.game.state.plays_since_last_raise++;
 					this.game.queue.splice(qe, 1);
 					return 1;
 				} else {
@@ -381,6 +399,7 @@ class PokerQueue {
 				this.game.queue.splice(qe, 1);
 
 				this.board.render();
+				this.displayPlayers();
 
 				if (this.game.state.flipped === 0) {
 					if (this.game.player > 0) {
@@ -536,6 +555,8 @@ class PokerQueue {
 				let pot_size = Math.floor(pot_total / winners.length);
 				let winnerStr = '';
 
+				let winObj = {};
+
 				// single winner gets everything
 
 				let logMsg =
@@ -554,6 +575,10 @@ class PokerQueue {
 							winnerStr += ', and ';
 						}
 					}
+
+					// For animating chip change
+					winObj[winners[i]] = this.game.state.player_credit[winners[i]];
+
 					this.game.stats[this.game.players[winners[i]]].wins++;
 					if (winners[i] == this.game.player - 1) {
 						winnerStr += 'You';
@@ -565,6 +590,8 @@ class PokerQueue {
 
 					this.game.state.winners.push(winners[i] + 1);
 				}
+
+				this.displayPlayers();
 
 				//update log
 				this.updateLog(winnerStr + logMsg);
@@ -611,42 +638,28 @@ class PokerQueue {
 								let amount_to_send = this.convertChipsToCrypto(
 									this.game.state.player_pot[ii] / winners.length
 								);
-								//To Do: check math on this... and make more efficient (fewer transfers total if split pot)
-
-								if (this.settleNow) {
-									// do not reformat -- adding whitespace screws with API
-									let ts = new Date().getTime();
-									this.rollDice();
-									let uh = this.game.dice;
-									this.settlement.push(
-										`RECEIVE\t${this.game.players[ii]}\t${
-											this.game.players[winners[i]]
-										}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`
-									);
-									this.settlement.push(
-										`SEND\t${this.game.players[ii]}\t${
-											this.game.players[winners[i]]
-										}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`
-									);
-								} else {
-									let share_of_winnings = this.game.state.player_pot[ii] / winners.length;
-									this.game.state.debt[ii] += share_of_winnings;
-									this.game.state.debt[winners[i]] -= share_of_winnings;
-								}
+								console.log(`crypto -- ${ii}->${winners[i]}: ${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${amount_to_send}\t${this.game.crypto}`);
+								let share_of_winnings = this.game.state.player_pot[ii] / winners.length;
+								this.game.state.debt[ii] += share_of_winnings;
+								this.game.state.debt[winners[i]] -= share_of_winnings;
 							}
 						}
 					}
 				}
 
-				this.halted = 1;
+				this.halted = 1; // because not inside the function for now
+				this.animateWin(pot_total, winObj);
 				this.playerAcknowledgeNotice(winnerStr, async () => {
+					this.animating = false;
 					this.cardfan.hide();
-					this.pot.render(0);
+					this.pot.clearPot();
 					this.settleLastRound(winner_keys, 'besthand');
 					this.board.clearTable();
 					await this.timeout(1000);
 					this.restartQueue();
 				});
+				this.setShotClock('.acknowledge');
+
 
 				return 0;
 			}
@@ -743,15 +756,15 @@ class PokerQueue {
 						this.displayPlayerNotice(`<div class="plog-update">All in!</div>`, player);
 					}
 				} else {
-					this.updateLog(this.game.state.player_names[player - 1] + ' calls');
+					this.updateLog(this.game.state.player_names[player - 1] + ' calls to match ' + this.formatWager(this.game.state.required_pot));
 					if (this.game.player !== player) {
 						this.displayPlayerNotice(`<div class="plog-update">calls</div>`, player);
 					}
 				}
 
-				//
-				// reset plays since last raise
-				//
+				this.game.state.plays_since_last_raise++;
+
+				await this.animateBet(player, amount_to_call);
 
 				this.game.state.player_pot[player - 1] += amount_to_call;
 				this.game.state.player_credit[player - 1] -= amount_to_call;
@@ -764,20 +777,30 @@ class PokerQueue {
 			if (mv[0] === 'fold') {
 				let player = parseInt(mv[1]);
 
-				this.updateLog(this.game.state.player_names[player - 1] + ' folds');
+				this.updateLog(this.game.state.player_names[player - 1] + ` folds with ${this.formatWager(this.game.state.player_pot[player-1])}`);
 
 				this.game.stats[this.game.players[player - 1]].folds++;
 				this.game.state.passed[player - 1] = 1;
 				this.game.state.last_fold = player;
 				this.game.queue.splice(qe, 1);
 
+				this.game.state.plays_since_last_raise++;
+
 				if (this.browser_active) {
 					if (this.game.player !== player) {
 						this.displayPlayerNotice(`<div class="plog-update">folds</div>`, player);
+						this.playerbox.addClass("folded", player);
 					} else {
 						this.displayHand();
+						this.ignore_notifications = true;
 					}
 				}
+			}
+
+			if (mv[0] === 'allin') {
+				this.game.queue.splice(qe, 1);
+				this.game.state.plays_since_last_raise++;
+				return 1;
 			}
 
 			if (mv[0] === 'check') {
@@ -787,6 +810,8 @@ class PokerQueue {
 				if (this.game.player !== player && this.browser_active) {
 					this.displayPlayerNotice(`<div class="plog-update">checks</div>`, player);
 				}
+				this.game.state.plays_since_last_raise++;
+
 				return 1;
 			}
 
@@ -798,6 +823,8 @@ class PokerQueue {
 				let raise_portion = raise - call_portion;
 
 				this.game.state.plays_since_last_raise = 1;
+
+				await this.animateBet(player, raise);
 
 				this.game.state.player_credit[player - 1] -= raise;
 				this.game.state.player_pot[player - 1] += raise;
@@ -830,6 +857,7 @@ class PokerQueue {
 					this.updateLog(`${this.game.state.player_names[player - 1]} ${raise_message}`);
 				}
 				this.game.queue.splice(qe, 1);
+				
 				return 1;
 			}
 		}

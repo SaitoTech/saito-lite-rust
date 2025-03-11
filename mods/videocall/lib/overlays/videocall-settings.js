@@ -1,6 +1,5 @@
 const SaitoOverlay = require('../../../../lib/saito/ui/saito-overlay/saito-overlay');
 const VideoCallSettingsTemplate = require('./videocall-settings.template');
-const StunSettings = require("./../stun-settings");
 
 class VideoCallSettings {
 	constructor(app, mod) {
@@ -10,6 +9,7 @@ class VideoCallSettings {
 	}
 
 	render() {
+		console.log("***** 2");
 		this.saitoOverlay.show(VideoCallSettingsTemplate(this.mod, this.app));
 		this.mod.loadSettings('.videocall-setting-grid-item');
 

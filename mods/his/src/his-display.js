@@ -234,7 +234,7 @@
     if (c === "battle-of-mohacs") {
       let t = "The Ottoman subjugation of Hungary-Bohemia forces the Hapsburg Empire to intervene on the side of Christian Europe and in pre-emptive defense of Vienna";
       if (this.areEnemies("hapsburg", "ottoman")) {  
-      t = "The Ottoman subjugation of Hungary-Bohemia prompts a Hapsburg-Hungarian Alliance in defense of Christian Europe and th city of Vienna";
+      t = "The Ottoman subjugation of Hungary-Bohemia prompts a Hapsburg-Hungarian Alliance in defense of Christian Europe and the city of Vienna";
       }
       this.welcome_overlay.renderCustom({
         title : "War between the Hapsburg and Ottoman Empires" ,
@@ -604,7 +604,7 @@
     if (c === "battle-of-mohacs") {
       let t = "The Ottoman subjugation of Hungary-Bohemia forces the Hapsburg Empire to intervene on the side of Christian Europe and in pre-emptive defense of Vienna";
       if (this.areEnemies("hapsburg", "ottoman")) {  
-        t = "The Ottoman subjugation of Hungary-Bohemia prompts a Hapsburg-Hungarian Alliance in defense of Christian Europe and th city of Vienna";
+        t = "The Ottoman subjugation of Hungary-Bohemia prompts a Hapsburg-Hungarian Alliance in defense of Christian Europe and the city of Vienna";
       }
       this.hud_popup.render({
         title : "War between the Hapsburg and Ottoman Empires" ,
@@ -1104,6 +1104,15 @@
 
   displayNewWorldBonuses() {
     try {
+
+      document.querySelector(".france_colony1_bonus").innerHTML = "";
+      document.querySelector(".france_colony2_bonus").innerHTML = "";
+      document.querySelector(".england_colony1_bonus").innerHTML = "";
+      document.querySelector(".england_colony2_bonus").innerHTML = "";
+      document.querySelector(".hapsburg_colony1_bonus").innerHTML = "";
+      document.querySelector(".hapsburg_colony2_bonus").innerHTML = "";
+      document.querySelector(".hapsburg_colony3_bonus").innerHTML = "";
+
       //
       // Galleons Colony #1
       //
@@ -1594,9 +1603,19 @@ console.log("ERROR DISPLAYING NEW WORLD STUFF: " + JSON.stringify(err));
       let squadrons = 0;
       let corsairs = 0;
 
+      //
+      // if the squadron is on-loan, show the original tile not the 
+      // owner
+      //
+      let squadrons_loaned = [];
+
+
       for (let zz = 0; zz < space.units[z].length; zz++) {
 	if (space.units[z][zz].type === "squadron") {
 	  squadrons += 2;
+	  if (space.units[z][zz].owner != faction) { 
+	    squadrons_loaned.push(space.units[z][zz].owner);
+	  }
 	}
 	if (space.units[z][zz].type === "corsair") {
 	  corsairs += 1;
@@ -1604,56 +1623,64 @@ console.log("ERROR DISPLAYING NEW WORLD STUFF: " + JSON.stringify(err));
       }
 
       while (squadrons >= 2) {
-        if (z === "hapsburg") {
+
+	let zzz = z;
+
+	if (squadrons_loaned.length > 0) {
+	  zzz = squadrons_loaned[0];
+	  squadrons_loaned.splice(0, 1);
+	}
+
+        if (zzz === "hapsburg") {
           tile = "/his/img/tiles/hapsburg/";	  
 	  if (squadrons >= 2) {
             tile += `Hapsburg_squadron.svg`;
 	    squadrons -= 2;
 	  }
         }
-        if (z === "england") {
+        if (zzz === "england") {
           tile = "/his/img/tiles/england/";	  
 	  if (squadrons >= 2) {
             tile += `English_squadron.svg`;
 	    squadrons -= 2;
           }
         }
-        if (z === "france") {
+        if (zzz === "france") {
           tile = "/his/img/tiles/france/";	  
 	  if (squadrons >= 2) {
             tile += `French_squadron.svg`;
 	    squadrons -= 2;
           }
         }
-        if (z === "papacy") {
+        if (zzz === "papacy") {
           tile = "/his/img/tiles/papacy/";	  
 	  if (squadrons >= 2) {
             tile += `Papacy_squadron.svg`;
 	    squadrons -= 2;
 	  }
         }
-        if (z === "ottoman") {
+        if (zzz === "ottoman") {
           tile = "/his/img/tiles/ottoman/";	  
 	  if (squadrons >= 2) {
             tile += `Ottoman_squadron.svg`;
 	    squadrons -= 2;
           }
         }
-        if (z === "venice") {
+        if (zzz === "venice") {
           tile = "/his/img/tiles/venice/";	  
 	  if (squadrons >= 2) {
             tile += `Venice_squadron.svg`;
 	    squadrons -= 2;
           }
         }
-        if (z === "genoa") {
+        if (zzz === "genoa") {
           tile = "/his/img/tiles/genoa/";	  
 	  if (squadrons >= 2) {
             tile += `Genoa_squadron.svg`;
 	    squadrons -= 2;
           }
         }
-        if (z === "scotland") {
+        if (zzz === "scotland") {
           tile = "/his/img/tiles/scotland/";	  
 	  if (squadrons >= 2) {
             tile += `Scottish_squadron.svg`;
@@ -2823,9 +2850,10 @@ console.log("ERROR DISPLAYING NEW WORLD STUFF: " + JSON.stringify(err));
     //
     // and force if has units
     //
+    let has_units = 0;
     for (let key in space.units) {
       if (space.units[key].length > 0) {
-	show_tile = 1; 
+        has_units = 1;
       }
     }
 
@@ -2839,8 +2867,8 @@ console.log("ERROR DISPLAYING NEW WORLD STUFF: " + JSON.stringify(err));
 
       obj.innerHTML = "";
 
-      if (show_tile === 1) {
-	if (!no_keytiles_in_keys.includes(key)) {
+      if (has_units === 1 || show_tile === 1) {
+	if (!no_keytiles_in_keys.includes(key) && show_tile == 1) {
           obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
 	}
         obj.innerHTML += this.returnArmies(space);
@@ -2890,6 +2918,19 @@ console.log("ERROR DISPLAYING NEW WORLD STUFF: " + JSON.stringify(err));
 
     let obj = document.getElementById(key);
     let space = this.game.navalspaces[key];
+
+    //
+    // to prevent desyncs we make sure all units are in the same order
+    //
+    for (let key in space.units) {
+      if (space.units[key].length > 0) {
+	space.units[key].sort((a, b) => {
+    	  if (a.type < b.type) return -1;
+    	  if (a.type > b.type) return 1;
+    	  return 0;
+	});
+      }
+    }
 
     //
     // should we show the tile?
@@ -3171,7 +3212,23 @@ try {
       "img/backgrounds/move/colonize.jpg",
       "img/backgrounds/move/explore.jpg",
       "img/backgrounds/move/conquer.jpg",
+      "img/backgrounds/language_zone.jpg",
       "img/cards/PASS.png",
+    ];
+
+    this.preloadImageArray(allImages);
+  }
+
+  async preloadMoreImages() {
+    var allImages = [
+      "img/backgrounds/war-horse.png",
+      "img/backgrounds/winter_background.png",
+      "img/backgrounds/corsairs_destroyed.jpg",
+      "img/backgrounds/diplomacy/excommunication.png",
+      "img/backgrounds/henry_viii.png",
+      "img/backgrounds/marital_status.png",
+      "img/backgrounds/naval_battle.png",
+      "img/backgrounds/new_world.png",
     ];
 
     this.preloadImageArray(allImages);

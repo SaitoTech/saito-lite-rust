@@ -51,6 +51,7 @@ class League extends ModTemplate {
 		this.icon_fa = 'fas fa-user-friends';
 		this.debug = false;
 		this.last_prune = 0;
+		this.finished_games = [];
 
 		app.connection.on('league-render-into', (league_id, container) => {
 			if (!app.BROWSER) {
@@ -296,6 +297,7 @@ class League extends ModTemplate {
 					for (let i = 0; i < this.leagues.length; i++) {
 						if (this.leagues[i].game == am_name) {
 							this.fetchLeagueLeaderboard(this.leagues[i].id, () => {
+								console.log("Update league info for curent game:", this.leagues[i]);
 								this.app.connection.emit(
 									'league-leaderboard-loaded',
 									this.leagues[i].game,
@@ -572,6 +574,10 @@ class League extends ModTemplate {
 	async loadLeagues() {
 		let league_self = this;
 		if (this.app.BROWSER) {
+
+			//
+			// Browsers cache data for relevant leagues
+			//
 			if (this.app.options?.leagues) {
 				if (this.debug) {
 					console.log(
@@ -624,7 +630,7 @@ class League extends ModTemplate {
 				this.app.options.leagues = [];
 			}
 		} else {
-			//Do we need to make sure the service node has all the data in memory??
+
 			let sqlResults = await this.app.storage.queryDatabase(
 				`SELECT *
          FROM leagues
@@ -635,6 +641,7 @@ class League extends ModTemplate {
 			for (let league of sqlResults) {
 				await league_self.updateLeague(league);
 			}
+			console.log("Loaded leagues into memory");
 		}
 	}
 
@@ -995,14 +1002,20 @@ class League extends ModTemplate {
 		//
 		// small grace period
 		//
-		if (
-			is_gameover &&
-			(txmsg.reason == 'cancellation' ||
+		if (is_gameover){
+			if(txmsg.reason == 'cancellation' ||
 				txmsg.reason?.includes('Wins:') ||
 				txmsg.reason?.includes('Scores: '))
-		) {
-			console.log("Don't process");
-			return;
+		 	{
+				console.log("Don't process");
+				return;
+			}
+			if (this.finished_games.includes(txmsg.game_id)){
+				console.warn("Game over already processed");
+				return;
+			}else{
+				this.finished_games.push(txmsg.game_id);
+			}
 		}
 
 		//
@@ -1033,6 +1046,10 @@ class League extends ModTemplate {
 		// update database
 		//
 		for (let leag of relevantLeagues) {
+
+			let myScore = leag.score;
+			let myRank = leag.rank;
+
 			//
 			// update rankings (ELO)
 			//
@@ -1047,10 +1064,8 @@ class League extends ModTemplate {
 			}
 
 			if (this.app.BROWSER) {
-				//console.log("Update league rankings on game over");
-				//console.log(JSON.parse(JSON.stringify(leag.players)));
-				let myScore = leag.score;
-				let myRank = leag.rank;
+				console.log("Update league rankings on game over");
+				console.log(JSON.parse(JSON.stringify(leag.players)), myScore, myRank);
 				this.fetchLeagueLeaderboard(leag.id, () => {
 					if (myRank <= 0 && leag.rank > 0) {
 						if (is_gameover) {
@@ -1158,7 +1173,7 @@ class League extends ModTemplate {
 	/////////////////////
 	/////////////////////
 	async getRelevantLeagues(game, target_league = '') {
-		let sql = `SELECT *
+		/*let sql = `SELECT *
                FROM leagues
                WHERE game = $game
                  AND (admin = "" OR id = $target)
@@ -1167,6 +1182,7 @@ class League extends ModTemplate {
 		let params = { $game: game, $target: target_league };
 
 		let sqlResults = await this.app.storage.queryDatabase(sql, params, 'league');
+		*/
 
 		let localLeagues = this.leagues.filter((l) => {
 			if (l.game === game) {
@@ -1177,7 +1193,7 @@ class League extends ModTemplate {
 			return false;
 		});
 
-		return sqlResults || localLeagues;
+		return /*sqlResults ||*/ localLeagues;
 	}
 
 	async getPlayersFromLeague(league_id, players) {
@@ -1377,11 +1393,26 @@ class League extends ModTemplate {
 
 			//console.log(tweetContent);
 
+			let now = new Date().getTime();
+
 			let obj = {
 				module: 'RedSquare',
 				request: 'create tweet',
 				data: { text: tweetContent, mentions: players }
 			};
+
+			if (league?.tweetID) {
+				if (now - league.tweetTS > 1000*60*60*4){
+					// Start a new thread if it has been at least 4 hours
+					delete league.tweetID;
+					delete league.tweetTS;
+				}else{
+					league.tweetTS = now;
+					obj.data.parent_id = league.tweetID;
+					obj.data.thread_id = league.tweetID;
+					obj.data.signature = league.tweetID;
+				}
+			}
 
 			let newtx = await this.app.wallet.createUnsignedTransaction();
 			for (let player of players){
@@ -1392,6 +1423,12 @@ class League extends ModTemplate {
 
 			await newtx.sign();
 			await this.app.network.propagateTransaction(newtx);
+
+			if (!league?.tweetID){
+				league.tweetID = newtx.signature;
+				league.tweetTS = now;
+			}
+
 		}
 	}
 

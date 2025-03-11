@@ -11,22 +11,19 @@ class SettlersActions {
 
       document.getElementById("rolldice").onclick = async (e) => {
         e.currentTarget.onclick = null;
-        console.log("Click ACKNOWLEDGE");
+        this.clearShotClock();
         this.updateControls();
         this.game.queue.splice(this.game.queue.length - 1, 1);
         this.restartQueue();
       }
+
+      if (this.loadGamePreference("settlers_play_mode") !== 0 || this.turn_limit) {
+        this.setShotClock("#rolldice", 2500);  
+      }
+
     } catch (err) {
       console.error("Error with ACKWNOLEDGE notice!: " + err);
     }
-
-    if (this.turn_limit){
-      this.sleep_timer = setTimeout(()=> {
-        $("#rolldice").click();
-        clearTimeout(this.sleep_timer);
-      }, this.turn_limit);
-    }
-
 
     return 0;
   }

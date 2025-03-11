@@ -498,9 +498,12 @@ class Beleaguered extends OnePlayerGameTemplate {
 
 		this.updateStatus(html);
 
-		$('.new_game').on('click', () => {
-			this.prependMove('lose');
-			this.endTurn();
+		$('.new_game').on('click', async () => {
+			let c = await sconfirm('Do you want to end this game and start a new one?');
+			if (c) {
+				this.prependMove('lose');
+				this.endTurn();
+			}
 		});
 
 		$('.undo_last').on('click', () => {

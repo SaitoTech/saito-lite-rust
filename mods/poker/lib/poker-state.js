@@ -20,8 +20,8 @@ class PokerState {
 
                 if (num_of_players == 2) {
                         state.button_player = 2;
-                        state.big_blind_player = 2;
-                        state.small_blind_player = 1;
+                        state.big_blind_player = 1;
+                        state.small_blind_player = 2;
                 }
 
                 state.player_names = [];
@@ -82,6 +82,29 @@ class PokerState {
                 }else{
                         console.warn("Invalid index removePlayerFromState");
                 }
+        }
+
+        addPlayerToState(pkey){
+                let index = this.game.players.indexOf(pkey);
+
+                console.log(pkey, index, this.game.players);
+
+                this.game.state.player_names.push(this.app.keychain.returnUsername(this.game.players[index], 12));
+                this.game.state.player_pot.push(0);
+                this.game.state.player_credit.push(this.game.chips);
+                this.game.state.passed.push(0);
+                this.game.state.debt.push(0);
+
+                // And for stats...
+
+                this.game.stats[pkey] = {};
+                this.game.stats[pkey].hands = 0;
+                this.game.stats[pkey].wins = 0;
+                this.game.stats[pkey].folds = 0;
+                this.game.stats[pkey].walks = 0;
+                this.game.stats[pkey].vpip = 0;
+                this.game.stats[pkey].showdowns = 0;
+
         }
 
 

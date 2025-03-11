@@ -124,7 +124,7 @@ module.exports = (app, mod) => {
                 <td class="blockslot9"></td>
                 <td class="blockslot10"></td>
             </tr>
-            <tr class="total_payout_routing">
+            <tr class="total_payout_routing payout_value">
                 <td>total_payout_routing</td>
                 <td class="blockslot1"></td>
                 <td class="blockslot2"></td>
@@ -137,7 +137,7 @@ module.exports = (app, mod) => {
                 <td class="blockslot9"></td>
                 <td class="blockslot10"></td>
             </tr>
-            <tr class="total_payout_mining">
+            <tr class="total_payout_mining payout_value">
                 <td>total_payout_mining</td>
                 <td class="blockslot1"></td>
                 <td class="blockslot2"></td>
@@ -150,7 +150,7 @@ module.exports = (app, mod) => {
                 <td class="blockslot9"></td>
                 <td class="blockslot10"></td>
             </tr>
-            <tr class="total_payout_treasury">
+            <tr class="total_payout_treasury payout_value">
                 <td>total_payout_treasury</td>
                 <td class="blockslot1"></td>
                 <td class="blockslot2"></td>
@@ -163,7 +163,7 @@ module.exports = (app, mod) => {
                 <td class="blockslot9"></td>
                 <td class="blockslot10"></td>
             </tr>
-            <tr class="total_payout_graveyard">
+            <tr class="total_payout_graveyard payout_value">
                 <td>total_payout_graveyard</td>
                 <td class="blockslot1"></td>
                 <td class="blockslot2"></td>
@@ -176,73 +176,8 @@ module.exports = (app, mod) => {
                 <td class="blockslot9"></td>
                 <td class="blockslot10"></td>
             </tr>
-            <tr class="total_payout_atr">
+            <tr class="total_payout_atr payout_value">
                 <td>total_payout_atr</td>
-                <td class="blockslot1"></td>
-                <td class="blockslot2"></td>
-                <td class="blockslot3"></td>
-                <td class="blockslot4"></td>
-                <td class="blockslot5"></td>
-                <td class="blockslot6"></td>
-                <td class="blockslot7"></td>
-                <td class="blockslot8"></td>
-                <td class="blockslot9"></td>
-                <td class="blockslot10"></td>
-            </tr>
-            <tr class="avg_payout_routing">
-                <td>avg_payout_routing</td>
-                <td class="blockslot1"></td>
-                <td class="blockslot2"></td>
-                <td class="blockslot3"></td>
-                <td class="blockslot4"></td>
-                <td class="blockslot5"></td>
-                <td class="blockslot6"></td>
-                <td class="blockslot7"></td>
-                <td class="blockslot8"></td>
-                <td class="blockslot9"></td>
-                <td class="blockslot10"></td>
-            </tr>
-            <tr class="avg_payout_mining">
-                <td>avg_payout_mining</td>
-                <td class="blockslot1"></td>
-                <td class="blockslot2"></td>
-                <td class="blockslot3"></td>
-                <td class="blockslot4"></td>
-                <td class="blockslot5"></td>
-                <td class="blockslot6"></td>
-                <td class="blockslot7"></td>
-                <td class="blockslot8"></td>
-                <td class="blockslot9"></td>
-                <td class="blockslot10"></td>
-            </tr>
-            <tr class="avg_payout_treasury">
-                <td>avg_payout_treasury</td>
-                <td class="blockslot1"></td>
-                <td class="blockslot2"></td>
-                <td class="blockslot3"></td>
-                <td class="blockslot4"></td>
-                <td class="blockslot5"></td>
-                <td class="blockslot6"></td>
-                <td class="blockslot7"></td>
-                <td class="blockslot8"></td>
-                <td class="blockslot9"></td>
-                <td class="blockslot10"></td>
-            </tr>
-            <tr class="avg_payout_graveyard">
-                <td>avg_payout_graveyard</td>
-                <td class="blockslot1"></td>
-                <td class="blockslot2"></td>
-                <td class="blockslot3"></td>
-                <td class="blockslot4"></td>
-                <td class="blockslot5"></td>
-                <td class="blockslot6"></td>
-                <td class="blockslot7"></td>
-                <td class="blockslot8"></td>
-                <td class="blockslot9"></td>
-                <td class="blockslot10"></td>
-            </tr>
-            <tr class="avg_payout_atr">
-                <td>avg_payout_atr</td>
                 <td class="blockslot1"></td>
                 <td class="blockslot2"></td>
                 <td class="blockslot3"></td>
@@ -280,8 +215,8 @@ module.exports = (app, mod) => {
                 <td class="blockslot9"></td>
                 <td class="blockslot10"></td>
             </tr>
-            <tr class="avg_total_fees">
-                <td>avg_total_fees</td>
+            <tr class="total_fees_cumulative">
+                <td>total_fees_cumulative</td>
                 <td class="blockslot1"></td>
                 <td class="blockslot2"></td>
                 <td class="blockslot3"></td>
@@ -293,34 +228,8 @@ module.exports = (app, mod) => {
                 <td class="blockslot9"></td>
                 <td class="blockslot10"></td>
             </tr>
-            <tr class="avg_total_fees_new">
-                <td>avg_total_fees_new</td>
-                <td class="blockslot1"></td>
-                <td class="blockslot2"></td>
-                <td class="blockslot3"></td>
-                <td class="blockslot4"></td>
-                <td class="blockslot5"></td>
-                <td class="blockslot6"></td>
-                <td class="blockslot7"></td>
-                <td class="blockslot8"></td>
-                <td class="blockslot9"></td>
-                <td class="blockslot10"></td>
-            </tr>
-            <tr class="avg_total_fees_atr">
-                <td>avg_total_fees_atr</td>
-                <td class="blockslot1"></td>
-                <td class="blockslot2"></td>
-                <td class="blockslot3"></td>
-                <td class="blockslot4"></td>
-                <td class="blockslot5"></td>
-                <td class="blockslot6"></td>
-                <td class="blockslot7"></td>
-                <td class="blockslot8"></td>
-                <td class="blockslot9"></td>
-                <td class="blockslot10"></td>
-            </tr>
-            <tr class="avg_fee_per_byte">
-                <td>avg_fee_per_byte</td>
+            <tr class="total_fees total_supply_value">
+                <td>total_fees</td>
                 <td class="blockslot1"></td>
                 <td class="blockslot2"></td>
                 <td class="blockslot3"></td>
@@ -386,6 +295,123 @@ module.exports = (app, mod) => {
             </tr>
             <tr class="hasGoldenTicket">
                 <td>hasGoldenTicket</td>
+                <td class="blockslot1"></td>
+                <td class="blockslot2"></td>
+                <td class="blockslot3"></td>
+                <td class="blockslot4"></td>
+                <td class="blockslot5"></td>
+                <td class="blockslot6"></td>
+                <td class="blockslot7"></td>
+                <td class="blockslot8"></td>
+                <td class="blockslot9"></td>
+                <td class="blockslot10"></td>
+            </tr>
+            <tr class="avg_total_fees">
+                <td>avg_total_fees</td>
+                <td class="blockslot1"></td>
+                <td class="blockslot2"></td>
+                <td class="blockslot3"></td>
+                <td class="blockslot4"></td>
+                <td class="blockslot5"></td>
+                <td class="blockslot6"></td>
+                <td class="blockslot7"></td>
+                <td class="blockslot8"></td>
+                <td class="blockslot9"></td>
+                <td class="blockslot10"></td>
+            </tr>
+            <tr class="avg_total_fees_new">
+                <td>avg_total_fees_new</td>
+                <td class="blockslot1"></td>
+                <td class="blockslot2"></td>
+                <td class="blockslot3"></td>
+                <td class="blockslot4"></td>
+                <td class="blockslot5"></td>
+                <td class="blockslot6"></td>
+                <td class="blockslot7"></td>
+                <td class="blockslot8"></td>
+                <td class="blockslot9"></td>
+                <td class="blockslot10"></td>
+            </tr>
+            <tr class="avg_total_fees_atr">
+                <td>avg_total_fees_atr</td>
+                <td class="blockslot1"></td>
+                <td class="blockslot2"></td>
+                <td class="blockslot3"></td>
+                <td class="blockslot4"></td>
+                <td class="blockslot5"></td>
+                <td class="blockslot6"></td>
+                <td class="blockslot7"></td>
+                <td class="blockslot8"></td>
+                <td class="blockslot9"></td>
+                <td class="blockslot10"></td>
+            </tr>
+            <tr class="avg_fee_per_byte">
+                <td>avg_fee_per_byte</td>
+                <td class="blockslot1"></td>
+                <td class="blockslot2"></td>
+                <td class="blockslot3"></td>
+                <td class="blockslot4"></td>
+                <td class="blockslot5"></td>
+                <td class="blockslot6"></td>
+                <td class="blockslot7"></td>
+                <td class="blockslot8"></td>
+                <td class="blockslot9"></td>
+                <td class="blockslot10"></td>
+            </tr>
+            <tr class="avg_payout_routing">
+                <td>avg_payout_routing</td>
+                <td class="blockslot1"></td>
+                <td class="blockslot2"></td>
+                <td class="blockslot3"></td>
+                <td class="blockslot4"></td>
+                <td class="blockslot5"></td>
+                <td class="blockslot6"></td>
+                <td class="blockslot7"></td>
+                <td class="blockslot8"></td>
+                <td class="blockslot9"></td>
+                <td class="blockslot10"></td>
+            </tr>
+            <tr class="avg_payout_mining">
+                <td>avg_payout_mining</td>
+                <td class="blockslot1"></td>
+                <td class="blockslot2"></td>
+                <td class="blockslot3"></td>
+                <td class="blockslot4"></td>
+                <td class="blockslot5"></td>
+                <td class="blockslot6"></td>
+                <td class="blockslot7"></td>
+                <td class="blockslot8"></td>
+                <td class="blockslot9"></td>
+                <td class="blockslot10"></td>
+            </tr>
+            <tr class="avg_payout_treasury">
+                <td>avg_payout_treasury</td>
+                <td class="blockslot1"></td>
+                <td class="blockslot2"></td>
+                <td class="blockslot3"></td>
+                <td class="blockslot4"></td>
+                <td class="blockslot5"></td>
+                <td class="blockslot6"></td>
+                <td class="blockslot7"></td>
+                <td class="blockslot8"></td>
+                <td class="blockslot9"></td>
+                <td class="blockslot10"></td>
+            </tr>
+            <tr class="avg_payout_graveyard">
+                <td>avg_payout_graveyard</td>
+                <td class="blockslot1"></td>
+                <td class="blockslot2"></td>
+                <td class="blockslot3"></td>
+                <td class="blockslot4"></td>
+                <td class="blockslot5"></td>
+                <td class="blockslot6"></td>
+                <td class="blockslot7"></td>
+                <td class="blockslot8"></td>
+                <td class="blockslot9"></td>
+                <td class="blockslot10"></td>
+            </tr>
+            <tr class="avg_payout_atr">
+                <td>avg_payout_atr</td>
                 <td class="blockslot1"></td>
                 <td class="blockslot2"></td>
                 <td class="blockslot3"></td>

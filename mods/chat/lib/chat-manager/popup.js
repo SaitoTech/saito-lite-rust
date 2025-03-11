@@ -972,6 +972,7 @@ class ChatPopup {
 		this.remove();
 		this.app.storage.saveOptions();
 		window.onpopstate = this.closeFn;
+		this.close_function = null;
 	}
 }
 

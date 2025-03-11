@@ -1,5 +1,4 @@
 module.exports = (app, mod, form) => {
-  console.log("Select amount", form?.ticker);
 	let html = `
 
     <div class="game-crypto-transfer-manager-container" id="stake-crypto-request-container">
@@ -14,39 +13,24 @@ module.exports = (app, mod, form) => {
 
       if (form.fixed){
         html += `<div class="crypto-ticker">${form.ticker}</div>`;
-        crypto_mod = app.wallet.returnCryptoModuleByTicker(form.ticker);
-        crypto_mod.returnWithdrawalFeeForAddress('', function(res){
-          fee = res;
-        });
+        
+        fee = mod.includeFeeInMax(form.ticker);
 
-        let diff = Number(mod.max_balance) - Number(fee);
-        if (diff < 0) {
-          mod.max_balance = 0;  
-        } else {
-          mod.max_balance = Number(mod.max_balance) - Number(fee);
-        }
       } else {
+
         html +=  `
                  <div class="token-dropdown"><select class="withdraw-select-crypto" id="stake-select-crypto">`;
         for (let ticker in mod.balances){
+
+          // Legacy fallback
           if (!form?.ticker){
             console.log("Set initial ticker");
             form.ticker = ticker;
-            mod.max_balance = parseFloat(mod.balances[ticker].balance);
           }
 
           if (form.ticker == ticker) {
-            crypto_mod = app.wallet.returnCryptoModuleByTicker(ticker);
-            crypto_mod.returnWithdrawalFeeForAddress('', function(res){
-              fee = res;
-            });
-
-            let diff = Number(mod.max_balance) - Number(fee);
-            if (diff < 0) {
-              mod.max_balance = 0;  
-            } else {
-              mod.max_balance = Number(mod.max_balance) - Number(fee);
-            }
+            mod.max_balance = parseFloat(mod.balances[ticker].balance);
+            fee = mod.includeFeeInMax(ticker);            
           }
 
           html += `<option value="${ticker}" ${form.ticker == ticker ? "selected" : ""}>${ticker}</option>`;
@@ -54,6 +38,11 @@ module.exports = (app, mod, form) => {
         html +=  `</select>
           </div>`;
       }
+
+  let warning_msg = "(0 network fees)";
+  if (fee){
+    warning_msg = `(${fee} ${form?.ticker})`;
+  }
 
   html +=  `<div class="crypto_msg"><div></div><div class="select_max">Max: ${mod.max_balance}</div></div></div>`;
 
@@ -76,7 +65,7 @@ module.exports = (app, mod, form) => {
 
       <div class="crypto-stake-confirm-container">
         <input type="checkbox" checked name="crypto-stake-confirm-input" id="crypto-stake-confirm-input">
-        <label for="crypto-stake-confirm-input" class="commentary">authorize in-game crypto transfer</label>
+        <label for="crypto-stake-confirm-input" class="commentary">authorize in-game crypto transfer ${warning_msg}</label>
       </div>
       <div class="stake-input-error" id="stake-checkbox-error"></div>
 

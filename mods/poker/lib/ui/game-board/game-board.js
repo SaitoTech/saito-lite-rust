@@ -10,16 +10,24 @@ class GameBoard {
 		this.app = app;
 		this.game_mod = mod;
 		this.cards_visible = 0;
+		this.timer = null;
 	}
 
 	render() {
 
+		if (!this.game_mod.gameBrowserActive()){
+			return;
+		}
+		
 		if (!document.querySelector(".gameboard")) {
-		  this.app.browser.addElementToDom(GameBoardTemplate(this.game_mod.theme));
+		  this.app.browser.addElementToDom(GameBoardTemplate(this.game_mod));
 		  this.attachEvents();
 		} 
 
-		this.game_mod.cardfan.render();
+		if (!this.game_mod.game.state.passed[this.game_mod.game.player - 1]){
+			this.game_mod.cardfan.render();	
+		}
+		
 		this.game_mod.pot.render();
 
 
@@ -41,19 +49,24 @@ class GameBoard {
 		}
 	}
 
+	changeFelt(){
+		let gb = document.querySelector(".gameboard");
+		if (!gb) {
+			return;
+		}
+		gb.classList.remove("green");
+		gb.classList.remove("red");
+		gb.classList.remove("blue");
+		gb.classList.add(this.game_mod.felt);
+	}
+
   	displayTable() {
 
 		let poker_self = this.game_mod;
 
-		let animate_flip = false;
-		let flip_from_idx = 0;
+		let animate_flip = this.game_mod.game.state.flipped > 0 && this.game_mod.game.state.flipped > this.cards_visible;
 
-		if (this.game_mod.game.state.flipped > 0 && this.game_mod.game.state.flipped > this.cards_visible) {
-			animate_flip = true;
-			if (this.game_mod.game.state.flipped == 3) { flip_from_idx = 0; }
-			if (this.game_mod.game.state.flipped == 4) { flip_from_idx = 3; }
-			if (this.game_mod.game.state.flipped == 5) { flip_from_idx = 4; }
-		}
+		console.log("POKER: display table -- ", this.game_mod.game.state.flipped, this.cards_visible);
 
         	try {   
                         if (document.getElementById('deal')) {
@@ -66,15 +79,15 @@ class GameBoard {
                                 ) {
                                         let card = {};
                 
-                                        if (i < poker_self.game.pool[0].hand.length && i < flip_from_idx) {
+                                        if (i < poker_self.game.pool[0].hand.length && i < this.cards_visible) {
                                                 card = poker_self.game.pool[0].cards[poker_self.game.pool[0].hand[i]];
                                                 newHTML += `<div class="card slot${i+1}"><img class="cardFront" src="${poker_self.card_img_dir}/${card.name}"></div>`;
                                         } else {
 						if (i < poker_self.game.pool[0].hand.length) {
                                                   card = poker_self.game.pool[0].cards[poker_self.game.pool[0].hand[i]];
-                                                  newHTML += `<div class="flipped slot${i+1} card"><img class="cardFront" src="${poker_self.card_img_dir}/${card.name}"><img class="cardBack" src="${poker_self.card_img_dir}/red_back.png"></div>`;
+                                                  newHTML += `<div class="flipped slot${i+1} card"><img class="cardFront" src="${poker_self.card_img_dir}/${card.name}"><img class="cardBack" src="${poker_self.card_img_dir}/${poker_self.card_img}.png"></div>`;
 						} else {
-                                                  newHTML += `<div class="flipped slot${i+1} card"><img class="cardBack" src="${poker_self.card_img_dir}/red_back.png"></div>`;
+                                                  newHTML += `<div class="flipped slot${i+1} card"><img class="cardBack" src="${poker_self.card_img_dir}/${poker_self.card_img}.png"></div>`;
 						}
                                         }
                                 }
@@ -84,12 +97,17 @@ class GameBoard {
 			//
 			// animate card flip
 			//
-			setTimeout(() => {
-				if (animate_flip == true && this.cards_visible < poker_self.game.pool[0].hand.length) {
-				  for (let i = 0; i < poker_self.game.pool[0].hand.length; i++) {
-				    let obj = document.querySelector(`.slot${i+1}`);
-				    if (obj) { obj.classList.remove("flipped"); }
-				  }
+			clearTimeout(this.timer);
+			this.timer = setTimeout(() => {
+				console.log("Animate poker cards");
+
+				if (animate_flip && this.cards_visible < poker_self.game.pool[0].hand.length) {
+					for (let i = 0; i < poker_self.game.pool[0].hand.length; i++) {
+					    let obj = document.querySelector(`.slot${i+1}`);
+					    if (obj) { obj.classList.remove("flipped"); }
+					}
+				}else{
+					console.log("Skip animation: ", animate_flip, this.game_mod.game.state.flipped, this.cards_visible, poker_self.game.pool[0].hand.length);
 				}
 				this.cards_visible = poker_self.game.pool[0].hand.length;
 			}, 200);

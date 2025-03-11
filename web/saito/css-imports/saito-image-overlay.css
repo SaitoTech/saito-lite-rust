@@ -29,6 +29,7 @@
 .saito-overlay-img-cont img {
   max-height: 90vh;
   max-width: 90vw;
+  display: none;
 }
 
 

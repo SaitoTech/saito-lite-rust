@@ -1,0 +1,146 @@
+.election-container {
+    margin: 0 auto;
+    padding: 16px;
+  }
+  
+  .election-card {
+    border-radius: 8px;
+    padding: 24px;
+    color: white;
+    border: 1px solid var(--saito-border-color);
+  }
+  
+  .election-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .election-title {
+    font-size: 2.4rem;
+    font-weight: 600;
+  }
+
+  .election-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .election-icon-button {
+    padding: 8px;
+    border-radius: 999rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .election-icon-button:hover {
+    background-color: #374151;
+  }
+  
+  .election-icon {
+    width: 2rem;
+    height: 2rem;
+    color: #9ca3af;
+  }
+  
+  .election-header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .vote-count {
+    color: #9ca3af;
+  }
+  
+  .election-dates {
+    color: #9ca3af;
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+  
+  .candidate-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  
+  .candidate-item {
+    display: flex;
+    align-items: center;
+    background-color: #374151;
+    border-radius: 8px;
+    padding: 12px;
+  }
+  
+  .candidate-radio {
+    margin-right: 12px;
+  }
+  
+  .candidate-info {
+    flex: 1;
+  }
+  
+  .candidate-name {
+    color: white;
+    margin-bottom: 4px;
+  }
+  
+  .vote-stats {
+    color: #9ca3af;
+    font-size: 14px;
+  }
+  
+  .progress-bar {
+    width: 50%;
+    background-color: #4b5563;
+    border-radius: 9999px;
+    height: 8px;
+  }
+  
+  .progress-fill {
+    background-color: #3b82f6;
+    height: 100%;
+    border-radius: 9999px;
+    transition: width 0.3s ease;
+  }
+  
+  .election-status {
+    background-color: rgba(55, 65, 81, 0.5);
+    color: white;
+    padding: 8px;
+    text-align: center;
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+  
+  .election-button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-top: 16px;
+  }
+  
+  .election-button:disabled {
+    background-color: #4b5563;
+    cursor: not-allowed;
+  }
+  
+  .election-results {
+    margin-top: 16px;
+    padding: 16px;
+    background-color: rgba(55, 65, 81, 0.5);
+    border-radius: 8px;
+  }

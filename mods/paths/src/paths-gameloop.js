@@ -67,7 +67,7 @@ this.updateLog(`###############`);
 
 	  if (this.game.player === this.returnPlayerOfFaction("central")) {
 	    if (this.game.deck[0].hand.includes("cp01")) {
-	      this.addMove("Central Powers start with Guns of August");
+	      this.addMove("NOTIFY\tCentral Powers start with Guns of August!");
               this.addMove("DEAL\t1\t1\t1"); // deal random other card
 	      this.endTurn()
 	    } else {
@@ -86,6 +86,14 @@ this.updateLog(`###############`);
 	  return 1;
 	}
  	if (mv[0] == "replacement_phase") {
+
+	  console.log("###");
+	  console.log("### Replacement Phase");
+	  console.log("###");
+
+	  this.game.state.rp['central'] = {};
+	  this.game.state.rp['allies'] = {};
+
           this.game.queue.splice(qe, 1);
 	  return 1;
 	}
@@ -290,14 +298,25 @@ try {
   	if (mv[0] === "rp") {
 
 	  let faction = mv[1];
-	  let key = mv[2];
-	  let value = mv[3];
+	  let card = mv[2];
 
-	  if (!this.game.state.rp[faction][key]) { this.game.state.rp[faction][key] = 0; }
-	  this.game.state.rp[faction][key] += parseInt(value);
+    	  let c = this.deck[card];
+    
+    	  for (let key in c.sr) {
+            if (faction == "central") {
+              if (!this.game.state.rp["central"][key]) { this.game.state.rp["central"][key] = 0; }
+              this.game.state.rp["central"][key] += c.sr[key];
+            }
+            if (faction == "allies") {
+              if (!this.game.state.rp["allies"][key]) { this.game.state.rp["allies"][key] = 0; }
+              this.game.state.rp["allies"][key] += c.sr[key];
+            }
+          } 
 
+	  this.updateLog(this.returnFactionName(faction) + " plays " + this.popup(card) + " for Replacement Points");
           this.game.queue.splice(qe, 1);
 	  return 1;
+
 	}
 
         if (mv[0] === "resolve") {
@@ -340,7 +359,6 @@ try {
 	  // returns to this, so we only want to clear this once
 	  // it is not possible to execute any more combat.
 	  //
-
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
 
@@ -350,7 +368,10 @@ try {
               return 0;
             }
           );
-          if (options.length == 0) { return 1; }
+          if (options.length == 0) {
+	    this.game.queue.splice(qe, 1);
+	    return 1;
+	  }
 
 	  if (this.game.player == player) {
 	    this.playerPlayCombat(faction);

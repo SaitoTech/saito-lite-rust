@@ -5,7 +5,10 @@ class StatsOverlay {
 	constructor(app, mod) {
 		this.app = app;
 		this.mod = mod;
-		this.overlay = new SaitoOverlay(this.app, this.mod, false);
+		this.overlay = new SaitoOverlay(this.app, this.mod, true, false);
+		this.overlay.nonBlocking = true;
+		this.rendered = false;
+		this.eventsAttached = false;
 
 		this.tracked_stats = [
 			{
@@ -41,12 +44,34 @@ class StatsOverlay {
 		];
 	}
 
-	render() {
-		this.overlay.show(StatsOverlayTemplate(this.mod, this.tracked_stats));
-		this.attachEvents();
+	toggle(){
+		if (this.rendered){
+			this.overlay.close();
+		}else{
+			this.render();
+		}
 	}
 
-	attachEvents() {}
+
+	update(){
+		if (this.rendered){
+			this.render();
+		}
+	}
+
+	render() {
+		this.overlay.show(StatsOverlayTemplate(this.mod, this.tracked_stats), () => { this.rendered = false; });
+		this.rendered = true;
+		if (!this.eventsAttached){
+			this.attachEvents();	
+		}
+		
+	}
+
+	attachEvents() {
+		this.app.browser.makeDraggable(`saito-overlay${this.overlay.ordinal}`, '', true);
+		this.eventsAttached = true;
+	}
 
 
 

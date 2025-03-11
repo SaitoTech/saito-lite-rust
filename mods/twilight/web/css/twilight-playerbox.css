@@ -76,7 +76,6 @@
 	.game-playerbox-manager {
 		margin: 0.25rem;
 		flex-direction: row;
-		top: 5px;
 	}
 
 	.game-playerbox {

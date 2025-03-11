@@ -1,4 +1,5 @@
 const StatsTemplate = (twilight_self, stats) => {
+
 	let us_bg = 0;
 	let ussr_bg = 0;
 	let round_us_vp = [];
@@ -34,6 +35,7 @@ const StatsTemplate = (twilight_self, stats) => {
       <div class="us-global-title">US</div>
       <div class="us-global-stats global-desc-ops">${stats.us_ops}</div>
       <div class="us-global-stats global-desc-ops-modified">${stats.us_modified_ops}</div>
+      <div class="us-global-stats global-desc-evented-ops">${stats.us_events_ops}</div>
       <div class="us-global-stats global-desc-space">${stats.us_ops_spaced}</div>
       <div class="us-global-stats global-desc-scoring">${stats.us_scorings}</div>
       <div class="us-global-stats global-desc-bg">${us_bg}</div>
@@ -41,12 +43,14 @@ const StatsTemplate = (twilight_self, stats) => {
       <div class="ussr-global-title">USSR</div>
       <div class="ussr-global-stats global-desc-ops">${stats.ussr_ops}</div>
       <div class="ussr-global-stats global-desc-ops-modified">${stats.ussr_modified_ops}</div>
+      <div class="ussr-global-stats global-desc-evented-ops">${stats.ussr_events_ops}</div>
       <div class="ussr-global-stats global-desc-space">${stats.ussr_ops_spaced}</div>
       <div class="ussr-global-stats global-desc-scoring">${stats.ussr_scorings}</div>
       <div class="ussr-global-stats global-desc-bg">${ussr_bg}</div>
       <div class="ussr-global-stats global-desc-roll">${ussr_coups}</div>
       <div class="global-desc global-desc-ops">OPS</div>
       <div class="global-desc global-desc-ops-modified">Modified</div>
+      <div class="global-desc global-desc-evented-ops">Evented</div>
       <div class="global-desc global-desc-space">Spaced</div>
       <div class="global-desc global-desc-scoring">Scoring Cards</div>
       <div class="global-desc global-desc-bg">Battlegrounds</div>

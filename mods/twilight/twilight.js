@@ -107,10 +107,10 @@ class Twilight extends GameTemplate {
               There are no cards to display
               </div>`;
     }
-    this.overlay.show(html);
-    $(".transparent-card-overlay").onclick = (e) => {
-      this.overlay.hide();
-    }
+
+    let cc_status = this.overlay.clickToClose;
+    this.overlay.clickToClose = true;
+    this.overlay.show(html, ()=> { this.overlay.clickToClose = cc_status;});
   }
 
 
@@ -437,7 +437,6 @@ class Twilight extends GameTemplate {
 
     this.cardbox.render();
 
-
     //
     // add card events -- text shown and callback run if there
     //
@@ -482,10 +481,7 @@ class Twilight extends GameTemplate {
         }
       }
 
-
       this.hud.render();
-
-
 
       /* Attach classes to hud to visualize player roles */
       //this.game.player == 1 --> ussr, == 2 --> usa
@@ -971,16 +967,22 @@ console.log("error here 222");
       let scoring = twilight_self.calculateScoring(region, 1);
 
       let total_vp = scoring.us.vp - scoring.ussr.vp;
-      let vp_color = "white";
+      let vp_color = "#FFF";
 
-      if (total_vp > 0) { vp_color = "blue" }
-      if (total_vp < 0) { vp_color = "red" }
+      if (total_vp > 0) { vp_color = "#00F" }
+      if (total_vp < 0) { vp_color = "#F00" }
+      
       if (total_vp > (twilight_self.game.vp_needed) || total_vp < (twilight_self.game.vp_needed*-1)) { total_vp = "WIN" }
+      if (total_vp == "WIN" || Math.abs(total_vp) > 15){
+        vp_color += "F";
+      }else {
+        vp_color += Math.abs(total_vp).toString(16).toUpperCase();
+      }
+
+      $(`.display_vp#${region}`).html(`VP ${total_vp}`);
+      $(`.display_vp#${region}`).css("background", vp_color);
 
       $(`.display_card#${region}`).show();
-      $(`.display_vp#${region}`).html(
-        `VP <div style="color:${vp_color}">&nbsp${total_vp}</div>`
-      );
     }).mouseout(function() {
       let region = this.id;
       $(`.display_card#${region}`).hide();
@@ -1594,6 +1596,17 @@ console.log("LATEST MOVE: " + mv);
 
     //
     // Che
+    if (mv[0] == "clearcheclicktargets") {
+
+      try {   
+        $(".easterneurope").removeClass("easterneurope");
+      } catch (err) {}      
+
+      this.game.queue.splice(qe, 1);
+      return 1;
+
+    }
+
     if (mv[0] == "checoup") {
 
       let target1 = mv[2];
@@ -1650,6 +1663,7 @@ console.log("LATEST MOVE: " + mv);
               $(".easterneurope").on('click', function() {
                 twilight_self.playerFinishedPlacingInfluence("ussr");
                 let c = $(this).attr('id');
+                twilight_self.addMove("clearcheclicktargets");
                 twilight_self.addMove("coup\tussr\t"+c+"\t"+couppower);
                 twilight_self.addMove("NOTIFY\tChe launches coup in "+twilight_self.countries[c].name);
                 twilight_self.endTurn();
@@ -2615,7 +2629,15 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
 
     if (mv[0] === "event") {
 
-      if (this.game.deck[0].cards[mv[2]] != undefined) { this.game.state.event_name = this.cardToText(mv[2]); }
+      if (this.game.deck[0].cards[mv[2]] != undefined) { 
+        if (mv[1] === "us") {
+	  this.game.state.stats.us_events_ops += parseInt(this.game.deck[0].cards[mv[2]].ops);
+        }
+        if (mv[1] === "ussr") {
+	  this.game.state.stats.ussr_events_ops += parseInt(this.game.deck[0].cards[mv[2]].ops);
+        }
+	this.game.state.event_name = this.cardToText(mv[2]);
+      }
       this.updateLog(mv[1].toUpperCase() + ` triggers ${this.game.state.event_name} as an event`);
 
       shd_continue = this.playEvent(mv[1], mv[2]);
@@ -3328,6 +3350,8 @@ try {
           this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_scorings = this.game.state.stats.ussr_scorings;
           this.game.state.stats.round[this.game.state.stats.round.length-1].us_ops = this.game.state.stats.us_ops;
           this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_ops = this.game.state.stats.ussr_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].us_events_ops = this.game.state.stats.us_events_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_events_ops = this.game.state.stats.ussr_events_ops;
           this.game.state.stats.round[this.game.state.stats.round.length-1].us_modified_ops = this.game.state.stats.us_modified_ops;
           this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_modified_ops = this.game.state.stats.ussr_modified_ops;
           this.game.state.stats.round[this.game.state.stats.round.length-1].us_us_ops = this.game.state.stats.us_ops;
@@ -3868,7 +3892,6 @@ console.log("TURN IS: " + this.game.state.turn);
 
      if (this.game.player === 0) {
       this.updateLog("Processing Headline Cards...");
-console.log("processing headline cards - TEST");
       return;
     }
 
@@ -7129,6 +7152,8 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     state.stats.ussr_ops_spaced = 0;
     state.stats.us_modified_ops = 0;
     state.stats.ussr_modified_ops = 0;
+    state.stats.us_events_ops = 0;
+    state.stats.ussr_events_ops = 0;
     state.stats.us_coups = [];
     state.stats.ussr_coups = [];
     state.stats.round = [];

@@ -183,7 +183,7 @@
   max-height: 100vh;
   min-width: 30rem;
   min-height: 20rem;
-  box-shadow: var(--shadow-chat-popup);
+  box-shadow: var(--shadow-draggable-popup);
 
   /*
   making overflow hiddent for saito mention list
@@ -869,6 +869,7 @@
     max-height: -webkit-fill-available;
     max-width: -webkit-fill-available;
     z-index: 15;
+    border-radius: unset;
   }
 
   .chat-manager-overlay .chat-manager {

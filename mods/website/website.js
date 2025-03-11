@@ -18,7 +18,9 @@ class Website extends ModTemplate {
 
 	initializeHompage(app) {}
 
-	initializeHTML(app) {}
+	initializeHTML(app) {
+		alert('initializeHTML');
+	}
 	initialize(app) {}
 
 	webServer(app, expressapp, express) {

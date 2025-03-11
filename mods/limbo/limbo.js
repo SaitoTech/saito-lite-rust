@@ -438,12 +438,29 @@ class Limbo extends ModTemplate {
 				for (let key in this.dreams) {
 					document.querySelector('.spaces-list').style.display = 'flex';
 					this.createProfileCard(key, this.dreams[key], '.spaces-list');
+
 				}
+
+				Array.from(document.querySelectorAll(".spaces-list .saito-profile")).forEach(elm => {
+					elm.onclick	= (e) => {
+						let id = e.currentTarget.getAttribute("data-id");
+
+
+						let data = {
+							name: this.returnName(),
+							path: `/${this.returnSlug()}/`,
+							dream: this.app.crypto.stringToBase64(id)
+						};
+						let link_obj = new InvitationLink(this.app, this, data);
+						link_obj.buildLink();
+						let cast_link = link_obj.invite_link;
+
+						navigateWindow(cast_link);
+					}
+				})
 			});
 
-			document.querySelector('.spaces-list').onclick = (e) => {
-				navigateWindow('/' + this.returnSlug());
-			};
+
 		}
 	}
 

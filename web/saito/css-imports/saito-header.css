@@ -12,7 +12,7 @@
   left: 0;
   z-index: 15;
   height: var(--saito-header-height);
-  /*transition: all 0.33s linear;*/
+  transition: top 0.33s linear, height 0.33s linear, padding 0.33s linear;
 }
 
 #saito-header.wide-screen {
@@ -30,7 +30,7 @@
   /* redefining base variable in game-layout doesn't work if people push themes on games */
   background: transparent; 
   backdrop-filter: none;
-  z-index: 500; /* to be the same as game-menu was */
+  z-index: 90; /* to be the same as game-menu was */
 }
 
 #saito-header.game .saito-header-logo-wrapper, #saito-header.game .header-msg {
@@ -176,7 +176,7 @@
   max-width: 20rem;
   width: 20vh;
   border: var(--border-thickness-qr-code) solid var(--border-color-qr-code);
-  padding: 0.5rem;
+  padding: var(--border-padding-qr-code);
   border-radius: var(--border-radius-qr-code);
   background: var(--background-color-qr-code);
 }
@@ -255,10 +255,11 @@
 .pubkey-containter {
   display: flex;
   flex-direction: row;
-  width: 90%;
+  max-width: 75%;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  gap: 0.5rem;
 }
 
 .pubkey-containter:hover i {
@@ -273,6 +274,7 @@
   align-items: center;
   gap: 1rem;
   justify-content: space-around;
+  width: 100%;
 }
 
 .wallet-balance {
@@ -283,7 +285,6 @@
 }
 
 .profile-public-key {
-  width: 55%;
   font-size: 1.7rem;
   white-space: nowrap;
   overflow: hidden;
@@ -529,10 +530,16 @@
 }
 
 
+.hide-for-fade-in {
+  opacity: 0;
+  transition: opacity 4s;
+}
+
 @media screen and (max-width: 620px) {
   .saito-header-hamburger-contents {
     width: 100vw;
     right: -100vw;
+    border-radius: unset;
   }
 
   #saito-header {

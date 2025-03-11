@@ -12,7 +12,7 @@ html[data-theme="milquetoast"] {
 
     /*SHADOW SELECTION*/
       --shadow-primary-button: var(--shadow-shape-flat);
-      --shadow-chat-popup: var(--shadow-shape-glow);
+      --shadow-draggable-popup: var(--shadow-shape-glow);
       --box-shadow-sidebar-elements: var(--shadow-shape-flat);
       
       --shadow-chat-message-bottom: 0px 0px 2px var(--color-shadow-bubble); /* flattened and centered the shadow */

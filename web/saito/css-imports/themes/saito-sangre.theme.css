@@ -84,12 +84,13 @@ html[data-theme="sangre"] {
   --font-color-module-menu-header: var(--font-color-primary);
   --font-color-overlay-form-header: var(--font-color-primary);
   --font-color-overlay-form-text: var(--font-color-primary);
-  --font-color-overlay-subform-recover: var(--font-color-primary);
   /* BORDER RADIUS */
   --border-radius-modal-menu: var(--border-radius-soft);
   /* BORDER THICKNESS */
+  --border-padding-qr-code: 0;
   --border-thickness-button-primary: var(--border-thickness-thin);
   --border-thickness-button-hover-primary: var(--border-thickness-thin);
+  --border-thickness-qr-code: var(--border-thickness-fat); /* for contrast to be able to scan */
   /* BORDER COLORS */
   --border-color-general-dividers-dark: var(--color-primary);
   --border-color-button-wallet-control: var(--color-complement);

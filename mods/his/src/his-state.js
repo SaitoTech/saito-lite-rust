@@ -101,6 +101,7 @@
     //
     // reset variables that permit intervention
     //
+    this.game.state.events.intervention_venetian_informant_possible = 0;
     this.game.state.events.intervention_on_movement_possible = 0;
     this.game.state.events.intervention_on_events_possible = 0;
     this.game.state.events.intervention_on_assault_possible = 0;
@@ -152,6 +153,7 @@
     this.game.state.events.ottoman_piracy_attempts = 0;
     this.game.state.events.ottoman_piracy_seazones = [];
 
+    this.game.state.events.intervention_venetian_informant_possible = 0;
     this.game.state.events.intervention_on_movement_possible = 0;
     this.game.state.events.intervention_on_events_possible = 0;
     this.game.state.events.intervention_on_assault_possible = 0;
@@ -301,6 +303,7 @@
   }
 
   captureLeader(winning_faction, losing_faction, space, unit = false) {
+
     if (!unit) { return; }
     if (unit.personage == false && unit.army_leader == false && unit.navy_leader == false && unit.reformer == false) { return; }
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}

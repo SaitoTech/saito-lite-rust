@@ -487,9 +487,9 @@ class Mods {
   //
   // return 1 if we permit or do not block
   //
-  // 1 if (yes or maybe)
-  //
-  // note that permit_through can be returned -1 (no) 0 (indifferent) or 1 (yes)
+  // 1 if (yes)
+  // -1 if (no)
+  // 0 if unsure
   //
   moderate(tx = null, app = '') {
     let permit_through = 0;
@@ -526,6 +526,7 @@ class Mods {
     //
     return 0;
   }
+
 
   async render() {
     for (let icb = 0; icb < this.mods.length; icb++) {
