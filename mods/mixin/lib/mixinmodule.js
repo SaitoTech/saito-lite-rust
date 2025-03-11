@@ -5,18 +5,9 @@
  Extends the generic web3 crypto module to add auto-support for cryptos that are
  supported by the Mixin module.
 
- returnAddress()
  returnPrivateKey()
  async sendPayment(amount="", recipient="", unique_hash="")
  async receivePayment(amount="", sender="", recipient="", timestamp=0, unique_hash="")
-
-
- TODO:
-
- we currently SEND the payments but do not record if the payment has been a success
- so there are failure modes if the effort to send has been unsuccessful. the same
- trace_id will be sent with each request so we should not have multiple payments
- through.
 
 
  Uses Mixin API:
@@ -62,11 +53,9 @@ class MixinModule extends CryptoModule {
 		this.minimum_delay_between_balance_queries = 4000;
 
 		this.confirmations = 100;
-
 	}
 
 	async activate() {
-
 		if (this.mixin.account_created == 0) {
 			this.app.connection.emit('header-install-crypto', this.ticker);
 			await this.mixin.createAccount(async (res) => {
@@ -95,17 +84,14 @@ class MixinModule extends CryptoModule {
 	 */
 	async checkBalance() {
 		let now = new Date().getTime();
-		if (now - this.balance_timestamp_last_fetched >
-			this.minimum_delay_between_balance_queries
-		) {
+		if (now - this.balance_timestamp_last_fetched > this.minimum_delay_between_balance_queries) {
 			console.log('MixinModule Query balance for ' + this.ticker);
 
 			this.balance_timestamp_last_fetched = now;
 
 			await this.mixin.fetchSafeUtxoBalance(this.asset_id);
-
-		}else{
-			console.log("MixinModule warning: too soon to query balance updates");
+		} else {
+			console.log('MixinModule warning: too soon to query balance updates');
 		}
 	}
 
@@ -117,12 +103,13 @@ class MixinModule extends CryptoModule {
 	 * @abstract
 	 * @return {Number}
 	 */
-	async sendPayment(amount = '', recipient = '', unique_hash = '', fee) {
+	async sendPayment(amount = '', recipient = '', unique_hash = '') {
 		try {
 			let r = recipient.split('|');
-			let ts = new Date().getTime();
+
 			let internal_transfer = false;
 			let destination = recipient;
+
 			let res = {};
 
 			console.log('send sendPayment');
@@ -144,14 +131,16 @@ class MixinModule extends CryptoModule {
 						address: recipient
 					},
 					function (res) {
-						let user_data = res;
-						if (typeof user_data.user_id != 'undefined') {
+						console.log('Cross network callback complete');
+						if (res?.user_id) {
 							internal_transfer = true;
-							destination = user_data.user_id;
+							destination = res.user_id;
 						}
 					}
 				);
 			}
+
+			console.log('Initiate mixin transfer, internally? ', internal_transfer);
 
 			// internal mixin transfer
 			if (internal_transfer) {
@@ -182,20 +171,11 @@ class MixinModule extends CryptoModule {
 		}
 	}
 
-	/**
-	 * Abstract method which should get pubkey/address
-	 * @abstract
-	 * @return {String} Pubkey/address
-	 */
-	returnAddress() {
-		if (!this.address) {
-			return 'unknown address';
-		}
+	//
+	// Reference for how we used to package the mixin address bar...
+	//
+	formatAddress() {
 		return this.address + '|' + this.mixin.mixin.user_id + '|' + 'mixin';
-	}
-
-	formatAddress(address) {
-		return address; //+ "|" + this.mixin.mixin.user_id + "|" + "mixin";
 	}
 
 	/**
@@ -227,17 +207,8 @@ class MixinModule extends CryptoModule {
 		sender = split[0];
 
 		//
-		// mixin transfers will be registered with a specific TRACE_ID
-		//
-		// so we can use this TRACE_ID to monitor transactions that have been
-		// made from other accounts.
-		//
-		let trace_id = getUuid(unique_hash);
-
-		//
 		// the mixin module might have a record of this already stored locally
 		//
-
 		console.log('////////////////////////////////////////////////////');
 		console.log('inside receivePayment ///');
 		console.log('amount, sender, timestamp');
@@ -307,7 +278,6 @@ class MixinModule extends CryptoModule {
 		return status;
 	}
 
-
 	returnNetworkInfo() {
 		return this.mixin.returnNetworkInfo(this.asset_id);
 	}
@@ -317,7 +287,7 @@ class MixinModule extends CryptoModule {
 	// if it can offer zero-fee in-network transfers or requires a network fee to be paid
 	// in order to process the payment.
 	//
-	async returnWithdrawalFeeForAddress(recipient = '', mycallback) {
+	async checkWithdrawalFeeForAddress(recipient = '', mycallback) {
 		if (recipient == '') {
 			return mycallback(0);
 		}
@@ -353,8 +323,12 @@ class MixinModule extends CryptoModule {
 		if (typeof user_data.user_id != 'undefined') {
 			return mycallback(0);
 		} else {
-			let fee = await this.mixin.checkWithdrawalFee(this.asset_id, recipient);
-			return mycallback(fee);
+			let fee = await this.mixin.returnWithdrawalFee(this.asset_id, recipient);
+			if (fee !== false) {
+				return mycallback(fee);
+			}
+
+			return mycallback(0);
 		}
 	}
 
@@ -472,72 +446,40 @@ class MixinModule extends CryptoModule {
 		return await this.mixin.fetchUtxo(state, limit, order, callback);
 	}
 
-	async getMixinAddress(publicKey, ticker, callback = null) {
+	async returnAddressFromPublicKey(publicKey) {
 		this_self = this;
 		try {
-			if (publicKey == '' || ticker == '') {
-				return {};
-			}
 
 			//check if key exists in keychain
-			let return_data = null;
-			let key_exists = false;
-			let keys = this.app.keychain.returnKeys();
-			let asset_id = this.getAssetIdByTicker(ticker);
+			let address = await super.returnAddressFromPublicKey(publicKey);
 
-			console.log('asset_id: ///////////////////////', asset_id);
+			if (address) {
+				return;
+			}
 
-			for (let i = 0; i < keys.length; i++) {
-				// check key exists in keychain
-				if (publicKey == keys[i].publicKey) {
-					key_exists = true;
-					//check if specific asset address exists
-					if (typeof keys[i].crypto_addresses != 'undefined') {
-						let crypto_addresses = keys[i].crypto_addresses;
-						console.log('crypto_addresses in key:', crypto_addresses);
-						for (const key in crypto_addresses) {
-							if (key == ticker) {
-								return_data = crypto_addresses;
-								break;
+			// if it doesnt exist fetch it from node db
+			return this.mixin.sendFetchUserByPublicKeyTransaction(
+				{
+					publicKey: publicKey,
+					asset_id: this.asset_id
+				},
+				function (res) {
+					console.log('miximodule res: ', res);
+					if (res.length > 0) {
+						for (let i = 0; i < res.length; i++) {
+							console.log(res[i].asset_id, ' - ', this_self.asset_id, ' - ', res[i].asset_id == this_self.asset_id);
+							if (res[i].asset_id == this_self.asset_id) {
+								// save address to keychain if publickey exists in keychain
+								this_self.app.keychain.addCryptoAddress(publicKey, this_self.ticker, res[i].address);
+								return res[i].address;
 							}
 						}
 					}
 				}
-			}
-
-			if (return_data == null) {
-				// if it doesnt exist fetch it from node db
-				await this.mixin.sendFetchUserByPublicKeyTransaction(
-					{
-						publicKey: publicKey,
-						asset_id: asset_id
-					},
-					async function (res) {
-						console.log('miximodule res: ', res);
-						if (res.length > 0) {
-							for (let i = 0; i < res.length; i++) {
-								console.log(res[i].asset_id, ' - ', asset_id, ' - ', res[i].asset_id == asset_id);
-
-								if (res[i].asset_id == asset_id) {
-									if (key_exists) {
-										// save address to keychain if publickey exists in keychain
-										await this_self.addCryptoAddressToKey(publicKey, res[i].address, ticker);
-									}
-									let obj = {};
-									obj[ticker] = res[i].address;
-									return_data = obj;
-									break;
-								}
-							}
-						}
-					}
-				);
-			}
-
-			console.log('return_data: ', return_data);
-			return callback(return_data);
+			);
 		} catch (err) {
 			console.error('Error getMixinAddress: ', err);
+			return null;
 		}
 	}
 
@@ -557,37 +499,6 @@ class MixinModule extends CryptoModule {
 		);
 		return address;
 	}
-
-	async addCryptoAddressToKey(publicKey, address, ticker) {
-		console.log('address, asset_id', address, ticker);
-		let crypto_addresses = {};
-		crypto_addresses[ticker] = address;
-		this.app.keychain.addKey(publicKey, {
-			crypto_addresses: crypto_addresses
-		});
-	}
-
-	getAssetIdByTicker(ticker) {
-		let available_cryptos = this.app.wallet.returnInstalledCryptos();
-		console.log(available_cryptos);
-		for (let i = 0; i < available_cryptos.length; i++) {
-			console.log(
-				available_cryptos[i].ticker,
-				' - ',
-				ticker,
-				' - ',
-				available_cryptos[i].ticker == ticker
-			);
-			if (available_cryptos[i].ticker == ticker) {
-				if (typeof available_cryptos[i].asset_id != 'undefined') {
-					return available_cryptos[i].asset_id;
-				}
-			}
-		}
-
-		return null;
-	}
-
 
 	validateAddress(address) {
 		// suported cryptos by validator package

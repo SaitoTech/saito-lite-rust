@@ -120,16 +120,12 @@ export default class Wallet extends SaitoWallet {
         return true;
       }
 
-      returnAddress() {
-        return this.address;
-      }
-
       //returns a Promise!
       returnPrivateKey() {
         return this.app.wallet.getPrivateKey();
       }
 
-      returnWithdrawalFeeForAddress(address = '', mycallback = null) {
+      checkWithdrawalFeeForAddress(address = '', mycallback = null) {
         if (mycallback) {
           mycallback(this.app.wallet.convertNolanToSaito(this.app.wallet.default_fee));
         }
@@ -145,23 +141,13 @@ export default class Wallet extends SaitoWallet {
         return callback(html);
       }
 
-      async sendPayment(amount, to_address, unique_hash = '', fee = null) {
+      async sendPayment(amount, to_address, unique_hash = '') {
         let nolan_amount = this.app.wallet.convertSaitoToNolan(amount);
 
-        let newtx = null;
-        if (fee != null && Number(fee) != 0) {
-          let nolan_fee = this.app.wallet.convertSaitoToNolan(fee);
-          newtx = await this.app.wallet.createUnsignedTransaction(
-            to_address,
-            BigInt(nolan_amount),
-            BigInt(nolan_fee)
-          );
-        } else {
-          newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(
+        let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(
             to_address,
             nolan_amount
           );
-        }
 
         await this.app.wallet.signAndEncryptTransaction(newtx);
         await this.app.network.propagateTransaction(newtx);
@@ -238,6 +224,7 @@ export default class Wallet extends SaitoWallet {
       validateAddress(address) {
         return this.app.wallet.isValidPublicKey(address);
       }
+
     }
 
     this.saitoCrypto = new SaitoCrypto(this.app);
@@ -392,6 +379,9 @@ export default class Wallet extends SaitoWallet {
         this.setKeyList(this.app.keychain.returnWatchedPublicKeys());
       });
     }
+
+    await this.saitoCrypto.initialize(this.app);
+
   }
 
   constructor(wallet: any) {
@@ -557,7 +547,7 @@ export default class Wallet extends SaitoWallet {
 
   returnPreferredCryptoAddress() {
     let preferred_crypto = this.returnPreferredCrypto();
-    return preferred_crypto.returnCachedAddress();
+    return preferred_crypto.returnAddress();
   }
 
   returnCryptoAddressByTicker(ticker = 'SAITO') {
@@ -587,7 +577,7 @@ export default class Wallet extends SaitoWallet {
       let mods = this.returnActivatedCryptos();
       for (let i = 0; i < mods.length; i++) {
         ticker = mods[i].ticker;
-        let address = mods[i].returnAddress();
+        let address = mods[i].formatAddress();
         await mods[i].checkBalance();
         let balance = mods[i].returnBalance();
 
@@ -605,6 +595,12 @@ export default class Wallet extends SaitoWallet {
     }
     console.log('done wallet.returnAvailableCryptosAssociativeArray()');
     return cryptos;
+  }
+
+  saveAvailableCryptosAssociativeArray(publicKey, cryptos){
+    for (let ticker in cryptos){
+      this.app.keychain.addCryptoAddress(publicKey, ticker, cryptos[ticker].address);
+    }
   }
 
   async returnPreferredCryptoBalance() {
@@ -630,8 +626,7 @@ export default class Wallet extends SaitoWallet {
     timestamp,
     unique_hash = '',
     mycallback = null,
-    ticker,
-    fee = null
+    ticker
   ) {
     console.log('wallet sendPayment 1');
     // validate inputs
@@ -664,11 +659,11 @@ export default class Wallet extends SaitoWallet {
         //       - not our own publickey
         //
 
-        if (senders[i] === cryptomod.returnAddress()) {
+        if (senders[i] === cryptomod.formatAddress()) {
           // Need to save before we await, otherwise there is a race condition
           await this.savePreferredCryptoTransaction(unique_tx_hash);
           try {
-            const hash = await cryptomod.sendPayment(amounts[i], receivers[i], unique_tx_hash, fee);
+            const hash = await cryptomod.sendPayment(amounts[i], receivers[i], unique_tx_hash);
             //
             // hash is "" if unsuccessful, trace_id if successful
             //
@@ -690,7 +685,7 @@ export default class Wallet extends SaitoWallet {
         } else {
           console.warn('Cannot send payment from wrong crypto address');
           console.log(cryptomod.name);
-          console.log(senders[i], cryptomod.returnAddress());
+          console.log(senders[i], cryptomod.formatAddress());
         }
       }
     } else {
