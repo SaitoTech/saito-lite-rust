@@ -1,7 +1,7 @@
-const AddNftTemplate = require('./add-nft.template');
+const NftTemplate = require('./nft.template');
 const SaitoOverlay = require('./../../../lib/saito/ui/saito-overlay/saito-overlay');
 
-class AddNft {
+class Nft {
 
     constructor(app, mod, container = '') {
         this.app = app;
@@ -12,6 +12,7 @@ class AddNft {
 	this.nft.num     = 1;
 	this.nft.deposit = 0;
 	this.nft.change  = 0;
+	this.nft.fee     = 0;
 	this.nft.slip    = "";
 	this.nft.id      = "";
 
@@ -37,7 +38,7 @@ class AddNft {
 	    this.addImage(file);
 	};
 
-        this.overlay.show(AddNftTemplate(this.app, this.mod, this));
+        this.overlay.show(NftTemplate(this.app, this.mod, this));
 
         let balance_str = await this.mod.getBalanceString();
         if (document.querySelector(".slip-info .metric.balance h3 .metric-amount") != null) {
@@ -45,6 +46,8 @@ class AddNft {
         }
 
         await this.renderUtxo();
+	if (this.nft.image != "") { this.addImage(this.nft.image); }
+
         this.attachEvents();
     }
 
@@ -112,7 +115,7 @@ console.log(nft_self.nft.image);
 
         let nft_self = this;
         let html = `<div class="nft-image-preview">
-                      <img src="${img}"/>
+                      <img style="max-height: inherit; max-width: inherit; height: inherit; width: inherit" src="${img}"/>
                       <i class="fa fa-times" onclick="alert('reload to change image')"></i>
                     </div>`;
                                 
@@ -155,8 +158,6 @@ console.log(nft_self.nft.image);
         let response = await fetch('/balance/' + publicKey);
         let data = await response.text();
 
-        console.log("utxo response: ", data);
-
         // slip.public_key = key[0..33].to_vec().try_into().unwrap();
         // slip.block_id = u64::from_be_bytes(key[33..41].try_into().unwrap());
         // slip.tx_ordinal = u64::from_be_bytes(key[41..49].try_into().unwrap());
@@ -171,5 +172,5 @@ console.log(nft_self.nft.image);
     }
 }
 
-module.exports = AddNft;
+module.exports = Nft;
 

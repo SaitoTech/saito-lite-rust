@@ -1,6 +1,6 @@
 const MainTemplate = require('./main.template');
 const AddMempool = require('./add-mempool');
-const AddNft = require('./add-nft');
+const Nft = require('./nft');
 
 class Main {
 	constructor(app, mod, container = '') {
@@ -11,7 +11,7 @@ class Main {
 			this.render();
 		});
 		this.add_mempool = new AddMempool(app, mod);
-		this.add_nft = new AddNft(app, mod);
+		this.nft = new Nft(app, mod);
 	}
 
 
@@ -96,7 +96,7 @@ class Main {
 
 
 		document.querySelector('#add_nft').onclick = async (e) => {
-			await this.add_nft.render();
+			await this.nft.render();
 		};
 	}
 
