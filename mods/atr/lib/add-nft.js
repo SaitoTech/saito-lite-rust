@@ -8,7 +8,11 @@ class AddNft {
         this.overlay = new SaitoOverlay(this.app, this.mod);
 
         this.nft = {};
-
+	this.nft.num     = 1;
+	this.nft.deposit = 0;
+	this.nft.change  = 0;
+	this.nft.slip    = "";
+	this.nft.id      = "";
 
     }
 
@@ -41,19 +45,22 @@ class AddNft {
               true
         );
 
+        document.querySelector('#nfts-num').onchange = async (e) => {
+	     nft_self.nft.num = e.target.value;      
+	}
+        document.querySelector('#nfts-deposit').onchange = async (e) => {
+	     nft_self.nft.deposit = e.target.value;      
+alert(JSON.stringify(nft_self));	     
+	}
+        document.querySelector('#nfts-change').onchange = async (e) => {
+	     nft_self.nft.change = e.target.value;      
+alert(JSON.stringify(nft_self));	     
+	}
 
         document.querySelector('#create_nft').onclick = async (e) => {
-            //let fee = document.querySelector('#fee').value;
             console.log('create clicked: ');
+alert(JSON.stringify(nft_self));	     
         };
-
-    }
-
-
-    async callbackOnImageUpload(file) {
-
-alert(JSON.stringify(file));
-
 
     }
 

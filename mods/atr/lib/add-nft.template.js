@@ -21,15 +21,15 @@ module.exports = (app, mod) => {
                   <div class="inputs">
                     <div>
                       <label for="num-nfts">Number of NFTs</label>
-                      <input type="number" id="num-nfts">
+                      <input type="number" id="nfts-num" value="1">
                     </div>
                     <div>
-                      <label for="amount-pair">Amount per NFT</label>
-                      <input type="number" id="amount-pair">
+                      <label for="nfts-deposit">Deposit per NFT</label>
+                      <input type="number" id="nfts-deposit" value="0">
                     </div>
                     <div>
-                      <label for="change">How much in change?</label>
-                      <input type="number" id="change">
+                      <label for="nfts-change">Change</label>
+                      <input type="number" id="nfts-change">
                     </div>
                   </div>
                   <div class="textarea-container">
