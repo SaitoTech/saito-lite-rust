@@ -9,11 +9,16 @@ class AddNft {
 
         this.nft = {};
 
+
     }
 
     async render() {
 
-	this.nft = {};
+	this.nft.test = "abc";
+	this.nft.imageUploadCallback = async (file) => {
+	    alert(JSON.stringify(this.nft.test));
+	    this.nft.data = file;
+	};
 
         this.overlay.show(AddNftTemplate(this.app, this.mod, this));
 
@@ -32,8 +37,8 @@ class AddNft {
 
         nft_self.app.browser.addDragAndDropFileUploadToElement(
              "nft-image-upload",
-              nft_self.callbackOnImageUpload,
-              false
+              this.nft.imageUploadCallback,
+              true
         );
 
 
@@ -46,7 +51,10 @@ class AddNft {
 
 
     async callbackOnImageUpload(file) {
+
 alert(JSON.stringify(file));
+
+
     }
 
 
