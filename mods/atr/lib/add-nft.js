@@ -60,32 +60,23 @@ class AddNft {
 
         document.querySelector('#nfts-fee').onchange = async (e) => {
 	     nft_self.nft.fee = e.target.value;      
-
-	     //
-	     // recalculate change
-	     //
 	     let change = BigInt(nft_self.nft.amt) - BigInt(nft_self.nft.deposit) - BigInt(nft_self.nft.fee);
              document.querySelector('#nfts-change').value = change.toString();
-
 	}
 
         document.querySelector('#nfts-deposit').onchange = async (e) => {
 	     nft_self.nft.deposit = e.target.value;      
-
 	     let change = BigInt(nft_self.nft.amt) - BigInt(nft_self.nft.deposit) - BigInt(nft_self.nft.fee);
              document.querySelector('#nfts-change').value = change.toString();
-
 	}
 
         document.querySelector('#nfts-change').onchange = async (e) => {
 	     nft_self.nft.change = e.target.value;      
-
 	     let change = BigInt(nft_self.nft.amt) - BigInt(nft_self.nft.deposit) - BigInt(nft_self.nft.fee);
              document.querySelector('#nfts-change').value = change.toString();
 	}
 
         document.querySelector('#create_nft').onclick = async (e) => {
-            console.log('create clicked: ');
 console.log("SUBMIT NFT: ");
 console.log(nft_self.nft.amt);
 console.log(nft_self.nft.bid);
@@ -110,11 +101,10 @@ console.log(nft_self.nft.image);
 	    this.nft.sid = slip_index;
 	    this.nft.amt = amount;
 
+	    document.querySelector(".nft-creator").forEach((el) => { el.classList.remove("nft-inactive"); });
+	    document.querySelector(".create-button").forEach((el) => { el.classList.remove("nft-inactive"); });
 
         };
-
-	
-
     }
 
 

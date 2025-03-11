@@ -12,6 +12,11 @@
     float: left;
 }
 
+.nft-inactive {
+    pointer-events: none;
+    opacity: 0.2;
+}
+
 html {
 	overflow-y: scroll;
 }
