@@ -1101,3 +1101,19 @@ ul.horizontal_list li.iconoption {
 	}
 }
 
+@keyframes dice-roll-flash {
+  0%, 100% { 
+    color: #FFF;
+    background: #0004;
+  }
+  50% { 
+    color: #000;
+    background: #FFF6;
+  }
+}
+
+.sector_value.rolled {
+  animation: dice-roll-flash 1.2s ease-in-out;
+  animation-iteration-count: 3;
+}
+

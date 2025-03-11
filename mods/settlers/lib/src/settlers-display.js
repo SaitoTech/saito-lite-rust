@@ -436,43 +436,16 @@ class SettlersDisplay {
   /*
   Flashes tiles activated by dice roll
   */
+ 
   animateDiceRoll(roll) {
-    //console.log("Dice Animated: " + roll);
-    $('.rolled').removeClass('rolled');
-    $('.sector_value:not(.bandit)').attr('style', '');
-    let divname = '.sv' + roll + ':not(.bandit)';
-    $(divname)
-      .addClass('rolled')
-      .css('color', '#000')
-      .css('background', '#FFF6')
-      .delay(600)
-      .queue(function () {
-        $(this).css('color', '#FFF').css('background', '#0004').dequeue();
-      })
-      .delay(600)
-      .queue(function () {
-        $(this).css('color', '#000').css('background', '#FFF6').dequeue();
-      })
-      .delay(600)
-      .queue(function () {
-        $(this).css('color', '#FFF').css('background', '#0004').dequeue();
-      })
-      .delay(600)
-      .queue(function () {
-        $(this).css('color', '#000').css('background', '#FFF6').dequeue();
-      })
-      .delay(600)
-      .queue(function () {
-        $(this).css('color', '#FFF').css('background', '#0004').dequeue();
-      })
-      .delay(600)
-      .queue(function () {
-        $(this).css('color', '#000').css('background', '#FFF6').dequeue();
-      });
-    /*.delay(800)
-      .queue(function () {
-        $(this).removeAttr("style").dequeue();
-      });*/
+    // Remove old classes and reset styles
+    document.querySelectorAll('.rolled').forEach(el => el.classList.remove('rolled'));
+    document.querySelectorAll('.sector_value:not(.bandit)').forEach(el => el.removeAttribute('style'));
+    
+    // Add rolled class to matching sectors
+    document.querySelectorAll(`.sv${roll}:not(.bandit)`).forEach(el => {
+      el.classList.add('rolled');
+    });
   }
 
 
