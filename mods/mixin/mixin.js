@@ -516,7 +516,7 @@ class Mixin extends ModTemplate {
     }
   }
 
-  async checkWithdrawalFee(asset_id, recipient){
+  async returnWithdrawalFee(asset_id, recipient){
     try {
       let user = MixinApi({
         keystore: {
@@ -535,37 +535,6 @@ class Mixin extends ModTemplate {
       const fee = assetFee ?? chainFee;
       
       return fee.amount;
-    } catch(err) {
-      console.error("ERROR: Mixin error check withdrawl fee: " + err);
-      return false;
-    }
-  }
-
-
-  async createWithdrawalAddress(asset_id, withdrawal_address, tag = "", callback = null) {
-    try {
-      let user = MixinApi({
-        keystore: {
-          app_id: this.mixin.user_id,
-          session_id: this.mixin.session_id,
-          pin_token_base64: this.mixin.tip_key_base64,
-          session_private_key: this.mixin.session_seed
-        },
-      });
-
-      let address_data = await user.address.create(this.mixin.tip_key_base64, {
-        asset_id: asset_id,
-        destination: withdrawal_address,
-        tag: tag,
-        label: ''
-      });
-
-      console.log("create address //");
-      console.log(address_data);
-
-      if (callback) {
-        return callback(address_data);
-      }
     } catch(err) {
       console.error("ERROR: Mixin error check withdrawl fee: " + err);
       return false;
@@ -896,7 +865,7 @@ class Mixin extends ModTemplate {
     }
 
     let data = params;
-    await this.app.network.sendRequestAsTransaction(
+    return this.app.network.sendRequestAsTransaction(
       "mixin fetch user",
       data,
       function (res) {

@@ -62,11 +62,9 @@ class MixinModule extends CryptoModule {
 		this.minimum_delay_between_balance_queries = 4000;
 
 		this.confirmations = 100;
-
 	}
 
 	async activate() {
-
 		if (this.mixin.account_created == 0) {
 			this.app.connection.emit('header-install-crypto', this.ticker);
 			await this.mixin.createAccount(async (res) => {
@@ -95,17 +93,14 @@ class MixinModule extends CryptoModule {
 	 */
 	async checkBalance() {
 		let now = new Date().getTime();
-		if (now - this.balance_timestamp_last_fetched >
-			this.minimum_delay_between_balance_queries
-		) {
+		if (now - this.balance_timestamp_last_fetched > this.minimum_delay_between_balance_queries) {
 			console.log('MixinModule Query balance for ' + this.ticker);
 
 			this.balance_timestamp_last_fetched = now;
 
 			await this.mixin.fetchSafeUtxoBalance(this.asset_id);
-
-		}else{
-			console.log("MixinModule warning: too soon to query balance updates");
+		} else {
+			console.log('MixinModule warning: too soon to query balance updates');
 		}
 	}
 
@@ -117,12 +112,13 @@ class MixinModule extends CryptoModule {
 	 * @abstract
 	 * @return {Number}
 	 */
-	async sendPayment(amount = '', recipient = '', unique_hash = '', fee) {
+	async sendPayment(amount = '', recipient = '', unique_hash = '') {
 		try {
 			let r = recipient.split('|');
-			let ts = new Date().getTime();
+
 			let internal_transfer = false;
 			let destination = recipient;
+
 			let res = {};
 
 			console.log('send sendPayment');
@@ -144,14 +140,16 @@ class MixinModule extends CryptoModule {
 						address: recipient
 					},
 					function (res) {
-						let user_data = res;
-						if (typeof user_data.user_id != 'undefined') {
+						console.log('Cross network callback complete');
+						if (res?.user_id) {
 							internal_transfer = true;
-							destination = user_data.user_id;
+							destination = res.user_id;
 						}
 					}
 				);
 			}
+
+			console.log('Initiate mixin transfer, internally? ', internal_transfer);
 
 			// internal mixin transfer
 			if (internal_transfer) {
@@ -307,7 +305,6 @@ class MixinModule extends CryptoModule {
 		return status;
 	}
 
-
 	returnNetworkInfo() {
 		return this.mixin.returnNetworkInfo(this.asset_id);
 	}
@@ -317,7 +314,7 @@ class MixinModule extends CryptoModule {
 	// if it can offer zero-fee in-network transfers or requires a network fee to be paid
 	// in order to process the payment.
 	//
-	async returnWithdrawalFeeForAddress(recipient = '', mycallback) {
+	async checkWithdrawalFeeForAddress(recipient = '', mycallback) {
 		if (recipient == '') {
 			return mycallback(0);
 		}
@@ -353,8 +350,12 @@ class MixinModule extends CryptoModule {
 		if (typeof user_data.user_id != 'undefined') {
 			return mycallback(0);
 		} else {
-			let fee = await this.mixin.checkWithdrawalFee(this.asset_id, recipient);
-			return mycallback(fee);
+			let fee = await this.mixin.returnWithdrawalFee(this.asset_id, recipient);
+			if (fee !== false) {
+				return mycallback(fee);
+			}
+
+			return mycallback(0);
 		}
 	}
 
@@ -587,7 +588,6 @@ class MixinModule extends CryptoModule {
 
 		return null;
 	}
-
 
 	validateAddress(address) {
 		// suported cryptos by validator package
