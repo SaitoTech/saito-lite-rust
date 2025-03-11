@@ -118,7 +118,7 @@ console.log(nft_self.nft.image);
     }
 
 
-    addImage() {
+    addImage(img="") {
 
         let nft_self = this;
         let html = `<div class="nft-image-preview post-tweet-img-preview">
