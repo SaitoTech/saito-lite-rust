@@ -6,9 +6,15 @@ class AddNft {
         this.app = app;
         this.mod = mod;
         this.overlay = new SaitoOverlay(this.app, this.mod);
+
+        this.nft = {};
+
     }
 
     async render() {
+
+	this.nft = {};
+
         this.overlay.show(AddNftTemplate(this.app, this.mod, this));
 
         let balance_str = await this.mod.getBalanceString();
@@ -21,7 +27,15 @@ class AddNft {
     }
 
     attachEvents() {
-        let this_self = this;
+
+	let nft_self = this;
+
+        nft_self.app.browser.addDragAndDropFileUploadToElement(
+             "nft-image-upload",
+              nft_self.callbackOnImageUpload,
+              false
+        );
+
 
         document.querySelector('#create_nft').onclick = async (e) => {
             //let fee = document.querySelector('#fee').value;
@@ -29,6 +43,13 @@ class AddNft {
         };
 
     }
+
+
+    async callbackOnImageUpload(file) {
+alert(JSON.stringify(file));
+    }
+
+
 
     async renderUtxo() {
         let utxo = await this.fetchUtxo();

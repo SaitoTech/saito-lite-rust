@@ -33,7 +33,7 @@ module.exports = (app, mod) => {
                     </div>
                   </div>
                   <div class="textarea-container">
-                    <div class="saito-app-upload active-tab paste_event" id="appstore-zip-upload">
+                    <div class="saito-app-upload active-tab paste_event" id="nft-image-upload">
                         drag-and-drop NFT image
                     </div>
                   </div>
