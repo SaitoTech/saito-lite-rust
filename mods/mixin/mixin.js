@@ -894,7 +894,7 @@ class Mixin extends ModTemplate {
   }
 
 
-  // Get MixinAddress
+  // Get MixinAddress -> returnAddressFromPublicKey
   async sendFetchUserByPublicKeyTransaction(params = {}, callback){
     let peers = await this.app.network.getPeers();
     if (peers.length == 0) {
@@ -904,10 +904,9 @@ class Mixin extends ModTemplate {
 
     console.log('params: ', params);
 
-    let data = params;
-    await this.app.network.sendRequestAsTransaction(
+    return await this.app.network.sendRequestAsTransaction(
       "mixin fetch user by publickey",
-      data,
+      params,
       function (res) {
         console.log("Callback for sendFetchUserByPublicKeyTransaction request: ", res);
         return callback(res);

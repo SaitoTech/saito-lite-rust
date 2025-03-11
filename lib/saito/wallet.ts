@@ -228,6 +228,7 @@ export default class Wallet extends SaitoWallet {
       validateAddress(address) {
         return this.app.wallet.isValidPublicKey(address);
       }
+
     }
 
     this.saitoCrypto = new SaitoCrypto(this.app);
@@ -595,6 +596,12 @@ export default class Wallet extends SaitoWallet {
     }
     console.log('done wallet.returnAvailableCryptosAssociativeArray()');
     return cryptos;
+  }
+
+  saveAvailableCryptosAssociativeArray(publicKey, cryptos){
+    for (let ticker in cryptos){
+      this.app.keychain.addCryptoAddress(publicKey, ticker, cryptos[ticker].address);
+    }
   }
 
   async returnPreferredCryptoBalance() {
