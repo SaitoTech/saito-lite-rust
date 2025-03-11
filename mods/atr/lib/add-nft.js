@@ -34,6 +34,7 @@ class AddNft {
 		return;
 	    }
 	    this.nft.image = file;
+	    this.addImage(file);
 	};
 
         this.overlay.show(AddNftTemplate(this.app, this.mod, this));
@@ -63,7 +64,7 @@ class AddNft {
 	     //
 	     // recalculate change
 	     //
-	     let change = BigInt(nft_self.nft.amt).minus(BigInt(nft_self.nft.deposit)).minus(BigInt(nft_self.nft.fee));
+	     let change = BigInt(nft_self.nft.amt) - BigInt(nft_self.nft.deposit) - BigInt(nft_self.nft.fee);
              document.querySelector('#nfts-change').value = change.toString();
 
 	}
@@ -120,7 +121,7 @@ console.log(nft_self.nft.image);
     addImage() {
 
         let nft_self = this;
-        let html = `<div class="post-tweet-img-preview">
+        let html = `<div class="nft-image-preview post-tweet-img-preview">
                       <img src="${img}"/>
                       <i class="fa fa-times"></i>
                     </div>`;
