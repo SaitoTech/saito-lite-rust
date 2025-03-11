@@ -1,5 +1,4 @@
 // @ts-nocheck
-
 import screenfull, { element } from 'screenfull';
 import { getDiffieHellman } from 'crypto';
 import React from 'react';
@@ -10,9 +9,7 @@ const sanitizer = require('sanitizer');
 const linkifyHtml = require('markdown-linkify');
 const emoji = require('node-emoji');
 const UserMenu = require('./ui/modals/user-menu/user-menu');
-const Deposit = require('./ui/saito-crypto/overlays/deposit');
-const Withdraw = require('./ui/saito-crypto/overlays/withdraw');
-const History = require('./ui/saito-crypto/overlays/history');
+const SaitoCrypto = require('./ui/saito-crypto/saito-crypto');
 const debounce = require('lodash/debounce');
 const SaitoMentions = require('./ui/saito-mentions/saito-mentions');
 
@@ -58,6 +55,7 @@ class Browser {
 		this.tab_event_name = "visibilitychange";
 		this.title_interval = null;
 	    this.terminationEvent = 'unload';
+	    this.back_fn_queue = [];
 
 	}
 
@@ -246,29 +244,10 @@ class Browser {
 				// if crypto is provided switch over
 				//
 				if (pair[0] === 'crypto') {
-					let preferred_crypto_found = 0;
-					const available_cryptos =
-						this.app.wallet.returnInstalledCryptos();
-					for (let i = 0; i < available_cryptos.length; i++) {
-						if (available_cryptos[i].ticker) {
-							if (
-								available_cryptos[i].ticker.toLowerCase() ===
-								pair[1].toLowerCase()
-							) {
-								preferred_crypto_found = 1;
-								await this.app.wallet.setPreferredCrypto(
-									available_cryptos[i].ticker
-								);
-							}
-						}
-					}
-
-					if (preferred_crypto_found == 0) {
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
+					if (!(await this.app.wallet.setPreferredCrypto(pair[1]))){
 						salert(
 							`Your compile does not contain a ${pair[1].toUpperCase()} module. Visit the AppStore or contact us about getting one built!`
-						);
+						);						
 					}
 				}
 			}
@@ -292,21 +271,9 @@ class Browser {
 			}
 
 			//
-			// crypto overlays, add so events will listen. this assumes
-			// games do not have saito-header installed.
+			// crypto overlays, add so events will listen
 			//
-			this.deposit_overlay = new Deposit(
-				this.app,
-				this.app.modules.returnActiveModule()
-			);
-			this.withdrawal_overlay = new Withdraw(
-				this.app,
-				this.app.modules.returnActiveModule()
-			);
-			this.history_overlay = new History(
-				this.app,
-				this.app.modules.returnActiveModule()
-			);
+			this.saito_crypto = new SaitoCrypto(this.app, this.app.modules.returnActiveModule());
 
 			//
 			// check if we are already open in another tab -
@@ -406,6 +373,15 @@ class Browser {
 				capture: true
 			}
 		);
+
+		window.onpopstate = (event)=> {
+			//console.log("Browser navigation: ", event?.state);
+			if (event.state){
+				this.popBackFn(event);	
+			}else{
+				//console.log(event);
+			}
+		}
 
 		//hide pace-js if its still active
 		setTimeout(function () {
@@ -726,6 +702,17 @@ class Browser {
 	generateQRCode(data, qrid = 'qrcode') {
 		const QRCode = require('./../helpers/qrcode');
 		let obj = document.getElementById(qrid);
+
+		if (typeof data === "object"){
+			data.width=256;
+	        data.height=256;
+	        data.colorDark="#000000";
+		    data.colorLight="#ffffff";
+		    data.correctLevel=QRCode.CorrectLevel.H;
+		}
+
+		console.log(data);
+
 		return new QRCode(obj, data);
 	}
 
@@ -927,10 +914,8 @@ class Browser {
 			let container = document.querySelector(selector);
 			if (container) {
 				const el = document.createElement('div');
-				console.log(html);
 				container.insertAdjacentElement('afterend', el);
 				el.outerHTML = html;
-				console.log(el);
 				return;
 			}
 		}
@@ -2779,6 +2764,39 @@ class Browser {
             root,
             cleanup
         };
+    }
+
+    pushBackFn(callback){
+    	this.back_fn_queue.push(callback);
+
+    	if (this.back_fn_queue.length == 2){
+    		console.log("HISTORY: Add back arrow");
+	    	this.app.connection.emit('saito-header-replace-logo', ()=> {
+	    		window.history.back();
+	    	});
+
+    	}
+
+    	console.log("HISTORY PUSHED: ", this.back_fn_queue);
+    }
+
+    popBackFn(event){
+    	this.back_fn_queue.pop();
+
+    	console.log("HISTORY POPPED: ", this.back_fn_queue, event);
+
+    	if (this.back_fn_queue.length > 0) {
+    		this.back_fn_queue[this.back_fn_queue.length - 1]();
+    	}
+
+    	if (this.back_fn_queue.length <= 1) {
+    		this.app.connection.emit('saito-header-reset-logo');
+    	}
+    }
+
+    resetBackFn(callback){
+    	this.back_fn_queue = [];
+    	this.pushBackFn(callback);
     }
 }
 

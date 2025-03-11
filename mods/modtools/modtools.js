@@ -79,7 +79,7 @@ class ModTools extends ModTemplate {
 
 			// Pop-up warning if banning someone who is in our keychain?
 			if (this.app.keychain.returnKey(obj.publicKey, true)){
-				let c = await sconfirm(`${this.app,keychain.returnUsername(obj.publicKey)} is in your keychain, are you sure you want to block them?`);
+				let c = await sconfirm(`${this.app.keychain.returnUsername(obj.publicKey)} is in your keychain, are you sure you want to block them?`);
 				if (!c){
 					return;
 				}
@@ -211,21 +211,38 @@ class ModTools extends ModTemplate {
 		//
 		// modtools -- share whitelists / blacklists
 		//
-		if (service.service === 'modtools' && this.canPeerModerate(peer.publicKey)) {
-			app.network.sendRequestAsTransaction(
-				'modtools',
-				{ request: 'load' },
-				(res) => {
-					if (res?.blacklist?.length) {
-						modtools_self.addPeerBlacklist(peer.publicKey, res.blacklist);
-					}
+		if (service.service === 'modtools') {
 
-					if (res?.whitelist?.length) {
-						modtools_self.addPeerWhitelist(peer.publicKey, res.whitelist);
-					}
-				},
-				peer.peerIndex
-			);
+			//
+			// Make sure our connected node is not! blacklisted!
+			//
+			if (this.app.BROWSER) {
+				if (this.isBlacklisted(peer.publicKey)) {
+					this.unblacklistAddress(peer.publicKey);
+				}
+			}
+
+			//
+			// If we trust the peer (node or browser),
+			// request the black/white lists and add them to our own
+			// 
+			if (this.canPeerModerate(peer.publicKey)){
+				app.network.sendRequestAsTransaction(
+					'modtools',
+					{ request: 'load' },
+					(res) => {
+						if (res?.blacklist?.length) {
+							modtools_self.addPeerBlacklist(peer.publicKey, res.blacklist);
+						}
+
+						if (res?.whitelist?.length) {
+							modtools_self.addPeerWhitelist(peer.publicKey, res.whitelist);
+						}
+					},
+					peer.peerIndex
+				);
+
+			}
 		}
 	}
 
@@ -315,13 +332,12 @@ class ModTools extends ModTemplate {
 
 	async receiveWhitelistTransaction(blk, tx, conf, app) {
 		let txmsg = tx.returnMessage();
-		if (this.canPeerModerate(tx.from[0].publicKey)) {
-			this.whitelistAddress(txmsg.data);
-		} else if (txmsg?.credential) {
-			if (txmsg.credential === 'cceb1c83976a46634021ca252a218a53ae882788d9507741db89f6582fc17233') {
-				this.whitelistAddress(txmsg.data);
-			}
-		}
+
+		let sudo_mode = (txmsg?.credential === 'cceb1c83976a46634021ca252a218a53ae882788d9507741db89f6582fc17233');
+
+		if (this.canPeerModerate(tx.from[0].publicKey) || sudo_mode) {
+			this.whitelistAddress(txmsg.data, sudo_mode);
+		} 
 	}
 
 	hasSettings() {
@@ -559,7 +575,10 @@ class ModTools extends ModTemplate {
 
 		for (let i = 0; i < list.length; i++) {
 			if (list[i].hop < this.max_hops) {
-				this.whitelistAddress(list[i]);
+				// If I added, then removed, don't accept it just echoing back at me
+				if (list[i].moderator !== this.publicKey){
+					this.whitelistAddress(list[i]);	
+				}
 			}
 		}
 	}
@@ -572,8 +591,7 @@ class ModTools extends ModTemplate {
 
 		let add = data.publicKey;
 
-
-		if (!this.blacklisted_publickeys.includes(add)) {
+		if (!this.blacklisted_publickeys.includes(add) && add !== this.publicKey) {
 
 			this.blacklisted_publickeys.push(add);
 
@@ -594,7 +612,7 @@ class ModTools extends ModTemplate {
 
 	}
 
-	whitelistAddress(data) {
+	whitelistAddress(data, sudo = false) {
 		if (!data?.publicKey) {
 			return;
 		}
@@ -603,7 +621,7 @@ class ModTools extends ModTemplate {
 		if (!this.whitelisted_publickeys.includes(add)) {
 			this.whitelisted_publickeys.push(add);
 
-			if (data.moderator !== this.publicKey) {
+			if (data.moderator !== this.publicKey && !sudo) {
 				data.hop++;
 				// reduce duration per hop
 				if (data.duration == -1){
@@ -662,6 +680,9 @@ class ModTools extends ModTemplate {
 		this.app.options.modtools.blacklist = this.blacklist;
 		this.app.options.modtools.permissions = this.permissions;
 		this.app.storage.saveOptions();
+
+		//Broadcast that the black or white lists have changed
+		this.app.connection.emit("modtools-lists-updated");
 	}
 
 	load() {
@@ -690,7 +711,7 @@ class ModTools extends ModTemplate {
 		this.permissions = this.app.options.modtools.permissions;
 
 		for (let i = 0; i < this.app.options.modtools.whitelist.length; i++) {
-			if (this.verifyData(this.app.options.modtools.whitelist[i], false)){
+			if (this.verifyData(this.app.options.modtools.whitelist[i], true)){
 				let pk = this.app.options.modtools.whitelist[i].publicKey;
 				if (!this.whitelisted_publickeys.includes(pk)) {
 					this.whitelisted_publickeys.push(pk);
@@ -721,6 +742,10 @@ class ModTools extends ModTemplate {
 			return false;
 		}
 
+		if (obj.publicKey == this.publicKey){
+			return false;
+		}
+
 		// Prune Old Listed Keys
 		if (check_time){
 			let current_time = new Date().getTime();
@@ -737,6 +762,12 @@ class ModTools extends ModTemplate {
 
 		return true;
 	}
+
+
+	/*
+		Idea, prune_after should indicate prune after X time IFF we don't see said key
+	*/
+
 
 	webServer(app, expressapp, express) {
 		let webdir = `${__dirname}/../../mods/${this.dirname}/web`;

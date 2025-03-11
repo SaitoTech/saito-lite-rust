@@ -220,6 +220,27 @@ class Tweet {
 		return false;
 	}
 
+
+	hideTweet() {
+		//remove from archive
+		this.app.storage.deleteTransaction(this.tx, null, 'localhost');
+		//remove from dom
+		this.remove();
+
+		//Add to blacklist
+		this.mod.hidden_tweets.push(this.tx.signature);
+		this.mod.saveOptions();
+
+		//remove from tweet list!
+	    for (let i = 0; i < this.mod.tweets.length; i++) {
+	        if (this.mod.curated_tweets[i].tx.signature === this.tx.signature) {
+    	      this.mod.curated_tweets.splice(i, 1);
+        	  return;
+        	}
+      	}
+	}
+
+
 	remove() {
 		let eqs = `.tweet-${this.tx.signature}`;
 		if (document.querySelector(eqs)) {

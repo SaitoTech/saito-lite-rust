@@ -4,14 +4,54 @@
 	position: absolute;
 }
 
+.oos-highlight::before {
+	content: ' ';
+	box-shadow: 2rem 2rem 7rem 3rem #fc8c, -2rem -2rem 7rem 3rem #fc8c;
+	height: 6rem;
+	width: 6rem;
+	display: block;
+	margin-top: 1.6rem;
+	margin-left: 1.6rem;
+	position: absolute;
+}
+.central-highlight::before {
+	content: ' ';
+	box-shadow: 2rem 2rem 7rem 3rem #f66c, -2rem -2rem 7rem 3rem #f66c;
+	height: 6rem;
+	width: 6rem;
+	display: block;
+	margin-top: 1.6rem;
+	margin-left: 1.6rem;
+	position: absolute;
+}
+.neutral-highlight::before {
+	content: ' ';
+	box-shadow: 2rem 2rem 7rem 3rem #cfcc, -2rem -2rem 7rem 3rem #cfcc;
+	height: 6rem;
+	width: 6rem;
+	display: block;
+	margin-top: 1.6rem;
+	margin-left: 1.6rem;
+	position: absolute;
+}
+.allies-highlight::before {
+	content: ' ';
+	box-shadow: 2rem 2rem 7rem 3rem #33fc, -2rem -2rem 7rem 3rem #33fc;
+	height: 6rem;
+	width: 6rem;
+	display: block;
+	margin-top: 1.6rem;
+	margin-left: 1.6rem;
+	position: absolute;
+}
 .selectable::before {
 	content: ' ';
 	box-shadow: 2rem 2rem 7rem 3rem #fffc, -2rem -2rem 7rem 3rem #fffc;
 	height: 6rem;
 	width: 6rem;
 	display: block;
-	margin-top: 2.5rem;
-	margin-left: 2rem;
+	margin-top: 1.6rem;
+	margin-left: 1.6rem;
 	position: absolute;
 }
 

@@ -57,7 +57,7 @@ class TweetMenu {
 							await this.reportTweet();
 							break;
 						case 'hide_tweet':
-							this.hideTweet();
+							this.tweet.hideTweet();
 					}
 
 					this.overlay.close();
@@ -72,14 +72,14 @@ class TweetMenu {
 	}
 
 	blockContact() {
+		//Also flag the tweet
+		this.reportTweet();
 		this.app.connection.emit('saito-blacklist', ({ publicKey : this.tweeter, duration : -1 })); // -1 is forever
 		siteMessage('User blocked... reloading feed');
 		reloadWindow(1500);
-		//Also flag the tweet
-		this.reportTweet();
 	}
 
-	async reportTweet() {
+	reportTweet() {
 		//let wallet_balance = await this.app.wallet.getBalance('SAITO');
 
 		// restrict moderation
@@ -92,28 +92,9 @@ class TweetMenu {
 
 		siteMessage('Reporting tweet to moderators...', 3000);
 
-		this.hideTweet();
+		this.tweet.hideTweet();
 	}
 
-	hideTweet() {
-		//remove from archive
-		this.app.storage.deleteTransaction(this.tweet.tx, null, 'localhost');
-		//remove from dom
-		this.tweet.remove();
-
-		//Add to blacklist
-		this.mod.hidden_tweets.push(this.tweet.tx.signature);
-		this.mod.saveOptions();
-
-		//remove from tweet list!
-	    for (let i = 0; i < this.mod.tweets.length; i++) {
-	        if (this.mod.curated_tweets[i].tx.signature === this.tweet.tx.signature) {
-    	      this.mod.curated_tweets.splice(i, 1);
-        	  return;
-        	}
-      	}
-
-	}
 }
 
 module.exports = TweetMenu;

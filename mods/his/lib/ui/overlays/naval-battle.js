@@ -162,14 +162,16 @@ try {
 
 				el.onclick = (e) => {
 
+					let hits_left = hits_to_assign - hits_assigned;
 					let this_unit_type = e.currentTarget.getAttribute('data-unit-type');
+
 					if (hits_left == 1 && this_unit_type == "squadron") {
-						alert("Squadrons take 2 hits to destroy...");
+						alert("You must assign your last hit to a Corsair...");
 						return;
 					}
 					if (hits_left == 2 && this_unit_type == "corsair") {
 						if (undestroyed_corsairs <= 1 && undestroyed_squadrons > 0) {
-							alert("Only One Corsair Remains - You Must Target a Squadron...");
+							alert("You must assign your last two hits to a Squadron...");
 							return;
 						}
 					}
@@ -188,7 +190,7 @@ try {
 					if (unit_type === 'squadron') {
 						hits_assigned++;
 					}
-					let hits_left = hits_to_assign - hits_assigned;
+					hits_left = hits_to_assign - hits_assigned;
 
 					if (hits_left > 0) {
 						this.mod.updateStatus(
@@ -344,6 +346,8 @@ try {
 			let roll = res.attacker_modified_rolls[modified_rolls_idx];
 			let unit_type = res.attacker_units[i];
 			let faction_name = res.attacker_units_faction[i];
+			let faction_owner = faction_name;
+			if (res.attacker_units_owners.length > i) { faction_owner = res.attacker_units_owners[i]; }
 			let how_many_hits = 1;
 			if (unit_type === 'squadron') {
 				how_many_hits = 2;
@@ -389,6 +393,8 @@ try {
 					roll = '?';
 					rrclass = '';
 				}
+
+				if (faction_owner != faction_name) { faction_name = faction_name + " / " + faction_owner; }
 
 				let html = `
               <div class="naval-battle-row ${assignable}" data-unit-type="${unit_type}" data-faction="${faction_name}">
@@ -441,6 +447,8 @@ try {
 			let roll = res.defender_modified_rolls[modified_rolls_idx];
 			let unit_type = res.defender_units[i];
 			let faction_name = res.defender_units_faction[i];
+			let faction_owner = faction_name;
+			if (res.defender_units_owners.length > i) { faction_owner = res.defender_units_owners[i]; }
 			let how_many_hits = 1;
 			if (unit_type === 'squadron') {
 				how_many_hits = 2;
@@ -486,6 +494,8 @@ try {
 					roll = '?';
 					rrclass = '';
 				}
+
+				if (faction_owner != faction_name) { faction_name = faction_name + " / " + faction_owner; }
 
 				let html = `
               <div class="naval-battle-row ${assignable}" data-unit-type="${unit_type}" data-faction="${faction_name}">

@@ -111,9 +111,11 @@ html[data-theme="midnight"] {
   --border-radius-offset: 0.3rem;
   --border-radius-leaderboard-ranking: var(--border-radius-round);
   /* BORDER THICKNESS */
+  --border-padding-qr-code: 0;
   --border-thickness-button-primary: var(--border-thickness-thin);
   --border-thickness-button-hover-primary: var(--border-thickness-thin);
   --border-thickness-identicon: var(--border-thickness-none);
+  --border-thickness-qr-code: var(--border-thickness-fat); /* for contrast to be able to scan */
   /* BORDER COLORS */
   --border-color-general-dividers-dark: var(--color-primary);
   --border-color-button-primary: var(--color-complement);

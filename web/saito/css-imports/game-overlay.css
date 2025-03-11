@@ -215,6 +215,40 @@
 }
 
 
+/***********************
+ * 
+ * GAme stake info
+ * 
+ **********************/
+.stake-info-overlay {
+  width: min(400px, 80vw);
+  min-height: 250px;
+  max-height: 70vh;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 2rem;
+  padding: 2rem;
+  justify-content: space-evenly;
+}
+
+.stake-info-overlay .h3 {
+  font-size: 3rem;
+}
+
+.stake-info-overlay > div {
+  margin: 1rem;
+}
+
+.stake-info-overlay .player-table {
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  row-gap: 1rem;
+  column-gap: 2rem;
+  justify-items: center;
+}
+
 /*******************/
 /* A welcome image  */
 /*******************/

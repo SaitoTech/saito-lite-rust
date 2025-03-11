@@ -232,9 +232,6 @@
 	gap: unset;
 }
 
-.discard-cards-overlay .settlers-items-container .settlers-cards-container img {
-	height: 13rem;
-}
 
 .discard-cards-overlay .settlers-cards-container img.selected {
 	filter: grayscale(50%) brightness(0.7);
@@ -392,7 +389,9 @@
 		gap: 0.2rem;
 	}
 
-	.settlers-items-container .settlers-cards-container img {
+	.settlers-items-container .settlers-cards-container img,
+	.discard-cards-overlay .settlers-items-container .settlers-cards-container img
+	 {
 		height: 8rem;
 	}
 

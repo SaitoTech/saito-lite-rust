@@ -16,7 +16,7 @@ class ChatManagerOverlay {
 
 			if (this.backFn){
 				window.onpopstate = this.backFn;
-				delete this.backFnl
+				this.backFn = null;
 			}
 
 			this.mod.chat_manager.container = this.old_container;

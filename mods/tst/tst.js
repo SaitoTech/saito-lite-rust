@@ -2,17 +2,16 @@ const CryptoModule = require('../../lib/templates/cryptomodule');
 
 class TST extends CryptoModule {
 	constructor(app) {
-		super(app, 'TST');
-		this.name = 'TST';
+		super(app, "TST");
+
 		this.slug = 'tst';
-		this.ticker = 'TST';
+
 		this.description =
 			'This module implement CryptoModule functions without moving tokens';
-		this.categories = 'Cryptocurrency';
 		this.information =
 			'This is some important information you may care to read about when enabling the TST crypto module';
 		this.warning = 'The TST crypto module wishes you to read this warning';
-		this.balance = (100*Math.random()).toFixed(8);
+		this.balance = "0.0"; 
 	}
 
 	//
@@ -29,6 +28,16 @@ class TST extends CryptoModule {
 		return this.app.wallet.publicKey;
 	}
 
+	async activate(){
+
+		if (!this.isActivated()){
+			this.balance = (100*Math.random()).toFixed(8);
+			this.app.connection.emit('header-install-crypto', this.ticker);
+		}
+		
+		await super.activate();
+	}
+
 	//
 	// returns the web3 crypto private key
 	//
@@ -37,17 +46,10 @@ class TST extends CryptoModule {
 		return await this.app.wallet.returnPrivateKey();
 	}
 
-	//
-	// fetches and returns the balance at the web3 crypto addresses
-	//
-	// @param {String} address in which to check balance
-	// @return {Array} Array of {address: {String}, balance: {Int}}
-	//
-	async returnBalance(address = '') {
-		return this.balance;
-		//return '100.00000000';
+	async checkBalance(){
+		return 0;
 	}
-
+	
 	//
 	// sends a payment in amount requested to the specified address if possible
 	//
@@ -57,7 +59,7 @@ class TST extends CryptoModule {
 	//        of the transaction that makes this transfer on the external web3
 	//        crypto.
 	//
-	async sendPayment(amounts = '', recipient = '', unique_hash = '', fee) {
+	async sendPayment(amounts = '', recipient = '', unique_hash = '') {
 		return this.app.crypto.hash(Math.random().toString());
 	}
 
@@ -83,28 +85,9 @@ class TST extends CryptoModule {
 		return 0;
 	}
 
-	async renderModalSelectCrypto(app, mod, cryptomod) {
-		return WarningTemplate(await this.returnAddress());
-	}
 
-
-	async returnWithdrawalFeeForAddress(address="", callback){
+	async checkWithdrawalFeeForAddress(address="", callback){
 		callback(0.005);
-	}
-
-	attachEventsModalSelectCrypto(app, mod, cryptomod) {
-		try {
-			let dotgo = document.getElementById('dot-warning-confirm');
-			if (dotgo) {
-				dotgo.onclick = (e) => {
-					cryptomod.modal_overlay.hide();
-					app.connection.emit('header-update-balance');
-				};
-			}
-		} catch (err) {
-			console.log('ERROR ACTIVATING: ' + err);
-		}
-		return;
 	}
 
 	respondTo(type = '', obj) {

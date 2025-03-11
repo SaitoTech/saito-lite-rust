@@ -25,7 +25,9 @@
     //
     this.preloadImages();
     setTimeout(() => {
-      this.preloadMoreImage();
+      try {
+        this.preloadMoreImages();
+      } catch (err) {}
     }, 20000);
 
 

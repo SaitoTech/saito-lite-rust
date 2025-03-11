@@ -80,6 +80,17 @@ module.exports  = (app, mod, main) => {
               <div class="profile-public-key saito-password">${main.privateKey}</div>
               <i class="fas fa-copy" id="copy-private-key"></i>
             </div>
+
+            <div>Default Fee:</div>
+            <div class="default-fee-containter">
+              <input type="number" 
+                     id="profile-default-fee-input" 
+                     class="profile-default-fee" 
+                     step="0.000000001" 
+                     min="0" 
+                     value="${app.wallet.convertNolanToSaito(app.wallet.default_fee)}"
+              />
+            </div>
           </div>
         </div>
       </div>

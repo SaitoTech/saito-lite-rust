@@ -64,7 +64,7 @@ class GameTestSuite extends GameTemplate {
 		//
 		if (this.game.options.crypto != undefined) {
 			this.game.crypto = this.game.options.crypto;
-			let crypto_key = await this.app.wallet.returnCryptoAddressByTicker(
+			let crypto_key = this.app.wallet.returnCryptoAddressByTicker(
 				this.game.crypto
 			);
 			this.addMove(
@@ -994,14 +994,7 @@ class GameTestSuite extends GameTemplate {
     game_self.endTurn();
     */
 
-		let current_balance =
-			await game_self.crypto_transfer_manager.returnBalance(
-				app,
-				game_self,
-				address,
-				ticker,
-				function () {}
-			);
+		let current_balance = 0;
 		game_self.updateStatus(`you have ${current_balance} ${ticker}`);
 	}
 

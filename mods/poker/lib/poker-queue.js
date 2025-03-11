@@ -42,7 +42,7 @@ class PokerQueue {
 
 			if (mv[0] === 'winner') {
 				this.game.queue = [];
-				this.game.crypto = null;
+				//this.game.crypto = null;
 				this.settleDebt();
 				this.sendGameOverTransaction(this.game.players[parseInt(mv[1])], 'elimination');
 				return 0;
@@ -66,9 +66,13 @@ class PokerQueue {
 					this.game.state.button_player = this.game.players.length;
 				}
 
-				this.game.state.small_blind_player = this.game.state.button_player - 1;
-				if (this.game.state.small_blind_player < 1) {
-					this.game.state.small_blind_player = this.game.players.length;
+				if (this.game.players.length > 2){
+					this.game.state.small_blind_player = this.game.state.button_player - 1;
+					if (this.game.state.small_blind_player < 1) {
+						this.game.state.small_blind_player = this.game.players.length;
+					}
+				}else{
+					this.game.state.small_blind_player = this.game.state.button_player;
 				}
 
 				this.game.state.big_blind_player = this.game.state.small_blind_player - 1;
@@ -283,20 +287,9 @@ class PokerQueue {
 								if (this.game.state.player_pot[i] > 0) {
 									let amount_to_send = this.convertChipsToCrypto(this.game.state.player_pot[i]);
 
-									if (this.settleNow) {
-										let ts = new Date().getTime();
-										this.rollDice();
-										let uh = this.game.dice;
-										this.settlement.push(
-											`RECEIVE\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`
-										);
-										this.settlement.push(
-											`SEND\t${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`
-										);
-									} else {
-										this.game.state.debt[i] += this.game.state.player_pot[i];
-										this.game.state.debt[player_left_idx] -= this.game.state.player_pot[i];
-									}
+									console.log(`crypto -- ${i}->${player_left_idx}: ${this.game.players[i]}\t${this.game.players[player_left_idx]}\t${amount_to_send}\t${this.game.crypto}`);
+									this.game.state.debt[i] += this.game.state.player_pot[i];
+									this.game.state.debt[player_left_idx] -= this.game.state.player_pot[i];
 								}
 							}
 						}
@@ -645,28 +638,10 @@ class PokerQueue {
 								let amount_to_send = this.convertChipsToCrypto(
 									this.game.state.player_pot[ii] / winners.length
 								);
-								//To Do: check math on this... and make more efficient (fewer transfers total if split pot)
-
-								if (this.settleNow) {
-									// do not reformat -- adding whitespace screws with API
-									let ts = new Date().getTime();
-									this.rollDice();
-									let uh = this.game.dice;
-									this.settlement.push(
-										`RECEIVE\t${this.game.players[ii]}\t${
-											this.game.players[winners[i]]
-										}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`
-									);
-									this.settlement.push(
-										`SEND\t${this.game.players[ii]}\t${
-											this.game.players[winners[i]]
-										}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`
-									);
-								} else {
-									let share_of_winnings = this.game.state.player_pot[ii] / winners.length;
-									this.game.state.debt[ii] += share_of_winnings;
-									this.game.state.debt[winners[i]] -= share_of_winnings;
-								}
+								console.log(`crypto -- ${ii}->${winners[i]}: ${this.game.players[ii]}\t${this.game.players[winners[i]]}\t${amount_to_send}\t${this.game.crypto}`);
+								let share_of_winnings = this.game.state.player_pot[ii] / winners.length;
+								this.game.state.debt[ii] += share_of_winnings;
+								this.game.state.debt[winners[i]] -= share_of_winnings;
 							}
 						}
 					}

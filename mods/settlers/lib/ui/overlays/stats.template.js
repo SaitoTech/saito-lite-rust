@@ -41,7 +41,7 @@ module.exports = (stats, winner) => {
 <!--                  <div class="settlers-stats-player">Dice Rolls</div> -->
         `;
 
-		html += `<div class="settlers-dice-histogram">`;
+		html += `<div class="settlers-dice-histogram" title="number of times each number has been rolled">`;
 		for (let i = 2; i <= 12; i++) {
 			let bar_height = base_height * stats.mod.game.stats.dice[i];
 			html += `  <div class="settlers-dice-bar dice-${i} ${
@@ -63,10 +63,19 @@ module.exports = (stats, winner) => {
 		}
 		html += `</div>`;
 
-		html += `<div class="settlers-dice-numbers">`;
+		html += `<div class="settlers-dice-numbers" title="dice roll">`;
 		for (let i = 2; i <= 12; i++) {
 			html += `<div class="settlers-dice-number">${i}</div>`;
 		}
+		html += `</div><div class="settlers-dice-numbers" title="rolls since number last came up" style="display:none;">`;
+		for (let i = 2; i <= 12; i++) {
+			if (stats.mod.game.stats.famine[i] !== undefined){
+				html += `<div class="settlers-number">${stats.mod.game.stats.famine[i]}</div>`;	
+			}else{
+				html += `<div class="settlers-number"></div>`;	
+			}
+		}
+
 		html += `</div><hr></div>`;
 
 

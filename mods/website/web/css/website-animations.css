@@ -1145,6 +1145,7 @@ text {
     padding: 1rem;
     transition: transform 0.3s ease-in-out;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    margin: 2rem 0;
 }
 
 a#start_anim:hover,

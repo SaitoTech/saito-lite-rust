@@ -38,6 +38,17 @@
 
   }
 
+  addHighlights(el) {
+    if (!el.classList.contains("allies")) {
+      el.classList.add('allies-highlight');
+    }
+    if (!el.classList.contains("neutral")) {
+      el.classList.add('neutral-highlight');
+    }
+    if (!el.classList.contains("central")) {
+      el.classList.add('central-highlight');
+    }
+  } 
 
   addSelectable(el) {
     if (!el.classList.contains("selectable")) {
@@ -69,12 +80,13 @@
     paths_self.displayReserveBoxes();
     paths_self.displayEliminatedUnitsBoxes();
 
-
     //
     // display the spaces on the board
     //
     try {
       this.displaySpaces();
+      this.addHighlights();
+
     } catch (err) {
 console.log("!");
 console.log("!");
@@ -184,9 +196,15 @@ console.log("!");
 	}
       }
 
-      document.querySelectorAll(`.${key}`).forEach((el) => { el.innerHTML = html; });
+      document.querySelectorAll(`.${key}`).forEach((el) => { 
+        if (control == "allies") { el.classList.add("allies-highlight"); }
+        if (control == "central") { el.classList.add("central-highlight"); }
+        if (control == "neutral") { el.classList.add("neutral-highlight"); }
+	el.innerHTML = html; 
+      });
 
     } catch (err) {
+console.log("err: " + err);
     }
   }
 

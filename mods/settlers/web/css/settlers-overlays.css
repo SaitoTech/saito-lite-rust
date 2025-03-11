@@ -135,10 +135,14 @@ stats overlay
 	font-weight: bold;
 }
 
+.settlers-number {
+	width: calc(100% / 14);
+	text-align: center;
+}
+
 .settlers-dice-numbers {
 	display: flex;
 	justify-content: space-around;
-	margin-bottom: 1rem;
 }
 
 
@@ -182,6 +186,10 @@ stats overlay
 	display: flex;
 	flex-direction: column;
 	gap: 0.25rem;
+}
+
+.settlers-state-container hr {
+	margin: 1rem;
 }
 
 .settlers-stats-player {
@@ -460,6 +468,7 @@ stats overlay
 	display: grid;
 	grid-template-columns: 12rem repeat(auto-fit, minmax(5rem, 1fr));
 	align-items: center;
+	margin-bottom: 0.5rem;
 }
 
 .settlers-stat-num-alt {
@@ -594,7 +603,8 @@ stats overlay
 		flex-direction: column;
 	}
 	.settlers-stats-overlay{
-		min-height: min(550px, 90vh);
+		min-height: unset;
+		height: min(800px, 85vh);
 		padding: 2rem 2vw;
 		gap: 1rem;
 	}
@@ -635,6 +645,20 @@ stats overlay
 	}
 	hr {
 		margin: 1.5rem;
+	}
+
+	.stats-header{
+		flex-wrap: wrap;
+	}
+	.stats-header .overlay-tab {
+		max-width: unset;
+	}
+	.stats-header .overlay-tab.active-tab{
+		order: 1;
+	}
+
+	.trade_area{
+		font-size: 5rem;
 	}
 }
 

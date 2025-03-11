@@ -76,6 +76,8 @@ class Stun extends ModTemplate {
 		// });
 
 		app.connection.on('stun-connection-connected', async (publicKey) => {
+			let stats = await this.peers.get(publicKey).getStats()
+			console.log("STUN STATS: ", stats);
 			//await this.app.network.addStunPeer(publicKey, this.peers.get(publicKey))
 		});
 	}
@@ -466,7 +468,7 @@ class Stun extends ModTemplate {
 			} else {
 				console.log('STUN reconnection attempt timed out, give up!');
 			}
-		}, 8000);
+		}, 10000);
 
 		// Handle ICE candidates
 		peerConnection.onicecandidate = async (event) => {
@@ -507,7 +509,7 @@ class Stun extends ModTemplate {
 				peerConnection.connectionState === 'disconnected'
 			) {
 				console.log('STUN: set reconnection timer...');
-				let timerAmt = callback ? 6000 : 4000;
+				let timerAmt = callback ? 9000 : 5000;
 				peerConnection.timer = setTimeout(
 					() => {
 						if (
@@ -613,6 +615,16 @@ class Stun extends ModTemplate {
 			peerConnection.close();
 			this.peers.delete(peerId);
 		}
+
+		//remove from noloop so manual refreshing can do a try again
+		for (let i = 0; i < this.noloop.length; i++){
+			if (this.noloop[i] == peerId) {
+				this.noloop.splice(i, 1);
+				return;
+			}
+		}
+
+			
 	}
 }
 
