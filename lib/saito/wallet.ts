@@ -242,6 +242,7 @@ export default class Wallet extends SaitoWallet {
 
     this.saitoCrypto = new SaitoCrypto(this.app);
 
+
     if (this.app.options.wallet != null) {
       if (this.app.options.archive) {
         this.app.options.archive.wallet_version = this.app.options.wallet.version;
@@ -392,6 +393,8 @@ export default class Wallet extends SaitoWallet {
         this.setKeyList(this.app.keychain.returnWatchedPublicKeys());
       });
     }
+    await this.saitoCrypto.initialize(this.app);
+
   }
 
   constructor(wallet: any) {
