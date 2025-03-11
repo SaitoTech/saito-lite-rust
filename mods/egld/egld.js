@@ -240,7 +240,7 @@ class EGLDModule extends CryptoModule {
     }
   }
 
-  async sendPayment(amount = '', recipient = '', unique_hash = '', fee = null) {
+  async sendPayment(amount = '', recipient = '', unique_hash = '') {
     try {
       console.log('inside sendPayment ////');
       console.log('amount, recipient, unique_hash: ', amount, recipient, unique_hash);
@@ -366,14 +366,14 @@ class EGLDModule extends CryptoModule {
     }
   }
 
-  async returnWithdrawalFeeForAddress(address, callback) {
+  async checkWithdrawalFeeForAddress(address, callback) {
     try {
 
       let fee = BigInt(this.networkConfig.MinGasLimit * this.networkConfig.MinGasPrice);
       console.log('egld fee;', fee);
       return callback(this.convertAtomicToEgld(fee));
     } catch (error) {
-      console.error('Error returnWithdrawalFeeForAddress:', error);
+      console.error('Error checkWithdrawalFeeForAddress:', error);
     }
   }
 

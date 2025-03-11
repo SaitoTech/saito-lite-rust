@@ -11558,10 +11558,12 @@ defender_hits - attacker_hits;
 	  //
 	  let faction = "";
 	  let resolve_required = false;
+	  let no_need_for_resolve = false;
 
 	  if (mv[1] && (mv[0] === "check_interventions" || mv[0] === "check_intervention")) { 
 	    this.game.queue.splice(qe, 1);
 	    faction = mv[1];
+	    no_need_for_resolve = true;
 	  }
 
 	  this.unbindBackButtonFunction();
@@ -11579,7 +11581,7 @@ defender_hits - attacker_hits;
 	    // extra RESOLVES because we receive another RESOLVE before 
 	    // ours, so we swap out this for a HALTED command.
 	    //
-	    if (resolve_required == true || faction == "") {
+	    if ((resolve_required == true && no_need_for_resolve != true) || faction == "") {
 	      this.game.queue[his_self.game.queue.length-1] = "halted";
 	      this.addMove("RESOLVE\t"+this.publicKey);
 	    }

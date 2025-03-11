@@ -247,7 +247,7 @@ class Crypto extends ModTemplate {
 		let fee = 0;
 
     let crypto_mod = this.app.wallet.returnCryptoModuleByTicker(ticker);
-    crypto_mod.returnWithdrawalFeeForAddress('', function(res){
+    crypto_mod.checkWithdrawalFeeForAddress('', function(res){
       fee = res;
     });
 
