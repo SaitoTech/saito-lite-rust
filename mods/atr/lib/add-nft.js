@@ -121,9 +121,9 @@ console.log(nft_self.nft.image);
     addImage(img="") {
 
         let nft_self = this;
-        let html = `<div class="nft-image-preview post-tweet-img-preview">
+        let html = `<div class="nft-image-preview">
                       <img src="${img}"/>
-                      <i class="fa fa-times"></i>
+                      <i class="fa fa-times" onclick="alert('reload to change image')"></i>
                     </div>`;
                                 
         this.app.browser.addElementToSelector(html, ".create-button");

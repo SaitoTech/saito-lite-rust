@@ -4,6 +4,14 @@
     box-sizing: border-box;
 }
 
+.nft-image-preview {
+    position: relative;
+    height: auto;
+    cursor: pointer;
+    width: auto;
+    float: left;
+}
+
 html {
 	overflow-y: scroll;
 }
