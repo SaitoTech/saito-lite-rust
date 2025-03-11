@@ -19,13 +19,19 @@ module.exports = (app, mod) => {
                 </div>
                 <div class="nft-creator">
                   <div class="inputs">
+<!-----
                     <div>
-                      <label for="num-nfts">Number of NFTs</label>
+                      <label for="nfts-num">Number of NFTs</label>
                       <input type="number" id="nfts-num" value="1">
                     </div>
+------>
                     <div>
-                      <label for="nfts-deposit">Deposit per NFT</label>
+                      <label for="nfts-deposit">Deposit</label>
                       <input type="number" id="nfts-deposit" value="0">
+                    </div>
+                    <div>
+                      <label for="nfts-fee">Tx Fee</label>
+                      <input type="number" id="nfts-fee" value="1">
                     </div>
                     <div>
                       <label for="nfts-change">Change</label>

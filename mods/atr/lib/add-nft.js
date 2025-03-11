@@ -19,6 +19,7 @@ class AddNft {
 	this.nft.tid     = 0;
 	this.nft.sid     = 0;
 	this.nft.amt     = 0;
+	this.nft.image   = "";
 
 	this.utxo = [];
 
@@ -28,8 +29,11 @@ class AddNft {
 
 	this.nft.test = "abc";
 	this.nft.imageUploadCallback = async (file) => {
-	    alert(JSON.stringify(this.nft.test));
-	    this.nft.data = file;
+	    if (this.nft.image != "") { 
+		alert("NFT Image Editing not allowed, refresh to restart...");
+		return;
+	    }
+	    this.nft.image = file;
 	};
 
         this.overlay.show(AddNftTemplate(this.app, this.mod, this));
@@ -53,14 +57,31 @@ class AddNft {
               true
         );
 
+        document.querySelector('#nfts-fee').onchange = async (e) => {
+	     nft_self.nft.fee = e.target.value;      
+
+	     //
+	     // recalculate change
+	     //
+	     let change = BigInt(nft_self.nft.amount).minus(BigInt(nft_self.nft.deposit)).minus(BigInt(nft_self.nft.fee));
+             document.querySelector('#nfts-change').value = change.toString();
+
+	}
         document.querySelector('#nfts-num').onchange = async (e) => {
 	     nft_self.nft.num = e.target.value;      
 	}
         document.querySelector('#nfts-deposit').onchange = async (e) => {
 	     nft_self.nft.deposit = e.target.value;      
+
+	     let change = BigInt(nft_self.nft.amount).minus(BigInt(nft_self.nft.deposit)).minus(BigInt(nft_self.nft.fee));
+             document.querySelector('#nfts-change').value = change.toString();
+
 	}
         document.querySelector('#nfts-change').onchange = async (e) => {
 	     nft_self.nft.change = e.target.value;      
+
+	     let change = BigInt(nft_self.nft.amount).minus(BigInt(nft_self.nft.deposit)).minus(BigInt(nft_self.nft.fee));
+             document.querySelector('#nfts-change').value = change.toString();
 	}
 
         document.querySelector('#create_nft').onclick = async (e) => {
@@ -73,10 +94,10 @@ console.log(nft_self.nft.sid);
 console.log(nft_self.nft.num);
 console.log(nft_self.nft.deposit);
 console.log(nft_self.nft.change);
+console.log(nft_self.nft.image);
         };
 
         document.querySelector('.utxo-selection-button').onclick = async (e) => {
-alert("VAL: " + JSON.stringify(e.target.value));
 
             let utxo = this.utxo[parseInt(e.target.value)-1];
             let block_id = utxo[1];
@@ -94,6 +115,19 @@ alert("VAL: " + JSON.stringify(e.target.value));
 
 	
 
+    }
+
+
+    addImage() {
+
+        let nft_self = this;
+        let html = `<div class="post-tweet-img-preview">
+                      <img src="${img}"/>
+                      <i class="fa fa-times"></i>
+                    </div>`;
+                                
+        this.app.browser.addElementToSelector(html, ".create-button");
+                        
     }
 
 
