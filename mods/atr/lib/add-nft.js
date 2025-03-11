@@ -15,6 +15,11 @@ class AddNft {
 	this.nft.slip    = "";
 	this.nft.id      = "";
 
+	this.nft.bid     = 0;
+	this.nft.tid     = 0;
+	this.nft.sid     = 0;
+	this.nft.amt     = 0;
+
 	this.utxo = [];
 
     }
@@ -60,12 +65,20 @@ class AddNft {
 
         document.querySelector('#create_nft').onclick = async (e) => {
             console.log('create clicked: ');
+console.log("SUBMIT NFT: ");
+console.log(nft_self.nft.amt);
+console.log(nft_self.nft.bid);
+console.log(nft_self.nft.tid);
+console.log(nft_self.nft.sid);
+console.log(nft_self.nft.num);
+console.log(nft_self.nft.deposit);
+console.log(nft_self.nft.change);
         };
 
         document.querySelector('.utxo-selection-button').onclick = async (e) => {
 alert("VAL: " + JSON.stringify(e.target.value));
 
-            let utxo_item = this.utxo[parseInt(e.target.value)-1];
+            let utxo = this.utxo[parseInt(e.target.value)-1];
             let block_id = utxo[1];
             let tx_ordinal = utxo[2];
             let slip_index = utxo[3];
@@ -91,7 +104,7 @@ alert("VAL: " + JSON.stringify(e.target.value));
         let html = ``;
         for (let i = 0; i < this.utxo.length; i++) {
 
-            let utxo_item = this.utxo[i];
+            let utxo = this.utxo[i];
             let block_id = utxo[1];
             let tx_ordinal = utxo[2];
             let slip_index = utxo[3];
