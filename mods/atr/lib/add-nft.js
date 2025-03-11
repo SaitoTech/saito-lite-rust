@@ -101,8 +101,8 @@ console.log(nft_self.nft.image);
 	    this.nft.sid = slip_index;
 	    this.nft.amt = amount;
 
-	    document.querySelector(".nft-creator").forEach((el) => { el.classList.remove("nft-inactive"); });
-	    document.querySelector(".create-button").forEach((el) => { el.classList.remove("nft-inactive"); });
+	    document.querySelectorAll(".nft-creator").forEach((el) => { el.classList.remove("nft-inactive"); });
+	    document.querySelectorAll(".create-button").forEach((el) => { el.classList.remove("nft-inactive"); });
 
         };
     }

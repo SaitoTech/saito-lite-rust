@@ -8,8 +8,9 @@ module.exports = (app, mod) => {
 		Creating NFTs requires you to have SAITO in your wallet.
 		<p></p>
 		Once you pick a slip you will be able to specify the transaction fee you wish to pay and the "deposit" that you wish to affix to your NFT. This deposit is what keeps your NFT from -- only the user who is able to spend the UTXO you "deposit" will be able to transfer the NFT to a new address.
-                <div><b>Your UTXO</b></div>
-                <div id="utxo-list"></div>
+	      </div>
+              <div><b>Your UTXO</b></div>
+              <div id="utxo-list"></div>
             </div>
             
             <div class="right-section">
