@@ -10,6 +10,8 @@
     cursor: pointer;
     width: auto;
     float: left;
+    max-height: 7.5rem;
+    height: inherit;
 }
 
 .nft-inactive {
