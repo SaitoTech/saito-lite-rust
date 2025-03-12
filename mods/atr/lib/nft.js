@@ -24,6 +24,7 @@ class Nft {
 	this.nft.amt     = 0;
 	this.nft.type    = 0;
 	this.nft.image   = "";
+	this.nft.publickey = "";
 
 	this.callback    = {};
 	this.utxo = [];
@@ -31,6 +32,8 @@ class Nft {
     }
 
     async render() {
+
+        this.nft.publickey = await this.app.wallet.returnPublicKey();
 
 	this.callback.imageUploadCallback = async (file) => {
 	    if (this.nft.image != "") { 
@@ -56,7 +59,7 @@ class Nft {
 
     createObject() {
 	let obj = {};
-	    obj.id = `${this.publicKey}${this.nft.bid}${this.nft.tid}${this.nft.sid}${this.nft.amount}${1}`;
+	    obj.id = `${this.nft.publickey}${this.nft.bid}${this.nft.tid}${this.nft.sid}${this.nft.amt}${1}`;
 	    if (this.nft.image) { obj.image = this.nft.image; }
 	    if (this.nft.data) { obj.data = this.nft.data; }
 	    return obj;
@@ -66,14 +69,21 @@ class Nft {
 
 	let nft_self = this;
 
+	//
+	// upload images
+	//
         nft_self.app.browser.addDragAndDropFileUploadToElement(
              "nft-image-upload",
               this.callback.imageUploadCallback,
               true
         );
 
+	//
+	// switch to data-mode
+	//
         document.querySelector('.data-nft-toggle').onclick = (e) => {
 	     if (this.editing_mode === "image") {
+	        this.editing_mode = "data";
 		let obj = this.createObject();
 		if (!obj.data) { obj.data = {}; }
 		e.target.style.opacity = "0.3";
@@ -83,18 +93,27 @@ class Nft {
 	     }
 	}
 
+        //
+        // transaction fee
+        //
         document.querySelector('#nfts-fee').onchange = async (e) => {
 	     nft_self.nft.fee = e.target.value;      
 	     let change = BigInt(nft_self.nft.amt) - BigInt(nft_self.nft.deposit) - BigInt(nft_self.nft.fee);
              document.querySelector('#nfts-change').value = change.toString();
 	}
 
+        //
+        // deposit
+        //
         document.querySelector('#nfts-deposit').onchange = async (e) => {
 	     nft_self.nft.deposit = e.target.value;      
 	     let change = BigInt(nft_self.nft.amt) - BigInt(nft_self.nft.deposit) - BigInt(nft_self.nft.fee);
              document.querySelector('#nfts-change').value = change.toString();
 	}
 
+        //
+        // change amount
+        //
         document.querySelector('#nfts-change').onchange = async (e) => {
 	     nft_self.nft.change = e.target.value;      
 	     let change = BigInt(nft_self.nft.amt) - BigInt(nft_self.nft.deposit) - BigInt(nft_self.nft.fee);
@@ -125,6 +144,11 @@ console.log(nft_self.nft.num);
 console.log(nft_self.nft.deposit);
 console.log(nft_self.nft.change);
 console.log(nft_self.nft.image);
+
+	     //
+	     // send NFT object to RUST
+	     //
+
         };
 
         document.querySelector('.utxo-selection-button').onclick = async (e) => {
