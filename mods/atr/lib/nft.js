@@ -67,84 +67,90 @@ class Nft {
 	let nft_self = this;
 
         nft_self.app.browser.addDragAndDropFileUploadToElement(
-             "nft-image-upload",
-              this.callback.imageUploadCallback,
-              true
+            "nft-image-upload",
+            this.callback.imageUploadCallback,
+            true
         );
 
         document.querySelector('.data-nft-toggle').onclick = (e) => {
-	     if (this.editing_mode === "image") {
-		let obj = this.createObject();
-		if (!obj.data) { obj.data = {}; }
-		e.target.style.opacity = "0.3";
-		document.querySelector(".textarea-container").innerHTML = `<textarea class="data-nft-textarea">${JSON.stringify(obj, null, 2)}</textarea>`;
-	     } else {
-		alert("Please reload to return to image editor...");
-	     }
-	}
+            if (this.editing_mode === "image") {
+                let obj = this.createObject();
+                if (!obj.data) { obj.data = {}; }
+                e.target.style.opacity = "0.3";
+                document.querySelector(".textarea-container").innerHTML = `<textarea class="data-nft-textarea">${JSON.stringify(obj, null, 2)}</textarea>`;
+            } else {
+                alert("Please reload to return to image editor...");
+            }
+    	}
 
         document.querySelector('#nfts-fee').onchange = async (e) => {
-	     nft_self.nft.fee = e.target.value;      
-	     let change = BigInt(nft_self.nft.amt) - BigInt(nft_self.nft.deposit) - BigInt(nft_self.nft.fee);
-             document.querySelector('#nfts-change').value = change.toString();
-	}
+	        nft_self.nft.fee = e.target.value;      
+	        let change = BigInt(nft_self.nft.amt) - BigInt(nft_self.nft.deposit) - BigInt(nft_self.nft.fee);
+            document.querySelector('#nfts-change').value = change.toString();
+	    }
 
         document.querySelector('#nfts-deposit').onchange = async (e) => {
-	     nft_self.nft.deposit = e.target.value;      
-	     let change = BigInt(nft_self.nft.amt) - BigInt(nft_self.nft.deposit) - BigInt(nft_self.nft.fee);
-             document.querySelector('#nfts-change').value = change.toString();
-	}
+	        nft_self.nft.deposit = e.target.value;      
+	        let change = BigInt(nft_self.nft.amt) - BigInt(nft_self.nft.deposit) - BigInt(nft_self.nft.fee);
+            document.querySelector('#nfts-change').value = change.toString();
+	    }
 
         document.querySelector('#nfts-change').onchange = async (e) => {
-	     nft_self.nft.change = e.target.value;      
-	     let change = BigInt(nft_self.nft.amt) - BigInt(nft_self.nft.deposit) - BigInt(nft_self.nft.fee);
-             document.querySelector('#nfts-change').value = change.toString();
-	}
+	        nft_self.nft.change = e.target.value;      
+	        let change = BigInt(nft_self.nft.amt) - BigInt(nft_self.nft.deposit) - BigInt(nft_self.nft.fee);
+            document.querySelector('#nfts-change').value = change.toString();
+	    }
 
         document.querySelector('#create_nft').onclick = async (e) => {
-	     let obj = this.createObject();
-	     if (this.editing_mode === "image") {
-alert("NFT: " + JSON.stringify(obj));
-	     } else {
-		let ta = document.querySelector(".data-nft-textarea");
-		let obj2 = JSON.parse(ta.value);
-alert("NFT2: " + JSON.stringify(obj2));
-		for (let key in obj2) {
-		    if (key != id) {
-			obj.key = obj2.key
-		    }
-		}
-alert("NFT3: " + JSON.stringify(obj));
-	     }
-console.log("SUBMIT NFT: ");
-console.log(nft_self.nft.amt);
-console.log(nft_self.nft.bid);
-console.log(nft_self.nft.tid);
-console.log(nft_self.nft.sid);
-console.log(nft_self.nft.num);
-console.log(nft_self.nft.deposit);
-console.log(nft_self.nft.change);
-console.log(nft_self.nft.image);
+    	    let obj = this.createObject();
+    	  
+            if (this.editing_mode === "image") {
+            
+                alert("NFT: " + JSON.stringify(obj));
+    	    
+            } else {
+        		
+                let ta = document.querySelector(".data-nft-textarea");
+        		let obj2 = JSON.parse(ta.value);
+                
+                alert("NFT2: " + JSON.stringify(obj2));
+        		
+                for (let key in obj2) {
+        		    if (key != id) {
+        			  obj.key = obj2.key
+        		    }
+        		}
+
+                alert("NFT3: " + JSON.stringify(obj));
+    	    }
+
+            console.log("SUBMIT NFT: ");
+            console.log(nft_self.nft.amt);
+            console.log(nft_self.nft.bid);
+            console.log(nft_self.nft.tid);
+            console.log(nft_self.nft.sid);
+            console.log(nft_self.nft.num);
+            console.log(nft_self.nft.deposit);
+            console.log(nft_self.nft.change);
+            console.log(nft_self.nft.image);
         };
 
         document.querySelector('.utxo-selection-button').onclick = async (e) => {
-
             let utxo = this.utxo[parseInt(e.target.value)-1];
-
-console.log("UTXO: " + JSON.stringify(utxo));
+            console.log("UTXO: " + JSON.stringify(utxo));
 
             let block_id = utxo[1];
             let tx_ordinal = utxo[2];
             let slip_index = utxo[3];
             let amount = utxo[4];
 
-	    this.nft.bid = block_id;
-	    this.nft.tid = tx_ordinal;
-	    this.nft.sid = slip_index;
-	    this.nft.amt = amount;
+    	    this.nft.bid = block_id;
+    	    this.nft.tid = tx_ordinal;
+    	    this.nft.sid = slip_index;
+    	    this.nft.amt = amount;
 
-	    document.querySelectorAll(".nft-creator").forEach((el) => { el.classList.remove("nft-inactive"); });
-	    document.querySelectorAll(".create-button").forEach((el) => { el.classList.remove("nft-inactive"); });
+    	    document.querySelectorAll(".nft-creator").forEach((el) => { el.classList.remove("nft-inactive"); });
+    	    document.querySelectorAll(".create-button").forEach((el) => { el.classList.remove("nft-inactive"); });
 
         };
     }
