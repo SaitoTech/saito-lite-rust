@@ -65,7 +65,7 @@ class Nft {
 
         document.querySelector('.data-nft-toggle').onclick = (e) => {
 	     if (this.editing_mode === "image") {
-		document.querySelector(".textarea-container").innerHTML = `<textarea class="data-nft-textarea">${JSON.stringify(this.nft}</textarea`;	        
+		document.querySelector(".textarea-container").innerHTML = `<textarea class="data-nft-textarea">${JSON.stringify(this.nft)}</textarea>`;	        
 	     } else {
 		alert("Please reload to return to image editor...");
 	     }
