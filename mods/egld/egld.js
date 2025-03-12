@@ -163,14 +163,6 @@ class EGLDModule extends CryptoModule {
     }
   }
 
-  returnAddress() {
-    try {
-      return this.address;
-    } catch (error) {
-      console.error('Error returnAddress:', error);
-    }
-  }
-
   async getNonce() {
     try {
       await this.updateAccount();

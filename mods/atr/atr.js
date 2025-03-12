@@ -133,6 +133,7 @@ class ATR extends ModTemplate {
 			atr_obj.total_supply = '-';
 		} else {
 			utxo = await this.fetchBalanceSnapshot('');
+			console.log("")
 			atr_obj.utxo = utxo;
 			atr_obj.total_supply = utxo+blk.treasury+blk.graveyard+blk.totalFees+blk.previousBlockUnpaid;
 		}
@@ -275,6 +276,8 @@ class ATR extends ModTemplate {
             let data = await response.text();
             let utxo = null;
 
+            console.log("utxo: ", data);
+
             let split_data = data.split(' ');
 
             const result = split_data.slice(1).filter(item => item.includes('\n')).map(item => {
@@ -286,6 +289,19 @@ class ATR extends ModTemplate {
         } catch (error) {
             console.error(error);
         }
+    }
+
+    async getBalanceString(balance = null) {
+    	if (balance == null) {
+    		balance = await this.app.wallet.getBalance();
+		}
+
+		let balanceSaito = balance/BigInt(100000000);
+		let nolansRemainder = balance - (balanceSaito * BigInt(100000000));
+
+		let balance_str = balanceSaito+"."+nolansRemainder;
+
+		return Number(balance_str).toFixed(2);
     }
 }
 

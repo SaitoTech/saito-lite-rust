@@ -1,5 +1,6 @@
 const MainTemplate = require('./main.template');
 const AddMempool = require('./add-mempool');
+const Nft = require('./nft');
 
 class Main {
 	constructor(app, mod, container = '') {
@@ -10,6 +11,7 @@ class Main {
 			this.render();
 		});
 		this.add_mempool = new AddMempool(app, mod);
+		this.nft = new Nft(app, mod);
 	}
 
 
@@ -92,14 +94,14 @@ class Main {
 			// await this.app.network.propagateTransaction(newtx);
 		};
 
+
+		document.querySelector('#add_nft').onclick = async (e) => {
+			await this.nft.render();
+		};
 	}
 
 	async renderBalance(){
-		let balance = await this.app.wallet.getBalance();
-		let balanceSaito = balance/BigInt(100000000);
-		let nolansRemainder = balance - (balanceSaito * BigInt(100000000));
-
-		let balance_str = balanceSaito+"."+nolansRemainder;
+		let balance_str = await this.mod.getBalanceString();
 
 		console.log('balance string: ', balance_str);
 		if (document.querySelector(".metric.balance h3 .metric-amount") != null) {

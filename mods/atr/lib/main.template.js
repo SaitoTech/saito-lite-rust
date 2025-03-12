@@ -22,6 +22,7 @@ module.exports = (app, mod) => {
         <button class="saito-button-secondary control-button new_block_with_ticket">New Block (w/ golden ticket)</button>
         <button class="saito-button-secondary control-button new_block_no_ticket">New Block (w/o golden ticket)</button>
         <button class="saito-button-secondary control-button add_transaction_to_mempool" id="add_transaction_to_mempool">Add Transaction to Mempool</button>
+        <button class="saito-button-secondary control-button add_nft" id="add_nft">Add NFT</button>
     </div>
 
     <div class="tabs">

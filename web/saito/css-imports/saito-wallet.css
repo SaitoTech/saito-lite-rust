@@ -507,6 +507,7 @@
   autocomplete: off;
 }
 
+
 /* Fully override Chrome's autofill styling */
 .saito-overlay-form-input input:-webkit-autofill,
 .saito-overlay-form-input input:-webkit-autofill:hover,
