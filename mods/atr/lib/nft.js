@@ -22,6 +22,7 @@ class Nft {
 	this.nft.tid     = 0;
 	this.nft.sid     = 0;
 	this.nft.amt     = 0;
+	this.nft.type    = 0;
 	this.nft.image   = "";
 
 	this.callback    = {};
@@ -53,6 +54,14 @@ class Nft {
         this.attachEvents();
     }
 
+    createObject() {
+	let obj = {};
+	    obj.id = `${this.publicKey}${this.nft.bid}${this.nft.tid}${this.nft.sid}${this.nft.amount}${1}`;
+	    if (this.nft.image) { obj.image = this.nft.image; }
+	    if (this.nft.data) { obj.data = this.nft.data; }
+	    return obj;
+    }
+
     attachEvents() {
 
 	let nft_self = this;
@@ -65,7 +74,10 @@ class Nft {
 
         document.querySelector('.data-nft-toggle').onclick = (e) => {
 	     if (this.editing_mode === "image") {
-		document.querySelector(".textarea-container").innerHTML = `<textarea class="data-nft-textarea">${JSON.stringify(this.nft)}</textarea>`;	        
+		let obj = this.createObject();
+		if (!obj.data) { obj.data = {}; }
+		e.target.style.opacity = "0.3";
+		document.querySelector(".textarea-container").innerHTML = `<textarea class="data-nft-textarea">${JSON.stringify(obj, null, 2)}</textarea>`;
 	     } else {
 		alert("Please reload to return to image editor...");
 	     }
@@ -90,6 +102,20 @@ class Nft {
 	}
 
         document.querySelector('#create_nft').onclick = async (e) => {
+	     let obj = this.createObject();
+	     if (this.editing_mode === "image") {
+alert("NFT: " + JSON.stringify(obj));
+	     } else {
+		let ta = document.querySelector(".data-nft-textarea");
+		let obj2 = JSON.parse(ta.value);
+alert("NFT2: " + JSON.stringify(obj2));
+		for (let key in obj2) {
+		    if (key != id) {
+			obj.key = obj2.key
+		    }
+		}
+alert("NFT3: " + JSON.stringify(obj));
+	     }
 console.log("SUBMIT NFT: ");
 console.log(nft_self.nft.amt);
 console.log(nft_self.nft.bid);
@@ -104,6 +130,9 @@ console.log(nft_self.nft.image);
         document.querySelector('.utxo-selection-button').onclick = async (e) => {
 
             let utxo = this.utxo[parseInt(e.target.value)-1];
+
+console.log("UTXO: " + JSON.stringify(utxo));
+
             let block_id = utxo[1];
             let tx_ordinal = utxo[2];
             let slip_index = utxo[3];
