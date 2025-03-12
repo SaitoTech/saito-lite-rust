@@ -433,10 +433,10 @@ export default class Wallet extends SaitoWallet {
       this.app.options.gameprefs = {};
     }
 
-    this.app.options.gameprefs.crypto_transfers_inbound_approved = 1;
-    this.app.options.gameprefs.crypto_transfers_outbound_approved = 1;
-    this.app.options.gameprefs.crypto_transfers_inbound_trusted = 1;
-    this.app.options.gameprefs.crypto_transfers_outbound_trusted = 1;
+    this.app.options.gameprefs.crypto_transfers_outbound_approved = 0;
+    this.app.options.gameprefs.crypto_transfers_inbound_trusted = 0;
+
+    this.preferred_crypto = 'SAITO';
 
     await this.saveWallet();
 
@@ -651,6 +651,8 @@ export default class Wallet extends SaitoWallet {
       ticker
     );
 
+    let rtnObj = {};
+
     if (!this.doesPreferredCryptoTransactionExist(unique_tx_hash)) {
       console.log('preferred crypto transaction does not already exist');
       const cryptomod = this.returnCryptoModuleByTicker(ticker);
@@ -678,21 +680,25 @@ export default class Wallet extends SaitoWallet {
             return;
           } catch (err) {
             // it failed, delete the transaction
-            console.log('sendPayment ERROR: payment failed....\n' + err);
             this.deletePreferredCryptoTransaction(unique_tx_hash);
-            mycallback({err: err});
-            return;
+            rtnObj = { err };
           }
         } else {
-          console.warn('Cannot send payment from wrong crypto address');
           console.log(cryptomod.name);
           console.log(senders[i], cryptomod.formatAddress());
+          rtnObj = { err: "wrong address" };
         }
       }
     } else {
-      console.log('sendPayment ERROR: already sent');
-      //mycallback({err: "already sent"});
+      rtnObj = { err: "already sent" };
     }
+
+    console.error("sendPayment ERROR: ", rtnObj);
+
+    if (mycallback){
+      mycallback({rtnObj});  
+    }
+    
   }
 
   /**
@@ -1151,6 +1157,7 @@ export default class Wallet extends SaitoWallet {
       this.reset(false);
       this.app.blockchain.resetBlockchain();
       this.app.storage.resetOptions();
+      this.preferred_crypto = 'SAITO';
       await this.fetchBalanceSnapshot(publicKey);
     } else if (type == 'import') {
       // wallet file used for importing

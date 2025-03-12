@@ -69,10 +69,6 @@ class CryptoSelectAmount {
 				return;
 			}
 
-			let confirm = document.getElementById('crypto-stake-confirm-input').checked;
-			this_self.app.options.gameprefs.crypto_transfers_inbound_approved = confirm ? 1 : 0;
-			await this_self.app.wallet.saveWallet();
- 
 			if (this.callback != null) {
 				let amount = stake_input.value;
 				let alt_amount = document.getElementById('minimum_accepted_stake')?.value || null;
