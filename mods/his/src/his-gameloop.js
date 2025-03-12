@@ -9290,6 +9290,11 @@ console.log("into relief siege...");
 	  let stage = "assault";
 
 	  //
+	  //
+	  //
+	  this.updateLog(this.returnFactionName(attacker) + " assaults " + this.returnSpaceName(spacekey));
+
+	  //
 	  // keep track of assaulted spaces
 	  //
  	  this.game.state.spaces_assaulted_this_turn.push(spacekey);
@@ -12670,7 +12675,21 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	      if (cost > 0) { msg += " (cost: "+cost+")"; }
               let html = '<ul>';
               html += `<li class="option" id="yes">declare war</li>`;
+
+	      //
+	      // Auld Alliance is 
+	      //
+	      if (faction == "france") {
+                let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
+    		for (let i = 0; i < this.game.deck[0].fhand[faction_hand_idx].length; i++) {
+      		  if (this.game.deck[0].fhand[faction_hand_idx][i] == "069") {
+            	    html += `<li class="option showcard" id="069">Auld Alliance</li>`;
+		  }
+		}
+	      }
+
               html += `<li class="option" id="no">do not intervene</li>`;
+
               html += '</ul>';
 
               his_self.updateStatusWithOptions(msg, html);
@@ -12678,11 +12697,48 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
               $('.option').off();
               $('.option').on('click', function () {
 
+		his_self.cardbox.hide();
+
                 $('.option').off();
                 his_self.updateStatus("acknowledge...");
                 let action = $(this).attr("id");
 
-	        if (action === "yes") {
+	        if (action === "069") {
+
+                  //
+                  // add up to 3 new French regulars in any Scottish home space under French control that isnot under siege.
+                  //
+                  his_self.playerSelectSpaceWithFilter(
+
+                    "Select Unbesieged Scottish Home Space Under French Control",
+
+                    function(space) {
+                      if (space.home == "scotland") {
+                        if (his_self.isSpaceControlled(space.key, "france") || his_self.isSpaceControlled(space.key, "scotland")) {
+                          if (!space.besieged) {
+                            return 1;
+                          }
+                        }
+                      }
+                    },
+
+                    function(spacekey) {
+		      his_self.updateStatus("fortifying...");
+		      his_self.addMove("discard\t"+faction+"\t"+"069");
+	              his_self.addMove("unexpected_war\t"+faction+"\t"+enemy);
+		      his_self.addMove("set_allies\t"+faction+"\t"+natural_ally);
+		      his_self.addMove("declare_war\t"+faction+"\t"+enemy);
+                      his_self.addMove("build\tland\tfrance\t"+"regular"+"\t"+spacekey);
+                      his_self.addMove("build\tland\tfrance\t"+"regular"+"\t"+spacekey);
+                      his_self.addMove("build\tland\tfrance\t"+"regular"+"\t"+spacekey);
+                      his_self.endTurn();
+                    }
+                  );
+
+		  return;
+	        }
+
+		if (action === "yes") {
 	  	  if (cost > 0) {
 		    his_self.playerSelectOps(faction, cost, (card) => {
 		      his_self.addMove("discard\t"+faction+"\t"+card);
