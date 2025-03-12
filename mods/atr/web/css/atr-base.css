@@ -4,6 +4,28 @@
     box-sizing: border-box;
 }
 
+
+
+
+.slip-info .options {
+    margin-top: 8px;
+    display: flex
+;
+    gap: 0px;
+    flex-direction: column;
+}
+.data-nft-toggle {
+    align-items: flex-end;
+    border-bottom: 1px dashed #030303;
+    font-size: 1.75rem;
+    cursor: pointer;
+    height: 100%;
+    display: flex
+;
+}
+.data-nft-textarea {
+    height: inherit;
+}
 .nft-image-preview {
     position: relative;
     height: auto;
@@ -208,6 +230,8 @@ body {
   border: 1px solid #ddd;
   padding: 1rem;
   background: #f4f4f4;
+  display: flex;
+  justify-content: space-between;
 }
 
 .nft-creator {

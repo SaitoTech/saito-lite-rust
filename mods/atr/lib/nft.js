@@ -8,6 +8,8 @@ class Nft {
         this.mod = mod;
         this.overlay = new SaitoOverlay(this.app, this.mod);
 
+	this.editing_mode = "image"; // "data" shows textarea
+
         this.nft = {};
 	this.nft.num     = 1;
 	this.nft.deposit = 0;
@@ -22,14 +24,14 @@ class Nft {
 	this.nft.amt     = 0;
 	this.nft.image   = "";
 
+	this.callback    = {};
 	this.utxo = [];
 
     }
 
     async render() {
 
-	this.nft.test = "abc";
-	this.nft.imageUploadCallback = async (file) => {
+	this.callback.imageUploadCallback = async (file) => {
 	    if (this.nft.image != "") { 
 		alert("NFT Image Editing not allowed, refresh to restart...");
 		return;
@@ -57,9 +59,17 @@ class Nft {
 
         nft_self.app.browser.addDragAndDropFileUploadToElement(
              "nft-image-upload",
-              this.nft.imageUploadCallback,
+              this.callback.imageUploadCallback,
               true
         );
+
+        document.querySelector('.data-nft-toggle').onclick = (e) => {
+	     if (this.editing_mode === "image") {
+		document.querySelector(".textarea-container").innerHTML = `<textarea class="data-nft-textarea">${JSON.stringify(this.nft}</textarea`;	        
+	     } else {
+		alert("Please reload to return to image editor...");
+	     }
+	}
 
         document.querySelector('#nfts-fee').onchange = async (e) => {
 	     nft_self.nft.fee = e.target.value;      
