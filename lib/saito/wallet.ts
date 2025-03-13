@@ -775,7 +775,9 @@ export default class Wallet extends SaitoWallet {
     if (senders.length !== 1 || receivers.length !== 1 || amounts.length !== 1) {
       // We have no code which exercises multiple senders/receivers so can't implement it yet.
       console.error('receivePayment ERROR. Only supports one transaction');
-      mycallback({ err: 'Only supports one transaction' });
+      if (mycallback){
+        mycallback({ err: 'Only supports one transaction' });
+      }
       return;
     }
 

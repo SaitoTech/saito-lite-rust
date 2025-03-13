@@ -255,11 +255,12 @@
 .pubkey-containter {
   display: flex;
   flex-direction: row;
-  max-width: 75%;
+  width: 75%;
+  max-width: 38rem;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
 .pubkey-containter:hover i {
@@ -286,6 +287,12 @@
 
 .profile-public-key {
   font-size: 1.7rem;
+  display: grid;
+  grid-template-columns: minmax(12rem, 1fr) min-content;
+  width: min-content;
+}
+
+.profile-public-key > div:first-child{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

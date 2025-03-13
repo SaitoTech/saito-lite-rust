@@ -203,54 +203,31 @@ input[type=number] {
   display: none;
 }
 
-.transfer-details {
-  align-items: center;
-  margin-left: auto;
-  margin-right: auto;
+
+.counterparty-details {
   display: flex;
-  flex-direction: column; 
-  gap: 1rem;
-}
-
-.transfer-details .send_to .transfer-details .send_from {
-  display: block;
-  font-size: 1em;
-  margin-bottom: 0;
-  padding-right: 4px;
-}
-.transfer-details .from_address,
-.transfer-details .to_address {
-  clear: both;
-  display: block;
-  font-weight: bold;
-  font-size: 1em;
-  max-width: 220px;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  margin-bottom: 0;
-}
-
-.transfer-details .saito-identicon-box {
-  display: flex;
-  gap: 1rem;
-  width: 100%;
+  flex-direction: column;
   align-items: center;
-  height: fit-content;
-  font-size: 1.5rem;
-  cursor: default;
 }
 
-.transfer-details .saito-identicon-box .saito-identicon {
-  width: 3.5rem;
-  height: 3.5rem;
+.counterparty-details .saito-user {
+  width: unset;
+  align-items: self-end;
+
 }
 
-.send_from {
-  font-size: 1.4em;
+.counterparty-details .saito-user > .saito-address {
+  color: white;
+  font-size: 1.2em;
 }
 
-.crypto_transfer_btn {
-  
+.counterparty-details .saito-identicon-box {
+  width: 5rem;
+  height: 5rem;
+}
+
+.counterparty-details .saito-userline {
+  text-transform: unset;
 }
 
 .history-to-publickey {
@@ -284,12 +261,3 @@ input[type=number] {
   cursor: pointer;
 }
 
-.transfer-address {
-  width: -webkit-fill-available;
-}
-
-.crypto-transfer-fast-mode {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}

@@ -18,14 +18,6 @@
     text-transform: uppercase;
 }
 
-.saito-crypto-deposit-container .profile-public-key {
-    width: 95%;
-}
-
-.saito-crypto-deposit-container .pubkey-containter {
-    width: 30rem;
-}
-
 .saito-crypto-deposit-container .balance-amount {
     margin-right: 0rem;
 }

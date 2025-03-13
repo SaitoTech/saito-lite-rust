@@ -64,10 +64,6 @@
 	gap: 1rem;
 }
 
-.settings-appspace-user-details .profile-public-key {
-	width: 38rem;
-}
-
 .profile-default-fee {
     width: 100% !important;
     padding: 0.66rem 1rem !important;
