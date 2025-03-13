@@ -864,6 +864,10 @@ console.log("\n\n\n\n");
 	  //this.game.spaces["salonika"].units["ottoman"][1].owner = "france";
 	  //this.setAllies("france", "ottoman");
 
+	  this.controlSpace("ottoman", "linz");
+	  this.controlSpace("ottoman", "brunn");
+	  this.controlSpace("ottoman", "salzburg");
+
 	  this.removeCardFromGame("009");
 	  this.removeCardFromGame("008");
       }

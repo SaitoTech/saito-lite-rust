@@ -12683,7 +12683,7 @@ if (space.key == "milan") {
       turn : 3 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { if (his_self.areAllies("ottoman", "france")) { return 1; } return 0; } ,
-      canEvent : function(his_self, faction) { return 1; },
+      canEvent : function(his_self, faction) { if (his_self.areAllies("ottoman", "france")) { return 1; }; return 0; },
       onEvent : function(his_self, faction) {
 
 	if (his_self.areAllies("ottoman", "france")) {

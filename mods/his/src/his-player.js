@@ -2000,6 +2000,130 @@ if (relief_siege == 1) {
 
   }
 
+
+  playerPlayWinterRetreatToFortresses(f, player) {
+
+    let his_self = this;
+
+    //
+    // this lets independent fill their own capitals before major powers...
+    //
+    let ofs = ["venice","hungary","genoa","scotland","independent","ottoman","hapsburg","england","france","papacy","protestant"];
+    let fs = [];
+    for (let z = 0; z < ofs.length; z++) {
+      if (this.returnControllingPower(ofs[z]) == f) {
+	fs.push(ofs[z]);
+      }
+    }
+
+    let sources = [];
+    let any_need_to_intervene = false;
+
+    //
+    // handle non-naval units
+    //
+    for (let spacekey in this.game.spaces) {
+      for (let mm = 0; mm < fs.length; mm++) {
+
+        let faction = fs[mm];
+        let space = this.game.spaces[spacekey];
+
+        if (space.units[faction].length > 0 ) {
+
+          //
+          // we need to retreat from these spaces
+          //
+          if (
+             ((this.isSpaceFortified(spacekey) && !this.isSpaceControlled(spacekey, faction)) || (!this.isSpaceFortified(spacekey)))
+             &&
+             (!(faction == "protestant" && this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1))
+             &&
+             (spacekey != "ireland" && spacekey != "persia" && spacekey != "egypt")
+          ) {
+             this.removeSiege(space.key);
+	     if (this.returnFactionLandUnitsInSpace(faction, spacekey, 0) > 0) { 
+
+               //
+               // find the nearest friendly fortified space w/ less than 4 units
+               //
+               let res = this.returnNearestFriendlyFortifiedSpacesTransitPasses(faction, spacekey, 4);
+	       sources.push({ spacekey : spacekey , res : res });
+	       any_need_to_intervene = true;
+	     }
+	  }
+        }
+      }
+    }
+
+    if (any_need_to_intervene == false) {
+      his_self.endTurn();
+      return 1;
+    }
+
+
+    let next_unit_fnct = async (sources, sources_idx, unit_idx, next_unit_fnct) => {
+
+      if (sources.length < (sources_idx+1)) {
+	his_self.theses_overlay.hide();
+	his_self.endTurn();
+	return 1;
+      }
+
+      this.theses_overlay.renderAtSpacekey(sources[sources_idx].spacekey);
+      let status = document.querySelector('.theses-overlay .status');
+      status.style.display = 'block';
+      let controls = document.querySelector('.theses-overlay .controls');
+      controls.style.display = 'block';
+
+      let res = this.returnNearestFriendlyFortifiedSpacesTransitPasses(f, sources[sources_idx].spacekey, 4);
+      let destinations = []; 
+      for (let z = 0; z < res.length; z++) { destinations.push(res[z].key); }
+
+      let space = his_self.game.spaces[sources[sources_idx].spacekey];
+
+      if (space.units[f].length > unit_idx) {
+
+	let unit_type = space.units[f][unit_idx].type;
+	let unit_name = "";
+	if (unit_type == "mercenary") { unit_name = "Mercenary"; }
+	if (unit_type == "regular") { unit_name = "Regular"; }
+	if (unit_type == "cavalry") { unit_name = "Cavalry"; }
+	if (space.units[f][unit_idx].army_leader == true) { unit_type = space.units[f][unit_idx].name; }
+
+        if (unit_name == "" || res.length == 0) {
+	   next_unit_fnct(sources, sources_idx, unit_idx+1, next_unit_fnct);
+	} else {
+
+          his_self.playerSelectSpaceWithFilter(
+            "Winter "+unit_name+" (unit #"+(unit_idx+1)+") from "+his_self.returnSpaceName(space.key) ,
+            function(space) {
+              if (destinations.includes(space.key)) { return 1; }
+	      return 0;
+            }, 
+            function(spacekey) {
+     	      alert(spacekey+"! submitting nitidx " + (unit_idx+1));
+	      his_self.addMove("move\t"+f+"\tland\t"+space.key+"\t"+spacekey+"\t"+unit_idx);
+	      next_unit_fnct(sources, sources_idx, unit_idx+1, next_unit_fnct);
+            },
+            null ,
+            true
+          );
+
+	}
+      } else {
+        next_unit_fnct(sources, sources_idx+1, 0, next_unit_fnct);
+      }
+
+    }
+
+    if (sources.length > 0) {
+      next_unit_fnct(sources, 0, 0, next_unit_fnct);
+    }
+          
+    return 0;
+
+  }
+
   playerPlayDiplomacyCard(faction) {
 
     let p = this.returnPlayerOfFaction(faction);

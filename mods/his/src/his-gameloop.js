@@ -722,13 +722,41 @@ this.updateLog(`###############`);
 
 	}
 
-	if (mv[0] === "winter_retreat_move_units_to_fortresses_faction_array") {
+	if (mv[0] === "winter_retreat_move_units_to_fotresses_faction_array" || mv[0] === "winter_retreat_move_units_to_fortresses_faction_array") {
 
-	  this.game.queue.splice(qe, 1);
+          let factions = JSON.parse(mv[1]);
+          let do_i_get_to_move = false;
+              
+          //  
+          // skip if we have already confirmed!
+          //
+          if (this.game.confirms_needed[this.game.player-1] == 0) {
+            return 0;
+          }   
+              
+          //  
+          // exit if we are already handling....
+          //
+          if (this.moves.length > 0) { return 0; }
+          this.addMove("RESOLVE\t"+this.publicKey);
 
-	  this.endTurn();
 
-	  return 0;
+          for (let i = 0; i < factions.length; i++) {
+            let p = this.returnPlayerCommandingFaction(factions[i]);
+            if (this.game.player == p && factions[i] != "protestant") {
+              this.playerPlayWinterRetreatToFortresses(factions[i], this.game.player, "");
+              do_i_get_to_move = true;
+            }
+          }
+
+	  //
+          // hey, it's me, protestants
+	  //
+          if (do_i_get_to_move == false) {
+             this.endTurn();
+          }
+
+          return 0;
 
 	}
 
@@ -739,7 +767,7 @@ this.updateLog(`###############`);
 	  if (this.game.players.length == 3) {
             this.game.queue.push("winter_retreat_move_units_to_fortresses_faction_array\t"+JSON.stringify(["france","papacy","protestant"]));
             this.game.queue.push("RESETCONFIRMSNEEDED\tall");
-            this.game.queue.push("winter_retreat_move_units_to_fotresses_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england"]));
+            this.game.queue.push("winter_retreat_move_units_to_fortresses_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england"]));
             this.game.queue.push("RESETCONFIRMSNEEDED\tall");
           }
           
@@ -755,10 +783,6 @@ this.updateLog(`###############`);
 	    this.game.queue.push("winter_retreat_move_units_to_fortresses_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england","france","papacy"]));
 	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	  }
-
-
-
-
 
 
 
@@ -982,42 +1006,56 @@ this.updateLog(`###############`);
 		    } else {
 
 		      //
-		      // how much space do we have?
+		      // only one destination, so auto-move!
 		      //
-		      let options = [];
-		      for (let b = 0; b < res.length; b++) {
-		        let unit_limit = 4;
-		        if (res[b].key == "paris" || res[b].key == "valladolid" || res[b].key == "london" || res[b].key == "vienna" || res[b].key == "istanbul" || res[b].key == "rome") { unit_limit = 1000; } else {
-			  unit_limit = 4;
-			}
-			options.push(unit_limit - this.returnFactionLandUnitsInSpace(faction, res[b].key, true));
-		      }
-
+		      // OR unallied minor power who handle themselves!
 		      //
-		      // fill those spaces
-		      //
-		      for (let b = 0; b < res.length; b++) {
-			for (let zz = 0; zz < options[b]; zz++) {
-			  let unitlen = this.game.spaces[spacekey].units[faction].length;
-		          for (let zzz = 0, zzy = 0; zzz < unitlen; zzz++, zzy++) {
-		            if (this.game.spaces[spacekey].units[faction][zzy].type != "squadron" && this.game.spaces[spacekey].units[faction][zzy].type != "corsair" && this.game.spaces[spacekey].units[faction][zzy].navy_leader != true) {
-		              if (this.game.spaces[spacekey].units[faction][zzy].reformer != true) {
-			        this.game.spaces[res[b].key].units[faction].push(this.game.spaces[spacekey].units[faction][zzy]);
-			        this.game.spaces[spacekey].units[faction].splice(zzy, 1);
-			        zzy--;
-			        // we have moved one guy...
-			        fluis--; fluis_idx--;
+		      if (res.length == 1 || (this.isMinorPower(faction) && this.returnControllingPower(faction) == faction)) {
 
-			        //
-			        // and show new unit!
-			        //
-			        this.displaySpace(res[b].key);
+		        //
+		        // how much space do we have?
+		        //
+		        let options = [];
+		        for (let b = 0; b < res.length; b++) {
+		          let unit_limit = 4;
+		          if (res[b].key == "paris" || res[b].key == "valladolid" || res[b].key == "london" || res[b].key == "vienna" || res[b].key == "istanbul" || res[b].key == "rome") { unit_limit = 1000; } else {
+		  	    unit_limit = 4;
+			  }
+			  options.push(unit_limit - this.returnFactionLandUnitsInSpace(faction, res[b].key, true));
+		        }
 
+		        //
+		        // fill those spaces
+		        //
+		        for (let b = 0; b < res.length; b++) {
+		  	  for (let zz = 0; zz < options[b]; zz++) {
+			    let unitlen = this.game.spaces[spacekey].units[faction].length;
+		            for (let zzz = 0, zzy = 0; zzz < unitlen; zzz++, zzy++) {
+		              if (this.game.spaces[spacekey].units[faction][zzy].type != "squadron" && this.game.spaces[spacekey].units[faction][zzy].type != "corsair" && this.game.spaces[spacekey].units[faction][zzy].navy_leader != true) {
+		                if (this.game.spaces[spacekey].units[faction][zzy].reformer != true) {
+			          this.game.spaces[res[b].key].units[faction].push(this.game.spaces[spacekey].units[faction][zzy]);
+			          this.game.spaces[spacekey].units[faction].splice(zzy, 1);
+			          zzy--;
+			          // we have moved one guy...
+			          fluis--; fluis_idx--;
+
+			          //
+			          // and show new unit!
+			          //
+			          this.displaySpace(res[b].key);
+
+			        }
 			      }
+			      unitlen = this.game.spaces[spacekey].units[faction].length;
 			    }
-			    unitlen = this.game.spaces[spacekey].units[faction].length;
 			  }
 			} 
+		      } else {
+
+			//
+			// because there are multiple destinations, we fall back to asking the player
+			//
+
 		      }
 		    }
 		  } // fluis_idx loop
@@ -8599,7 +8637,7 @@ console.log("into relief siege...");
 	    let numchoice = 0;
 
 	    if (
-		vp_issuable == true && 
+		vp_issuable == true && vp_available > 0 && 
 		(
 			(vp_offered <= cards_offered && vp_offered <= squadrons_offered) ||
 			(vp_offered <= cards_offered && squadrons_issuable == false) || 
@@ -8613,7 +8651,7 @@ console.log("into relief siege...");
 
 
 	    if (
-		cards_issuable == true && 
+		cards_issuable == true && cards_available > 0 && 
 		(
 			(cards_offered <= vp_offered && cards_offered <= squadrons_offered) ||
 			(cards_offered <= vp_offered && squadrons_issuable == false) || 
@@ -8627,7 +8665,7 @@ console.log("into relief siege...");
 
 
 	    if (
-		squadrons_issuable == true && 
+		squadrons_issuable == true && squadrons_available > 0 &&
 		(
 			(squadrons_offered <= vp_offered && squadrons_offered <= cards_offered) ||
 			(squadrons_offered <= vp_offered && cards_issuable == false) || 
@@ -13093,7 +13131,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-//cardnum = 1;
+//cardnum = 2;
 //if (f == "france") { cardnum = 0; }
 //if (f == "papacy") { cardnum = 0; }
 //if (f == "hapsburg") { cardnum = 1; }
