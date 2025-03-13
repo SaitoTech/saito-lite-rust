@@ -2101,7 +2101,6 @@ if (relief_siege == 1) {
 	      return 0;
             }, 
             function(spacekey) {
-     	      alert(spacekey+"! submitting nitidx " + (unit_idx+1));
 	      his_self.addMove("move\t"+f+"\tland\t"+space.key+"\t"+spacekey+"\t"+unit_idx);
 	      next_unit_fnct(sources, sources_idx, unit_idx+1, next_unit_fnct);
             },
