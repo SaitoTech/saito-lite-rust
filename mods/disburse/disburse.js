@@ -176,20 +176,6 @@ class Disburse extends ModTemplate {
 				},
 				ticker
 			);
-			// } else {
-			// 	console.log("sendPayment");
-			// 	amounts[0] = amounts[0]/100000000; // original send payment assume input its saito and not nolan
-			// 	let hash = await this.app.wallet.sendPayment(
-			// 		senders,
-			// 		receivers,
-			// 		amounts,
-			// 		timestamp,
-			// 		unique_hash,
-			// 		null,
-			// 		ticker
-			// 	);
-			// 	console.log('hash: ' + hash);
-			// }
 		} catch (error) {
 			console.log(error);
 		}

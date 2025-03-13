@@ -81,8 +81,6 @@ class Mods {
     for (let i = 0; i < this.mods.length; i++) {
       // if (!!message && message.module != undefined) {
       if (this.mods[i].shouldAffixCallbackToModule(message?.module || '', tx) == 1) {
-        let affix_callback = true;
-
         //
         // module-level moderation can OVERRIDE the core moderation which
         // is why we check module-level moderation here and permit the mod
@@ -90,12 +88,16 @@ class Mods {
         //
         let mod_accepts = this.moderateModule(tx, this.mods[i]);
         if (mod_accepts == 1 || (mod_accepts == 0 && core_accepts != -1)) {
-          if (affix_callback == true) {
-            callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
-            callbackIndexArray.push(txindex);
-          }
-        }
+          callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
+          callbackIndexArray.push(txindex);
+        }      
       }
+    }
+
+    // A bit of a hack to connect the ghost SaitoCrypto (from Wallet) into processing TXs on chain (for info!)
+    if (message?.module == "Saito" && this.app.wallet?.saitoCrypto) {
+      callbackArray.push(this.app.wallet.saitoCrypto.onConfirmation.bind(this.app.wallet.saitoCrypto));
+      callbackIndexArray.push(txindex);
     }
   }
 
@@ -228,6 +230,7 @@ class Mods {
               // remove any disabled / inactive modules from this.mods
               //
               if (this.app.options.modules[i].active == 0) {
+                console.log("Splice inactive module");
                 this.mods.splice(z, 1);
               }
 
@@ -240,6 +243,7 @@ class Mods {
           //
           if (!found){
             module_removed = 1;
+            console.log("Splice missing module");
             this.app.options.modules.splice(i, 1);
           }
         }
