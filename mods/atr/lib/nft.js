@@ -63,8 +63,7 @@ class Nft {
     }
 
     attachEvents() {
-
-	let nft_self = this;
+	   let nft_self = this;
 
         nft_self.app.browser.addDragAndDropFileUploadToElement(
             "nft-image-upload",
@@ -124,15 +123,32 @@ class Nft {
                 alert("NFT3: " + JSON.stringify(obj));
     	    }
 
+            let amount = typeof nft_self.nft.amt === "string" ? BigInt(nft_self.nft.amt) : nft_self.nft.amt;
+            let depositAmt = typeof nft_self.nft.deposit === "string" ? BigInt(nft_self.nft.deposit) : nft_self.nft.deposit;
+            let change = BigInt(nft_self.nft.change);
+
             console.log("SUBMIT NFT: ");
-            console.log(nft_self.nft.amt);
+            console.log(nft_self.nft);
+            console.log(amount);
             console.log(nft_self.nft.bid);
             console.log(nft_self.nft.tid);
             console.log(nft_self.nft.sid);
             console.log(nft_self.nft.num);
-            console.log(nft_self.nft.deposit);
-            console.log(nft_self.nft.change);
+            console.log(depositAmt);
+            console.log(change);
             console.log(nft_self.nft.image);
+
+            let tx = await nft_self.app.wallet.createBoundUtxoTransaction(
+                amount,
+                nft_self.nft.bid,
+                nft_self.nft.tid,
+                nft_self.nft.sid,
+                nft_self.nft.num,
+                depositAmt,
+                change,
+                nft_self.nft.image,
+            );
+            console.log("createBoundUtxoTransaction:", tx);
         };
 
         document.querySelector('.utxo-selection-button').onclick = async (e) => {

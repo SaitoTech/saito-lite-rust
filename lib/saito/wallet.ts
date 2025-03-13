@@ -76,6 +76,40 @@ export default class Wallet extends SaitoWallet {
     return BigInt(0);
   }
 
+  public async createBoundUtxoTransaction(
+    amt,
+    bid,
+    tid,
+    sid,
+    num,
+    deposit,
+    change,
+    image,
+  ): Promise<Transaction> {
+
+
+      console.log("values going to saito.ts:");
+      console.log(amt);
+      console.log(bid);
+      console.log(tid);
+      console.log(sid);
+      console.log(num);
+      console.log(deposit);
+      console.log(change);
+      console.log(image);
+
+      return S.getInstance().createBoundUtxoTransaction(
+        amt,
+        bid,
+        tid,
+        sid,
+        num,
+        deposit,
+        change,
+        image,
+      );
+  }
+
   async initialize() {
     let privateKey = await this.getPrivateKey();
     let publicKey = await this.getPublicKey();
