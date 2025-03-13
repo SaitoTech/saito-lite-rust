@@ -123,18 +123,8 @@ class PokerStake {
               // Convert Chips to CRYPTO
               let amount_to_send = this.convertChipsToCrypto(amount_owed);
 
-              let ts = new Date().getTime();
-              this.rollDice();
-              let uh = this.game.dice;
+              this.addPaymentToQueue(this.game.players[i], this.game.players[j], amount_to_send);
 
-              console.log(`crypto -- ${i}->${j}: ${this.game.players[i]}\t${this.game.players[j]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`);
-
-              this.game.queue.push(
-                `RECEIVE\t${this.game.players[i]}\t${this.game.players[j]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`
-              );
-              this.game.queue.push(
-                `SEND\t${this.game.players[i]}\t${this.game.players[j]}\t${amount_to_send}\t${ts}\t${uh}\t${this.game.crypto}`
-              );
             }
           }
         }
