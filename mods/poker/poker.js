@@ -99,6 +99,7 @@ class Poker extends GameTableTemplate {
 		// CHIPS or CRYPTO ?
 		//
 		this.settleNow = false;
+		this.settle_every_hand = false;
 
 		//
 		// initialize game state

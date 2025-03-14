@@ -90,6 +90,10 @@ class PokerStake {
     if (!this.game.options?.crypto) {
       return false;
     }
+
+    if (this.settle_every_hand) {
+      return true;
+    }
     //
     // if settleNow is true, the send/receive are added directly in the poker queue
     //
