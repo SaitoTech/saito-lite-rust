@@ -21,16 +21,18 @@ class TST extends CryptoModule {
 		// just given them our Saito publickey - easy to test
 		//console.log("TST return address: " + this.publicKey);
 
-		//
-		// Strange that this.publicKey is not intialized...
-		//
-
-		return this.app.wallet.publicKey;
+		return this.address;
 	}
 
 	async activate(){
 
 		if (!this.isActivated()){
+
+			if (!this?.address){
+				this.privateKey = this.app.crypto.generateKeys();
+				this.address = this.app.crypto.generatePublicKey(this.privateKey);			
+			}
+
 			this.balance = (100*Math.random()).toFixed(8);
 			this.app.connection.emit('header-install-crypto', this.ticker);
 		}
@@ -43,7 +45,7 @@ class TST extends CryptoModule {
 	//
 	async returnPrivateKey() {
 		// just give them our Saito privatekey - easy to test
-		return await this.app.wallet.returnPrivateKey();
+		return this.privateKey;
 	}
 
 	async checkBalance(){
