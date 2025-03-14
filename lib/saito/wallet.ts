@@ -76,6 +76,7 @@ export default class Wallet extends SaitoWallet {
     return BigInt(0);
   }
 
+
   public async createBoundUtxoTransaction(
     amt,
     bid,
@@ -84,7 +85,9 @@ export default class Wallet extends SaitoWallet {
     num,
     deposit,
     change,
-    image,
+    data,
+    fee,
+    receipient_publicKey,
   ): Promise<Transaction> {
 
 
@@ -96,7 +99,9 @@ export default class Wallet extends SaitoWallet {
       console.log(num);
       console.log(deposit);
       console.log(change);
-      console.log(image);
+      console.log(data);
+      console.log(fee);
+      console.log(receipient_publicKey);
 
       return S.getInstance().createBoundUtxoTransaction(
         amt,
@@ -106,7 +111,9 @@ export default class Wallet extends SaitoWallet {
         num,
         deposit,
         change,
-        image,
+        data,
+        fee,
+        receipient_publicKey
       );
   }
 

@@ -8,25 +8,25 @@ class Nft {
         this.mod = mod;
         this.overlay = new SaitoOverlay(this.app, this.mod);
 
-	this.editing_mode = "image"; // "data" shows textarea
+	    this.editing_mode = "image"; // "data" shows textarea
 
         this.nft = {};
-	this.nft.num     = 1;
-	this.nft.deposit = 0;
-	this.nft.change  = 0;
-	this.nft.fee     = 0;
-	this.nft.slip    = "";
-	this.nft.id      = "";
+    	this.nft.num     = 1;
+    	this.nft.deposit = 0;
+    	this.nft.change  = 0;
+    	this.nft.fee     = 0;
+    	this.nft.slip    = "";
+    	this.nft.id      = "";
 
-	this.nft.bid     = 0;
-	this.nft.tid     = 0;
-	this.nft.sid     = 0;
-	this.nft.amt     = 0;
-	this.nft.type    = 0;
-	this.nft.image   = "";
+    	this.nft.bid     = 0;
+    	this.nft.tid     = 0;
+    	this.nft.sid     = 0;
+    	this.nft.amt     = 0;
+    	this.nft.type    = 0;
+    	this.nft.image   = "";
 
-	this.callback    = {};
-	this.utxo = [];
+    	this.callback    = {};
+    	this.utxo = [];
 
     }
 
@@ -56,7 +56,7 @@ class Nft {
 
     createObject() {
 	let obj = {};
-	    obj.id = `${this.publicKey}${this.nft.bid}${this.nft.tid}${this.nft.sid}${this.nft.amount}${1}`;
+	    obj.id = `${this.mod.publicKey}${this.nft.bid}${this.nft.tid}${this.nft.sid}${this.nft.amount}${1}`;
 	    if (this.nft.image) { obj.image = this.nft.image; }
 	    if (this.nft.data) { obj.data = this.nft.data; }
 	    return obj;
@@ -126,6 +126,7 @@ class Nft {
             let amount = typeof nft_self.nft.amt === "string" ? BigInt(nft_self.nft.amt) : nft_self.nft.amt;
             let depositAmt = typeof nft_self.nft.deposit === "string" ? BigInt(nft_self.nft.deposit) : nft_self.nft.deposit;
             let change = BigInt(nft_self.nft.change);
+            let fee = BigInt(nft_self.nft.fee);
 
             console.log("SUBMIT NFT: ");
             console.log(nft_self.nft);
@@ -136,7 +137,9 @@ class Nft {
             console.log(nft_self.nft.num);
             console.log(depositAmt);
             console.log(change);
-            console.log(nft_self.nft.image);
+            console.log(JSON.stringify(obj));
+            console.log(fee);
+            console.log(nft_self.mod.publicKey);
 
             let tx = await nft_self.app.wallet.createBoundUtxoTransaction(
                 amount,
@@ -146,7 +149,9 @@ class Nft {
                 nft_self.nft.num,
                 depositAmt,
                 change,
-                nft_self.nft.image,
+                JSON.stringify(obj),
+                fee,
+                nft_self.mod.publicKey
             );
             console.log("createBoundUtxoTransaction:", tx);
         };
