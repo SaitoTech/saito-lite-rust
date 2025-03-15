@@ -203,6 +203,13 @@ input[type=number] {
   display: none;
 }
 
+.crypto-transfer-countdown {
+  margin-left: auto;
+}
+
+.crypto-transfer-countdown span {
+  font-family: monospace;
+}
 
 .counterparty-details {
   display: flex;

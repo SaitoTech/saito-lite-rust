@@ -71,13 +71,13 @@ module.exports  = (app, mod, main) => {
       
             <div>Public Key:</div>
             <div class="pubkey-containter" data-id="${publicKey}">
-              <div class="profile-public-key">${publicKey}</div>
+              <div class="profile-public-key"><div>${publicKey.slice(0, -8)}</div><div>${publicKey.slice(-8)}</div></div>
               <i class="fas fa-copy" id="copy-public-key"></i>
             </div>
       
             <div>Private Key:</div>
             <div class="pubkey-containter" data-id="${main.privateKey}">
-              <div class="profile-public-key saito-password">${main.privateKey}</div>
+              <div class="profile-public-key saito-password"><div>${main.privateKey}</div></div>
               <i class="fas fa-copy" id="copy-private-key"></i>
             </div>
 

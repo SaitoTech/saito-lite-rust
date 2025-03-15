@@ -89,6 +89,11 @@
 	width: 100%;
 }
 
+
+.settings-appspace .profile-public-key {
+	width: unset;
+}
+
 .saito-switch {
 	height: 100%;
 	display: flex;

@@ -261,6 +261,7 @@
   justify-content: center;
   cursor: pointer;
   gap: 0.75rem;
+  font-family: monospace;
 }
 
 .pubkey-containter:hover i {
@@ -288,7 +289,7 @@
 .profile-public-key {
   font-size: 1.7rem;
   display: grid;
-  grid-template-columns: minmax(12rem, 1fr) min-content;
+  grid-template-columns: minmax(12.2rem, 1fr) min-content;
   width: min-content;
 }
 
@@ -299,7 +300,9 @@
 }
 
 .profile-public-key.generate-keys {
-  width: 100%;
+  width: fit-content;
+  max-width: 100%;
+  font-family: var(--saito-font);
 }
 
 

@@ -116,6 +116,10 @@ class Archive extends ModTemplate {
 			this.pruneArchive();
 		}
 
+		setInterval(()=> {
+			this.pruneArchive()
+		}, 24*60*60*1000 + 5000);
+
 	}
 
 	async initInBrowserDatabase() {

@@ -251,7 +251,7 @@ class EGLDModule extends CryptoModule {
         value: this.convertEgldToAtomic(amount),
         sender: this.address_obj,
         receiver: Address.newFromBech32(recipient),
-        chainID: '1',
+        chainID: this.options.chain_id,
         nonce: this.options.nonce,
         gasLimit: 50000
         //data: "SAITO multiwallet transfer"
@@ -423,6 +423,7 @@ class EGLDModule extends CryptoModule {
             this_self.options.base_url = res.base_url;
             this_self.options.explorer_url = res.explorer_url;
             this_self.options.network_provider_url = res.network_provider_url;
+            this_self.options.chain_id = res?.chain_id || '1';
 
             await this_self.initiateNetwork();
           } else {
