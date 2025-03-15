@@ -155,16 +155,12 @@ this.updateLog(`###############`);
 	  let name = this.returnPlayerName(faction);
 	  let hand = this.returnPlayerHand();
 
-console.log("PLAYER: " + this.game.player);
-console.log("LIve: " + player);
-console.log("HAND: " + JSON.stringify(hand));
-
 	  this.onNewTurn();
 
 	  if (this.game.player == player) {
 	    this.playerTurn(faction);
 	  } else {
-	    this.updateStatusAndListCards(`${name} Turn`, hand);
+	    this.updateStatusAndListCards(`Opponent Turn`, hand);
 	  }
 	  
 	  return 0;
@@ -290,9 +286,34 @@ try {
 	// modifying state //
 	/////////////////////
   	if (mv[0] === "sr") {
-	  let faction = mv[1];
+
           this.game.queue.splice(qe, 1);
-	  return 1;
+
+	  let faction = mv[1];
+	  let source = mv[2];
+          let destination = mv[3];
+	  let unit_idx = parseInt(mv[4]);
+	  let value = parseInt(mv[5]);
+	  let card = mv[6];
+
+	  let unit = this.game.spaces[source].units[unit_idx];
+	  this.game.spaces[source].units.splice(unit_idx, 1);
+	  this.game.spaces[destination].units.push(unit);
+
+	  this.displaySpace(source);
+	  this.displaySpace(destination);
+
+	  if (value > 0) {
+	    if (this.game.player == this.returnPlayerOfFaction(faction)) {
+	      this.playerPlayStrategicRedeployment(faction, card, value);
+            } else {
+	      this.updateStatus("Opponent Redeploying...");
+	    }
+	    return 0;
+	  } else {
+	    return 1;
+	  }
+
 	}
 
   	if (mv[0] === "rp") {

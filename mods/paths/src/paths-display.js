@@ -39,15 +39,15 @@
   }
 
   addHighlights(el) {
-    if (!el.classList.contains("allies")) {
-      el.classList.add('allies-highlight');
-    }
-    if (!el.classList.contains("neutral")) {
-      el.classList.add('neutral-highlight');
-    }
-    if (!el.classList.contains("central")) {
-      el.classList.add('central-highlight');
-    }
+//    if (!el.classList.contains("allies")) {
+//      el.classList.add('allies-highlight');
+//    }
+//    if (!el.classList.contains("neutral")) {
+//      el.classList.add('neutral-highlight');
+//    }
+//    if (!el.classList.contains("central")) {
+//      el.classList.add('central-highlight');
+//    }
   } 
 
   addSelectable(el) {
@@ -170,7 +170,8 @@ console.log("!");
       // activated for movement
       //
       if (space.activated_for_movement) {
-        html += `<img src="/paths/img/tiles/activate_move.png" class="activation-tile" />`;
+console.log("space is activated for movement: " + key);  
+      html += `<img src="/paths/img/tiles/activate_move.png" class="activation-tile" />`;
       }
       if (space.activated_for_combat) {
         html += `<img src="/paths/img/tiles/activate_attack.png" class="activation-tile" />`;
@@ -197,9 +198,9 @@ console.log("!");
       }
 
       document.querySelectorAll(`.${key}`).forEach((el) => { 
-        if (control == "allies") { el.classList.add("allies-highlight"); }
-        if (control == "central") { el.classList.add("central-highlight"); }
-        if (control == "neutral") { el.classList.add("neutral-highlight"); }
+//        if (control == "allies") { el.classList.add("allies-highlight"); }
+//        if (control == "central") { el.classList.add("central-highlight"); }
+//        if (control == "neutral") { el.classList.add("neutral-highlight"); }
 	el.innerHTML = html; 
       });
 

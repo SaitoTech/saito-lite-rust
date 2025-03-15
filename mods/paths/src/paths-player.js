@@ -139,7 +139,7 @@ alert("Player Playing Post Combat Retreat!");
     html    += `<li class="card" id="event">trigger event</li>`;
     html    += `</ul>`;
 
-    this.updateStatusWithOptions(`Playing ${this.popup(card)}`, html, true);
+    this.updateStatusWithOptions(`${this.returnFactionName(faction)} - playing ${this.popup(card)}`, html, true);
     this.bindBackButtonFunction(() => { this.playerTurn(faction); });
     this.attachCardboxEvents((action) => {
 
@@ -173,7 +173,6 @@ alert("Player Playing Post Combat Retreat!");
 	  if (this.returnPowerOfUnit(this.game.spaces[key].units[0]) != faction) {
   	    for (let i = 0; i < this.game.spaces[key].neighbours.length; i++) {
 	      let n = this.game.spaces[key].neighbours[i];
-console.log("key: " + n);
 	      if (this.game.spaces[n].activated_for_combat == 1) { return 1; }
 	    }
 	  }
@@ -232,7 +231,6 @@ console.log("key: " + n);
 	  if (paths_self.game.spaces[key].units.length > 0) {
 	    if (paths_self.returnPowerOfUnit(paths_self.game.spaces[key].units[0]) != faction) {
   	      for (let i = 0; i < paths_self.game.spaces[key].neighbours.length; i++) {
-console.log("key: " + key);
 	        let n = paths_self.game.spaces[key].neighbours[i];
 	        if (paths_self.game.spaces[n].activated_for_combat == 1) { return 1; }
 	      }
@@ -356,6 +354,9 @@ console.log("key: " + key);
       }
     );
 
+    paths_self.zoom_overlay.renderAtSpacekey(options[0]);
+    paths_self.zoom_overlay.showControls();
+
     let mainInterface = function(options, mainInterface, moveInterface, unitActionInterface) {
 
       //
@@ -398,6 +399,11 @@ console.log("key: " + key);
 	    let everything_moved = true;
 	    for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
 	      if (paths_self.game.spaces[key].units[z].moved != 1) { everything_moved = false; }
+	    }
+	    if (everything_moved == true) {
+	      paths_self.game.spaces[key].activated_for_movement = 0;
+	      paths_self.displaySpace(key);
+alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].activated_for_movement);
 	    }
 	    if (everything_moved == false) { return 1; }
 	  }
@@ -783,6 +789,8 @@ console.log("key: " + key);
 
   playerPlayStrategicRedeployment(faction, card, value) {
 
+alert(faction + " - " + card + " - " + value);
+
     let paths_self = this;
 
     let spaces = this.returnSpacesWithFilter((key) => {
@@ -832,7 +840,10 @@ console.log("key: " + key);
 	  },
 	  (idx) => {
 	    let unit = paths_self.game.spaces[key].units[idx];
+            if (unit.type == "corps") { value -= 1; }
+            if (unit.type == "army") { value -= 4; }
 	    paths_self.game.spaces[key].units[idx].moved = 1;
+	    paths_self.playerRedeployUnit(faction, card, value, key, idx);
 	  },
           false
         );
@@ -841,9 +852,34 @@ console.log("key: " + key);
       true
     );
 
-//    this.addMove(`sr\t${faction}\t${value}`);
-//    this.endTurn();
   }
+
+  playerRedeployUnit(faction, card, value=0, spacekey="", unit_idx=0) {
+
+    let paths_self = this;
+    let unit = paths_self.game.spaces[spacekey].units[unit_idx];
+
+    let destinations = paths_self.returnSpacesConnectedToSpaceForStrategicRedeployment(faction, spacekey);
+
+console.log("DESTINATIONS: " + JSON.stringify(destinations));
+
+    this.playerSelectSpaceWithFilter(
+      "Select Space with Unit to Strategically Redeploy",
+      (key) => {
+	if (destinations.includes(key)) { return 1; }
+        return 0;
+      },
+      (key) => {
+	this.updateStatus("redeploying...");
+        this.addMove(`sr\t${faction}\t${spacekey}\t${key}\t${unit_idx}\t${value}\t${card}`);
+        this.endTurn();
+      },
+      null,
+      true
+    );
+
+  }
+
 
   playerPlayEvent(faction, card) {
 
@@ -856,7 +892,7 @@ console.log("key: " + key);
 
     this.addMove("resolve\tplay");
 
-    this.updateStatusAndListCards(`${name}: pick a card`, hand);
+    this.updateStatusAndListCards(`${name} - select card`, hand);
     this.attachCardboxEvents((card) => {
       this.playerPlayCard(faction, card);
     });
