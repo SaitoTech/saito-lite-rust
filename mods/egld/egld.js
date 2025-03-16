@@ -423,7 +423,7 @@ class EGLDModule extends CryptoModule {
             this_self.options.base_url = res.base_url;
             this_self.options.explorer_url = res.explorer_url;
             this_self.options.network_provider_url = res.network_provider_url;
-            this_self.options.chain_id = res.chain_id || '1';
+            this_self.options.chain_id = res?.chain_id || '1';
 
             await this_self.initiateNetwork();
           } else {

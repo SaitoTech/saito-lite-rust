@@ -50,6 +50,69 @@
     }
   }
 
+  doesSpaceHaveEnemyUnits(faction, spacekey) { return this.doesSpaceContainEnemyUnits(faction, spacekey); }
+  doesSpaceContainEnemyUnits(faction, spacekey) {
+    if (this.game.spaces[spacekey].control != faction) {
+      if (this.game.spaces[spacekey].units.length > 0) { return 1; }
+    }
+    return 0;
+  }
+  isSpaceEnemyControlled(faction, spacekey) {
+    if (this.game.spaces[spacekey].control != "neutral" && this.game.spaces[spacekey].control != faction) { return 1; }
+    return 0;
+  }
+
+  returnSpacesConnectedToSpaceForStrategicRedeployment(faction, spacekey) {
+
+    let spaces = [];
+    let pending = [spacekey];
+    let examined = {};
+
+    while (pending.length > 0) {
+
+      let current = pending.shift();
+
+      //
+      // mark space as examined
+      //
+      examined[current] = true;
+
+      //
+      //
+      //
+      let loop = 0;
+
+      if (!this.isSpaceEnemyControlled(faction, current)) {
+        loop = 1;
+        if (this.doesSpaceHaveEnemyUnits(faction, current)) {
+	  loop = 0;
+	}
+      }
+
+      if (loop == 1) {
+
+	//
+	// this is a possible destination!
+	//
+        spaces.push(current);
+
+        //
+        // add neighbours to pending if...
+        //
+        for (let n in this.game.spaces[current].neighbours) {
+          let s = this.game.spaces[current].neighbours[n];
+          if (!examined[s]) {
+            if (this.returnControlOfSpace(s) == faction) {
+              pending.push(s);
+            }
+          }
+        }
+      }
+    }
+
+    return spaces;
+
+  }
 
 
   checkSupplyStatus(faction, spacekey) {
@@ -81,16 +144,16 @@
       //
       // mark space as examined
       //
-      examined[spacekey] = true;
+      examined[current] = true;
 
       //
       // add neighbours to pending if...
       //
-      for (let n in this.game.spaces[key].neighbours) {
-        if (!examined[n]) {
-
-	  if (this.returnControlOfSpace(n) == faction) {
-	    pending.push(n); 
+      for (let n in this.game.spaces[current].neighbours) {
+        let s = this.game.spaces[current].neighbours[n];
+        if (!examined[s]) {
+	  if (this.returnControlOfSpace(s) == faction) {
+	    pending.push(s); 
 	  }
 
 	}
@@ -102,6 +165,7 @@
 
 
   returnControlOfSpace(key) {
+console.log("key: " + key);
     let space = this.game.spaces[key];
     if (space.control) { return space.control; }
     if (space.units.length > 0) { return this.returnPowerOfUnit(space.units[0]); }
