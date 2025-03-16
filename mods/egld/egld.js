@@ -417,7 +417,7 @@ class EGLDModule extends CryptoModule {
     try {
       let this_self = this;
 
-      if (this_self.options.base_url == null) {
+      if (this_self.options.base_url == null || this_self.options.chain_id == null) {
         await this_self.sendFetchEnvTransaction(async function (res) {
           if (typeof res == 'object' && Object.keys(res).length > 0) {
             this_self.options.base_url = res.base_url;
