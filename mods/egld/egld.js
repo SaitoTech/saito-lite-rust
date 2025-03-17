@@ -58,8 +58,9 @@ class EGLDModule extends CryptoModule {
 
       if (!this.options?.mnemonic_text) {
         await this.getAddress();
-        await this.generateAccount();
       }
+
+      await this.updateAccount();
 
       await super.activate();
 
@@ -96,25 +97,10 @@ class EGLDModule extends CryptoModule {
     }
   }
 
-  async generateAccount() {
-    try {
-      if (this.address_obj != null) {
-        let account = new Account(this.address_obj);
-        this.account = account;
-
-        this.options.balance = this.balance = this.account.balance;
-        this.options.nonce = this.account.nonce;
-
-        //console.log("generateAccount account: ", this.account);
-      }
-    } catch (error) {
-      console.error('Error creating EGLD account:', error);
-    }
-  }
-
   async updateAccount() {
     try {
       if (this.apiNetworkProvider == null) {
+        console.warn("No API Network Provided...");
         return;
       }
 
@@ -179,6 +165,8 @@ class EGLDModule extends CryptoModule {
         `accounts/${address.toBech32()}/transactions`
       );
 
+      await this.updateAccount();
+      
       let balance = BigInt(this.account.balance); // Start with the latest balance
       console.log('return history: ', transactions);
 
