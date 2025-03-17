@@ -150,25 +150,49 @@ class LossOverlay {
 	}
 
 	render(faction = '') {
+
 		this.faction = faction;
 
-		let units;
+console.log(JSON.stringify(this.mod.game.state.combat));
+
+		let am_i_the_attacker = false;
+
+		let attacker_units;
+		let defender_units;
+		let attacker_loss_factor;
+		let defender_loss_factor;
+
 		let qs = '.loss-overlay .units';
+		let qs_attacker = '.loss-overlay .units.attacker';
+		let qs_defender = '.loss-overlay .units.defender';
+		let my_qs = '.loss-overlay .units.defender';
+
+		attacker_units = this.mod.returnAttackerUnits();
+		defender_units = this.mod.returnDefenderUnits();
+
+console.log("DEFENDER UNITS: " + JSON.stringify(defender_units));
+console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
+
+		this.units = defender_units;
 
 		if (
 			faction == this.mod.game.state.combat.attacking_faction ||
 			faction === 'attacker'
 		) {
-			units = this.mod.returnAttackerUnits();
-			this.loss_factor = this.mod.game.state.combat.attacker_loss_factor;
-		} else {
-			units = this.mod.returnDefenderUnits();
-			this.loss_factor = this.mod.game.state.combat.defender_loss_factor;
+			am_i_the_attacker = true;
+			my_qs = '.loss-overlay .units.attacker';
+			this.units = attacker_units;
 		}
-		this.units = JSON.parse(JSON.stringify(units));
 
-		this.starting_units = JSON.parse(JSON.stringify(units));
-		this.starting_loss_factor = this.loss_factor;
+		if (am_i_the_attacker) {
+		  this.starting_units = JSON.parse(JSON.stringify(attacker_units));
+		  this.starting_loss_factor = this.mod.game.state.combat.attacker_loss_factor;
+		  this.loss_factor = this.starting_loss_factor;
+		}  else {
+		  this.starting_units = JSON.parse(JSON.stringify(defender_units));
+		  this.starting_loss_factor = this.mod.game.state.combat.defender_loss_factor;
+		  this.loss_factor = this.starting_loss_factor;
+		}
 
 		//
 		// calculate max losses we can take
@@ -180,22 +204,49 @@ class LossOverlay {
 		this.overlay.show(LossTemplate());
 		this.updateLossesRequired(this.loss_factor);
 
-		for (let i = 0; i < units.length; i++) {
-			let html = `<div class="loss-overlay-unit" id="${i}">${this.mod.returnUnitImage(
-				units[i]
-			)}</div>`;
-			this.app.browser.addElementToSelector(html, qs);
+		for (let i = 0; i < attacker_units.length; i++) {
+			let html = `
+				<div class="loss-overlay-unit" id="${i}">${this.mod.returnUnitImage(attacker_units[i])}</div>
+			`;
+			this.app.browser.addElementToSelector(html, qs_attacker);
 		}
 
-		this.attachEvents();
+
+		for (let i = 0; i < defender_units.length; i++) {
+			let html = `
+				<div class="loss-overlay-unit" id="${i}">${this.mod.returnUnitImage(defender_units[i])}</div>
+			`;
+			this.app.browser.addElementToSelector(html, qs_defender);
+		}
+
+		//
+		// add battle information
+		//
+		document.querySelector(".attacker.faction").innerHTML = this.mod.game.state.combat.attacker_power;
+		document.querySelector(".defender.faction").innerHTML = this.mod.game.state.combat.defender_power;
+		document.querySelector(".attacker.power").innerHTML = this.mod.game.state.combat.attacker_strength;
+		document.querySelector(".defender.power").innerHTML = this.mod.game.state.combat.defender_strength;
+		document.querySelector(".attacker.roll").innerHTML = this.mod.game.state.combat.attacker_modified_roll;
+		document.querySelector(".defender.roll").innerHTML = this.mod.game.state.combat.defender_modified_roll;
+		document.querySelector(".attacker.hits").innerHTML = this.mod.game.state.combat.defender_loss_factor;
+		document.querySelector(".defender.hits").innerHTML = this.mod.game.state.combat.attacker_loss_factor;
+
+		if (this.mod.game.state.combat.winner == "attacker") {
+			document.querySelector(".attacker.hits").style.backgroundColor = "yellow";
+		}
+		if (this.mod.game.state.combat.winner == "defender") {
+			document.querySelector(".defender.hits").style.backgroundColor = "yellow";
+		}
+
+		this.attachEvents(am_i_the_attacker, my_qs);
 	}
 
 	updateLossesRequired(num) {
-		document.querySelector('.loss-overlay .help').innerHTML =
-			'Losses Required: ' + num;
+		document.querySelector('.loss-overlay .help').innerHTML = 'Losses Required: ' + num;
 	}
 
-	attachEvents() {
+	attachEvents(am_i_the_attacker, my_qs) {
+
 		if (!this.canTakeMoreLosses()) {
 			let c = confirm('Maximum Losses Sustained: Submit?');
 			if (c) {
@@ -212,16 +263,24 @@ class LossOverlay {
 			}
 		}
 
-		document.querySelectorAll('.loss-overlay-unit').forEach((el) => {
+		document.querySelectorAll(my_qs + " .loss-overlay-unit").forEach((el) => {
 			el.onclick = (e) => {
+
 				let idx = e.currentTarget.id;
 
 				//
 				//
 				//
 				let unit = this.units[idx];
+				let didx = idx;
 
-				this.moves.push(`damage\t${unit.spacekey}\t${idx}`);
+				for (let z = 0; z < this.mod.game.spaces[unit.spacekey].units.length; z++) {
+					if (JSON.stringify(unit) === JSON.stringify(this.mod.game.spaces[unit.spacekey].units[z])) {
+						didx = z;
+					}
+				}
+
+				this.moves.push(`damage\t${unit.spacekey}\t${didx}`);
 
 				if (unit.damaged) {
 					this.loss_factor -= unit.rloss;

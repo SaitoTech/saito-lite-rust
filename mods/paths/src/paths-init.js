@@ -3,8 +3,10 @@ const ZoomOverlay = require('./lib/ui/overlays/zoom');
 const CombatOverlay = require('./lib/ui/overlays/combat');
 const LossOverlay = require('./lib/ui/overlays/loss');
 const GunsOverlay = require('./lib/ui/overlays/guns');
+const ReservesOverlay = require('./lib/ui/overlays/reserves');
 const MandatesOverlay = require('./lib/ui/overlays/mandates');
 const WelcomeOverlay = require('./lib/ui/overlays/welcome');
+const MenuOverlay = require('./lib/ui/overlays/menu');
 
 const PathsRules = require('./lib/core/rules.template');
 const PathsOptions = require('./lib/core/advanced-options.template');
@@ -42,8 +44,10 @@ class PathsOfGlory extends GameTemplate {
     this.combat_overlay = new CombatOverlay(this.app, this); 
     this.loss_overlay = new LossOverlay(this.app, this); 
     this.guns_overlay = new GunsOverlay(this.app, this); 
+    this.reserves_overlay = new ReservesOverlay(this.app, this); 
     this.mandates_overlay = new MandatesOverlay(this.app, this); 
     this.welcome_overlay = new WelcomeOverlay(this.app, this); 
+    this.menu_overlay = new MenuOverlay(this.app, this); 
 
     //
     // this sets the ratio used for determining
@@ -127,6 +131,24 @@ class PathsOfGlory extends GameTemplate {
       callback : function(app, game_mod) {
         game_mod.menu.hideSubMenus();
         game_mod.combat_overlay.render();
+      }
+    });
+    this.menu.addSubMenuOption("game-game", {
+      text : "Central Reserves",
+      id : "game-reserves-central",
+      class : "game-reserves-central",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.reserves_overlay.render("central");
+      }
+    });
+    this.menu.addSubMenuOption("game-game", {
+      text : "Allied Reserves",
+      id : "game-reserves-allies",
+      class : "game-reserves-allies",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+        game_mod.reserves_overlay.render("allies");
       }
     });
     this.menu.addSubMenuOption("game-game", {

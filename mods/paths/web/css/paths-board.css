@@ -605,6 +605,20 @@
   flex-direction: column;
 }
 
-
-
+.arbox {
+    top: 851px;
+    left: 4250px;
+    width: 730px;
+    height: 380px;
+}
+.crbox {
+    top: 1280px;
+    left: 4250px;
+    width: 730px;
+    height: 380px;
+}
+.reserve-box.selectable::before {
+    width: inherit;
+    height: inherit;
+}
 

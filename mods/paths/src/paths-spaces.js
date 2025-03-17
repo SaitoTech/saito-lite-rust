@@ -3216,7 +3216,25 @@ spaces['izmir'] = {
       vp : false ,
 }
 
+spaces['arbox'] = {
+      name: "Allied Reserves" ,
+      control: "allies" ,
+      top:  2945,
+      left: 3265,
+      neighbours: [],
+      terrain : "normal" ,
+      vp : false ,
+}
 
+spaces['crbox'] = {
+      name: "Central Powers Reserves" ,
+      control: "central",
+      top:  2945,
+      left: 3265,
+      neighbours: [],
+      terrain : "normal" ,
+      vp : false ,
+}
 
     for (let key in spaces) {
       spaces[key].units = [];

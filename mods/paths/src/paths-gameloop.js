@@ -246,7 +246,16 @@ try {
           this.addUnitToSpace("it_army03", "maggiore");
           this.addUnitToSpace("it_army04", "asiago");
 
-}catch(err) {console.log("error initing:" + JSON.stringify(err));}
+	  // reserves boxes
+    	  this.addUnitToSpace("ge_army04", "crbox");
+    	  this.addUnitToSpace("ge_army06", "crbox");
+    	  this.addUnitToSpace("ge_army08", "crbox");
+    	  this.addUnitToSpace("fr_army01", "arbox");
+    	  this.addUnitToSpace("ru_army09", "arbox");
+    	  this.addUnitToSpace("ru_army10", "arbox");
+    	  this.addUnitToSpace("br_corps", "arbox");
+
+} catch(err) {console.log("error initing:" + JSON.stringify(err));}
 
           this.displayBoard();
 
@@ -385,7 +394,12 @@ try {
 
           let options = this.returnSpacesWithFilter(
             (key) => {
-              if (this.game.spaces[key].activated_for_combat == 1) { return 1; }
+              if (this.game.spaces[key].activated_for_combat == 1) {
+		for (let z = 0; z < this.game.spaces[key].units.length; z++) {
+		  if (this.game.spaces[key].units[z].attacked == 0) { return 1; }
+		}
+	        return 0;
+	      }
               return 0;
             }
           );
@@ -506,6 +520,7 @@ console.log("moving forward with combat!");
 	  for (let i = 0; i < this.game.state.combat.attacker.length; i++) {
 	    let unit = this.game.spaces[this.game.state.combat.attacker[i].unit_sourcekey].units[this.game.state.combat.attacker[i].unit_idx];
 	    if (unit.key.indexOf("army") > 0) { defender_table = "army"; }	    
+	    unit.attacked = 1;
 	  }
 
 	  attacker_roll = this.rollDice();
@@ -531,9 +546,17 @@ console.log("moving forward with combat!");
 	  this.game.state.combat.defender_modified_roll = defender_modified_roll;
 	  this.game.state.combat.attacker_loss_factor = this.returnAttackerLossFactor();
 	  this.game.state.combat.defender_loss_factor = this.returnDefenderLossFactor();
+	  this.game.state.combat.winner = "none";
+	  if (this.game.state.combat.attacker_loss_factor > this.game.state.combat.defender_loss_factor) {
+	    this.game.state.combat.winner = "defender";
+	  }
+	  if (this.game.state.combat.attacker_loss_factor < this.game.state.combat.defender_loss_factor) {
+	    this.game.state.combat.winner = "attacker";
+	  }
 
 console.log("#");
 console.log("#");
+console.log("# combat");
 console.log("#");
 console.log("#");
 console.log(JSON.stringify(this.game.state.combat));

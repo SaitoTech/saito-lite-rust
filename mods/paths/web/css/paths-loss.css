@@ -22,11 +22,43 @@
 	text-align: center;
 }
 
+.loss-overlay .info {
+	display: flex;
+	flex-direction: row;
+	row-gap: 5rem;
+	column-gap: 5rem;
+	bottom: 0px;
+	position: absolute;
+	width: 100%;
+background-color: white;
+font-size: 2rem;
+}
+
+.loss-overlay .info div {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1;
+	min-height: 12rem;
+	font-size: 3rem;
+	padding: 1rem;
+}
+
+.loss-overlay .info div div {
+	min-width: 1px;
+	min-height: 1px;
+}
+
 .loss-overlay-unit {
 	height: 15rem;
 	width: 15rem;
 	position: relative;
 	display: block;
+}
+
+.loss-overlay-group {
+	display: flex;
+	flex-direction: column;
+	row-gap: 1rem;
 }
 
 .loss-overlay .units {

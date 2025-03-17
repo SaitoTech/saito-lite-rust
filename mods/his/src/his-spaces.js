@@ -1775,10 +1775,10 @@
             if (this.areAllies(f, faction2)) {
               faction_map[f] = faction2;
             }
-            if (this.returnCommandingPower(f) == faction1) {
+            if (this.returnControllingPower(f) == faction1) {
               faction_map[f] = faction1;
 	    }
-            if (this.returnCommandingPower(f) == faction2) {
+            if (this.returnControllingPower(f) == faction2) {
               faction_map[f] = faction2;
 	    }
             if (this.returnPlayerCommandingFaction(f) === this.returnPlayerCommandingFaction(faction1)) {

@@ -793,11 +793,11 @@ export default (app, mod) => {
 
                         <!--- RESERVE BOXES --->
                         <div
-                                class="allies-reserve-box reserve-box"
+                                class="space arbox allies-reserve-box reserve-box"
                                 id="allies-reserve-box"
                         ></div>
                         <div
-                                class="central-reserve-box reserve-box"
+                                class="space crbox central-reserve-box reserve-box"
                                 id="central-reserve-box"
                         ></div>
                         <div

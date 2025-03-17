@@ -37,8 +37,10 @@
         sr : 4 ,        
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-      }
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
+    }
 
 	    
 deck['ap02'] = { 
@@ -50,7 +52,9 @@ deck['ap02'] = {
         sr : 4 ,        
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -63,7 +67,9 @@ deck['ap03'] = {
         sr : 4 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap04'] = { 
@@ -75,7 +81,9 @@ deck['ap04'] = {
         sr : 2 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -88,7 +96,9 @@ deck['ap05'] = {
         sr : 2 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -102,7 +112,9 @@ deck['ap06'] = {
         sr : 2 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -115,7 +127,9 @@ deck['ap07'] = {
         sr : 2 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -130,7 +144,9 @@ deck['ap08'] = {
         sr : 2 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -143,7 +159,9 @@ deck['ap09'] = {
         sr : 4 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -156,7 +174,9 @@ deck['ap10'] = {
         sr : 4 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -170,7 +190,9 @@ deck['ap11'] = {
         sr : 4 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -183,7 +205,9 @@ deck['ap12'] = {
         sr : 4 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -196,7 +220,9 @@ deck['ap13'] = {
         sr : 4 ,        
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -209,7 +235,9 @@ deck['ap14'] = {
         sr : 4 ,        
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,       
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -222,7 +250,9 @@ deck['ap15'] = {
         sr : 4 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap16'] = { 
@@ -234,7 +264,9 @@ deck['ap16'] = {
         sr : 5 ,        
         rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'IT' : 2 , 'RU' : 4 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -247,7 +279,9 @@ deck['ap17'] = {
         sr : 5 ,        
         rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'RU' : 4 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -260,7 +294,9 @@ deck['ap18'] = {
         sr : 2 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap19'] = { 
@@ -272,7 +308,9 @@ deck['ap19'] = {
         sr : 2 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap20'] = { 
@@ -284,7 +322,9 @@ deck['ap20'] = {
         sr : 2 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -297,7 +337,9 @@ deck['ap21'] = {
         sr : 2 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap22'] = { 
@@ -309,7 +351,9 @@ deck['ap22'] = {
         sr : 4 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap23'] = { 
@@ -321,7 +365,9 @@ deck['ap23'] = {
         sr : 2 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap24'] = { 
@@ -333,7 +379,9 @@ deck['ap24'] = {
         sr : 4 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap25'] = { 
@@ -345,7 +393,9 @@ deck['ap25'] = {
         sr : 4 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap26'] = { 
@@ -357,7 +407,9 @@ deck['ap26'] = {
         sr : 4 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap27'] = { 
@@ -369,7 +421,9 @@ deck['ap27'] = {
         sr : 4 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -382,7 +436,9 @@ deck['ap28'] = {
         sr : 4 ,        
         rp : { 'A' : 1, 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap29'] = { 
@@ -394,7 +450,9 @@ deck['ap29'] = {
         sr : 4 ,        
         rp : { 'A' : 1, 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -407,7 +465,9 @@ deck['ap30'] = {
         sr : 4 ,        
         rp : { 'A' : 1, 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -420,7 +480,9 @@ deck['ap31'] = {
         sr : 4 ,        
         rp : { 'A' : 1, 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap32'] = { 
@@ -432,7 +494,9 @@ deck['ap32'] = {
         sr : 2 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap33'] = { 
@@ -444,7 +508,9 @@ deck['ap33'] = {
         sr : 2 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap34'] = { 
@@ -456,7 +522,9 @@ deck['ap34'] = {
         sr : 4 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap35'] = { 
@@ -468,7 +536,9 @@ deck['ap35'] = {
         sr : 4 ,        
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -481,7 +551,9 @@ deck['ap36'] = {
         sr : 2 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -494,7 +566,9 @@ deck['ap37'] = {
         sr : 2 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap38'] = { 
@@ -506,7 +580,9 @@ deck['ap38'] = {
         sr : 2 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap39'] = { 
@@ -518,7 +594,9 @@ deck['ap39'] = {
         sr : 2 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -531,7 +609,9 @@ deck['ap40'] = {
         sr : 2 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap41'] = { 
@@ -543,7 +623,9 @@ deck['ap41'] = {
         sr : 4 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 deck['ap42'] = { 
         key : 'britishreinforcements',
@@ -554,7 +636,9 @@ deck['ap42'] = {
         sr : 4 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap43'] = { 
@@ -566,7 +650,9 @@ deck['ap43'] = {
         sr : 4 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -579,7 +665,9 @@ deck['ap44'] = {
         sr : 4 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap45'] = { 
@@ -591,7 +679,9 @@ deck['ap45'] = {
         sr : 4 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -604,7 +694,9 @@ deck['ap46'] = {
         sr : 4 ,        
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap47'] = { 
@@ -616,7 +708,9 @@ deck['ap47'] = {
         sr : 4 ,        
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -629,7 +723,9 @@ deck['ap48'] = {
         sr : 4 ,        
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap49'] = { 
@@ -641,7 +737,9 @@ deck['ap49'] = {
         sr : 4 ,        
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap50'] = { 
@@ -653,7 +751,9 @@ deck['ap50'] = {
         sr : 4 ,        
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -666,7 +766,9 @@ deck['ap51'] = {
         sr : 4 ,        
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap52'] = { 
@@ -678,7 +780,9 @@ deck['ap52'] = {
         sr : 4 ,        
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap53'] = { 
@@ -690,7 +794,9 @@ deck['ap53'] = {
         sr : 5 ,        
         rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'IT' : 2 , 'RU' : 4 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -703,7 +809,9 @@ deck['ap54'] = {
         sr : 5 ,        
         rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'IT' : 2 , 'RU' : 4 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap55'] = { 
@@ -715,7 +823,9 @@ deck['ap55'] = {
         sr : 5 ,        
         rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'IT' : 2 , 'RU' : 4 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap56'] = { 
@@ -727,7 +837,9 @@ deck['ap56'] = {
         sr : 2 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap57'] = { 
@@ -739,7 +851,9 @@ deck['ap57'] = {
         sr : 4 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap58'] = { 
@@ -751,7 +865,9 @@ deck['ap58'] = {
         sr : 2 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap59'] = { 
@@ -763,7 +879,9 @@ deck['ap59'] = {
         sr : 2 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 2 , 'RU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -776,7 +894,9 @@ deck['ap60'] = {
         sr : 4 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap61'] = { 
@@ -788,7 +908,9 @@ deck['ap61'] = {
         sr : 4 ,        
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -801,7 +923,9 @@ deck['ap62'] = {
         sr : 2 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap63'] = { 
@@ -813,7 +937,9 @@ deck['ap63'] = {
         sr : 4 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap64'] = { 
@@ -825,7 +951,9 @@ deck['ap64'] = {
         sr : 4 ,        
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['ap65'] = { 
@@ -837,7 +965,9 @@ deck['ap65'] = {
         sr : 4 ,        
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -854,7 +984,9 @@ deck['ap65'] = {
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
       deck['cp02'] = { 
@@ -866,7 +998,9 @@ deck['ap65'] = {
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
       deck['cp03'] = { 
@@ -878,7 +1012,9 @@ deck['ap65'] = {
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
  deck['cp04'] = { 
@@ -890,7 +1026,9 @@ deck['ap65'] = {
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
    deck['cp05'] = { 
@@ -902,7 +1040,9 @@ deck['ap65'] = {
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
    deck['cp06'] = { 
@@ -914,7 +1054,9 @@ deck['ap65'] = {
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['cp07'] = { 
@@ -926,7 +1068,9 @@ deck['cp07'] = {
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
    deck['cp08'] = { 
@@ -938,7 +1082,9 @@ deck['cp07'] = {
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
    deck['cp09'] = { 
@@ -950,7 +1096,9 @@ deck['cp07'] = {
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 deck['cp10'] = { 
         key : 'sudarmy',
@@ -961,7 +1109,9 @@ deck['cp10'] = {
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -974,7 +1124,9 @@ deck['cp11'] = {
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['cp12'] = { 
@@ -986,7 +1138,9 @@ deck['cp12'] = {
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
     deck['cp13'] = { 
         key : 'falkenhayn',
@@ -997,7 +1151,9 @@ deck['cp12'] = {
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -1010,7 +1166,9 @@ deck['cp12'] = {
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
       deck['cp15'] = { 
@@ -1022,8 +1180,11 @@ deck['cp12'] = {
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
+
   deck['cp16'] = { 
         key : 'limanvonsanders',
         img : "cards/card_cp16.svg" ,
@@ -1033,7 +1194,9 @@ deck['cp12'] = {
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -1046,7 +1209,9 @@ deck['cp12'] = {
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
   deck['cp18'] = { 
@@ -1058,8 +1223,11 @@ deck['cp12'] = {
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
+
   deck['cp19'] = { 
         key : 'flamethrowers',
         img : "cards/card_cp19.svg" ,
@@ -1069,7 +1237,9 @@ deck['cp12'] = {
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -1082,7 +1252,9 @@ deck['cp12'] = {
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
   deck['cp21'] = { 
@@ -1094,7 +1266,9 @@ deck['cp12'] = {
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
   deck['cp22'] = { 
         key : 'germanreinforcements',
@@ -1105,7 +1279,9 @@ deck['cp12'] = {
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -1118,7 +1294,9 @@ deck['cp12'] = {
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
   deck['cp24'] = { 
@@ -1130,7 +1308,9 @@ deck['cp12'] = {
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
   deck['cp25'] = { 
         key : 'highseasfleet',
@@ -1141,7 +1321,9 @@ deck['cp12'] = {
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['cp26'] = { 
@@ -1153,7 +1335,9 @@ deck['cp26'] = {
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -1166,7 +1350,9 @@ deck['cp26'] = {
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
   deck['cp28'] = { 
@@ -1178,7 +1364,9 @@ deck['cp26'] = {
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
   deck['cp29'] = { 
@@ -1190,7 +1378,9 @@ deck['cp26'] = {
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['cp30'] = { 
@@ -1202,7 +1392,9 @@ deck['cp30'] = {
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['cp31'] = { 
@@ -1214,7 +1406,9 @@ deck['cp31'] = {
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['cp32'] = { 
@@ -1226,7 +1420,9 @@ deck['cp32'] = {
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['cp33'] = { 
@@ -1238,7 +1434,9 @@ deck['cp33'] = {
         sr : 5 ,        
         rp : { 'AH' : 3 , 'BU' : 1 , 'GE' : 4 , 'TU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
    deck['cp34'] = { 
         key : 'bulgaria',
@@ -1249,7 +1447,9 @@ deck['cp33'] = {
         sr : 5 ,        
         rp : { 'AH' : 3 , 'GE' : 4 , 'TU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
    deck['cp35'] = { 
@@ -1261,7 +1461,9 @@ deck['cp33'] = {
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
    deck['cp36'] = { 
@@ -1273,7 +1475,9 @@ deck['cp33'] = {
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
    deck['cp37'] = { 
@@ -1285,7 +1489,9 @@ deck['cp33'] = {
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
    deck['cp38'] = { 
@@ -1297,7 +1503,9 @@ deck['cp33'] = {
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
    deck['cp39'] = { 
@@ -1309,7 +1517,9 @@ deck['cp33'] = {
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -1322,7 +1532,9 @@ deck['cp33'] = {
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
    deck['cp41'] = { 
@@ -1334,7 +1546,9 @@ deck['cp33'] = {
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
    deck['cp42'] = { 
@@ -1346,7 +1560,9 @@ deck['cp33'] = {
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
    deck['cp43'] = { 
         key : 'vonbelow',
@@ -1357,7 +1573,9 @@ deck['cp33'] = {
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
    deck['cp44'] = { 
@@ -1369,7 +1587,9 @@ deck['cp33'] = {
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
    deck['cp45'] = { 
@@ -1381,7 +1601,9 @@ deck['cp33'] = {
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -1394,7 +1616,9 @@ deck['cp33'] = {
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
   deck['cp47'] = { 
@@ -1406,7 +1630,9 @@ deck['cp33'] = {
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['cp48'] = { 
@@ -1418,7 +1644,9 @@ deck['cp48'] = {
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 deck['cp49'] = { 
         key : 'michael',
@@ -1429,7 +1657,9 @@ deck['cp49'] = {
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['cp50'] = { 
@@ -1441,7 +1671,9 @@ deck['cp50'] = {
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['cp51'] = { 
@@ -1453,7 +1685,9 @@ deck['cp51'] = {
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['cp52'] = { 
@@ -1465,7 +1699,9 @@ deck['cp52'] = {
         sr : 5 ,        
         rp : { 'AH' : 3 , 'BU' : 1 , 'GE' : 4 , 'TU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['cp53'] = { 
@@ -1477,7 +1713,9 @@ deck['cp53'] = {
         sr : 5 ,        
         rp : { 'AH' : 3 , 'BU' : 1 , 'GE' : 4 , 'TU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['cp54'] = { 
@@ -1489,7 +1727,9 @@ deck['cp54'] = {
         sr : 5 ,        
         rp : { 'AH' : 3 , 'BU' : 1 , 'GE' : 4 , 'TU' : 2 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['cp55'] = { 
@@ -1501,7 +1741,9 @@ deck['cp55'] = {
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -1514,7 +1756,9 @@ deck['cp56'] = {
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['cp57'] = { 
@@ -1526,7 +1770,9 @@ deck['cp57'] = {
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 deck['cp58'] = { 
         key : 'stavkatimidity',
@@ -1537,7 +1783,9 @@ deck['cp58'] = {
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -1550,7 +1798,9 @@ deck['cp59'] = {
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['cp60'] = { 
@@ -1562,7 +1812,9 @@ deck['cp60'] = {
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 deck['cp61'] = { 
         key : 'haig',
@@ -1573,7 +1825,9 @@ deck['cp61'] = {
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -1586,7 +1840,9 @@ deck['cp62'] = {
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['cp63'] = { 
@@ -1598,7 +1854,9 @@ deck['cp63'] = {
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 deck['cp64'] = { 
@@ -1610,7 +1868,9 @@ deck['cp64'] = {
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
 
@@ -1623,7 +1883,9 @@ deck['cp65'] = {
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
-    removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(his_self, faction) { return 0; } ,
+        onEvent : function(his_self, faction) { return 1; } ,
       }
 
     }

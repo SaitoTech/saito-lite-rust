@@ -153,6 +153,8 @@ console.log("!");
 
   displaySpace(key) {
 
+    if (key == "arbox" || key == "crbox") { return; }
+
     try {
 
       let space = this.game.spaces[key];
@@ -297,7 +299,7 @@ alert("display detailed space!");
       card = deck[cardname];
       html = `<img class="${cardclass}" src="/paths/img/${card.img}" />`;
       try {
-	if (card.canEvent(this)) {
+	if (!card.canEvent(this)) {
           html += `<img class="${cardclass} cancel_x" src="/paths/img/cancel_x.png" />`;
         }
       } catch (err) {}
@@ -499,11 +501,19 @@ alert("display detailed space!");
       arb.innerHTML = "";
       crb.innerHTML = "";
 
-      for (let z = 0; z < this.game.state.reserves['allies'].length; z++) {
-        arb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.state.reserves['allies'][z]}.png" />`;
+      for (let z = 0; z < this.game.spaces["arbox"].units.length; z++) {
+	if (this.game.spaces["arbox"].units[z].damaged) {
+          arb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.spaces["arbox"].units[z].back}" />`;
+        } else {
+          arb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.spaces["arbox"].units[z].front}" />`;
+	}
       }
-      for (let z = 0; z < this.game.state.reserves['central'].length; z++) {
-        crb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.state.reserves['central'][z]}.png" />`;
+      for (let z = 0; z < this.game.spaces["crbox"].units.length; z++) {
+	if (this.game.spaces["arbox"].units[z].damaged) {
+          crb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.spaces["crbox"].units[z].back}" />`;
+        } else {
+          crb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.spaces["crbox"].units[z].front}" />`;
+	}
       }
 
     } catch (err) {

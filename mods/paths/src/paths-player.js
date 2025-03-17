@@ -131,7 +131,6 @@ alert("Player Playing Post Combat Retreat!");
     //
     this.cardbox.hide();
 
-
     let html = `<ul>`;
     html    += `<li class="card" id="ops">ops (movement / combat)</li>`;
     html    += `<li class="card" id="sr">strategic redeployment</li>`;
@@ -139,9 +138,15 @@ alert("Player Playing Post Combat Retreat!");
     html    += `<li class="card" id="event">trigger event</li>`;
     html    += `</ul>`;
 
+
     this.updateStatusWithOptions(`${this.returnFactionName(faction)} - playing ${this.popup(card)}`, html, true);
+
+    this.menu_overlay.render(this.game.player, faction);
     this.bindBackButtonFunction(() => { this.playerTurn(faction); });
+
     this.attachCardboxEvents((action) => {
+
+      this.menu_overlay.hide();
 
       if (action === "ops") {
 	this.playerPlayOps(faction, card, c.ops);
@@ -184,6 +189,11 @@ alert("Player Playing Post Combat Retreat!");
 
     let mainInterface = function(options, mainInterface, attackInterface) {
 
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("MAIN INTERFACE: " + options.length);
+
       //
       // sometimes this ends
       //
@@ -207,6 +217,8 @@ alert("Player Playing Post Combat Retreat!");
 	  }
 	}
       }
+
+console.log("UNITS TO ATTACK: " + units_to_attack);
 
       //
       // exit if nothing is left to attack with
@@ -241,6 +253,7 @@ alert("Player Playing Post Combat Retreat!");
 	(key) => {
 
 	  if (key === "skip") {
+alert("skip attack target!");
 	    paths_self.addMove("resolve\tplayer_play_combat");
 	    paths_self.addMove("post_combat_cleanup");
 	    paths_self.removeSelectable();
@@ -305,11 +318,12 @@ alert("Player Playing Post Combat Retreat!");
 	      for (let z = 0; z < selected.length; z++) {
   		s.push(JSON.parse(paths_self.app.crypto.base64ToString(selected[z])));
 	      }
-	      paths_self.addMove("resolve\tplayer_play_combat");
+	      //paths_self.addMove("resolve\tplayer_play_combat");
 	      paths_self.addMove("post_combat_cleanup");
 	      paths_self.addMove(`combat\t${original_key}\t${JSON.stringify(s)}`);
 	      paths_self.endTurn();
 	    } else {
+alert("skip attack target!");
 	      paths_self.addMove("resolve\tplayer_play_combat");
 	      paths_self.addMove("post_combat_cleanup");
 	      paths_self.endTurn();
@@ -652,22 +666,9 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
     //
     //
     //
-    for (let key in c.sr) {
-      if (faction == "central") {
-        if (!this.game.state.replacement_points["central"][key]) { this.game.state.replacement_points["central"][key] = 0; }
-	this.game.state.replacement_points["central"][key] += c.sr[key];
-      }
-      if (faction == "allies") {
-        if (!this.game.state.replacement_points["allies"][key]) { this.game.state.replacement_points["allies"][key] = 0; }
-	this.game.state.replacement_points["allies"][key] += c.sr[key];
-      }
-    }
-
     this.updateStatus("adding replacement points...");
-    this.attachCardboxEvents((action) => {
-      this.addMove("rp\tfaction\t${action}\t${c.sr[key]}");
-      this.endTurn();
-    });
+    this.addMove(`rp\tfaction\t${card}`);
+    this.endTurn();
 
   }
 
@@ -789,11 +790,10 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
 
   playerPlayStrategicRedeployment(faction, card, value) {
 
-alert(faction + " - " + card + " - " + value);
-
     let paths_self = this;
 
     let spaces = this.returnSpacesWithFilter((key) => {
+      if (key == "arbox" || key == "crbox") { return 1; }
       for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
         let unit = paths_self.game.spaces[key].units[z];
 	if (faction == paths_self.returnPowerOfUnit(unit)) {
@@ -823,6 +823,28 @@ alert(faction + " - " + card + " - " + value);
         return 0;
       },
       (key) => {
+
+        if (key == "crbox") {
+  	  paths_self.reserves_overlay.pickUnitAndTriggerCallback("central", (idx) => {
+	    let unit = paths_self.game.spaces[crbox].units[idx];
+            if (unit.type == "corps") { value -= 1; }
+            if (unit.type == "army") { value -= 4; }
+	    paths_self.game.spaces[key].units[idx].moved = 1;
+	    paths_self.playerRedeployUnit(faction, card, value, key, idx);
+	  });
+	  return;
+	}
+        if (key == "arbox") {
+  	  paths_self.reserves_overlay.pickUnitAndTriggerCallback("allies", (idx) => {
+	    let unit = paths_self.game.spaces[crbox].units[idx];
+            if (unit.type == "corps") { value -= 1; }
+            if (unit.type == "army") { value -= 4; }
+	    paths_self.game.spaces[key].units[idx].moved = 1;
+	    paths_self.playerRedeployUnit(faction, card, value, key, idx);
+	  });
+	  return;
+	}
+
 
         let units = [];
         for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
@@ -861,11 +883,10 @@ alert(faction + " - " + card + " - " + value);
 
     let destinations = paths_self.returnSpacesConnectedToSpaceForStrategicRedeployment(faction, spacekey);
 
-console.log("DESTINATIONS: " + JSON.stringify(destinations));
-
     this.playerSelectSpaceWithFilter(
       "Select Space with Unit to Strategically Redeploy",
       (key) => {
+        if (key == "arbox" || key == "crbox") { return 1; }
 	if (destinations.includes(key)) { return 1; }
         return 0;
       },
