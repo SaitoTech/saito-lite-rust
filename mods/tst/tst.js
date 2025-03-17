@@ -33,8 +33,9 @@ class TST extends CryptoModule {
 				this.address = this.app.crypto.generatePublicKey(this.privateKey);			
 			}
 
-			this.balance = (100*Math.random()).toFixed(8);
+			this.balance = (10*Math.random()).toFixed(8);
 			this.app.connection.emit('header-install-crypto', this.ticker);
+			this.save();
 		}
 		
 		await super.activate();
