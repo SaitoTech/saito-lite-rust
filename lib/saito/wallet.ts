@@ -378,7 +378,7 @@ export default class Wallet extends SaitoWallet {
     }
 
     await this.saitoCrypto.initialize(this.app);
-
+    console.log("$$$$ -- Saito Crypto Initialized in Wallet");
   }
 
   constructor(wallet: any) {
