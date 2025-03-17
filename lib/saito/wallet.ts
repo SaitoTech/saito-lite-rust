@@ -90,7 +90,7 @@ export default class Wallet extends SaitoWallet {
 
     // add ghost crypto module so Saito interface available
     class SaitoCrypto extends CryptoModule {
-      constructor(app) {
+      constructor(app, publicKey) {
         super(app, 'SAITO');
         this.name = 'Saito';
         this.description = 'Saito';
@@ -224,7 +224,7 @@ export default class Wallet extends SaitoWallet {
       }
     }
 
-    this.saitoCrypto = new SaitoCrypto(this.app);
+    this.saitoCrypto = new SaitoCrypto(this.app, this.publicKey);
 
     if (this.app.options.wallet != null) {
       if (this.app.options.archive) {
