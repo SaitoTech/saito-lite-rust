@@ -475,7 +475,7 @@ class Keychain {
 		let new_hash = this.returnHash();
 		if (new_hash != this.hash) {
 			this.hash = new_hash;
-			this.app.connection.emit('wallet-updated');
+			this.app.connection.emit('keychain-updated');
 		}
 	}
 
@@ -484,7 +484,7 @@ class Keychain {
 		this.app.storage.saveOptions();
 		if (this.returnHash() != this.hash) {
 			this.hash = this.returnHash();
-			this.app.connection.emit('wallet-updated');
+			this.app.connection.emit('keychain-updated');
 		}
 	}
 
