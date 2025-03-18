@@ -44,8 +44,25 @@
 
   playerPlayPostCombatRetreat() {
 
+    let html = `<ul>`;
+    html    += `<li class="card" id="retreat">retreat</li>`;
+    html    += `<li class="card" id="hit">take additional hit</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Retreat?`, html);
+    this.attachCardboxEvents((action) => {
+
+      if (action === "retreat") {
 alert("Player Playing Post Combat Retreat!");
-    this.endTurn();
+	this.endTurn();
+      }
+
+      if (action === "hit") {
+alert("Player Taking Step Loss");
+	this.endTurn();
+      }
+
+    });
 
   }
 
@@ -244,7 +261,13 @@ console.log("UNITS TO ATTACK: " + units_to_attack);
 	    if (paths_self.returnPowerOfUnit(paths_self.game.spaces[key].units[0]) != faction) {
   	      for (let i = 0; i < paths_self.game.spaces[key].neighbours.length; i++) {
 	        let n = paths_self.game.spaces[key].neighbours[i];
-	        if (paths_self.game.spaces[n].activated_for_combat == 1) { return 1; }
+	        if (paths_self.game.spaces[n].activated_for_combat == 1) {
+		  for (let z = 0; z < paths_self.game.spaces[n].units.length; z++) {
+		    if (paths_self.game.spaces[n].units[z].attacked != 1) { return 1; }
+		  }
+		  paths_self.game.spaces[n].activated_for_combat = 0;
+		  paths_self.displaySpace(n);
+		}
 	      }
 	    }
             return 0;

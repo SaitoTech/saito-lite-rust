@@ -605,6 +605,7 @@ console.log(JSON.stringify(this.game.state.combat));
 	    this.loss_overlay.render(power);
 	  } else {
 	    this.combat_overlay.hide();
+	    this.loss_overlay.render(power);
 	    this.unbindBackButtonFunction();
 	    this.updateStatus("Opponent Assigning Losses");
 	  }
@@ -647,8 +648,14 @@ console.log(JSON.stringify(this.game.state.combat));
 	  }
 
 	  if (does_defender_retreat) {
+console.log("#");
+console.log("#");
+console.log("# does retreat?");
+console.log("#");
+console.log(this.returnPlayerOfFaction(this.game.state.combat.defender_power) + " -- " + this.game.state.combat.defender_power);
 	    let player = this.returnPlayerOfFaction(this.game.state.combat.defender_power);
 	    if (this.game.player == player) {
+console.log("playing post combat retreat...");
 	      this.playerPlayPostCombatRetreat();
 	    } else {
 	      this.updateStatus("Opponent Retreating...");

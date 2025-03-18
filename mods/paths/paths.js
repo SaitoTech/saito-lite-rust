@@ -8301,6 +8301,7 @@ console.log(JSON.stringify(this.game.state.combat));
 	    this.loss_overlay.render(power);
 	  } else {
 	    this.combat_overlay.hide();
+	    this.loss_overlay.render(power);
 	    this.unbindBackButtonFunction();
 	    this.updateStatus("Opponent Assigning Losses");
 	  }
@@ -8343,8 +8344,14 @@ console.log(JSON.stringify(this.game.state.combat));
 	  }
 
 	  if (does_defender_retreat) {
+console.log("#");
+console.log("#");
+console.log("# does retreat?");
+console.log("#");
+console.log(this.returnPlayerOfFaction(this.game.state.combat.defender_power) + " -- " + this.game.state.combat.defender_power);
 	    let player = this.returnPlayerOfFaction(this.game.state.combat.defender_power);
 	    if (this.game.player == player) {
+console.log("playing post combat retreat...");
 	      this.playerPlayPostCombatRetreat();
 	    } else {
 	      this.updateStatus("Opponent Retreating...");
@@ -8711,8 +8718,25 @@ console.log("Attacker Advances!");
 
   playerPlayPostCombatRetreat() {
 
+    let html = `<ul>`;
+    html    += `<li class="card" id="retreat">retreat</li>`;
+    html    += `<li class="card" id="hit">take additional hit</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Retreat?`, html);
+    this.attachCardboxEvents((action) => {
+
+      if (action === "retreat") {
 alert("Player Playing Post Combat Retreat!");
-    this.endTurn();
+	this.endTurn();
+      }
+
+      if (action === "hit") {
+alert("Player Taking Step Loss");
+	this.endTurn();
+      }
+
+    });
 
   }
 
@@ -8911,7 +8935,13 @@ console.log("UNITS TO ATTACK: " + units_to_attack);
 	    if (paths_self.returnPowerOfUnit(paths_self.game.spaces[key].units[0]) != faction) {
   	      for (let i = 0; i < paths_self.game.spaces[key].neighbours.length; i++) {
 	        let n = paths_self.game.spaces[key].neighbours[i];
-	        if (paths_self.game.spaces[n].activated_for_combat == 1) { return 1; }
+	        if (paths_self.game.spaces[n].activated_for_combat == 1) {
+		  for (let z = 0; z < paths_self.game.spaces[n].units.length; z++) {
+		    if (paths_self.game.spaces[n].units[z].attacked != 1) { return 1; }
+		  }
+		  paths_self.game.spaces[n].activated_for_combat = 0;
+		  paths_self.displaySpace(n);
+		}
 	      }
 	    }
             return 0;
@@ -9621,6 +9651,9 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
     if (!obj.rcombat)	{ obj.rcombat 	= 5; }
     if (!obj.rloss)	{ obj.rloss 	= 3; }
     if (!obj.rmovement)	{ obj.rmovement = 3; }
+
+    if (!obj.attacked)	{ obj.attacked  = 0; }
+    if (!obj.moved)	{ obj.moved     = 0; }
 
     if (!obj.damaged)	{ obj.damaged = false; }
     if (!obj.destroyed)	{ obj.destroyed = false; }

@@ -32,6 +32,9 @@
     if (!obj.rloss)	{ obj.rloss 	= 3; }
     if (!obj.rmovement)	{ obj.rmovement = 3; }
 
+    if (!obj.attacked)	{ obj.attacked  = 0; }
+    if (!obj.moved)	{ obj.moved     = 0; }
+
     if (!obj.damaged)	{ obj.damaged = false; }
     if (!obj.destroyed)	{ obj.destroyed = false; }
     if (!obj.spacekey)  { obj.spacekey = ""; }

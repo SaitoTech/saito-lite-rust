@@ -4505,7 +4505,6 @@ async playerTurnHeadlineSelected(card, player) {
       };
     } else {
 
-      /*Function called with a particular card in mind*/
       if (selected_card === "scoringcard") {
         user_message = 'Scoring card must be played: <ul>';
         for (i = 0; i < this.game.deck[0].hand.length; i++) {
@@ -6766,6 +6765,9 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     this.game.state.turn_in_round 	= 0;
     this.game.state.move 		= 0;
 
+// HACK TESTING
+    this.game.state.turn_in_round 	= 5;
+
     //
     // game over if scoring card is held
     //
@@ -6773,9 +6775,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
       for (let i = 0 ; i < this.game.deck[0].hand.length; i++) {
         if (this.game.deck[0].hand[i] != "china") {
           if (this.game.deck[0].cards[this.game.deck[0].hand[i]]?.scoring == 1) {
-	    // hard-exception
 	    if (this.game.options.deck != "late-war" && this.game.state.round != 8) {
-              //There may be an issue if both players simulataneously resign...
               this.sendStopGameTransaction("scoring card held");
               return 0;
 	    }

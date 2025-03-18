@@ -214,10 +214,6 @@ class SettlersPlayer {
     if (this.game.state.placedCity) {
       this.hud.updateStatus(`<div class="player-notice">YOUR TURN: place a connecting ${this.r.name}</diiv>`);
 
-      /*Initial placing of settlements and roads, road must connect to settlement just placed
-          Use a "new" class tag to restrict scope
-          This is literally just a fix for the second road in the initial placement
-        */
       let newRoads = this.hexgrid.edgesFromVertex(this.game.state.placedCity.replace("city_", ""));
       for (let road of newRoads) {
         $(`#road_${road}`).addClass("new");

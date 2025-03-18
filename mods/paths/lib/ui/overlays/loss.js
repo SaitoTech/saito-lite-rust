@@ -238,14 +238,23 @@ console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
 			document.querySelector(".defender.hits").style.backgroundColor = "yellow";
 		}
 
-		this.attachEvents(am_i_the_attacker, my_qs);
+
+console.log("PLAYER OF: " + this.mod.game.player + " -- " + this.mod.returnPlayerOfFaction(faction) + " --- " + faction);
+
+		if (am_i_the_attacker == 1 && faction == "attacker") {
+		  this.attachEvents(am_i_the_attacker, my_qs, faction);
+		}
+		if (am_i_the_attacker == 0 && faction == "defender") {
+		  this.attachEvents(am_i_the_attacker, my_qs, faction);
+		}
+
 	}
 
 	updateLossesRequired(num) {
 		document.querySelector('.loss-overlay .help').innerHTML = 'Losses Required: ' + num;
 	}
 
-	attachEvents(am_i_the_attacker, my_qs) {
+	attachEvents(am_i_the_attacker, my_qs ,faction) {
 
 		if (!this.canTakeMoreLosses()) {
 			let c = confirm('Maximum Losses Sustained: Submit?');
