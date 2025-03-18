@@ -44,12 +44,6 @@ class TweetMenu {
 				item.onclick = async (e) => {
 					console.log(e.currentTarget);
 					switch (e.currentTarget.getAttribute('id')) {
-						case 'follow_contact':
-							this.mod.sendFollowTransaction(this.tweeter);
-							break;
-						case 'unfollow_contact':
-							this.mod.sendUnfollowTransaction(this.tweeter);
-							break;
 						case 'block_contact':
 							this.blockContact();
 							break;

@@ -1,28 +1,10 @@
 module.exports = (menu, tweet) => {
 
   let shortName = menu.app.keychain.returnUsername(menu.tweeter);
-  let add_contact = 
-    `
-      <li id="follow_contact" class="tweet-menu-list-item">
-        <i class="fa-solid fa-user-plus"></i>
-        <div>follow ${shortName}</div>
-      </li>
-    `;
 
-  if (menu.mod.isFollowing(menu.tweeter)){
-    add_contact = 
-    `
-      <li id="unfollow_contact" class="tweet-menu-list-item">
-        <i class="fa-solid fa-user-minus"></i>
-        <div>unfollow ${shortName}</div>
-      </li>
-    `;
-  }
-
-	return `
+return `
       <div class="tweet-menu" style="top=${50}px; left=${50}px;">
         <ul class="saito-menu-list">
-          ${add_contact}
           <li id="block_contact" class="tweet-menu-list-item">
             <i class="fa-solid fa-ban"></i>
             <div>block ${shortName}</div>

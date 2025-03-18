@@ -178,24 +178,17 @@ if (this.app.BROWSER) {
 		////////////
 		if (new_mode == 'tweets') {
 
-//
-//
-//
-alert("RESET HERE... " + this.mod.tweets.length);
-//			this.mod.reset();
-//
-//			if (holder) {
-//				let kids = holder.children;
-//				managerElem.replaceChildren(...kids);
-//			}
-
 			for (let tweet of this.mod.tweets) {
-				if (1) {
-				//if (tweet.curated == 1 && !tweet.isRendered()) {
-					tweet.renderWithCriticalChild();
+				if (this.mod.curated != false) {
+					if (tweet.curated == 1 && !tweet.isRendered()) {
+						tweet.renderWithCriticalChild();
+					}
+				} else {
+					if (!tweet.isRendered()) {
+						tweet.renderWithCriticalChild();
+					}
 				}
 			}
-alert("finished rendering!!!");
 
 			//Fire up the intersection observer
 			this.attachEvents();
@@ -485,10 +478,10 @@ if (this.app.BROWSER) {
 	}
 
 	/*
-    Liked tweets are more complicated than tweets I have sent because it is a 2-step look up
-    We can find the 1, 2...n txs where I liked the tweet, which contains the signature of the original 
-    tweet transaction. Fortunately, if I am looking at my own profile, I should have everything stored locally
-  */
+        Liked tweets are more complicated than tweets I have sent because it is a 2-step look up
+        We can find the 1, 2...n txs where I liked the tweet, which contains the signature of the original 
+        tweet transaction. Fortunately, if I am looking at my own profile, I should have everything stored locally
+        */
 	loadLikes(list_of_liked_tweet_sigs, peer) {
 		if (this.mode !== 'profile') {
 			return;

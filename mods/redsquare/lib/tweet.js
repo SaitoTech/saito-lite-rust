@@ -266,8 +266,6 @@ class Tweet {
 
 	render(prepend = false) {
 
-alert("rendering tweet: " + this.text);
-
 		//
 		// create link preview if link
 		//
@@ -502,7 +500,6 @@ alert("rendering tweet: " + this.text);
 		}
 
 		if (!does_tweet_already_exist_on_page) {
-alert("rendering tweet: " + this.text);
 			this.render();
 		}
 
