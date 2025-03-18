@@ -72,6 +72,11 @@ class Tweet {
 		this.updated_at = this.tx?.updated_at || this.tx.timestamp;
 
 		//
+		// is this tweet curated
+		//
+		this.curated = 0;
+
+		//
 		// the notice shows up at the top of the tweet BEFORE the username and
 		// is used for "retweeted by X" or "liked by Y". the userline is the
 		// line that goes in the tweet header below the username/address but to
@@ -222,8 +227,10 @@ class Tweet {
 
 
 	hideTweet() {
+
 		//remove from archive
 		this.app.storage.deleteTransaction(this.tx, null, 'localhost');
+
 		//remove from dom
 		this.remove();
 
@@ -231,13 +238,8 @@ class Tweet {
 		this.mod.hidden_tweets.push(this.tx.signature);
 		this.mod.saveOptions();
 
-		//remove from tweet list!
-	    for (let i = 0; i < this.mod.tweets.length; i++) {
-	        if (this.mod.curated_tweets[i].tx.signature === this.tx.signature) {
-    	      this.mod.curated_tweets.splice(i, 1);
-        	  return;
-        	}
-      	}
+		this.curated = 0;
+
 	}
 
 
@@ -263,6 +265,8 @@ class Tweet {
 	}
 
 	render(prepend = false) {
+
+alert("rendering tweet: " + this.text);
 
 		//
 		// create link preview if link
@@ -490,12 +494,15 @@ class Tweet {
 		this.attachEvents();
 	}
 	renderWithCriticalChild() {
+
+
 		let does_tweet_already_exist_on_page = false;
 		if (document.querySelector(`.tweet-${this.tx.signature}`)) {
 			does_tweet_already_exist_on_page = true;
 		}
 
 		if (!does_tweet_already_exist_on_page) {
+alert("rendering tweet: " + this.text);
 			this.render();
 		}
 

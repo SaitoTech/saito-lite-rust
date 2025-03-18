@@ -1,4 +1,3 @@
-//const SaitoUser = require('./../../../lib/saito/ui/templates/saito-user.template');
 
 module.exports = (app, mod, tweet) => {
 	let notice = tweet?.notice || '';
@@ -8,8 +7,8 @@ module.exports = (app, mod, tweet) => {
 	text = app.browser.markupMentions(text);
 
 	let html_markers = '';
-	if (tweet.data_source) {
-		html_markers += ` data-source="${tweet.data_source}"`;
+	if (tweet.source.text) {
+		html_markers += ` data-source="${tweet.source.text}"`;
 	}
 	if (tweet.source.type) {
 		html_markers += ` data-source-type="${tweet.source.type}"`;

@@ -44,6 +44,9 @@ class TweetManager {
 						// load more tweets -- from local and remote sources
 						//
 						if (this.mode === 'tweets') {
+if (this.app.BROWSER) {
+  alert("we are intersecting, so fetching more tweets!");
+}
 							this.fetchTweets();
 						}
 
@@ -120,7 +123,7 @@ class TweetManager {
 
 	render(new_mode = this.mode) {
 
-		console.log(this.mode, new_mode);
+		console.log("Tweet Manager rendering: " + new_mode);
 		
 		this.app.connection.emit('redsquare-clear-menu-highlighting', new_mode);
 
@@ -158,7 +161,6 @@ class TweetManager {
 		let managerElem = document.querySelector(myqs);
 
 		if (this.mode == 'tweets' && new_mode !== 'tweets') {
-			//console.log('Stash rendered tweets from main feed');
 			let kids = managerElem.children;
 			holder.replaceChildren(...kids);
 			if (document.getElementById('saito-new-tweets')) {
@@ -166,38 +168,38 @@ class TweetManager {
 			}
 			this.thread_id = null;
 		} else {
-			//console.log('Remove temporary content from page');
 			while (managerElem.hasChildNodes()) {
 				managerElem.firstChild.remove();
 			}
 		}
 
-		//console.log('Redsquare manager rendering: ', this.mode);
-
 		////////////
 		// tweets //
 		////////////
 		if (new_mode == 'tweets') {
-			// Do curation before rendering...
-			this.mod.reset();
 
-			if (holder) {
-				let kids = holder.children;
-				managerElem.replaceChildren(...kids);
-			}
+//
+//
+//
+alert("RESET HERE... " + this.mod.tweets.length);
+//			this.mod.reset();
+//
+//			if (holder) {
+//				let kids = holder.children;
+//				managerElem.replaceChildren(...kids);
+//			}
 
-			for (let tweet of this.mod.curated_tweets) {
-				if (!tweet.isRendered()) {
+			for (let tweet of this.mod.tweets) {
+				if (1) {
+				//if (tweet.curated == 1 && !tweet.isRendered()) {
 					tweet.renderWithCriticalChild();
 				}
 			}
+alert("finished rendering!!!");
 
 			//Fire up the intersection observer
 			this.attachEvents();
 			this.mode = new_mode;
-			if (this.mod.curated_tweets < 10){
-				this.fetchTweets();
-			}
 
 			return;
 		}
@@ -291,14 +293,19 @@ class TweetManager {
 	fetchTweets(){
 		this.intersectionObserver.disconnect();
 
+if (this.app.BROWSER) {
+  alert("disconnected intersection observer ... ");
+}
 		this.numActivePeers = this.mod.loadTweets(
 			'earlier',
 			this.insertOlderTweets.bind(this)
 		);
 
 		if (!this.numActivePeers) {
-			console.log('RS: Try again');
 			this.mod.tweets_earliest_ts--;
+if (this.app.BROWSER) {
+  alert("on numActivePeers fetchTweets...");
+}
 			numActivePeers = this.mod.loadTweets('earlier', this.insertOlderTweets.bind(this));
 			if (!numActivePeers) {
 				console.log('RS: Give up');
@@ -315,52 +322,28 @@ class TweetManager {
 			return;
 		}
 
-		// Curation is done after the return so we don't care about tx_count per se 
-		let acceptable_tweet_ct = this.mod.reset();
-
-		if (acceptable_tweet_ct > 0) {
-			this.hideLoader();
-			for (let tweet of this.mod.curated_tweets) {
-				if (!tweet.isRendered()) {
-					tweet.renderWithCriticalChild();
-				}
+		this.hideLoader();
+		for (let tweet of this.mod.tweets) {
+			if (tweet.curated && !tweet.isRendered()) {
+				tweet.renderWithCriticalChild();
 			}
-
-			this.intersectionObserver.observe(document.getElementById('intersection-observer-trigger'));
-			return;
-
-		} else if (peer?.tweets_earliest_ts) {
-			console.log(
-				`${peer.publicKey} still has tweets as early as ${new Date(
-					peer.tweets_earliest_ts
-				)}, keep querying...`
-			);
-			this.mod.tweets_earliest_ts--;
-			this.numActivePeers += this.mod.loadTweets('earlier', this.insertOlderTweets.bind(this), peer);
-		} else {
-			//If all peers have returned 0, then clear feed...
-
-			let out_of_content = true;
-
-			for (let i = 0; i < this.mod.peers.length; i++) {
-				if (this.mod.peers[i].tweets_earliest_ts) {
-					out_of_content = false;
-				}
-			}
-
-			if (out_of_content) {
-				this.hideLoader();
-
-				if (!document.querySelector('.saito-end-of-redsquare')) {
-					this.app.browser.addElementToSelector(
-						`<div class="saito-end-of-redsquare">no more tweets</div>`,
-						'.tweet-manager'
-					);
-				}
-				this.intersectionObserver.disconnect();
-				console.log("RS: Out of content");
-			} 
 		}
+
+
+		if (tx_count == 0) {
+			if (!document.querySelector('.saito-end-of-redsquare')) {
+				this.app.browser.addElementToSelector(
+					`<div class="saito-end-of-redsquare">no more tweets</div>`,
+					'.tweet-manager'
+				);
+			}
+			this.intersectionObserver.disconnect();
+		} else {
+			this.intersectionObserver.observe(document.getElementById('intersection-observer-trigger'));
+		}
+
+		return;
+
 	}
 
 	renderProfile(publicKey) {
