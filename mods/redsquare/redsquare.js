@@ -331,7 +331,7 @@ class RedSquare extends ModTemplate {
           }
 
 	  //
-	  // CURATION (servers)
+	  // CURATION (browsers)
 	  //
 	  // we have two kinds of curation, browsers filter based on a restricted
 	  // set of criteria, looking for transactions/tweets from users/friends
