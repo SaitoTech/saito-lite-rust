@@ -2716,6 +2716,28 @@ class Browser {
 	}
 
 
+	returnBalanceHTML(balance, exact_precision){
+
+		balance = this.formatDecimals(balance, exact_precision);
+		let separator = this.getDecimalSeparator();
+		
+		let split = balance.split(`${separator}`);
+
+		let html = `<span class="balance-amount-whole">${split[0]}</span>`;
+
+		if (split[1]){
+			html += `<span class="balance-amount-separator">${separator}</span>`;
+			html += `<span class="balance-amount-decimal">${split[1]}</span>`;
+		}
+
+		return html;
+
+		document.querySelector(`.balance-amount-whole`).innerHTML = whole_amt;
+		document.querySelector(`.balance-amount-separator`).innerHTML = separator;
+		document.querySelector(`.balance-amount-decimal`).innerHTML = decimal_amt;
+
+	}
+
 	reloadWindow(delay = 0){
 		if (delay > 0) {
 			setTimeout(() => { window.location.reload(); }, delay);		

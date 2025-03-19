@@ -469,13 +469,13 @@ class SettingsAppspace {
 
 			Array.from(
 				document.querySelectorAll(
-					'.settings-appspace .pubkey-containter'
+					'.settings-appspace .pubkey-grid'
 				)
 			).forEach((key) => {
 				key.onclick = (e) => {
 					navigator.clipboard.writeText(e.currentTarget.dataset.id);
 					let icon_element = e.currentTarget.querySelector(
-						'.pubkey-containter i'
+						'.pubkey-grid i'
 					);
 					icon_element.classList.toggle('fa-copy');
 					icon_element.classList.toggle('fa-check');

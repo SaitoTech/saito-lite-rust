@@ -181,9 +181,7 @@
   background: var(--background-color-qr-code);
 }
 
-.balance-amount {
-  font-size: 4.2rem;
-  margin-right: -1.5rem;
+.balance-amount{
   display: flex;
 }
 
@@ -213,6 +211,7 @@
   border: none;
   background: none;
   width: auto;
+  height: 100%;
   font-size: 2.2rem;
   color: var(--font-color-primary);
 }
@@ -248,8 +247,9 @@
 
 
 .wallet-identicon {
-  width: 3rem;
-  height: 3rem;
+  width: 3.2rem;
+  height: 3.2rem;
+  margin: auto 1rem auto 0;
 }
 
 .pubkey-containter {
@@ -260,8 +260,8 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  gap: 0.75rem;
-  font-family: monospace;
+  gap: 1rem;
+  font-size: 1.6rem;
 }
 
 .pubkey-containter:hover i {
@@ -282,15 +282,13 @@
 .wallet-balance {
   display: flex;
   flex-direction: row;
-  gap: 2rem;
+  gap: 1rem;
   align-items: baseline;
+  height: 4.2rem;
 }
 
 .profile-public-key {
-  font-size: 1.7rem;
-  display: grid;
-  grid-template-columns: minmax(12.2rem, 1fr) min-content;
-  width: min-content;
+  width: fit-content;
 }
 
 .profile-public-key > div:first-child{
@@ -299,11 +297,11 @@
   text-overflow: ellipsis;
 }
 
-.profile-public-key.generate-keys {
+/*.profile-public-key.generate-keys {
   width: fit-content;
   max-width: 100%;
   font-family: var(--saito-font);
-}
+}*/
 
 
 .hamburger-container {

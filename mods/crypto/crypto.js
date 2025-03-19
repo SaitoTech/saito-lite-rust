@@ -248,7 +248,7 @@ class Crypto extends ModTemplate {
 
     let crypto_mod = this.app.wallet.returnCryptoModuleByTicker(ticker);
     crypto_mod.checkWithdrawalFeeForAddress('', function(res){
-      fee = res;
+      fee = Number(res);
     });
 
     let diff = Number(this.max_balance) - Number(fee);

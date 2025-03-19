@@ -41,7 +41,7 @@
 
 .settings-appspace-user-details {
 	display: grid;
-	grid-template-columns: 10rem min-content;
+	grid-template-columns: 10rem max-content;
 	grid-template-rows: repeat(3, 1fr);
 	grid-column-gap: 1.5rem;
 	grid-row-gap: 1.5rem;
@@ -89,9 +89,20 @@
 	width: 100%;
 }
 
+.pubkey-grid {
+	display: grid;
+	grid-template-columns: minmax(10rem, 1fr) min-content;
+	width: 100%;
+	align-items: center;
+	font-family: monospace;
+	gap: 1rem;
+	cursor: pointer;
+}
 
-.settings-appspace .profile-public-key {
-	width: unset;
+.pubkey-grid div {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 40rem;
 }
 
 .saito-switch {

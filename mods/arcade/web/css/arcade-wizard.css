@@ -317,6 +317,9 @@
 	cursor: pointer;
 	border-bottom: 1px dashed;
 	font-size: 2rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 
