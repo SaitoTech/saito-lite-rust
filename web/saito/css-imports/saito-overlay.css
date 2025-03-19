@@ -231,19 +231,6 @@
 }
 
 
-@media screen and (max-width: 768px) {
-    .saito-overlay-form-submitline {
-        flex-direction: column;
-    }
-    .saito-overlay-form>button[type="button"], .saito-overlay-form-submitline>button[type="button"] {
-        width: 100%;
-    }
-
-    .module-settings-overlay{
-        padding: 1rem;
-    }
-}
-
 @media screen and (max-width: 600px) {
     .maximized-overlay .saito-overlay-closebox {
         top: 0.5rem;
@@ -259,6 +246,19 @@
     }
 
 
+    /* **********************************************
+    Previously: @media screen and (max-width: 768px) 
+    *********************************************** */ 
+    .saito-overlay-form-submitline {
+        flex-direction: column;
+    }
+    .saito-overlay-form>button[type="button"], .saito-overlay-form-submitline>button[type="button"] {
+        width: 100%;
+    }
+
+    .module-settings-overlay{
+        padding: 1rem;
+    }
 
 }
 

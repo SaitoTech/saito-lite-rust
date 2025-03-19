@@ -25,21 +25,6 @@
   margin-right: auto;
 }
 
-.email-appspace-deposit-overlay {
-  padding: 2rem;
-  background-image: linear-gradient(to bottom right, #EA4843, #f78754);
-  color: #fff;
-  background-position: 0em;
-  background-size: 120% 100%;
-  color: white;
-  border-radius: 1rem;
-  width: 40vw;
-}
-
-.email-appspace-deposit-overlay p {
-  font-size: 17px;
-}
-
 .input-cont {
   margin-bottom: 20px;
   position: relative;
@@ -100,32 +85,6 @@
   width: 100%;
 }
 
-.email-appspace-deposit-overlay {
-  max-width: 32vw;
-}
-
-.deposit_title {
-  font-size: 2em;
-}
-
-.deposit_desc {
-  font-size: 1.2em;
-  line-height: 1.6em;
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-.deposit_qrcode {
-  clear: both;
-  margin-top: 10px;
-  margin-bottom: 20px;
-}
-
-.deposit_address {
-  font-size: 1.2em;
-  font-weight: bold;
-  letter-spacing: 0.05em;
-}
 
 #withdrawl-confirm-cont, #withdrawl-sent-cont {
   display: none;
@@ -744,14 +703,6 @@
   }
   .mixin-items-container .saito-table-row {
     grid-template-columns: 7rem 7rem 7rem 7rem 7rem;
-  }
-  .email-appspace-deposit-overlay {
-    max-width: fit-content;
-    width: 95vw;
-  }
-  .email-appspace-deposit-overlay #qrcode img {
-    width: 24vw;
-    height: auto;
   }
   .mixin-no-history {
     margin-top: 1rem;

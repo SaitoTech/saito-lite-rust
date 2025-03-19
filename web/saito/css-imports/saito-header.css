@@ -160,10 +160,10 @@
   align-items: center;
 }
 
-#qrcode {
+#qrcode, .qrcode {
   width: 100%;
-  max-height: 21rem;
-  height: 21.5vh;
+  max-height: 20rem;
+  height: 20vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -171,7 +171,7 @@
 }
 
 
-#qrcode img {
+#qrcode img, .qrcode img {
   height: auto;
   max-width: 20rem;
   width: 20vh;
@@ -269,8 +269,7 @@
 }
 
 .wallet-infoo {
-  padding: 0rem;
-  margin: 0rem;
+  padding-top: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
