@@ -51,6 +51,7 @@ class Disburse extends ModTemplate {
 		// });
 	}
 
+	/*
 	async onConfirmation(blk, tx, conf) {
 
 		if (this.app.BROWSER && !tx.isTo(this.publicKey)) {
@@ -66,6 +67,7 @@ class Disburse extends ModTemplate {
 			console.log('ERROR in ' + this.name + ' onConfirmation: ' + err);
 		}
 	}
+	*/
 
 	parseData(raw_data, this_wallet_balance) { /*    expected data, list of 'wallet \t value \n'    */
 		try {

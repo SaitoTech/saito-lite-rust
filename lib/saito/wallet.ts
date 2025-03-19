@@ -175,9 +175,9 @@ export default class Wallet extends SaitoWallet {
             amountsChunk
           );
           await this.app.wallet.signAndEncryptTransaction(newTx);
-          console.log("newTx:\t" + JSON.stringify(newTx))
+          //console.log("newTx:\t" + JSON.stringify(newTx))
           await this.app.network.propagateTransaction(newTx);
-          console.log("TX Sent");
+          //console.log("TX Sent");
           signatures.push(newTx.signature);
         }
 
