@@ -114,13 +114,14 @@ class RedSquareMain {
     this.app.connection.on(
       'redsquare-insert-loading-message',
       (message = 'loading new tweets...') => {
-        this.loader.render(message);
+siteMessage(message, 1000);
+//        this.loader.render(message);
       }
     );
 
     this.app.connection.on('redsquare-remove-loading-message', (message = `Finished Loading!`) => {
       //NOTE: --> COMMENT THIS OUT TO KEEP MESSAGE DISPLAYED FOR CSS TWEAKING
-      this.loader.finish(message);
+//      this.loader.finish(message);
     });
 
     //

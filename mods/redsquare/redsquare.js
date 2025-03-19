@@ -363,18 +363,15 @@ class RedSquare extends ModTemplate {
 	  //
           } else {
 
-	return 1;
-
-	    let tweet = new Tweet(this.app, this, tx, '.tweet-manager');
-    
-	    let is_anonymous_user = !(this.app.keychain.returnIdentifierByPublicKey(tweet.user.publicKey, false));
+	    let is_anonymous_user = !(this.app.keychain.returnIdentifierByPublicKey(tx.from[0].publicKey, false));
 	    if (is_anonymous_user) { return 0; }
 
-    	    if (tweet.num_replies > 0 && mod_score != -1 && is_anonymous_user == false) {
+	    let tweet = new Tweet(this.app, this, tx, '.tweet-manager');
+    	    if (tweet.num_replies > 0 && mod_score != -1) {
       	      return 1;
     	    }
 
-	    if (tweet.num_likes > 1 && mod_score != -1 && is_anonymous_user == false) {
+	    if (tweet.num_likes > 1 && mod_score != -1) {
  	      return 1;
     	    }
 
@@ -776,8 +773,6 @@ class RedSquare extends ModTemplate {
         }
         return;
       }
-
-
       if (txmsg.request === 'create tweet') {
         await this.receiveTweetTransaction(blk, tx, conf, this.app);
         if (this.addTweet(tx, 'receiveTweet')){
@@ -942,6 +937,7 @@ class RedSquare extends ModTemplate {
       if (!txs[z].optional.source) {
         txs[z].optional.source = {};
       }
+      txs[z].optional.source.text = source;
       txs[z].optional.source.type = 'archive';
       txs[z].optional.source.node = peer.publicKey;
 
@@ -1271,7 +1267,7 @@ class RedSquare extends ModTemplate {
       let t = this.returnTweet(tweet.tx.signature);
       if (!t) { return 0; }
 
-      t.data_renewal = source;
+      t.source.text = source;
 
       if (tweet.tx.optional) {
 
