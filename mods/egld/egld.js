@@ -13,6 +13,12 @@ const {
 } = require('@multiversx/sdk-core');
 const PeerService = require('saito-js/lib/peer_service').default;
 
+////  !!!!!!!!!!!!!!!!!!!!!!!!!
+
+///  don't forget to store this.balance as a string!
+
+//  !!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
 
 class EGLDModule extends CryptoModule {
@@ -58,6 +64,7 @@ class EGLDModule extends CryptoModule {
 
       if (!this.options?.mnemonic_text) {
         await this.getAddress();
+        await this.generateAccount();
       }
 
       await this.updateAccount();
@@ -94,6 +101,22 @@ class EGLDModule extends CryptoModule {
       this.options.address = this.address = this.address_obj.toBech32();
     } catch (error) {
       console.error('Error creating EGLD address:', error);
+    }
+  }
+
+  async generateAccount() {
+    try {
+      if (this.address_obj != null) {
+        let account = new Account(this.address_obj);
+        this.account = account;
+
+        this.options.balance = this.balance = this.account.balance;
+        this.options.nonce = this.account.nonce;
+
+        //console.log("generateAccount account: ", this.account);
+      }
+    } catch (error) {
+      console.error('Error creating EGLD account:', error);
     }
   }
 
