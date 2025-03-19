@@ -159,7 +159,7 @@ class Disburse extends ModTemplate {
 			console.log("senders.length :" + senders.length);
 			// if (senders.length > 1) {
 			console.log("sendPayments");
-			let hash = await this.app.wallet.sendPayments(
+			await this.app.wallet.sendPayments(
 				senders,
 				receivers,
 				amounts,
@@ -168,7 +168,7 @@ class Disburse extends ModTemplate {
 				async function (res) {
 					console.log("hash:\t" + res.hash);
 					if (res.hash) {
-						salert("Success, please wait - transaction hash: " + res.hash);
+						salert("Success, please wait - transaction hash: " + res.hash.substring(0, 250));
 					} 
 					if (res.err) {
 						salert("Error: " + res.err);

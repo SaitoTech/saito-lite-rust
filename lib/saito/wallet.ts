@@ -162,13 +162,27 @@ export default class Wallet extends SaitoWallet {
       }
 
       async sendPayments(amounts: bigint[], to_addresses: string[]) {
-        let newTx = await this.app.wallet.createUnsignedTransactionWithMultiplePayments(
-          to_addresses,
-          amounts
-        );
-        await this.app.wallet.signAndEncryptTransaction(newTx);
-        await this.app.network.propagateTransaction(newTx);
-        return newTx.signature;
+        const CHUNK_SIZE = 100;
+        const signatures: string[] = [];
+
+        // Process in chunks of 100
+        for (let i = 0; i < amounts.length; i += CHUNK_SIZE) {
+          const amountsChunk = amounts.slice(i, i + CHUNK_SIZE);
+          const addressesChunk = to_addresses.slice(i, i + CHUNK_SIZE);
+
+          let newTx = await this.app.wallet.createUnsignedTransactionWithMultiplePayments(
+            addressesChunk,
+            amountsChunk
+          );
+          await this.app.wallet.signAndEncryptTransaction(newTx);
+          console.log("newTx:\t" + JSON.stringify(newTx))
+          await this.app.network.propagateTransaction(newTx);
+          console.log("TX Sent");
+          signatures.push(newTx.signature);
+        }
+
+        // Return all transaction signatures
+        return signatures.join(', ');
       }
 
       async receivePayment(howMuch, from, to, timestamp) {
