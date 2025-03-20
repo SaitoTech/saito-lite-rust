@@ -190,8 +190,12 @@ export default class Wallet extends SaitoWallet {
             nolan_amount
           );
 
+        console.log("newtx created: ", newtx);
+
         await this.app.wallet.signAndEncryptTransaction(newtx);
         await this.app.network.propagateTransaction(newtx);
+
+        console.log("newtx propogated: ", newtx);
 
         return newtx.signature;
       }

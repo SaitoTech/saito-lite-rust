@@ -125,8 +125,8 @@ class Nft {
 
             let amount = typeof nft_self.nft.amt === "string" ? BigInt(nft_self.nft.amt) : nft_self.nft.amt;
             let depositAmt = typeof nft_self.nft.deposit === "string" ? BigInt(nft_self.nft.deposit) : nft_self.nft.deposit;
-            let change = BigInt(nft_self.nft.change);
             let fee = BigInt(nft_self.nft.fee);
+            let change = amount - depositAmt - fee;
 
             console.log("SUBMIT NFT: ");
             console.log(nft_self.nft);
@@ -153,7 +153,13 @@ class Nft {
                 fee,
                 nft_self.mod.publicKey
             );
+
+            alert("Bound Tx received");
             console.log("createBoundUtxoTransaction:", tx);
+            await nft_self.app.wallet.signAndEncryptTransaction(tx);
+            await nft_self.app.network.propagateTransaction(tx);
+
+            console.log("tx propagateTransaction:", tx);
         };
 
         document.querySelector('.utxo-selection-button').onclick = async (e) => {
