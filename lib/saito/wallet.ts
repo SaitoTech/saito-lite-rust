@@ -616,8 +616,10 @@ export default class Wallet extends SaitoWallet {
 
   saveAvailableCryptosAssociativeArray(publicKey, cryptos) {
     for (let ticker in cryptos) {
+      console.log("$$$ SAVE -- ", publicKey, ticker, cryptos[ticker].address);
       this.app.keychain.addCryptoAddress(publicKey, ticker, cryptos[ticker].address);
     }
+    this.app.keychain.saveKeys();
   }
 
   async returnPreferredCryptoBalance() {
