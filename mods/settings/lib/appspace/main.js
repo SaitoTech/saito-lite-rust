@@ -450,18 +450,13 @@ class SettingsAppspace {
 						"This will clear your browser's DB, proceed cautiously"
 					);
 					if (confirmation) {
-						localforage
-							.clear()
-							.then(function () {
-								console.log('Cleared LocalForage');
-							})
-							.catch(function (err) {
-								console.error(err);
-							});
+
+						// Centrally Manage localForage
+						await this.app.storage.clearLocalForage();
 
 						let archive = this.app.modules.returnModule('Archive');
 						if (archive) {
-							await archive.onWalletReset(true);
+							await archive.onUpgrade('nuke');
 						}
 					}
 				};

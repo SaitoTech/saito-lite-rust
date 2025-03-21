@@ -430,15 +430,14 @@ export default class Wallet extends SaitoWallet {
       await this.app.blockchain.resetBlockchain();
     }
 
+    await this.app.storage.clearLocalForage();
+
     await this.app.storage.resetOptions();
 
     // keychain
     if (this.app.options.keys) {
       this.app.options.keys = [];
     }
-
-    // let modules purge stuff (only partially implemented)
-    await this.app.modules.onWalletReset(true);
 
     this.app.options.invites = [];
     this.app.options.games = [];
@@ -926,47 +925,6 @@ export default class Wallet extends SaitoWallet {
     }
   }
 
-  async restoreWallet(file) {
-    console.log('restoring wallet...');
-    let wallet_reader = new FileReader();
-    wallet_reader.readAsBinaryString(file);
-    wallet_reader.onloadend = async () => {
-      let decryption_secret = '';
-      if (!wallet_reader.result) {
-        console.error('Error reading wallet file');
-        return;
-      }
-      let decrypted_wallet = wallet_reader.result.toString();
-      try {
-        let wobj = JSON.parse(decrypted_wallet);
-        await this.reset(false);
-        await this.setPublicKey(wobj.wallet.publicKey);
-        await this.setPrivateKey(wobj.wallet.privateKey);
-        wobj.wallet.version = this.version;
-        wobj.wallet.inputs = [];
-        wobj.wallet.outputs = [];
-        wobj.wallet.spends = [];
-        wobj.games = [];
-        this.app.options = wobj;
-
-        await this.app.blockchain.resetBlockchain();
-        // this.app.storage.saveOptions(); //Included above, no need to double save
-
-        alert('Restoration Complete ... click to reload Saito');
-        this.app.browser.reloadWindow(300);
-      } catch (err) {
-        if (err.name == 'SyntaxError') {
-          alert('Error reading wallet file. Did you upload the correct file?');
-        } else if (false) {
-          // put this back when we support encrypting wallet backups again...
-          alert('Error decrypting wallet file. Password incorrect');
-        } else {
-          alert('Unknown error<br/>' + err);
-        }
-      }
-    };
-  }
-
   /**
    * If the to field of the transaction contains a pubkey which has previously negotiated a diffie-hellman
    * key exchange, encrypt the message part of message, attach it to the transaction, and resign the transaction
@@ -1071,13 +1029,12 @@ export default class Wallet extends SaitoWallet {
     let publicKey = await this.getPublicKey();
 
     if (type == 'nuke') {
-      this.reset(false);
-      this.app.blockchain.resetBlockchain();
-      this.app.storage.resetOptions();
-      this.preferred_crypto = 'SAITO';
-      await this.fetchBalanceSnapshot(publicKey);
+      await this.resetWallet();
+      publicKey = await this.getPublicKey();
     } else if (type == 'import') {
+      //
       // wallet file used for importing
+      //
       if (walletfile != null) {
         let decryption_secret = '';
         let decrypted_wallet = walletfile.result.toString();
@@ -1095,8 +1052,6 @@ export default class Wallet extends SaitoWallet {
           wobj.games = [];
           this.app.options = wobj;
 
-          await this.app.blockchain.resetBlockchain();
-          await this.fetchBalanceSnapshot(publicKey);
         } catch (err) {
           try {
             alert('error: ' + JSON.stringify(err));
@@ -1104,8 +1059,13 @@ export default class Wallet extends SaitoWallet {
           console.log(err);
           return err.name;
         }
+
+        publicKey = await this.getPublicKey();
+
       } else if (privatekey != '') {
+        //
         // privatekey used for wallet importing
+        //
         try {
           publicKey = this.app.crypto.generatePublicKey(privatekey);
           await this.setPublicKey(publicKey);
@@ -1116,22 +1076,27 @@ export default class Wallet extends SaitoWallet {
           this.app.options.wallet.spends = [];
           this.app.options.wallet.pending = [];
 
+          // Maybe stored our options in localForage
           await this.app.storage.resetOptionsFromKey(publicKey);
-          await this.fetchBalanceSnapshot(publicKey);
+
         } catch (err) {
           return err.name;
         }
+      }else{
+        console.error("Cannot import a wallet without a private key or json file!");
       }
     } else if (type == 'upgrade') {
       // purge old slips
       this.app.options.wallet.slips = [];
-      await this.app.blockchain.resetBlockchain();
-      //this.app.storage.resetOptions();
-      await this.fetchBalanceSnapshot(publicKey);
     }
 
-    await this.saveWallet();
     await this.app.modules.onUpgrade(type, privatekey, walletfile);
+
+    await this.app.blockchain.resetBlockchain();
+    
+    await this.fetchBalanceSnapshot(publicKey);
+
+    await this.saveWallet();
     return true;
   }
 
