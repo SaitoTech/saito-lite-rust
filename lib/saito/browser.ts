@@ -2746,8 +2746,17 @@ class Browser {
 		}
 	}
 
-	lockNavigation(callback){
+	beforeUnloadHandler(event){
+		event.preventDefault();
+		event.returnValue = true;
+	}
+
+	lockNavigation(callback, beforeUnload = false){
 		this.navigation_locked = true;
+
+		if (beforeUnload){
+			window.addEventListener('beforeunload', this.beforeUnloadHandler);
+		}
 
 	    window.addEventListener(this.terminationEvent, callback);
 	    if (this.app.browser.isMobileBrowser()) {
@@ -2758,6 +2767,7 @@ class Browser {
 	unlockNavigation(callback){
 		this.navigation_locked = false;
 
+		window.removeEventListener('beforeunload', this.beforeUnloadHandler);
 	    window.removeEventListener(this.terminationEvent, callback);
 	    if (this.app.browser.isMobileBrowser()) {
 	      document.removeEventListener('visibilitychange', callback);
@@ -2771,6 +2781,7 @@ class Browser {
 			if (!c){
 				return;
 			}
+			window.removeEventListener('beforeunload', this.beforeUnloadHandler);
 		}
 
 		if (delay > 0){
