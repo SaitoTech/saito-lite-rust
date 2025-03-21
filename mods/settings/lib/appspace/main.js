@@ -1,7 +1,6 @@
 const SettingsAppspaceTemplate = require('./main.template.js');
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
 const SaitoModule = require('./../../../../lib/saito/ui/saito-module/saito-module');
-const localforage = require('localforage');
 const jsonTree = require('json-tree-viewer');
 
 class SettingsAppspace {

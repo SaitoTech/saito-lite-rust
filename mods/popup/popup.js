@@ -7,7 +7,6 @@ const PopupReview = require('./lib/review');
 const PopupMain = require('./lib/main');
 const PopupLessonManager = require('./lib/manager');
 const PeerService = require('saito-js/lib/peer_service').default;
-//const localforage = require('localforage');
 const JsStore = require('jsstore');
 
 class Popup extends ModTemplate {

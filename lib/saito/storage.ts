@@ -291,35 +291,80 @@ class Storage {
   }
 
   async resetOptionsFromKey(publicKey) {
-    let wallet = await localforage.getItem(publicKey);
-    if (wallet) {
-      console.log(`Found wallet for ${publicKey} in IndexedDB`);
-      //siteMessage(`Found wallet for ${publicKey} in IndexedDB`);
-      this.app.options = wallet;
-      this.app.storage.saveOptions();
-    } else {
-      console.log(`Creating fresh wallet for ${publicKey}`);
-      //siteMessage(`Creating fresh wallet for ${publicKey}`);
-      await this.resetOptions();
+    if (this.app.BROWSER) {
+      let wallet = await localforage.getItem(publicKey);
+      if (wallet) {
+        console.log(`Found wallet for ${publicKey} in IndexedDB`);
+        //siteMessage(`Found wallet for ${publicKey} in IndexedDB`);
+        this.app.options = wallet;
+        this.app.storage.saveOptions();
+      } else {
+        console.log(`Creating fresh wallet for ${publicKey}`);
+        //siteMessage(`Creating fresh wallet for ${publicKey}`);
+        await this.resetOptions();
+      }
     }
   }
 
+  /**
+   *  Save the entire app.options as a key-entry pair in localForage -- enables switching accounts
+   *
+   */
   async saveOptionsToForage() {
-    let key = await this.app.wallet.getPublicKey();
-    if (key) {
-      localforage.setItem(key, this.app.options);
+    if (this.app.BROWSER) {
+      let key = await this.app.wallet.getPublicKey();
+      if (key) {
+        localforage.setItem(key, this.app.options);
+      }
+    }
+  }
+
+  /**
+   * Wrapper classes so modules can consistently use localForage (indexedDB)
+   */
+
+  async getLocalForageItem(key) {
+    if (this.app.BROWSER) {
+      try {
+        return await localforage.getItem(key);
+      } catch (err) {
+        console.error(err);
+        return null;
+      }
+    }
+  }
+
+  async setLocalForageItem(key, value) {
+    if (this.app.BROWSER) {
+      try {
+        return await localforage.setItem(key, value);
+      } catch (err) {
+        console.error(err);
+        return null;
+      }
+    }
+  }
+
+  async removeLocalForageItem(key) {
+    if (this.app.BROWSER) {
+      try {
+        return await localforage.removeItem(key);
+      } catch (err) {
+        console.error(err);
+        return null;
+      }
     }
   }
 
   async clearLocalForage() {
-    localforage
-      .clear()
-      .then(function () {
-        console.log('Cleared LocalForage');
-      })
-      .catch(function (err) {
+    if (this.app.BROWSER) {
+      try {
+        await localforage.clear();
+        console.log('Cleared LocalForage!');
+      } catch (err) {
         console.error(err);
-      });
+      }
+    }
   }
 
   saveOptions() {

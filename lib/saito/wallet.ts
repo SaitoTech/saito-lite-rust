@@ -959,7 +959,7 @@ export default class Wallet extends SaitoWallet {
       if (encryptedMessage) {
         tx.msg = encryptedMessage;
       } else {
-        console.warn("Not encrypting transaction because don't have shared key with recipient");
+        //console.warn("Not encrypting transaction because don't have shared key with recipient");
       }
 
       //
