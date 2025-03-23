@@ -212,7 +212,7 @@ console.log("err: " + err);
   }
 
   displaySpaceDetailedView(key) {
-alert("display detailed space!");
+    this.space_overlay.render(key);
   }
 
   displaySpaces() {

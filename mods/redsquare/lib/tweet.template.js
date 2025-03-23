@@ -45,25 +45,18 @@ module.exports = (app, mod, tweet) => {
                 <div class="tweet-tool tweet-tool-retweet" title="Retweet/Quote-tweet"><span class="tweet-tool-retweet-count ${is_retweeted_css}">${tweet.num_retweets}</span>
                   <i class="fa fa-repeat ${is_retweeted_css}"></i>
                 </div>
-                <div class="tweet-tool tweet-tool-like" title="Like tweet"><span class="tweet-tool-like-count ${is_liked_css}">${tweet.num_likes}</span> <div class="tweet-like-button">
-                <div class="heart-bg">
-                  <div class="heart-icon ${is_liked_css}"></div>
-                </div>
-              </div></div>
-                    
-                <div class="tweet-tool tweet-tool-share" title="Copy link to tweet"><i class="fa fa-arrow-up-from-bracket"></i>
-                </div>`;
-	if (tweet.tx.from[0].publicKey === mod.publicKey) {
-		if (tweet.created_at + 10 * 60 * 1000 > new Date().getTime()) {
-			controls += `<div class="tweet-tool tweet-tool-edit" title="Edit your tweet"><i class="fas fa-edit"></i></div>`;
-		} else {
-			controls += `<div class="tweet-tool tweet-tool-delete" title="Delete your tweet"><i class="fas fa-trash"></i></div>`;
-		}
-	} else {
-		controls += `<div class="tweet-tool tweet-tool-more" title="More options"><i class="fa-solid fa-ellipsis"></i></div>`;
-		//controls += `<div class="tweet-tool tweet-tool-flag" title="Flag tweet as inappropriate"><i class="fa fa-flag"></i></div>`;
-	}
-	controls += `           </div>`;
+                <div class="tweet-tool tweet-tool-like" title="Like tweet">
+		  <span class="tweet-tool-like-count ${is_liked_css}">${tweet.num_likes}</span>
+		  <div class="tweet-like-button">
+                    <div class="heart-bg">
+                      <div class="heart-icon ${is_liked_css}"></div>
+                    </div>
+                  </div>
+		</div>
+                <div class="tweet-tool tweet-tool-share" title="Copy link to tweet"><i class="fa fa-arrow-up-from-bracket"></i></div>
+		<div class="tweet-tool tweet-tool-more" title="More options"><i class="fa-solid fa-ellipsis"></i></div>
+	      </div>
+	`;
 
 	let html = `
         <div class="tweet tweet-${tweet.tx.signature}" data-id="${

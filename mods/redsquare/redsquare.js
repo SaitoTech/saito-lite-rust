@@ -371,7 +371,7 @@ class RedSquare extends ModTemplate {
       	      return 1;
     	    }
 
-	    if (tweet.num_likes > 1 && mod_score != -1) {
+	    if (tweet.num_likes > 1) {
  	      return 1;
     	    }
 
@@ -422,7 +422,7 @@ class RedSquare extends ModTemplate {
         updated_later_than: ts
       },
       (txs) => {
-        this.processTweetsFromPeer("localhost", txs, "initialize");
+        this.processTweetsFromPeer("localhost", txs, "redsquare.initialize");
 	if (!this.app.BROWSER) {
 	  this.cacheRecentTweets();
 	}
@@ -516,7 +516,7 @@ class RedSquare extends ModTemplate {
         if (!newtx?.optional) {
           newtx.optional = {};
         }
-        this.addTweet(newtx, 'server-pre-cache', 1);
+        this.addTweet(newtx, 'server-cache', 1);
       }
     }
 
@@ -866,7 +866,7 @@ class RedSquare extends ModTemplate {
             let count = 0;
 
             if (txs.length > 0) {
-              count = this.processTweetsFromPeer(this.peers[i], txs);
+              count = this.processTweetsFromPeer(this.peers[i], txs, "redsquare.loadTweets");
             } else {
               if (created_at === 'earlier') {
                 this.peers[i].tweets_earliest_ts = 0;
@@ -939,9 +939,19 @@ class RedSquare extends ModTemplate {
       }
       txs[z].optional.source.text = source;
       txs[z].optional.source.type = 'archive';
-      txs[z].optional.source.node = peer.publicKey;
+      if (peer != "localhost") {
+        txs[z].optional.source.peer = peer.publicKey;
+      } else {
+        txs[z].optional.source.peer = "localhost";
+      }
 
-      let added = this.addTweet(txs[z], `${peer.publicKey}`, source);
+      //
+      // curation, we respect our own by default
+      //
+      let curated = 0;
+      if (peer == "localhost") { curated = 1; }
+
+      let added = this.addTweet(txs[z], "archive", curated);
       let tweet = this.returnTweet(txs[z].signature);
 
       if (tweet) {
@@ -1247,6 +1257,20 @@ class RedSquare extends ModTemplate {
     //
     tweet.curated = this.app.modules.moderate(tweet.tx, this.name);
 
+    if (tweet.optional?.source?.peer) {
+      if (tweet.optional?.curated) {
+        tweet.curated = 1;
+      }
+    }
+
+    if (tweet.tx?.optional?.source?.curated > 0) {
+      for (let z = 0; z < this.peers.length; z++) {
+        if (tweet.tx.optional.source.peer === this.peers[z].publicKey || tweet.tx.optional.source.peer === "localhost") {
+    	  tweet.curated = tweet.tx.optional.source.curated;
+	}
+      }
+    }
+
     if (curated == 1) {
       tweet.curated = 1;
     }
@@ -1473,7 +1497,20 @@ class RedSquare extends ModTemplate {
     }
   }
 
-
+  pruneTweets() {
+    this.unknown_children = [];
+    let pruned = [];
+    let count = 0;
+    if (this.tweets.length > 100) {
+      for (let i = 0; count < 90 && i < this.tweets.length; i++) {
+        if (this.tweets[i].curated == 1) { 
+	  pruned.push(this.tweets[i]);
+	  count++;
+	}
+      }
+    }
+    this.tweets = pruned;
+  }
 
   returnNotification(tweet_sig = null) {
     if (tweet_sig == null) {
@@ -2098,6 +2135,7 @@ class RedSquare extends ModTemplate {
       // Is a reply
       //
       if (tweet.parent_id && tweet.parent_id !== tweet.tx.signature) {
+
         //
         // if we have the parent tweet in memory...
         //
@@ -2152,6 +2190,12 @@ class RedSquare extends ModTemplate {
           );
         }
       }
+
+      //
+      // prune if too many tweets
+      //
+      if (this.tweets.length > 100) { this.pruneTweets(); }
+
     } catch (err) {
       console.log('ERROR in receiveTweetsTransaction() in RedSquare: ' + err);
     }
@@ -2446,17 +2490,21 @@ class RedSquare extends ModTemplate {
 
     for (let tweet of this.tweets) {
 
-      if (this.cacheRecentTweetsCurationFunction(tweet)) {
-
-        //
-        // update tweet source
-        //
-        tweet.tx.optional.source = {};
-        tweet.tx.optional.source.text = 'cached';
-        tweet.tx.optional.source.type = 'curated';
-        tweet.tx.optional.source.node = this.publicKey;
-
+      if (this.tweets.curated == 1) {
         this.cached_tweets.push(tweet.tx.serialize_to_web(this.app));
+      } else {
+        if (this.cacheRecentTweetsCurationFunction(tweet)) {
+
+          //
+          // update tweet source
+          //
+          tweet.tx.optional.source = {};
+          tweet.tx.optional.source.text = 'cached';
+          tweet.tx.optional.source.type = 'curated';
+          tweet.tx.optional.source.peer = this.publicKey;
+
+          this.cached_tweets.push(tweet.tx.serialize_to_web(this.app));
+        }
       }
     }
 

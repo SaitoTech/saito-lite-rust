@@ -56,7 +56,7 @@ class Twilight extends GameTemplate {
     this.clock.container = "#clock_";
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 0;
+    this.is_testing 	 = 1;
     this.insert_rankings = true;
 
     //
@@ -1108,6 +1108,21 @@ console.log("LATEST MOVE: " + mv);
       // init -- assign roles
       // final_scoring -- trigger final scoring and end game
       // observer -- reveal cards to player0s (insecure)
+
+
+    if (mv[0] == "player_turn_card_selected") {
+
+      this.game.queue.splice(qe, 1);
+      let player = parseInt(mv[1]);
+      let card = mv[2];
+
+      if (this.game.player == player) {
+        this.playerTurnCardSelected(card, player);
+      }
+
+      return 0;
+
+    }
 
     if (mv[0] == "bgs") {
 
@@ -2952,7 +2967,7 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
         if (this.game.player == 2) {
           this.game.deck[0].hand = ["tehran", "saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["abmtreaty","vietnamrevolts","wargames","romanianab"];
+          this.game.deck[0].hand = ["cubanmissile", "abmtreaty","vietnamrevolts","wargames","romanianab"];
         }
 
       	//this.game.state.round = 1;
@@ -4523,7 +4538,7 @@ async playerTurnHeadlineSelected(card, player) {
     // Add dummy card for canceling Cuban Missile Crisis
     if (this.game.player == this.game.state.events.cubanmissilecrisis && this.game.player > 0) {
       if (this.canCancelCMC()) {
-        playable_cards.push("cancel cuban missile crisis");
+        playable_cards.push("cancel_cmc");
       }
     }
 
@@ -4746,7 +4761,7 @@ async playerTurnHeadlineSelected(card, player) {
       //
       // Cuban Missile Crisis
       //
-      if (card === "cancel cuban missile crisis") {
+      if (card === "cancel_cmc") {
         twilight_self.cancelCubanMissileCrisis();
         return 0;
       }
@@ -4868,9 +4883,9 @@ async playerTurnHeadlineSelected(card, player) {
         // Cuban Missile Crisis
         //
         if (action == "cancel_cmc") {
-          twilight_self.moves = []; //Clear the resolve play so we go back to the same player's turn
-          await twilight_self.cancelCubanMissileCrisis();
-          twilight_self.playerTurnCardSelected(card, player); //And shortcut back to our position
+          twilight_self.moves = []; // clear the resolve play so we go back to the same player's turn
+          twilight_self.cancelCubanMissileCrisis(card, player);
+          //twilight_self.playerTurnCardSelected(card, player);
           return;
         }
 
@@ -5386,15 +5401,19 @@ async playerTurnHeadlineSelected(card, player) {
     if (this.game.player == 2 && this.countries['westgermany'].us >= 2) { return  1; }
     return 0;
   }
-  /*
-  Apparently, we want to give the player ample opportunities to make this move
-  */
-  cancelCubanMissileCrisis(){
+
+  //
+  // if player + card selected, we'll continue with play of that card
+  //
+  cancelCubanMissileCrisis(player="", card=""){
 
     let twilight_self = this;
     if (twilight_self.game.player == 0) { return; } //just in case
 
     if (twilight_self.game.player == 1) {
+      if (card != "" && player != "") {
+	twilight_self.addMove("player_turn_card_selected\t"+player+"\t"+card);
+      }
       twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis\t0");
       twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis_cancelled\t1");
       twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis_removal_country\tcuba");
@@ -5417,6 +5436,9 @@ async playerTurnHeadlineSelected(card, player) {
       html += '</ul>';
       twilight_self.updateStatusWithOptions('Select country from which to remove influence:',html, function(action2) {
 
+        if (card != "" && player != "") {
+	  twilight_self.addMove("player_turn_card_selected\t"+player+"\t"+card);
+        }
         twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis\t0");
         twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis_cancelled\t1");
         twilight_self.addMove("setvar\tgame\tstate\tevents\tcubanmissilecrisis_removal_country\t"+action2);
@@ -5429,7 +5451,6 @@ async playerTurnHeadlineSelected(card, player) {
         twilight_self.game.state.events.cubanmissilecrisis = 0;
         twilight_self.game.state.events.cubanmissilecrisis_removal_country = action2;
         twilight_self.game.state.events.cubanmissilecrisis_cancelled = 1;
-
 
       });
 
@@ -6764,9 +6785,6 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     this.game.state.turn 		= 0;
     this.game.state.turn_in_round 	= 0;
     this.game.state.move 		= 0;
-
-// HACK TESTING
-    this.game.state.turn_in_round 	= 5;
 
     //
     // game over if scoring card is held
@@ -9546,7 +9564,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
       if (cardname === "skipturn") {
         return `<div class="noncard" style="height:100%;background-image: url('/twilight/img/skipturn.png'); background-size: cover;" id="${cardname.replaceAll(" ","")}"></div>`;
       }
-      if (cardname === "cancel cuban missile crisis") {
+      if (cardname === "cancel_cmc") {
         return `<div class="noncard" style="height:100%;background-image: url('/twilight/img/cancel_cmc.png'); background-size: cover;" id="${cardname.replaceAll(" ","")}"></div>`;
       }
       if (cardname === "cancel_cmc") {

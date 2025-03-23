@@ -423,23 +423,15 @@ try {
 	  let key = mv[1];
 	  let selected = JSON.parse(mv[2]);
 
-console.log("SELECTED: " + JSON.stringify(selected));
-
 	  this.game.state.combat = {};
 	  this.game.state.combat.key = key;
 	  this.game.state.combat.attacker = selected;
 	  this.game.state.combat.attacking_faction = this.returnPowerOfUnit(this.game.spaces[selected[0].unit_sourcekey].units[0]);
 
-console.log("moving forward with combat!");
-
 	  //
 	  // remove this from the queue
 	  //
 	  this.game.queue.splice(qe, 1);
-
-//1. Designate the Combat --> already finished
-
-//2. Determine Combat Strengths
 
 	  let attacker_strength = 0;
 	  let defender_strength = 0;
@@ -491,6 +483,53 @@ console.log("moving forward with combat!");
 	  return 1;
 
 	}
+
+	if (mv[0] == "combat_recalculate_loss_factor") {
+
+	  if (mv[1] == "attacker") {
+            this.game.state.combat.attacker_loss_factor = this.returnAttackerLossFactor();
+          }
+
+	  if (mv[1] == "defender") {
+	    this.game.state.combat.defender_loss_factor = this.returnDefenderLossFactor();
+	  }
+
+          
+          for (let z = 0; z < this.game.state.combat.defender_units.length; z++) {
+            let u = this.game.state.combat.defender_units[z];
+	    if (!u.damaged) {
+              attacker_strength += this.game.spaces[u.unit_sourcekey].units[u.unit_idx].combat;
+	    } else {
+              attacker_strength += this.game.spaces[u.unit_sourcekey].units[u.unit_idx].rcombat;
+	    }
+          }
+
+          for (let z = 0; z < this.game.state.combat.attacker_units.length; z++) {
+            let u = this.game.state.combat.attacker_units[z];
+	    if (!u.damaged) {
+              attacker_strength += this.game.spaces[u.unit_sourcekey].units[u.unit_idx].combat;
+	    } else {
+              attacker_strength += this.game.spaces[u.unit_sourcekey].units[u.unit_idx].rcombat;
+	    }
+          }
+
+          this.game.state.combat.attacker_strength = attacker_strength;
+          this.game.state.combat.defender_strength = defender_strength;
+
+console.log("RECALCULATE");
+console.log("RECALCULATE");
+console.log("RECALCULATE");
+console.log("RECALCULATE");
+console.log("RECALCULATE");
+console.log("RECALCULATE");
+console.log("RECALCULATE");
+console.log(JSON.stringify(this.game.state.combat, null, 2));
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
 
 	if (mv[0] == "combat_determine_outcome") {
 
@@ -564,11 +603,13 @@ console.log(JSON.stringify(this.game.state.combat));
 
 	  if (this.game.state.combat.flank_attack == "attacker") {
 	    this.game.queue.push(`combat_assign_hits\tattacker`);
+	    this.game.queue.push(`combat_recalculate_loss_factor\tattacker`);
 	    this.game.queue.push(`combat_assign_hits\tdefender`);
 	  }
-	  if (this.game.state.combat.flank_attack == "attacker") {
-	    this.game.queue.push(`combat_assign_hits\tattacker`);
+	  if (this.game.state.combat.flank_attack == "defender") {
 	    this.game.queue.push(`combat_assign_hits\tdefender`);
+	    this.game.queue.push(`combat_recalculate_loss_factor\tdefender`);
+	    this.game.queue.push(`combat_assign_hits\tattacker`);
 	  }
 	  //
 	  // defender applies losses first if not a flank attack
@@ -654,6 +695,7 @@ console.log("# does retreat?");
 console.log("#");
 console.log(this.returnPlayerOfFaction(this.game.state.combat.defender_power) + " -- " + this.game.state.combat.defender_power);
 	    let player = this.returnPlayerOfFaction(this.game.state.combat.defender_power);
+console.log(this.game.player + " ---- " + player);
 	    if (this.game.player == player) {
 console.log("playing post combat retreat...");
 	      this.playerPlayPostCombatRetreat();
@@ -668,7 +710,6 @@ console.log("playing post combat retreat...");
 	}
 
 	if (mv[0] === "combat_attacker_advance") {
-console.log("Attacker Advances!");
 
 	  this.game.queue.splice(qe, 1);
 
@@ -687,25 +728,16 @@ console.log("Attacker Advances!");
 
 	  this.game.queue.splice(qe, 1);
 
-	  let is_attacking_from_multiple_spaces = false;
-	  let defending_space_valid = false;
+	  if (this.canFlankAttack()) {
+	    if (this.game.player == this.returnPlayerOfFaction(this.game.state.combat.attacking_faction)) {
+	      this.playerPlayFlankAttack();
+	    } else {
+	      this.updateStatus("Opponent considering Flank Attack");
+	    }
+	    return 0;
+          }
 
-	  let space = this.game.spaces[this.game.state.combat.key];
-
-	  //
-	  // if swamp or mountain return
-	  //
-	  if (space.terrain != "swamp" && space.terrain != "mountain") { return 1; }	  
-	  if (space.type == "fort") { return 1; }
-	  if (space.trench >= 1) { return 1; }
-
-	  if (this.game.player = this.returnPlayerOfFaction(this.game.state.combat.attacking_faction)) {
-	    this.playerPlayFlankAttack();
-	  } else {
-	    this.updateStatus("Opponent deciding whether to launch flanking attack");
-	  }  
-
-	  return 0;
+	  return 1;
 
 	}
 
@@ -744,6 +776,29 @@ console.log("Attacker Advances!");
 
 	}
 
+	// eliminates unit from game
+	if (mv[0] === "eliminate") {
+
+	  let spacekey = mv[1];
+	  let idx = parseInt(mv[2]);
+
+	  let unit = this.game.spaces[spacekey].units[idx];
+	  let faction = this.returnPowerOfUnit(unit);
+	  this.updateLog(unit.name + " eliminated in " + this.returnSpaceName(spacekey));
+
+	  if (faction == "allies") {
+   	    this.game.state.eliminated["allies"].push(unit);
+	  } else {
+   	    this.game.state.eliminated["central"].push(unit);
+	  }
+
+	  this.game.spaces[spacekey].units.splice(idx, 1);	
+	  this.displaySpace(spacekey);
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+        }
 	if (mv[0] === "damage") {
 
 	  let spacekey = mv[1];
@@ -777,6 +832,9 @@ console.log("Attacker Advances!");
 
 	  let action = mv[1];
 	  let eligible_spaces = JSON.parse(mv[2]);
+
+console.log("ES: " + eligible_spaces[0]);
+
 	  let drm_modifiers = 0;
           //
           // +1 for every unit without another army adjacent to it
@@ -785,9 +843,13 @@ console.log("Attacker Advances!");
 
           for (let i = 0; i < eligible_spaces.length; i++) {
             if (i != action) {
+console.log("valid: " + eligible_spaces[i]);
               if (!flanking_spaces.includes(eligible_spaces[i])) {
+console.log("it is not a previously-examined flanking space...");
                 flanking_spaces.push(eligible_spaces[i]);
+console.log("can: " + eligible_spaces[i] + " flank?: " + this.canSpaceFlank(eligible_spaces[i]));
                 if (this.canSpaceFlank(eligible_spaces[i])) {
+console.log("adding +1 to drm modifiers...");
                   drm_modifiers++;
                 }
               }
@@ -895,6 +957,29 @@ console.log("Attacker Advances!");
 	  this.game.spaces[key].units[idx].moved = 1;
 
 	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+	if (mv[0] === "retreat") {
+
+	  let faction = mv[1];
+	  let sourcekey = mv[2];
+	  let sourceidx = parseInt(mv[3]);
+	  let destinationkey = mv[4];
+	  let player_to_ignore = 0;
+	  if (mv[5]) { player_to_ignore = parseInt(mv[5]); }
+
+	  this.game.queue.splice(qe, 1);
+	  if (mv[5]) {
+	     this.game.queue.push("move\t"+mv[1]+"\t"+mv[2]+"\t"+mv[3]+"\t"+mv[4]+"\t"+mv[5]);
+	  } else {
+	     this.game.queue.push("move\t"+mv[1]+"\t"+mv[2]+"\t"+mv[3]+"\t"+mv[4]);
+	  }
+
+	  this.game.state.combat.retreat_sourcekey = mv[2];
+	  this.game.state.combat.retreat_destinationkey = mv[4];
+
 	  return 1;
 
 	}

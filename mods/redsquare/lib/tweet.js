@@ -48,7 +48,6 @@ class Tweet {
 		if (!this.tx.optional.thread_id) { this.tx.optional.thread_id = ''; }
 		if (!this.tx.optional.retweeters) { this.tx.optional.retweeters = []; }
 		if (!this.tx.optional.thread_id) { this.tx.optional.thread_id = this.tx.signature; }		//
-		if (!this.tx.optional.source) { this.tx.optional.source = {}; }
 
 		//
 		// keep track of parent_id and thread_id (replies include these vars)
@@ -110,8 +109,11 @@ class Tweet {
 		this.unknown_children = [];
 		this.unknown_children_sigs_hmap = {};
 		this.user.notice = 'new post on ' + this.formatDate(this.created_at);
-		this.source = this.tx.optional.source;
-
+		this.source = {};
+		if (!this.source.text)    { this.source.text = "unknown"; }
+		if (!this.source.type)    { this.source.type = "unknown"; }
+		if (!this.source.peer)    { this.source.peer = "unknown"; }
+		if (!this.source.curated) { this.source.curated = 0; }
 
 		//
 		// transactions can contain more specifi information for 
@@ -929,41 +931,6 @@ class Tweet {
 					navigator.clipboard.writeText(tweetUrl).then(() => {
 						siteMessage('Link copied to clipboard.', 2000);
 					});
-				};
-			}
-
-			//////////
-			// edit //
-			//////////
-			let edit = document.querySelector(
-				`.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-edit`
-			);
-			if (edit) {
-				edit.onclick = (e) => {
-					e.preventDefault();
-					e.stopImmediatePropagation();
-
-					let post = new Post(this.app, this.mod, this);
-
-					post.source = 'Edit';
-					post.render();
-				};
-			}
-
-			//////////
-			// trash //
-			//////////
-			let trash = document.querySelector(
-				`.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-delete`
-			);
-			if (trash) {
-				trash.onclick = (e) => {
-					e.preventDefault();
-					e.stopImmediatePropagation();
-
-					let post = new Post(this.app, this.mod, this);
-
-					post.deleteTweet();
 				};
 			}
 

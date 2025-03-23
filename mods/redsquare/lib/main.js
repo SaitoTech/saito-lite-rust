@@ -121,6 +121,7 @@ siteMessage(message, 1000);
 
     this.app.connection.on('redsquare-remove-loading-message', (message = `Finished Loading!`) => {
       //NOTE: --> COMMENT THIS OUT TO KEEP MESSAGE DISPLAYED FOR CSS TWEAKING
+//	siteMessage();
 //      this.loader.finish(message);
     });
 

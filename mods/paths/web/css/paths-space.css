@@ -1,0 +1,20 @@
+.loss-overlay {
+	min-width: 600px;
+	min-height: 500px;
+	max-height: 90vh;
+	max-width: 90vw;
+	border-radius: 2rem;
+	background-image: url('/paths/img/backgrounds/mark_iv_tank.jpg');
+	background-size: cover;
+	overflow-y: auto;
+}
+
+.loss-overlay .units {
+	min-height: max-content;
+}
+
+.loss-overlay .details {
+	min-height: max-content;
+
+}
+

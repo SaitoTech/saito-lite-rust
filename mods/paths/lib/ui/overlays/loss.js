@@ -149,11 +149,41 @@ class LossOverlay {
 		return minval;
 	}
 
+	updateInstructions(msg="") {
+
+		let obj = document.querySelector(".loss-overlay .help");
+		if (obj) {
+			obj.innerHTML = msg;
+		}
+
+	}
+
+	renderToAssignAdditionalStewiseLoss(faction = "") {
+
+		let qs = '.loss-overlay .units';
+		let qs_attacker = '.loss-overlay .units.attacker';
+		let qs_defender = '.loss-overlay .units.defender';
+		let my_qs = '.loss-overlay .units.defender';
+		let defender_units = this.mod.returnDefenderUnits();
+
+		this.overlay.show(LossTemplate());
+		this.updateInstructions("Defender - Take Additional Hit to Cancel Retreat");
+
+		for (let i = 0; i < defender_units.length; i++) {
+			let html = `
+				<div class="loss-overlay-unit" id="${i}">${this.mod.returnUnitImageWithMouseoverOfStepwiseLoss(defender_units[i])}</div>
+			`;
+			this.app.browser.addElementToSelector(html, qs_defender);
+		}
+
+		this.attachEvents();
+		this.loss_factor = 0; // this results in canTakeMoreLosses() to return NO after the first hit
+
+	}
+
 	render(faction = '') {
 
 		this.faction = faction;
-
-console.log(JSON.stringify(this.mod.game.state.combat));
 
 		let am_i_the_attacker = false;
 
@@ -170,8 +200,11 @@ console.log(JSON.stringify(this.mod.game.state.combat));
 		attacker_units = this.mod.returnAttackerUnits();
 		defender_units = this.mod.returnDefenderUnits();
 
+
+console.log(JSON.stringify(this.mod.game.state.combat));
 console.log("DEFENDER UNITS: " + JSON.stringify(defender_units));
 console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
+console.log(faction + " -- " + this.mod.game.state.combat.attacking_faction);
 
 		this.units = defender_units;
 
@@ -206,7 +239,7 @@ console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
 
 		for (let i = 0; i < attacker_units.length; i++) {
 			let html = `
-				<div class="loss-overlay-unit" id="${i}">${this.mod.returnUnitImage(attacker_units[i])}</div>
+				<div class="loss-overlay-unit" id="${i}">${this.mod.returnUnitImageWithMouseoverOfStepwiseLoss(attacker_units[i])}</div>
 			`;
 			this.app.browser.addElementToSelector(html, qs_attacker);
 		}
@@ -214,7 +247,7 @@ console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
 
 		for (let i = 0; i < defender_units.length; i++) {
 			let html = `
-				<div class="loss-overlay-unit" id="${i}">${this.mod.returnUnitImage(defender_units[i])}</div>
+				<div class="loss-overlay-unit" id="${i}">${this.mod.returnUnitImageWithMouseoverOfStepwiseLoss(defender_units[i])}</div>
 			`;
 			this.app.browser.addElementToSelector(html, qs_defender);
 		}
@@ -238,8 +271,20 @@ console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
 			document.querySelector(".defender.hits").style.backgroundColor = "yellow";
 		}
 
-
-console.log("PLAYER OF: " + this.mod.game.player + " -- " + this.mod.returnPlayerOfFaction(faction) + " --- " + faction);
+	        if (this.mod.game.state.combat.flank_attack == "attacker") {
+		  if (am_i_the_attacker) {
+		    this.updateInstructions("Flank Attack: You Assign Hits First");
+		  } else {
+		    this.updateInstructions("Flank Attack: Attacker Assigning Hits");
+		  }
+	        }
+		if (this.mod.game.state.combat.flank_attack == "defender") {
+		  if (am_i_the_attacker) {
+		    this.updateInstructions("Flank Attack: You Assign Hits First");
+		  } else {
+		    this.updateInstructions("Flank Attack: Defender Assigning Hits");
+		  }
+		}
 
 		if (am_i_the_attacker == 1 && faction == "attacker") {
 		  this.attachEvents(am_i_the_attacker, my_qs, faction);
@@ -272,15 +317,34 @@ console.log("PLAYER OF: " + this.mod.game.player + " -- " + this.mod.returnPlaye
 			}
 		}
 
+console.log("^");
+console.log("^");
+console.log("^");
+console.log("^");
+console.log("^");
+console.log("^ attaching events!");
+console.log("^");
+console.log("^ - " + am_i_the_attacker + " - " + my_qs + " - " + faction);
+console.log("^");
+console.log("^");
+console.log("^");
+console.log(JSON.stringify(this.units));
+
 		document.querySelectorAll(my_qs + " .loss-overlay-unit").forEach((el) => {
+
 			el.onclick = (e) => {
 
+
 				let idx = e.currentTarget.id;
+
+alert("clicked on: " + e.currentTarget.id);
 
 				//
 				//
 				//
 				let unit = this.units[idx];
+				if (unit.destroyed) { alert("destroyed"); }
+
 				let didx = idx;
 
 				for (let z = 0; z < this.mod.game.spaces[unit.spacekey].units.length; z++) {
@@ -299,6 +363,7 @@ console.log("PLAYER OF: " + this.mod.game.player + " -- " + this.mod.returnPlaye
 
 					el.style.opacity = '0.3';
 					el.onclick = (e) => {};
+					el.id = "destroyed_unit";
 
 					//
 					// replace with corps if destroyed
@@ -309,14 +374,10 @@ console.log("PLAYER OF: " + this.mod.game.player + " -- " + this.mod.returnPlaye
 						this.units[this.units.length - 1].spacekey =
 							unit.spacekey;
 						this.moves.push(`add\t${unit.spacekey}\t${corpskey}`);
-						let html = `<div class="loss-overlay-unit" id="${
-							this.units.length - 1
-						}">${this.mod.returnUnitImage(
-							this.units[this.units.length - 1]
-						)}</div>`;
-						let qs = '.loss-overlay .units';
-						this.app.browser.addElementToSelector(html, qs);
-						this.attachEvents();
+						let html = `<div class="loss-overlay-unit" id="${this.units.length - 1}">${this.mod.returnUnitImage(this.units[this.units.length - 1])}</div>`;
+console.log("appending item to: " + my_qs);
+						this.app.browser.addElementToSelector(html, my_qs);
+		  				this.attachEvents(am_i_the_attacker, my_qs, faction);
 					}
 
 					this.updateLossesRequired(this.loss_factor);
@@ -343,7 +404,6 @@ console.log("PLAYER OF: " + this.mod.game.player + " -- " + this.mod.returnPlaye
 							this.hide();
 							return;
 						} else {
-							this.moves = [];
 							this.render(this.faction);
 							return;
 						}
