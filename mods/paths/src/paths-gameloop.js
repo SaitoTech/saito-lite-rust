@@ -494,22 +494,27 @@ try {
 	    this.game.state.combat.defender_loss_factor = this.returnDefenderLossFactor();
 	  }
 
-          
-          for (let z = 0; z < this.game.state.combat.defender_units.length; z++) {
-            let u = this.game.state.combat.defender_units[z];
+
+	  let attacker_strength = 0;          
+	  let defender_strength = 0;          
+
+          for (let z = 0; z < this.game.spaces[this.game.state.combat.key].units.length; z++) {
+            let u = this.game.spaces[this.game.state.combat.key].units[z];
 	    if (!u.damaged) {
-              attacker_strength += this.game.spaces[u.unit_sourcekey].units[u.unit_idx].combat;
+              defender_strength += u.combat;
 	    } else {
-              attacker_strength += this.game.spaces[u.unit_sourcekey].units[u.unit_idx].rcombat;
+              defender_strength += u.rcombat;
 	    }
           }
 
-          for (let z = 0; z < this.game.state.combat.attacker_units.length; z++) {
-            let u = this.game.state.combat.attacker_units[z];
+          for (let z = 0; z < this.game.state.combat.attacker.length; z++) {
+	    let skey = this.game.state.combat.attacker[z].unit_sourcekey;
+	    let sidx = this.game.state.combat.attacker[z].unit_idx;
+            let u = this.game.spaces[skey].units[sidx];
 	    if (!u.damaged) {
-              attacker_strength += this.game.spaces[u.unit_sourcekey].units[u.unit_idx].combat;
+              attacker_strength += u.combat;
 	    } else {
-              attacker_strength += this.game.spaces[u.unit_sourcekey].units[u.unit_idx].rcombat;
+              attacker_strength += u.rcombat;
 	    }
           }
 
