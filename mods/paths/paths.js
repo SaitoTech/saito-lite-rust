@@ -8980,14 +8980,21 @@ console.log("KEY");
 console.log("KEY - " + JSON.stringify(attacker_units));
 console.log("KEY");
 	for (let i = 0; i < attacker_units.length; i++) {
-          let u = attacker_units[unit_idx];
+          let x = attacker_units[i];
       	  let skey = u.spacekey;
       	  let ukey = u.key;
       	  let uidx = 0;
+	  let u = {};
+	  for (let z = 0; z < paths_self.game.spaces[skey].units.length; z++) {
+	    if (paths_self.game.spaces[skey].units[z].key === ukey) {
+	      uidx = z;
+	    } 
+	  }
 	  if (!u.damaged) {
-            paths_self.moveUnit(sourcekey, idx, key);
+            paths_self.moveUnit(skey, uidx, key);
 	    paths_self.addMove(`move\t${faction}\t${skey}\t${uidx}\t${key}\t${paths_self.game.player}`);
 	  }
+          paths_self.displaySpace(skey);
 	}
         paths_self.displaySpace(key);
 	paths_self.endTurn();

@@ -269,23 +269,28 @@ console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
 			document.querySelector(".defender.hits").style.backgroundColor = "yellow";
 		}
 
+
+// HACK - bad var name, but debugging
+let am_iii_the_attacker = false;
+if (this.mod.game.player == this.mod.returnPlayerOfFaction(this.mod.game.state.combat.attacker_power)) { am_iii_the_attacker = true; }
+
 if (faction == "attacker") {
 	        if (this.mod.game.state.combat.flank_attack == "attacker") {
-		  if (am_i_the_attacker) {
+		  if (am_iii_the_attacker) {
 		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.attacker_power)} - assign hits`);
 		  } else {
 		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.defender_power)} - opponent assigning hits`);
 		  }
 	        }
 		if (this.mod.game.state.combat.flank_attack == "defender") {
-		  if (am_i_the_attacker) {
+		  if (am_iii_the_attacker) {
 		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.attacker_power)} - assign hits first`);
 		  } else {
 		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.defender_power)} - opponent assigning hits`);
 		  }
 		}
 		if (this.mod.game.state.combat.flank_attack == "") {
-		  if (am_i_the_attacker) {
+		  if (am_iii_the_attacker) {
 		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.attacker_power)} - assign hits`);
 		  } else {
 		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.defender_power)} - opponent assigning hits`);
@@ -293,21 +298,21 @@ if (faction == "attacker") {
 		}
 } else {
 	        if (this.mod.game.state.combat.flank_attack == "attacker") {
-		  if (am_i_the_attacker) {
+		  if (am_iii_the_attacker) {
 		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.attacker_power)} - opponent assigning hits`);
 		  } else {
 		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.defender_power)} - assign hits first`);
 		  }
 	        }
 		if (this.mod.game.state.combat.flank_attack == "defender") {
-		  if (am_i_the_attacker) {
+		  if (am_iii_the_attacker) {
 		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.attacker_power)} - opponent assigning hits`);
 		  } else {
-		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.attacker_power)} - assign hits`);
+		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.defender_power)} - assign hits`);
 		  }
 		}
 		if (this.mod.game.state.combat.flank_attack == "") {
-		  if (am_i_the_attacker) {
+		  if (am_iii_the_attacker) {
 		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.attacker_power)} - opponent assigning hits`);
 		  } else {
 		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.defender_power)} - assign hits`);
@@ -316,12 +321,12 @@ if (faction == "attacker") {
 }
 
 
-		if (am_i_the_attacker == 1 && faction == "attacker") {
-console.log(am_i_the_attacker + " iam and faction is attacker");
+		if (am_iii_the_attacker == 1 && faction == "attacker") {
+console.log(am_iii_the_attacker + " iam and faction is attacker");
 		  this.attachEvents(am_i_the_attacker, my_qs, faction);
 		}
-		if (am_i_the_attacker == 0 && faction == "defender") {
-console.log(am_i_the_attacker + " iamnot and faction is defender");
+		if (am_iii_the_attacker == 0 && faction == "defender") {
+console.log(am_iii_the_attacker + " iamnot and faction is defender");
 		  this.attachEvents(am_i_the_attacker, my_qs, faction);
 		}
 
