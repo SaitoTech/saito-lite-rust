@@ -703,11 +703,10 @@ class Mods {
     }
   }
 
-  async onWalletReset(nuke = false) {
+  async onUpgrade(type, privatekey, walletfile) {
     for (let i = 0; i < this.mods.length; i++) {
-      await this.mods[i].onWalletReset(nuke);
+      await this.mods[i].onUpgrade(type, privatekey, walletfile);
     }
-    return 1;
   }
 
   returnModuleBySlug(modslug) {
@@ -774,12 +773,6 @@ class Mods {
       this.mods[i].webServer(this.app, expressapp, express);
     }
     return null;
-  }
-
-  async onUpgrade(type, privatekey, walletfile) {
-    for (let i = 0; i < this.mods.length; i++) {
-      await this.mods[i].onUpgrade(type, privatekey, walletfile);
-    }
   }
 
   async onWebSocketServer(webserver) {

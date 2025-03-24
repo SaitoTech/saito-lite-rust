@@ -1,41 +1,36 @@
 .saito-crypto-deposit-container {
-	padding: 3rem;
     background: var(--background-color-main);
     color: var(--font-color-primary);
     width: min(40rem, 95vw);
-}
 
-.saito-crypto-deposit-container {
-	    display: flex;
+    padding: 3rem;
+    display: flex;
     flex-direction: column;
     gap: 2rem;
     text-align: center;
     align-items: center;
+    font-size: 2rem;
+}
+
+.saito-crypto-wallet-state {
+    display: flex;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.saito-crypto-deposit-container .call-to-action {
+  color: var(--saito-secondary);
+  font-weight: bolder;
+  text-shadow: 1px 1px 1px var(--saito-font-color-inverse);
+  margin: 1rem;
 }
 
 .saito-crypto-header {
     font-size: 4.5rem;
     text-transform: uppercase;
 }
-
-.saito-crypto-deposit-container .balance-amount {
-    margin-right: 0rem;
-}
-
-#deposit-qrcode img {
-	height: auto;
-	max-width: 20rem;
-	width: 20vh;
-	border: 2px solid var(--color-black);
-	padding: 0.5rem;
-	border-radius: 0.5rem;
-	background: var(--color-white);
-}
-
-.deposit-ticker {
-	font-size: 3rem;
-}
-
 
 
 .crypto-activation-overlay {

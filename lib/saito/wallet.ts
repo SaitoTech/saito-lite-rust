@@ -27,7 +27,7 @@ export default class Wallet extends SaitoWallet {
 
   default_fee = BigInt(0); // in nolan
 
-  version = 5.669; //saito-js 0.2.57
+  version = 5.670; //saito-js 0.2.69
 
   nolan_per_saito = 100000000;
 
@@ -162,13 +162,27 @@ export default class Wallet extends SaitoWallet {
       }
 
       async sendPayments(amounts: bigint[], to_addresses: string[]) {
-        let newTx = await this.app.wallet.createUnsignedTransactionWithMultiplePayments(
-          to_addresses,
-          amounts
-        );
-        await this.app.wallet.signAndEncryptTransaction(newTx);
-        await this.app.network.propagateTransaction(newTx);
-        return newTx.signature;
+        const CHUNK_SIZE = 100;
+        const signatures: string[] = [];
+
+        // Process in chunks of 100
+        for (let i = 0; i < amounts.length; i += CHUNK_SIZE) {
+          const amountsChunk = amounts.slice(i, i + CHUNK_SIZE);
+          const addressesChunk = to_addresses.slice(i, i + CHUNK_SIZE);
+
+          let newTx = await this.app.wallet.createUnsignedTransactionWithMultiplePayments(
+            addressesChunk,
+            amountsChunk
+          );
+          await this.app.wallet.signAndEncryptTransaction(newTx);
+          //console.log("newTx:\t" + JSON.stringify(newTx))
+          await this.app.network.propagateTransaction(newTx);
+          //console.log("TX Sent");
+          signatures.push(newTx.signature);
+        }
+
+        // Return all transaction signatures
+        return signatures.join(', ');
       }
 
       async receivePayment(howMuch, from, to, timestamp) {
@@ -381,6 +395,9 @@ export default class Wallet extends SaitoWallet {
 
       this.app.connection.on('wallet-updated', async () => {
         await this.saveWallet();
+      });
+
+      this.app.connection.on('keychain-updated', () => {
         this.setKeyList(this.app.keychain.returnWatchedPublicKeys());
       });
     }
@@ -413,15 +430,14 @@ export default class Wallet extends SaitoWallet {
       await this.app.blockchain.resetBlockchain();
     }
 
+    await this.app.storage.clearLocalForage();
+
     await this.app.storage.resetOptions();
 
     // keychain
     if (this.app.options.keys) {
       this.app.options.keys = [];
     }
-
-    // let modules purge stuff (only partially implemented)
-    await this.app.modules.onWalletReset(true);
 
     this.app.options.invites = [];
     this.app.options.games = [];
@@ -599,8 +615,10 @@ export default class Wallet extends SaitoWallet {
 
   saveAvailableCryptosAssociativeArray(publicKey, cryptos) {
     for (let ticker in cryptos) {
+      console.log("$$$ SAVE -- ", publicKey, ticker, cryptos[ticker].address);
       this.app.keychain.addCryptoAddress(publicKey, ticker, cryptos[ticker].address);
     }
+    this.app.keychain.saveKeys();
   }
 
   async returnPreferredCryptoBalance() {
@@ -907,47 +925,6 @@ export default class Wallet extends SaitoWallet {
     }
   }
 
-  async restoreWallet(file) {
-    console.log('restoring wallet...');
-    let wallet_reader = new FileReader();
-    wallet_reader.readAsBinaryString(file);
-    wallet_reader.onloadend = async () => {
-      let decryption_secret = '';
-      if (!wallet_reader.result) {
-        console.error('Error reading wallet file');
-        return;
-      }
-      let decrypted_wallet = wallet_reader.result.toString();
-      try {
-        let wobj = JSON.parse(decrypted_wallet);
-        await this.reset(false);
-        await this.setPublicKey(wobj.wallet.publicKey);
-        await this.setPrivateKey(wobj.wallet.privateKey);
-        wobj.wallet.version = this.version;
-        wobj.wallet.inputs = [];
-        wobj.wallet.outputs = [];
-        wobj.wallet.spends = [];
-        wobj.games = [];
-        this.app.options = wobj;
-
-        await this.app.blockchain.resetBlockchain();
-        // this.app.storage.saveOptions(); //Included above, no need to double save
-
-        alert('Restoration Complete ... click to reload Saito');
-        this.app.browser.reloadWindow(300);
-      } catch (err) {
-        if (err.name == 'SyntaxError') {
-          alert('Error reading wallet file. Did you upload the correct file?');
-        } else if (false) {
-          // put this back when we support encrypting wallet backups again...
-          alert('Error decrypting wallet file. Password incorrect');
-        } else {
-          alert('Unknown error<br/>' + err);
-        }
-      }
-    };
-  }
-
   /**
    * If the to field of the transaction contains a pubkey which has previously negotiated a diffie-hellman
    * key exchange, encrypt the message part of message, attach it to the transaction, and resign the transaction
@@ -982,7 +959,7 @@ export default class Wallet extends SaitoWallet {
       if (encryptedMessage) {
         tx.msg = encryptedMessage;
       } else {
-        console.warn("Not encrypting transaction because don't have shared key with recipient");
+        //console.warn("Not encrypting transaction because don't have shared key with recipient");
       }
 
       //
@@ -1052,13 +1029,12 @@ export default class Wallet extends SaitoWallet {
     let publicKey = await this.getPublicKey();
 
     if (type == 'nuke') {
-      this.reset(false);
-      this.app.blockchain.resetBlockchain();
-      this.app.storage.resetOptions();
-      this.preferred_crypto = 'SAITO';
-      await this.fetchBalanceSnapshot(publicKey);
+      await this.resetWallet();
+      publicKey = await this.getPublicKey();
     } else if (type == 'import') {
+      //
       // wallet file used for importing
+      //
       if (walletfile != null) {
         let decryption_secret = '';
         let decrypted_wallet = walletfile.result.toString();
@@ -1076,8 +1052,6 @@ export default class Wallet extends SaitoWallet {
           wobj.games = [];
           this.app.options = wobj;
 
-          await this.app.blockchain.resetBlockchain();
-          await this.fetchBalanceSnapshot(publicKey);
         } catch (err) {
           try {
             alert('error: ' + JSON.stringify(err));
@@ -1085,8 +1059,13 @@ export default class Wallet extends SaitoWallet {
           console.log(err);
           return err.name;
         }
+
+        publicKey = await this.getPublicKey();
+
       } else if (privatekey != '') {
+        //
         // privatekey used for wallet importing
+        //
         try {
           publicKey = this.app.crypto.generatePublicKey(privatekey);
           await this.setPublicKey(publicKey);
@@ -1097,22 +1076,27 @@ export default class Wallet extends SaitoWallet {
           this.app.options.wallet.spends = [];
           this.app.options.wallet.pending = [];
 
+          // Maybe stored our options in localForage
           await this.app.storage.resetOptionsFromKey(publicKey);
-          await this.fetchBalanceSnapshot(publicKey);
+
         } catch (err) {
           return err.name;
         }
+      }else{
+        console.error("Cannot import a wallet without a private key or json file!");
       }
     } else if (type == 'upgrade') {
       // purge old slips
       this.app.options.wallet.slips = [];
-      await this.app.blockchain.resetBlockchain();
-      //this.app.storage.resetOptions();
-      await this.fetchBalanceSnapshot(publicKey);
     }
 
-    await this.saveWallet();
     await this.app.modules.onUpgrade(type, privatekey, walletfile);
+
+    await this.app.blockchain.resetBlockchain();
+    
+    await this.fetchBalanceSnapshot(publicKey);
+
+    await this.saveWallet();
     return true;
   }
 

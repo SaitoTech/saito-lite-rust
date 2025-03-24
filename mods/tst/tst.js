@@ -11,7 +11,7 @@ class TST extends CryptoModule {
 		this.information =
 			'This is some important information you may care to read about when enabling the TST crypto module';
 		this.warning = 'The TST crypto module wishes you to read this warning';
-		this.balance = "0.0"; 
+
 	}
 
 	//
@@ -33,7 +33,10 @@ class TST extends CryptoModule {
 				this.address = this.app.crypto.generatePublicKey(this.privateKey);			
 			}
 
-			this.balance = (10*Math.random()).toFixed(8);
+			if (Number(this.balance) == 0){
+				this.balance = (100*Math.random()).toFixed(8);
+			}
+
 			this.app.connection.emit('header-install-crypto', this.ticker);
 			this.save();
 		}

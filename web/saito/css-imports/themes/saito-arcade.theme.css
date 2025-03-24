@@ -23,7 +23,6 @@ html[data-theme="arcade"] {
   --saito-light-shim: #0001;
   --saito-box-shadow: 0 0 0 1px var(--saito-border-color);
   --saito-form-box-shadow: 0 0 0 1px var(--saito-border-color);
-  --saito-button-background: linear-gradient(45deg, #540e81, #b539e8);
   --saito-bubble-shadow: #000c;
   --saito-bubble-background: #213;
   --saito-modal-background: var(--saito-background-light);

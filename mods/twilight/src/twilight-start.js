@@ -1357,10 +1357,7 @@ console.log("LATEST MOVE: " + mv);
 
 
     if (mv[0] === "turn") {
-console.log("TURN: ");
-console.log("incrementing turn in round...");
       this.game.state.turn_in_round++;
-console.log("turn in round now: " + this.game.state.turn_in_round);
       this.game.state.events.china_card_eligible = 0;
       this.game.queue.splice(qe, 1);
       this.updateActionRound();
@@ -4259,6 +4256,9 @@ async playerTurnHeadlineSelected(card, player) {
 
       if (this.game.state.turn_in_round == 0) {
           this.game.state.turn_in_round++;
+console.log("#");
+console.log("# turn in round to " + this.game.state.turn_in_round);
+console.log("#");
           this.updateActionRound();
       }
 

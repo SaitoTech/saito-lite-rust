@@ -50,12 +50,24 @@ class Crypto extends ModTemplate {
 
 			let current_balance = Number(await this.app.wallet.returnPreferredCryptoBalance());
 
+			let network_fee = 0; 
+
+		  let crypto_mod = this.app.wallet.returnPreferredCrypto();
+	    await crypto_mod.checkWithdrawalFeeForAddress('', function(res){
+	      network_fee = Number(res);
+	    });
+
 			let needed_balance = (typeof sobj.stake == "object") ? parseFloat(sobj.stake.min) : parseFloat(sobj.stake);
+			
+			console.log(current_balance, needed_balance, network_fee);
+
+			needed_balance += network_fee;
 
 			if (needed_balance > current_balance){
+
 				this.app.connection.emit('saito-crypto-deposit-render-request', {
 					ticker: sobj.ticker,
-					amount: needed_balance,
+					amount: (needed_balance - current_balance),
 				});
 				return;
 			}
@@ -248,7 +260,7 @@ class Crypto extends ModTemplate {
 
     let crypto_mod = this.app.wallet.returnCryptoModuleByTicker(ticker);
     crypto_mod.checkWithdrawalFeeForAddress('', function(res){
-      fee = res;
+      fee = Number(res);
     });
 
     let diff = Number(this.max_balance) - Number(fee);

@@ -270,62 +270,6 @@ export default class Crypto {
 		return stringx;
 	}
 
-	// from saito/wallet.ts
-	formatBalance(balance, exact_precision = false) {
-		if (typeof balance == 'undefined') {
-			balance = '0.00';
-		}
-
-		let balance_as_float = parseFloat(balance);
-
-		let options = {};
-
-		if (!exact_precision) {
-
-			let minimumFractionDigits = 4;
-			let maximumFractionDigits = 6;
-
-			if (balance_as_float >= 1) {
-				maximumFractionDigits = 5;
-			}
-
-			if (balance_as_float >= 10) {
-				minimumFractionDigits = 3;
-				maximumFractionDigits = 4;
-			}
-
-			if (balance_as_float >= 100) {
-				minimumFractionDigits = 2;
-				maximumFractionDigits = 3;
-			}
-
-			if (balance_as_float >= 1000) {
-				minimumFractionDigits = 1;
-			}
-
-			if (balance_as_float >= 10000) {
-				maximumFractionDigits = 2;
-			}
-
-			if (balance_as_float >= 100000) {
-				minimumFractionDigits = 0;
-			}
-
-			if (balance_as_float >= 1000000) {
-				maximumFractionDigits = 1;
-			}
-
-			options = {
-				minimumFractionDigits,
-				maximumFractionDigits
-			};
-		}
-
-		let locale = window.navigator?.language || 'en-US';
-		let nf = new Intl.NumberFormat(locale, options);
-
-		return nf.format(balance_as_float).toString();
-	}
 
 	isValidPublicKey(key) {
 		if (typeof key !== 'string') {

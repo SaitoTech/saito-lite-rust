@@ -258,7 +258,7 @@ class StreamManager {
         return;
       }
 
-      this.app.browser.lockNavigation(this.visibilityChange.bind(this));
+      this.app.browser.lockNavigation(this.visibilityChange.bind(this), true);
 
       console.log('STUN: start-stun-call', JSON.parse(JSON.stringify(this.mod.room_obj)));
       this.firstConnect = true;
@@ -564,7 +564,7 @@ class StreamManager {
 
   visibilityChange() {
     console.log('visibilitychange triggered');
-    //this.leaveCall();
+    this.leaveCall();
   }
 }
 

@@ -6,7 +6,6 @@ const SaitoHeader = require('./../../lib/saito/ui/saito-header/saito-header');
 const ChatManager = require('./lib/chat-manager/main');
 const ChatManagerOverlay = require('./lib/overlays/chat-manager');
 const JSON = require('json-bigint');
-const localforage = require('localforage');
 const Transaction = require('../../lib/saito/transaction').default;
 const PeerService = require('saito-js/lib/peer_service').default;
 const ChatSettings = require('./lib/overlays/chat-manager-menu');
@@ -1497,7 +1496,7 @@ class Chat extends ModTemplate {
 
     // DMs
     if (members.length == 2 && !group?.member_ids) {
-      console.log('Chat: Try encrypting Message for ' + secret_holder);
+      //console.log('Chat: Try encrypting Message for ' + secret_holder);
 
       //
       // Only encrypts if we have swapped keys and haveSharedKey, otherwise just signs
@@ -2337,38 +2336,29 @@ class Chat extends ModTemplate {
     //console.log("Reading local DB");
     let count = 0;
     for (let g_id of this.app.options.chat.groups) {
-      //console.log("Fetch", g_id);
-      count++;
-      await localforage.getItem(`chat_${g_id}`, function (error, value) {
-        count--;
-        //Because this is async, the initialize function may have created an
-        //empty default group
 
-        if (value) {
-          let currentGroup = chat_self.returnGroup(g_id);
-          if (currentGroup) {
-            value.members = currentGroup.members;
-            currentGroup = Object.assign(currentGroup, value);
-          } else {
-            chat_self.groups.push(value);
-          }
-
-          currentGroup = chat_self.returnGroup(g_id);
-          if (!currentGroup?.last_read_message) {
-            if (currentGroup.txs.length > 0) {
-              currentGroup.last_read_message =
-                currentGroup.txs.slice(-1)[0].signature;
-            }
-          }
-
-          //console.log(value);
+      let value = await this.app.storage.getLocalForageItem(`chat_${g_id}`);
+      if (value) {
+        let currentGroup = chat_self.returnGroup(g_id);
+        if (currentGroup) {
+          value.members = currentGroup.members;
+          currentGroup = Object.assign(currentGroup, value);
+        } else {
+          chat_self.groups.push(value);
         }
 
-        if (count === 0) {
-          chat_self.createDefaultChatsFromKeys();
+        currentGroup = chat_self.returnGroup(g_id);
+        if (!currentGroup?.last_read_message) {
+          if (currentGroup.txs.length > 0) {
+            currentGroup.last_read_message =
+              currentGroup.txs.slice(-1)[0].signature;
+          }
         }
-      });
+
+        //console.log(value);
+      }
     }
+    this.createDefaultChatsFromKeys();
   }
 
   saveChatGroup(group) {
@@ -2395,12 +2385,7 @@ class Chat extends ModTemplate {
       delete new_group.target_container;
     }
 
-    localforage.setItem(`chat_${group.id}`, new_group).then(function () {
-      if (chat_self.debug) {
-        //console.log('Saved chat history for ' + new_group.id);
-        //console.log(JSON.parse(JSON.stringify(new_group)));
-      }
-    });
+    this.app.storage.setLocalForageItem(`chat_${group.id}`, new_group);
     group.online = online_status;
   }
 
@@ -2440,7 +2425,7 @@ class Chat extends ModTemplate {
       this.app.keychain.addKey(key_to_update, { mute: 1 });
     }
 
-    await localforage.removeItem(`chat_${group.id}`);
+    await this.app.storage.removeLocalForageItem(`chat_${group.id}`);
 
     this.app.connection.emit('chat-manager-render-request');
   }
@@ -2466,14 +2451,6 @@ class Chat extends ModTemplate {
     siteMessage('Link Copied', 2000);
   }
 
-  async onUpgrade(type, privatekey, walletfile) {
-    if (type == 'nuke') {
-      for (let i = 0; i < this.groups.length; i++) {
-        await localforage.removeItem(`chat_${this.groups[i].id}`);
-      }
-    }
-    return 1;
-  }
 
   webServer(app, expressapp, express) {
     let webdir = `${__dirname}/../../mods/${this.dirname}/web`;

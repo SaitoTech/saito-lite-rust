@@ -1,6 +1,6 @@
 .game-crypto-transfer-manager-container {
   max-width: 95vw;
-  text-align:center;
+  align-items: center;
   color: white;
   background-color:rgba(0,0,0,0.9);
   border-radius: 1rem;
@@ -9,7 +9,7 @@
   gap: 2.5rem;
   width: auto;
   padding: 3rem;
-  min-width: min(55rem, 100vw);
+  min-width: 55rem;
 }
 
 .saito-overlay:has(.game-crypto-transfer-manager-container) {
@@ -31,10 +31,15 @@ input[type="checkbox"].ignore_checkbox {
 }
 
 .game-crypto-transfer-manager-container .stake-input-container{
-  margin: auto;
   position: relative;
   margin-bottom: 2.5rem;
   display: flex;
+  gap: 1rem;
+  width: max-content;
+}
+
+.game-crypto-transfer-manager-container .stake-input-container.wallet-balance {
+  margin-bottom: 1.5rem;
 }
 
 .game-crypto-transfer-manager-container .stake-input-container.hidden{
@@ -42,9 +47,13 @@ input[type="checkbox"].ignore_checkbox {
 }
 
 .stake-input-error {
+  position: absolute;
   display: none;
-  color: red;
+  color: rgb(255, 10, 5);
   font-size: 1.6rem;
+  top: 105%;
+  left: 1rem;
+  font-weight: bolder;
 }
 
 /* Chrome, Safari, Edge, Opera */
@@ -63,12 +72,14 @@ input[type=number] {
   background: none;
   border: none;
   color: var(--color-white);
+  border-radius: 0;
   border-bottom: 1px solid var(--color-white);
   text-align: center;
   padding: 1rem;
   font-size: 4rem;
   display: inline-block;
-  width: 100%;
+  width: 80%;
+  max-width: 25rem;
 }
 
 .stake-input-container .crypto_msg {
@@ -106,19 +117,6 @@ input[type=number] {
     line-height: 2.8rem;
 }
 
-.crypto_transfer_btn {
-  background-color: var(--saito-button-background); /* testing */
-  color: var(--color-white);
-  margin-left: auto;
-  margin-right: auto;
-  position: relative;
-  font-size: 1.8rem;
-  transition: all .2s ease-in-out;
-  cursor: pointer;
-  border-radius: 0.5rem;
-  width: fit-content;
-}
-
 .crypto_transfer_btn.secondary {
   background: none;
   color: var(--saito-white);
@@ -132,6 +130,8 @@ input[type=number] {
 .crypto-stake-offer-btn-container {
   display: flex;
   flex-direction: row;
+  width: 100%;
+  justify-content: space-evenly;
 }
 
 .crypto_amount_btn {
@@ -140,6 +140,7 @@ input[type=number] {
     padding: 0rem;
     width: auto;
     line-height: 6rem;
+    margin-top: 1rem;
 }
 
 .commentary {
@@ -153,13 +154,13 @@ input[type=number] {
 }
 
 .crypto-stake-confirm-container {
-  margin: 0rem;
+  position: relative;
   display: flex;
   flex-direction: row;
   padding: 0rem;
   gap: 1rem;
   width: fit-content;
-  margin: auto;
+  min-width: 35rem; 
 }
 
 .crypto-stake-confirm-container input {

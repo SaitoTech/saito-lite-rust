@@ -79,7 +79,6 @@ font imports
   --saito-arcade-overlay-background: #11101ed1;
   --saito-box-shadow: 0px 12px 17px 2px hsla(0, 0%, 0%, 0.14), 0px 5px 22px 4px hsla(0, 0%, 0%, 0.12), 0px 7px 8px -4px hsla(0, 0%, 0%, 0.2);
   --saito-form-box-shadow:  1px 1px 5px var(--saito-border-color);
-  --saito-button-background: var(--saito-primary);
   --saito-modal-background: var(--dreamscape);
   --saito-font-color-dark-modal: #efefef;
   --saito-faded-icon-font: #6a6a6a;
@@ -231,7 +230,7 @@ font imports
   --font-color-button-hover-modal-oldschool: var(--font-color-inverse);
   --font-color-button-module: var(--font-color-primary);
   --font-color-button-hover-module: none;
-  --font-color-button-wallet-control: red;
+  --font-color-button-wallet-control: var(--color-primary);
   --font-color-button-hover-wallet-control: var(--font-color-inverse);
 /* Chat Popup Font Colors */
   --font-color-chat-popup: none;
