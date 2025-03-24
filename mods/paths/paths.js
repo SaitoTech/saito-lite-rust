@@ -4018,6 +4018,7 @@ console.log("err: " + err);
   }
 
   displaySpaceDetailedView(key) {
+alert("display space for: " + key);
     this.space_overlay.render(key);
   }
 
@@ -8256,14 +8257,7 @@ try {
 
 	if (mv[0] == "combat_recalculate_loss_factor") {
 
-	  if (mv[1] == "attacker") {
-            this.game.state.combat.attacker_loss_factor = this.returnAttackerLossFactor();
-          }
-
-	  if (mv[1] == "defender") {
-	    this.game.state.combat.defender_loss_factor = this.returnDefenderLossFactor();
-	  }
-
+	  let faction = mv[1]; // attacker / defender
 
 	  let attacker_strength = 0;          
 	  let defender_strength = 0;          
@@ -8299,6 +8293,21 @@ console.log("RECALCULATE");
 console.log("RECALCULATE");
 console.log("RECALCULATE");
 console.log(JSON.stringify(this.game.state.combat, null, 2));
+
+	  if (faction == "attacker") {
+            this.game.state.combat.attacker_loss_factor = this.returnAttackerLossFactor();
+          }
+
+	  if (faction == "defender") {
+	    this.game.state.combat.defender_loss_factor = this.returnDefenderLossFactor();
+	  }
+
+          if (this.game.state.combat.attacker_loss_factor > this.game.state.combat.defender_loss_factor) {
+            this.game.state.combat.winner = "defender";
+          }
+          if (this.game.state.combat.attacker_loss_factor < this.game.state.combat.defender_loss_factor) {
+            this.game.state.combat.winner = "attacker";
+          }
 
 	  this.game.queue.splice(qe, 1);
 	  return 1;
@@ -8457,6 +8466,11 @@ console.log(JSON.stringify(this.game.state.combat));
 	  let units = this.returnAttackerUnits();
 	  let does_defender_retreat = false;
 
+	  if (this.game.state.combat.winner == "defender") {
+	    this.updateLog("Defender Wins, no retreat...");
+	    return 1;
+	  }
+
 	  for (let i = 0; i < units.length; i++) {
 	    if (units[i].key.indexOf("army") > 0 && units[i].damaged == false) {
 	      does_defender_retreat = true;
@@ -8464,15 +8478,8 @@ console.log(JSON.stringify(this.game.state.combat));
 	  }
 
 	  if (does_defender_retreat) {
-console.log("#");
-console.log("#");
-console.log("# does retreat?");
-console.log("#");
-console.log(this.returnPlayerOfFaction(this.game.state.combat.defender_power) + " -- " + this.game.state.combat.defender_power);
 	    let player = this.returnPlayerOfFaction(this.game.state.combat.defender_power);
-console.log(this.game.player + " ---- " + player);
 	    if (this.game.player == player) {
-console.log("playing post combat retreat...");
 	      this.playerPlayPostCombatRetreat();
 	    } else {
 	      this.updateStatus("Opponent Retreating...");
@@ -8487,6 +8494,11 @@ console.log("playing post combat retreat...");
 	if (mv[0] === "combat_attacker_advance") {
 
 	  this.game.queue.splice(qe, 1);
+
+	  if (this.game.state.combat.winner == "defender") {
+	    this.updateLog("Defender Wins, no advance...");
+	    return 1;
+	  }
 
 	  let player = this.returnPlayerOfFaction(this.game.state.combat.attacker_power);
 	  if (this.game.player == player) {
@@ -8528,22 +8540,15 @@ console.log("playing post combat retreat...");
 
 	  this.displaySpace(spacekey);
 
-	  let x = this.returnAttackerUnits();
-	  let spacekeys = [];
-	  for (let z = 0; z < x.length; z++) {
-	    if (!spacekeys.includes(x[z].spacekey)) {
-	      spacekeys.push(x[z].spacekey);
-	    }
-	  }
-
-	  for (let z = 0; z < spacekeys.length; z++) {
-	    for (let i = this.game.spaces[spacekeys[z]].units.length-1; i >= 0; i--) {
-	      let u = this.game.spaces[spacekeys[z]].units[i];
-	      if (u.destroyed == true) {
-	        this.game.spaces[spacekeys[z]].units.splice(i, 1);
+	  for (let key in this.game.spaces) {
+	    let space = this.game.spaces[key];
+	    if (space.activated_for_combat || space.activated_for_movement) {
+	      for (let z = space.units.length-1;z >= 0 ; z++) {
+	        let u = space.units[z];
+		if (u.destroyed) { space.units.splice(z, 1); }
 	      }
 	    }
-	    this.displaySpace(spacekeys[z]);
+	    this.displaySpace(key);
 	  }
 
 	  this.game.queue.splice(qe, 1);
@@ -8981,8 +8986,8 @@ console.log("KEY - " + JSON.stringify(attacker_units));
 console.log("KEY");
 	for (let i = 0; i < attacker_units.length; i++) {
           let x = attacker_units[i];
-      	  let skey = u.spacekey;
-      	  let ukey = u.key;
+      	  let skey = x.spacekey;
+      	  let ukey = x.key;
       	  let uidx = 0;
 	  let u = {};
 	  for (let z = 0; z < paths_self.game.spaces[skey].units.length; z++) {

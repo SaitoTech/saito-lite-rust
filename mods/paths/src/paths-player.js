@@ -143,8 +143,8 @@ console.log("KEY - " + JSON.stringify(attacker_units));
 console.log("KEY");
 	for (let i = 0; i < attacker_units.length; i++) {
           let x = attacker_units[i];
-      	  let skey = u.spacekey;
-      	  let ukey = u.key;
+      	  let skey = x.spacekey;
+      	  let ukey = x.key;
       	  let uidx = 0;
 	  let u = {};
 	  for (let z = 0; z < paths_self.game.spaces[skey].units.length; z++) {

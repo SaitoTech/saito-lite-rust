@@ -212,6 +212,7 @@ console.log("err: " + err);
   }
 
   displaySpaceDetailedView(key) {
+alert("display space for: " + key);
     this.space_overlay.render(key);
   }
 

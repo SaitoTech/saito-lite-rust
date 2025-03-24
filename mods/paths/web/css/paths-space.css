@@ -1,4 +1,4 @@
-.loss-overlay {
+.space-overlay {
 	min-width: 600px;
 	min-height: 500px;
 	max-height: 90vh;
@@ -9,11 +9,11 @@
 	overflow-y: auto;
 }
 
-.loss-overlay .units {
+.space-overlay .units {
 	min-height: max-content;
 }
 
-.loss-overlay .details {
+.space-overlay .details {
 	min-height: max-content;
 
 }
