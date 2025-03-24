@@ -107,10 +107,7 @@ class Arcade extends ModTemplate {
 			let game = this.returnGame(game_id);
 			if (game) {
 				console.log(game);
-				let new_player_list = game.msg.options?.add_player || [];
-				new_player_list.push(this.publicKey);
-				game.msg.options.add_player = new_player_list;
-				this.sendJoinTransaction({ tx: game, game_name: 'open_table' }, "add_player");
+				this.sendJoinTransaction({ tx: game, game_name: 'open_table' });
 			}
 		});
 	}
@@ -340,11 +337,11 @@ class Arcade extends ModTemplate {
 
 					if (arcade_self.isAvailableGame(game)) {
 						//Mark myself as an invited guest
-						//game.msg.options.desired_opponent_publickey = this.publicKey;
+						game.msg.options.desired_opponent_publickey = this.publicKey;
 
 						//Then we have to remove and readd the game so it goes under "mine"
 						arcade_self.removeGame(game.signature);
-						arcade_self.addGame(game, 'private');
+						arcade_self.addGame(game);
 					}
 
 					app.browser.logMatomoEvent('GameInvite', 'FollowLink', game.game);
@@ -669,6 +666,7 @@ class Arcade extends ModTemplate {
 						if (step) {
 							step = String(step).padStart(5, '0');
 						}
+						//console.log("!!!!!!!!!! SAVE GAME STEP: ", step);
 						await this.app.storage.saveTransaction(
 							tx,
 							{ field4: txmsg.game_id, field5: step },
@@ -1212,10 +1210,7 @@ class Arcade extends ModTemplate {
 		// Don't add the same player twice!
 		//
 		if (!game.msg.players.includes(tx.from[0].publicKey)) {
-			if (
-				this.isAvailableGame(game) ||
-				(game.msg?.options['open-table'] && txmsg?.update_options?.add_player)
-			) {
+			if (this.isAvailableGame(game)) {
 				if (txmsg.update_options) {
 					console.log(
 						`Join TX updates the invite options -- ${txmsg.update_options}!`,
@@ -1254,7 +1249,7 @@ class Arcade extends ModTemplate {
 		}
 
 		// If this is an already initialized table game... stop
-		if (!this.isAvailableGame(game)) {
+		if (game.msg.request == 'active') {
 			return;
 		}
 
@@ -1262,7 +1257,9 @@ class Arcade extends ModTemplate {
 		// Do we have enough players?
 		//
 		if (game.msg.players.length >= game.msg.players_needed) {
-			//Temporarily change it....
+			//
+			// Temporarily change it so we don't process additional joins
+			//
 			game.msg.request = 'accepted';
 
 			//
@@ -1703,9 +1700,9 @@ class Arcade extends ModTemplate {
 				if (tx.msg.players_needed <= tx.msg.players.length) {
 					list = 'active';
 				}
-				if (tx.msg?.options['open-table']) {
-					list = 'open';
-				}
+				//if (tx.msg?.options['open-table']) {
+				//	list = 'open';
+				//}
 			}
 		}
 
@@ -1758,7 +1755,7 @@ class Arcade extends ModTemplate {
 			//Second pass for my open invites
 			let cutoff = now - this.invite_cutoff;
 			for (let g = this.games.mine.length - 1; g >= 0; g--) {
-				if (!this.isAcceptedGame(this.games.mine[g].signature)) {
+				if (!this.isAvailableGame(this.games.mine[g])) {
 					if (this.games.mine[g].timestamp < cutoff) {
 						siteMessage('Game invite timed out...', 4000);
 						this.games.mine.splice(g, 1);
@@ -1798,46 +1795,12 @@ class Arcade extends ModTemplate {
 		}
 	}
 
-	//
-	// Test whether the game_tx (from this.games) is of a game with all the players,
-	// includes me, and has saved a game module instantiation in my local storage
-	//
-	isAcceptedGame(game_id) {
-		if (!game_id) {
-			return false;
-		}
-
-		let game_tx = this.returnGame(game_id);
-
-		if (!game_tx) {
-			return false;
-		}
-
-		if (game_tx.msg.players_needed > game_tx.msg.players.length) {
-			return false;
-		}
-
-		/*let is_my_game = false;
-
-    for (let i = 0; i < game_tx.msg.players.length; i++) {
-      if (game_tx.msg.players[i] == this.publicKey) {
-        is_my_game = true;
-      }
-    }
-
-    if (is_my_game) {
-      for (let i = 0; i < this.app.options?.games?.length; i++) {
-        if (this.app.options.games[i].id === game_tx.signature) {
-          return true;
-        }
-      }
-    }*/
-
-		return true;
-	}
 
 	isAvailableGame(game_tx, additional_status = '') {
 		if (game_tx.msg.request == 'open' || game_tx.msg.request == 'private') {
+			return true;
+		}
+		if (game_tx.msg.request == 'active' && game_tx.msg.options['open-table']){
 			return true;
 		}
 		if (additional_status && additional_status === game_tx.msg.request) {
@@ -1899,7 +1862,7 @@ class Arcade extends ModTemplate {
 		let invites = [];
 
 		for (let invite of this.games?.mine) {
-			if (!this.isAcceptedGame(invite.signature) && this.publicKey == invite.msg.originator) {
+			if (this.isAvailableGame(invite) && this.publicKey == invite.msg.originator) {
 				invites.push(invite.signature);
 			}
 		}

@@ -83,8 +83,8 @@ class Invite {
 				//Invitation / Challenge ?
 
 				if (publicKey == txmsg.options.desired_opponent_publickey) {
-					alt_game_type = 'direct invite ';
-					this.invite_data.game_type = 'direct invite';
+					alt_game_type = 'direct ';
+					this.invite_data.game_type = 'direct ';
 				}
 			}
 
@@ -108,23 +108,16 @@ class Invite {
 
 			if (game_mod) {
 				let defaultOptions = game_mod.returnDefaultGameOptions();
-				let defaultKeys = Object.keys(defaultOptions);
 				let inviteKeys = Object.keys(txmsg.options);
 
-				if (defaultKeys.length == inviteKeys.length) {
-					for (const key of defaultKeys) {
-						if (
-							defaultOptions[key] != txmsg.options[key] &&
-							!key.includes('game-wizard-players')
-						) {
+				for (const key of inviteKeys) {
+					if (key !== 'desired_opponent_publickey' && key !== 'game-wizard-players'){
+						if (!defaultOptions[key] || defaultOptions[key] != txmsg.options[key]) {
 							alt_game_type += 'custom ';
 							this.invite_data.game_type = 'custom game';
 							break;
 						}
 					}
-				} else {
-					alt_game_type += 'custom ';
-					this.invite_data.game_type = 'custom game';
 				}
 
 				if (this.invite_data.game_type == 'custom game'){
@@ -154,10 +147,12 @@ class Invite {
 			alt_game_type += 'game';
 			if (alt_game_type == 'game') {
 				this.invite_data.verbose_game_type =
-					'standard game open invitation';
+					'standard game open';
 			} else {
 				this.invite_data.verbose_game_type = alt_game_type;
 			}
+
+			this.invite_data.verbose_game_type += " invitation";
 
 			if (txmsg.options["game-wizard-players-select-max"] && txmsg.options["open-table"]){
 				this.invite_data.max_players = parseInt(txmsg.options["game-wizard-players-select-max"]);
@@ -165,23 +160,26 @@ class Invite {
 		}
 
 		// calculate empty slots
-		this.invite_data.empty_slots = Math.max(
-			0,
-			this.invite_data.players_needed - this.invite_data.players.length
-		);
-		
-		if (!this.invite_data.empty_slots && this.invite_data.max_players){
-			this.invite_data.empty_slots = Math.max(0, this.invite_data.max_players - this.invite_data.players.length);
-			if (this.invite_data.empty_slots){
-				this.invite_data.empty_slots = 1;
+		this.invite_data.empty_slots = 0;
+
+		if (!this.mod.isMyGame(tx)){
+			this.invite_data.empty_slots = Math.max(
+				0,
+				this.invite_data.players_needed - this.invite_data.players.length
+			);
+			
+			if (!this.invite_data.empty_slots && this.invite_data.max_players){
+				this.invite_data.empty_slots = Math.max(0, this.invite_data.max_players - this.invite_data.players.length);
+				if (this.invite_data.empty_slots){
+					this.invite_data.empty_slots = 1;
+				}
 			}
+
+			// remove empty slots if any players are requested
+			// because we will pre-fill in the invitees
+			this.invite_data.empty_slots -=
+				this.invite_data.desired_opponent_publickeys.length;
 		}
-
-		// remove empty slots if any players are requested
-		// because we will pre-fill in the invitees
-		this.invite_data.empty_slots -=
-			this.invite_data.desired_opponent_publickeys.length;
-
 
 		//if this game already exists!
 		for (let i = 0; i < this.app?.options?.games?.length; i++) {

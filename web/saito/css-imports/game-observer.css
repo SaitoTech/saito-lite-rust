@@ -54,6 +54,7 @@
   border-radius: 0.75rem;
   cursor: pointer;
   margin-left: auto;
+  display: flex;
 }
 
 .join-game {
