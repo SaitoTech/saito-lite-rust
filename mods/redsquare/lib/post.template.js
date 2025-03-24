@@ -4,7 +4,7 @@ module.exports = (app, mod, post) => {
 
 	let html = `
 
-    <div class="tweet-overlay" id="tweet-overlay">
+    <div class="tweet-overlay" id="${post.id}">
       <div class="tweet-overlay-content">
         <div class="tweet-overlay-header"></div>
 

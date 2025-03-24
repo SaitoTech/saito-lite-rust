@@ -1,0 +1,1499 @@
+/* ----------------------------------------------------------------
+font imports
+-----------------------------------------------------------------*/
+@font-face {
+    font-family: "visuelt-black";
+    src: url("/saito/fonts/visuelt-black.eot");
+    src: url("/saito/fonts/visuelt-black.eot?#iefix") format("embedded-opentype"), url("/saito/fonts/visuelt-black.woff2") format("woff2"), url("/saito/fonts/visuelt-black.woff") format("woff"), url("/saito/fonts/visuelt-black.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "visuelt-light";
+    src: url("/saito/fonts/visuelt-light.eot");
+    src: url("/saito/fonts/visuelt-light.eot?#iefix") format("embedded-opentype"), url("/saito/fonts/visuelt-light.woff2") format("woff2"), url("/saito/fonts/visuelt-light.woff") format("woff"), url("/saito/fonts/visuelt-light.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "visuelt-medium";
+    src: url("/saito/fonts/visuelt-medium.eot");
+    src: url("/saito/fonts/visuelt-medium.eot?#iefix") format("embedded-opentype"), url("/saito/fonts/visuelt-medium.woff2") format("woff2"), url("/saito/fonts/visuelt-medium.woff") format("woff"), url("/saito/fonts/visuelt-medium.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+:root {
+    --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%), linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000), linear-gradient(180deg, #e9ce93, #f71f3d);
+    --vh: calc(var(--vh) * 1);
+    --saito-red: #f71f3d;
+}
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+    font-size: 1rem;
+    height: 100%;
+    overflow: hidden;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    line-height: 1.6;
+    font-family: visuelt-light, sans-serif, Arial;
+    min-height: calc(var(--vh) * 100);
+    min-height: 100dvh;
+    min-height: -webkit-fill-available;
+}
+
+section {
+    height: calc(var(--vh) * 100);
+    min-height: calc(var(--vh) * 100);
+    width: 100%;
+    position: relative;
+    overflow: visible;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    scroll-snap-align: start;
+}
+
+a {
+    text-decoration: none;
+    color: #fff;
+}
+
+h1 {
+    font-size: 4rem;
+    color: #f71f3d;
+    font-weight: 100;
+}
+
+h2 {
+    font-size: 2.2rem;
+    font-weight: normal;
+}
+
+h3 {
+    font-size: 2rem;
+    font-weight: normal;
+}
+
+p {
+    margin-bottom: 1.5rem;
+    line-height: 2rem;
+    font-size: 1.33rem;
+}
+
+h2+p {
+    margin-top: 1rem;
+}
+
+.container {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    perspective: 1px;
+    scroll-snap-type: y mandatory;
+}
+
+#landing {
+    background-color: #f71f3d;
+    color: white;
+}
+
+#consensus {
+    background-color: #444;
+    flex-direction: column;
+    color: #fff;
+}
+
+#about {
+    background-color: #efefef;
+}
+
+#community {
+    background-color: #fff;
+    align-items: center;
+    flex-direction: column;
+}
+
+#web3 {
+    background: var(--dreamscape);
+    flex-direction: column;
+}
+
+#contact {
+    background-color: #1c1c23;
+    color: white;
+    align-items: center;
+}
+
+.nav {
+    position: fixed;
+    right: 2rem;
+    bottom: 2rem;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    height: auto;
+}
+
+.nav a {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #888;
+    transition: all 0.3s ease;
+    border: 1px solid #888;
+}
+
+.nav a.active {
+    background: white;
+}
+
+
+.cube-container {
+    position: relative;
+    width: 105.3px;
+    height: 120.6px;
+    margin-top: 4rem;
+}
+
+.saito-cube {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0));
+    animation: pulseCube 3.5s ease-in-out forwards;
+}
+
+@keyframes pulseCube {
+
+    0%,
+    100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0));
+        opacity: 1;
+    }
+
+    15%,
+    48%,
+    81% {
+        transform: scale(1.15);
+        filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+    }
+
+    31.5%,
+    64.5%,
+    97.5% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0));
+    }
+
+    99%,
+    100% {
+        opacity: 0;
+    }
+}
+
+.landing-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    width: 100%;
+    position: relative;
+    overflow: visible;
+    height: 100%;
+}
+
+.feature-cards {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    animation: fadeInCards 1s ease-out 1.75s forwards;
+}
+
+@keyframes fadeInCards {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -60%) scale(1.25);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.25);
+    }
+}
+
+    .card-container {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem;
+        width: 100%;
+    }
+
+.card-link {
+    text-decoration: none;
+    color: inherit;
+    flex: 1;
+    min-width: 250px;
+    max-width: 250px;
+    margin: 0 0.5rem;
+}
+
+.feature-card {
+    position: relative;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    border-radius: 7px;
+    transition: transform 0.2s ease;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--saito-red);
+    z-index: -1;
+    border-radius: 7px;
+  }
+
+.feature-card h1 {
+    margin: 0;
+    font-size: 2rem;
+    color: white;
+    width: 100%;
+    text-align: center;
+}
+
+.feature-icon {
+    width: 64px;
+    height: 64px;
+    margin: auto 0;
+}
+
+.feature-card p {
+    margin: 0;
+    font-size: 1.2rem;
+    line-height: 1.5;
+    color: var(--text-color);
+    width: 100%;
+    text-align: left;
+    min-height: 4.5em;
+}
+
+.card-link:hover .feature-card {
+    transform: translateY(-5px);
+}
+
+/* Mobile styles */
+
+.landing-content {
+    flex-direction: column;
+    height: calc(var(--vh) * 100);
+    position: relative;
+}
+
+.cube-container {
+    display: none;
+    /* Hide main cube */
+}
+
+/* Add background cube for mobile */
+.landing-content::before {
+    content: '';
+    position: fixed;
+    top: calc(var(--vh) * -3);
+    right: calc(var(--vh) * -3);
+    width: calc(var(--vh) * 25);
+    height: calc(var(--vh) * 25);
+    background: url('/saito/img/saito-cube.svg') no-repeat center/contain;
+    opacity: 0;
+    z-index: 0;
+    animation: fadeInBackgroundCube 2s ease-out 0.5s forwards;
+}
+
+@keyframes fadeInBackgroundCube {
+    0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(-100%);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@media (orientation: portrait) {
+    .saito-text-container {
+        position: absolute;
+        animation: slideTextMobile 4s ease-out 1.5s forwards;
+        margin: 0;
+        left: 0;
+        bottom: 133vh;
+    }
+
+    @keyframes slideTextMobile {
+        0% {
+            opacity: 0;
+            bottom: calc(var(--vh) * 110);
+        }
+
+        100% {
+            opacity: 1;
+            bottom: 0;
+        }
+    }
+
+    object.saito-text {
+        transform: none;
+        /* Reset portrait transform */
+        width: 100%;
+    }
+}
+
+@media (max-width: 1400px) {
+    .feature-cards {
+        top: calc(var(--vh) * 42);
+        width: 100%;
+        order: -1;
+        position: absolute;
+        z-index: 1;
+        opacity: 0;
+        animation: fadeInCards 1s ease-out 1.25s forwards;
+    }
+
+    .card-container {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        padding: 1rem;
+        scrollbar-width: none;
+        gap: 1rem;
+    }
+
+    .feature-card {
+        scroll-snap-align: center;
+        margin: 0;
+    }
+
+    /* Add JavaScript to scroll to second card on load */
+}
+
+.saito-text {
+    transition: opacity 1.3s ease-out;
+}
+
+.saito-text.scrolled {
+    opacity: 0;
+}
+
+object.saito-text {
+    width: 100%;
+    z-index: 9999;
+    position: relative;
+}
+
+
+@media (orientation: portrait) {
+    object.saito-text {
+        transform: rotate(90deg) translateX(-97%);
+        transform-origin: bottom left;
+        width: calc(var(--vh) * 33);
+    }
+}
+
+/* Portrait styles (default) */
+
+
+
+
+/* Landscape styles */
+/* Landscape styles */
+@media (orientation: landscape) {
+    .saito-text-container {
+        position: absolute;
+        width: 70vw;
+        max-width: min(70rem, 50vw);
+        height: auto;
+        bottom: calc(var(--vh) * 110);
+        left: 0;
+        transform-origin: initial;
+        animation: slideTextLandscape 2s ease-out 1.5s forwards;
+        transform: translateY(10%);
+    }
+
+    @keyframes slideTextLandscape {
+        0% {
+            bottom: calc(var(--vh) * 110);
+            opacity: 0;
+        }
+
+        100% {
+            bottom: 0;
+            opacity: 1;
+        }
+    }
+}
+
+.main-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.header-logo {
+    height: 60px;
+    width: 160px;
+    display: none;
+}
+
+/* Desktop Menu Styles */
+.desktop-menu {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .main-header {
+        transform: translateY(-100%);
+    }
+
+    .desktop-menu {
+        display: flex;
+        justify-content: space-between;
+        padding: 1rem 2rem;
+        height: 6rem;
+        overflow: visible;
+    }
+
+    /* Initial expanded state */
+    .main-header:not(.scrolled) {
+        transform: none;
+        background: transparent;
+        opacity: 0;
+        animation: fadeInMenu 0.5s ease-out 2.5s forwards;
+        /* Start after text animation (1.5s + 1s) */
+        display: none;
+    }
+
+    .main-header.loaded {
+        animation: fadeInMenu ease-out 0.2s forwards;
+    }
+
+    @keyframes fadeInMenu {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Grid Layout for Desktop Initial State */
+    .main-header:not(.scrolled) .desktop-menu {
+        position: fixed;
+        top: 13rem;
+        left: min(8vw, 5rem);
+        width: calc(60vw + 7rem);
+    }
+
+    .main-header:not(.scrolled) .header-logo {
+        display: none;
+    }
+
+    .main-header:not(.scrolled) .menu-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        max-width: 100%;
+    }
+
+    .main-header:not(.scrolled) .menu-title {
+        color: white;
+        margin-bottom: 1rem;
+        font-weight: normal;
+    }
+
+    .menu-links {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    h1.menu-title {
+        font-size: 2rem;
+    }
+
+    .main-header:not(.scrolled) .menu-button {
+        display: block;
+        width: min(25rem, 40vw);
+        padding: 0.75rem 1rem;
+        color: white;
+        text-decoration: none;
+        border: 2px solid #fffc;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+        text-align: center;
+        font-size: 1.5rem;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .main-header:not(.scrolled) .menu-button:hover {
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Scrolled state */
+    .main-header.scrolled .menu-container {
+        display: flex;
+    }
+
+    .main-header.scrolled .header-logo {
+        display: block;
+        height: 60px;
+    }
+
+    .main-header.scrolled .menu-title {
+        color: #fff;
+        cursor: pointer;
+        padding: 0.5rem 1rem;
+    }
+
+    .main-header.scrolled .menu-links {
+        position: relative;
+        top: 4rem;
+        left: 4rem;
+        min-width: 200px;
+        padding: 1rem;
+        border-radius: 4px;
+        pointer-events: none;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        gap: 0;
+    }
+
+    .main-header.scrolled .menu-section:hover .menu-links {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        /* Re-enable pointer events on hover */
+    }
+
+    /* Keep menu visible when hovering the links */
+    .main-header.scrolled .menu-links:hover {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+    .main-header.scrolled .menu-button {
+        display: block;
+        text-decoration: none;
+        padding: 0.33rem 0;
+        transition: background-color 0.3s ease;
+    }
+
+    .main-header.scrolled .menu-button:hover {
+        border-bottom: 1px solid #fff;
+    }
+
+    /* Add hamburger indicator in scrolled state */
+    .main-header.scrolled .menu-container::before {
+        content: '';
+        position: absolute;
+        right: 5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 36px;
+        height: 24px;
+        border-top: 3px solid #fff;
+        border-bottom: 3px solid #fff;
+    }
+
+    .main-header.scrolled .menu-container::after {
+        content: '';
+        position: absolute;
+        right: 5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 36px;
+        height: 3px;
+        background: #fff;
+    }
+
+    /* Hover state */
+    .main-header.scrolled .menu-container:hover::before,
+    .main-header.scrolled .menu-container:hover::after {
+        opacity: 1;
+    }
+}
+
+/* Mobile Menu Styles */
+.mobile-menu {
+    display: block;
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+}
+
+.hamburger {
+    position: fixed;
+    z-index: 1001;
+    width: 30px;
+    height: 24px;
+    cursor: pointer;
+    right: 1.5rem;
+    top: 1.5rem;
+}
+
+.hamburger {
+    cursor: pointer;
+    color: var(--menu-color, #fff);
+    transition: transform 0.3s ease;
+}
+
+.hamburger.active {
+    transform: rotate(180deg);
+}
+
+.hamburger span {
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    background-color: var(--menu-color, #fff);
+    transition: all 0.3s ease;
+    border-radius: 3px;
+}
+
+.hamburger span:first-child {
+    top: 0;
+}
+
+.hamburger span:nth-child(2) {
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.hamburger span:last-child {
+    bottom: 0;
+}
+
+/* Active state for hamburger spans */
+.hamburger.active span:first-child {
+    transform: rotate(45deg) translate(7px, 7px);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:last-child {
+    transform: rotate(-45deg) translate(7px, -7px);
+}
+
+/* Mobile menu content styles */
+.mobile-menu-content {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    background: #fff;
+    padding: 4rem 2rem 2rem;
+    min-width: 250px;
+    height: calc(var(--vh) * 100);
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.mobile-menu-content.active {
+    display: block;
+}
+
+.mobile-menu-content .menu-section {
+    margin-bottom: 2rem;
+}
+
+.mobile-menu-content h3 {
+    color: #f61745;
+    margin-bottom: 1rem;
+}
+
+.mobile-menu-content a {
+    display: block;
+    color: #333;
+    padding: 0.5rem 0;
+    text-decoration: none;
+}
+
+@media (min-width: 768px) {
+    .mobile-menu {
+        display: none;
+    }
+}
+
+
+.main-header.scrolled .header-logo {
+    display: block;
+}
+
+
+
+/* Update background cube styles */
+.background-cube {
+    position: absolute;
+    top: -4rem;
+    right: -7rem;
+    width: 60vw;
+    max-width: 40rem;
+    height: auto;
+    opacity: 0;
+    animation: fadeInCube 0.5s ease-out 2.5s forwards;
+}
+
+@keyframes fadeInCube {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 1500px) {
+
+    .background-cube {
+        max-width: 30vw;
+    }
+
+    .menu-button {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 767px) {
+    .background-cube {
+        top: 10rem;
+        right: 50%;
+        transform: translateX(50%);
+        max-width: 66vw;
+    }
+}
+
+
+
+@media (orientation: landscape) and (max-height: 1000px) {
+    .background-cube {
+        max-width: 30vw;
+    }
+
+    .main-header:not(.scrolled) .desktop-menu {
+        position: fixed;
+    }
+}
+
+
+
+.community-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.community-image {
+    flex: 1;
+    min-height: 470px;
+    background-image: url(/saito/img/community-cats-square.jpeg);
+    background-size: contain;
+    background-position-y: center;
+    background-repeat: no-repeat;
+    margin: auto;
+    max-width: 470px;
+}
+
+.community-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.community-divider {
+    width: 2px;
+    height: 300px;
+    background-color: #f61745;
+}
+
+.community-text {
+    flex: 1;
+    font-size: 1.2rem;
+    line-height: 1.6;
+}
+
+.community-text a {
+    color: #f61745;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.community-text a:hover {
+    color: #d01238;
+}
+
+@media (max-width: 768px) {
+    .community-content {
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 2rem 0.5rem;
+    }
+
+    .community-divider {
+        width: 85%;
+        height: 2px;
+    }
+
+    .community-text {
+        padding: 0 1rem;
+    }
+
+    .community-image {
+        overflow: hidden;
+        min-height: 12vw;
+        min-width: 100%;
+        background-image: url(/saito/img/community-cats-row.jpeg);
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+}
+
+@media (min-width: 1200px) {
+    .community-content {
+        gap: 4rem;
+    }
+}
+
+
+
+
+/* Contact section styles */
+.contact-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;
+    max-width: 1200px;
+    gap: 2rem;
+    font-size: 1.5rem;
+}
+
+.contact-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.contact-cube {
+    width: 80%;
+    height: auto;
+}
+
+.contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.contact-links h3 {
+    color: #fff;
+    margin-top: 1.5rem;
+    font-size: 1.2rem;
+}
+
+.contact-links a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.contact-links a:hover {
+    color: #f61745;
+}
+
+.copyright {
+    color: #fff;
+    font-size: 1.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .contact-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 3rem;
+    }
+
+    .contact-cube {
+        width: 50%;
+    }
+
+    .contact-links {
+        align-items: center;
+    }
+
+    .contact-column {
+        width: 100%;
+        align-items: center;
+    }
+
+    .contact-column:last-child {
+        margin-top: 1rem;
+    }
+}
+
+/* Update contact section styles */
+.contact-column:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.copyright-link {
+    color: #efefef;
+    font-size: 1.4rem;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.copyright-link:hover {
+    color: #f61745;
+}
+
+
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    body {
+        font-size: 1.2rem;
+    }
+
+    section {
+        padding: 6rem 0 0 0;
+        justify-content: left;
+        flex-direction: column;
+    }
+
+    #landing {
+        padding-top: 0;
+    }
+
+    #community,
+    #web3 {
+        padding: 6rem 1rem 0 1rem;
+    }
+
+    h1 {
+        font-size: 2.6rem;
+        line-height: 1.2;
+    }
+
+    h2 {
+        font-size: 1.66rem;
+    }
+
+}
+
+/* Mobile header styles */
+.mobile-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    z-index: 1001;
+}
+
+/* Adjust mobile logo size */
+.mobile-header .header-logo {
+    height: 40px;
+    /* Smaller size for mobile */
+}
+
+/* Adjust hamburger position */
+.mobile-header .hamburger {
+    position: relative;
+    right: 0;
+    top: 0;
+}
+
+@media (min-width: 768px) {
+    .mobile-header {
+        display: none;
+    }
+}
+
+/* Typography - Desktop (> 768px) */
+@media (min-width: 768px) {
+
+    /* Headings */
+    h1,
+    .h1 {
+        font-size: 3.5rem;
+        line-height: 1.2;
+    }
+
+    h2,
+    .h2 {
+        font-size: 2.5rem;
+        line-height: 1.75;
+    }
+
+    h3,
+    .h3 {
+        font-size: 2rem;
+        line-height: 1.4;
+    }
+
+    h4,
+    .h4 {
+        font-size: 1.5rem;
+        line-height: 1.4;
+    }
+
+    /* Menu and Navigation */
+    .menu-title {
+        font-size: 1.25rem;
+    }
+
+    .menu-links a {
+        font-size: 1.5rem;
+    }
+
+    .nav-text {
+        font-size: 1rem;
+    }
+
+    /* General Text */
+    body {
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    .large-text {
+        font-size: 1.25rem;
+    }
+
+    .small-text {
+        font-size: 0.875rem;
+    }
+}
+
+/* Typography - Mobile (≤ 768px) */
+@media (max-width: 767px) {
+
+    /* Headings */
+    h1,
+    .h1 {
+        font-size: 2.5rem;
+        line-height: 1.2;
+    }
+
+    h2,
+    .h2 {
+        font-size: 2rem;
+        line-height: 1.2;
+        margin: 2rem 0
+    }
+
+    h3,
+    .h3 {
+        font-size: 1.5rem;
+        line-height: 1.4;
+    }
+
+    h4,
+    .h4 {
+        font-size: 1.25rem;
+        line-height: 1.4;
+    }
+
+    /* Menu and Navigation */
+    .menu-title {
+        font-size: 1.125rem;
+    }
+
+    .menu-links a {
+        font-size: 0.875rem;
+    }
+
+    .nav-text {
+        font-size: 0.875rem;
+    }
+
+    /* General Text */
+    body {
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    .large-text {
+        font-size: 1.125rem;
+    }
+
+    .small-text {
+        font-size: 0.75rem;
+    }
+}
+
+/* Hide on mobile */
+@media (max-width: 767px) {
+    .scroll-caret {
+        display: none;
+    }
+}
+
+/* Scroll Caret - Desktop Only */
+@media (min-width: 768px) {
+    .scroll-caret {
+        position: fixed;
+        bottom: 3rem;
+        right: 3rem;
+        left: auto;
+        transform: none;
+        color: #fff;
+        animation: bounce 2s infinite;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        width: 40px;
+        height: 40px;
+        padding: 10px;
+        border-radius: 3px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .scroll-caret svg {
+        width: 100%;
+        height: 100%;
+        filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.3));
+    }
+
+    @keyframes bounce {
+
+        0%,
+        20%,
+        50%,
+        80%,
+        100% {
+            transform: translateY(0);
+        }
+
+        40% {
+            transform: translateY(-10px);
+        }
+
+        60% {
+            transform: translateY(-5px);
+        }
+    }
+}
+
+/* Update menu hover behavior */
+.main-header.scrolled .menu-container:hover .menu-links {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    backdrop-filter: blur(50px);
+}
+
+/* Remove individual menu section hover states */
+.main-header.scrolled .menu-section:hover .menu-links {
+    opacity: initial;
+    visibility: initial;
+    pointer-events: initial;
+}
+
+/* Position the menus side by side */
+.main-header.scrolled .menu-container:hover .menu-section:first-child .menu-links {
+    right: calc(100% + 1rem);
+    /* Position first menu to the left */
+}
+
+.main-header.scrolled .menu-container:hover .menu-section:last-child .menu-links {
+    right: 0;
+    /* Keep second menu aligned to the right */
+}
+
+/* Color variable usage */
+.hamburger span {
+    background-color: var(--menu-color, #fff);
+}
+
+.menu-title {
+    color: var(--menu-color, #fff);
+}
+
+.main-header.scrolled .menu-links a {
+    color: var(--menu-color, #fff);
+}
+
+.main-header.scrolled .menu-container::before {
+    border-top-color: var(--menu-color, #fff);
+    border-bottom-color: var(--menu-color, #fff);
+}
+
+.main-header.scrolled .menu-container::after {
+    background-color: var(--menu-color, #fff);
+}
+
+/* For SVG logo */
+.header-logo svg style {
+    content: ".cls-1{fill:var(--menu-color, #fff)}";
+}
+
+#multiwallet {
+    background: var(--dreamscape);
+    min-height: calc(var(--vh) * 100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+    /* For nav pip tracking */
+}
+
+.multiwallet-content {
+    display: flex;
+    max-width: 1200px;
+    width: 100%;
+    gap: 2rem;
+}
+
+.multiwallet-text {
+    flex: 1;
+    color: white;
+    padding: 1rem;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.multiwallet-text h1 {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    color: white;
+}
+
+.multiwallet-text p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+}
+
+.multiwallet-logos {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-container {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.logo-circle {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2rem;
+    transition: transform 0.3s ease;
+}
+
+
+
+.logo-disk object {
+    width: 60px;
+    height: 60px;
+    margin: auto;
+}
+
+.logo-circle span {
+    color: white;
+    font-weight: 500;
+    white-space: nowrap;
+    font-size: 2rem;
+}
+
+/* Position the logos in an arc */
+.logo-circle:nth-child(1) {
+    /* Bitcoin */
+    left: 10%;
+}
+
+.logo-circle:nth-child(2) {
+    /* Ethereum */
+    left: 0%;
+}
+
+.logo-circle:nth-child(3) {
+    /* Saito */
+    left: 6%;
+}
+
+.logo-circle:nth-child(4) {
+    /* MultiverseX */
+    left: 25%;
+}
+
+.nav a:nth-child(4).active {
+    background-color: white;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .multiwallet-content {
+        flex-direction: column;
+    }
+
+    .logo-container {
+        padding: 0 1rem;
+        gap: 1rem;
+    }
+
+    /* Adjust logo positions for mobile */
+    .logo-circle:nth-child(1) {
+        left: 50%;
+        top: 10%;
+        transform: translateX(-50%);
+    }
+
+    .logo-circle:nth-child(2) {
+        left: 50%;
+        top: 30%;
+        transform: translateX(-50%);
+    }
+
+    .logo-circle:nth-child(3) {
+        left: 50%;
+        top: 50%;
+        transform: translateX(-50%);
+    }
+
+    .logo-circle:nth-child(4) {
+        left: 50%;
+        top: 70%;
+        transform: translateX(-50%);
+    }
+
+    .logo-circle:hover {
+        transform: translateX(-50%) scale(1.1);
+    }
+}
+
+/* Hide menu in landing section */
+#landing .desktop-menu,
+#landing .mobile-menu {
+    display: none;
+}
+
+/* Desktop styles */
+@media (min-width: 768px) and (orientation: landscape) {
+    .landing-content::before {
+        content: '';
+        position: fixed;
+        top: calc(var(--vh) * -3);
+        right: calc(var(--vh) * -6);
+        width: calc(var(--vh) * 40);
+        height: calc(var(--vh) * 40);
+        background: url('/saito/img/saito-cube.svg') no-repeat center/contain;
+        opacity: 0;
+        z-index: 0;
+        animation: fadeInBackgroundCube 2s ease-out 0.5s forwards;
+    }
+}
+
+/* Keep existing mobile styles */
+@media (max-width: 768px) or (orientation: portrait) {
+    .landing-content::before {
+        content: '';
+        position: fixed;
+        top: calc(var(--vh) * -3);
+        right: calc(var(--vh) * -3);
+        width: calc(var(--vh) * 25);
+        height: calc(var(--vh) * 25);
+        background: url('/saito/img/saito-cube.svg') no-repeat center/contain;
+        opacity: 0;
+        z-index: 0;
+        animation: fadeInBackgroundCube 2s ease-out 0.5s forwards;
+    }
+}
+
+/* Reset scale and add max-width for mobile */
+@media (max-width: 768px) {
+    .feature-cards {
+        max-width: 800px;
+    }
+
+    @keyframes fadeInCards {
+        0% {
+            opacity: 0;
+            transform: translate(-50%, -60%) scale(1);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+    }
+}

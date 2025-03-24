@@ -41,19 +41,23 @@
 			<div class="spam-loop-count">0</div>
 			<div>TXs per period:</div>
 			<div>
-				<input type="text" name="frequency" id="frequency" value="1" />
+				<input type="text" name="spam-frequency" id="spam-frequency" value="1" />
 			</div>
 			<div>Period:</div>
 			<div>
-				<input type="text" name="period" id="period" value="1" />
+				<input type="text" name="spam-period" id="spam-period" value="1" />
 			</div>
-			<div>Public key</div>
+			<div>To:</div>
 			<div>
-				<input type="text" name="publicKey" id="publicKey" value="" />
+				<input type="text" name="spam-to" id="spam-to" value="" />
+			</div>
+			<div>Payment:</div>
+			<div>
+				<input type="number" name="spam-payment" id="spam-payment" value="0" min="0" step="1" />
 			</div>
 			<div>Fee:</div>
 			<div>
-				<input type="text" name="fee" id="fee" value="" />
+				<input type="number" name="spam-fee" id="spam-fee" value="0" min="0" step="1" />
 			</div>
 		</div>
 		<div class="spam-buttons">

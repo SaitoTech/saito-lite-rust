@@ -52,8 +52,8 @@ class QRScanner extends ModTemplate {
 		//
 		// and scan when asked
 		//
-		this.app.connection.on('scanner-start-scanner', () => {
-			this.startScanner();
+		this.app.connection.on('scanner-start-scanner', (callback = null) => {
+			this.startScanner(callback);
 		});
 	}
 
@@ -73,20 +73,6 @@ class QRScanner extends ModTemplate {
 					icon: 'fas fa-expand',
 					rank: 110,
 					callback: function (app, id) {
-						app.connection.emit('scanner-start-scanner', {});
-					}
-				}
-			];
-		}
-
-		if (type === 'withdraw') {
-			return [
-				{
-					text: 'Scan',
-					icon: 'fas fa-expand',
-					rank: 110,
-					callback: async function (app, id, callback) {
-						qr_self.scanner_callback = callback;
 						app.connection.emit('scanner-start-scanner', {});
 					}
 				}
@@ -137,9 +123,6 @@ class QRScanner extends ModTemplate {
 		this.app.browser.addElementToDom(this.returnScannerHTML());
 		//document.body.innerHTML = this.returnScannerHTML();
 		document.querySelector('.close-scanner').onclick = () => {
-			// //setTimeout(() => {
-			// 					window.location.reload();
-			// 				}, 300);;
 			document.querySelector('.qrscanner-container').remove();
 			this.stop();
 		};
@@ -171,9 +154,7 @@ class QRScanner extends ModTemplate {
 
 		el.innerHTML = this.returnScannerHTML();
 		document.querySelector('.close-scanner').onclick = () => {
-			setTimeout(() => {
-				window.location.reload();
-			}, 300);
+			reloadWindow(300);
 		};
 
 		let scanner_self = this;
@@ -323,7 +304,7 @@ class QRScanner extends ModTemplate {
 			this.stop();
 			let c = confirm('Visit: ' + msg + '?');
 			if (c) {
-				window.location = msg;
+				navigateWindow(msg);
 				return;
 			}
 		}

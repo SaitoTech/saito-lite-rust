@@ -326,6 +326,7 @@ class AssaultOverlay {
 
 		this.visible = true;
 		this.overlay.show(AssaultTemplate());
+		this.updateInstructions("Assault in " + this.mod.returnSpaceName(res.spacekey)) ;
 
 		if (pre_battle == 1) {
 			res.attacker_modified_rolls = res.attacker_results;

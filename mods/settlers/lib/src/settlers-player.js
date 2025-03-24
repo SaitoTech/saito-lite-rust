@@ -3,6 +3,7 @@ class SettlersPlayer {
   //Select the person to steal from
   playerMoveBandit(player, hexId) {
     let settlers_self = this;
+    this.halted = 1;
     //Find adjacent cities and launch into stealing mechanism
     let thievingTargets = [];
 
@@ -95,6 +96,7 @@ class SettlersPlayer {
   playerBuildTown(player, canBackUp = 0) {
     let settlers_self = this;
     let existing_cities = 0;
+    this.halted = 1;
     for (let i = 0; i < this.game.state.cities.length; i++) {
       if (this.game.state.cities[i].player == this.game.player) {
         existing_cities++;
@@ -207,14 +209,11 @@ class SettlersPlayer {
 
   playerBuildRoad(player, canBackUp = false) {
     let settlers_self = this;
+    this.halted = 1;
 
     if (this.game.state.placedCity) {
       this.hud.updateStatus(`<div class="player-notice">YOUR TURN: place a connecting ${this.r.name}</diiv>`);
 
-      /*Initial placing of settlements and roads, road must connect to settlement just placed
-          Use a "new" class tag to restrict scope
-          This is literally just a fix for the second road in the initial placement
-        */
       let newRoads = this.hexgrid.edgesFromVertex(this.game.state.placedCity.replace("city_", ""));
       for (let road of newRoads) {
         $(`#road_${road}`).addClass("new");
@@ -282,6 +281,7 @@ class SettlersPlayer {
   }
 
   playerBuildCity(player, canBackUp = 0) {
+    this.halted = 1;
     this.updateStatus(`click on a ${this.c1.name} to upgrade it to a ${this.c2.name}...`);
     if (canBackUp) {
       this.updateControls(`<i class="fa-solid fa-xmark"></i>`);
@@ -387,10 +387,7 @@ class SettlersPlayer {
     // Set timer to auto-end my turn if I take too long
     // 
     if (this.turn_limit){
-      this.clock.startClock(this.turn_limit);
-      this.sleep_timer = setTimeout(()=> {
-        $("#rolldice").click();
-      }, this.turn_limit);
+      this.setShotClock("#rolldice", this.turn_limit, false);
     }
 
     let statushtml = "YOUR TURN:";

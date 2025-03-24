@@ -86,6 +86,7 @@ class Wuziqi extends GameTemplate {
 		this.racetrack.win = Math.ceil(this.game.options.best_of / 2);
 		this.racetrack.title = 'Best of ' + this.game.options.best_of;
 		this.racetrack.icon = `<i class="fa-solid fa-trophy"></i>`;
+		this.racetrack.players = [];
 		for (let i = 0; i < this.game.players.length; i++) {
 			let player = {
 				name: this.app.keychain.returnUsername(this.game.players[i])/*this.roles[i + 1].toUpperCase()*/,
@@ -314,18 +315,7 @@ class Wuziqi extends GameTemplate {
 						'\t' +
 						this.game.player;
 					// Add this move to the stack
-					this.prependMove(mv);
-
-					// If we have a winner
-					if (winner != 'no winner') {
-						// If not only add a 'round over' message to the stack.
-						this.prependMove('roundover\t' + this.game.player);
-					}
-
-					//If board full
-					if (!this.canPlayTile()) {
-						this.prependMove('draw\t' + this.game.player);
-					}
+					this.addMove(mv);
 
 					// And send on chain.
 					this.endTurn();
@@ -455,6 +445,7 @@ class Wuziqi extends GameTemplate {
 
 					// Add a game over message to the stack.
 					this.game.queue.push('gameover\t' + winner);
+					return 1;
 				} else {
 					this.stopClock();
 					// Initiate next round.
@@ -471,7 +462,7 @@ class Wuziqi extends GameTemplate {
 					}
 				}
 
-				return 1;
+				return 0;
 			}
 			if (mv[0] == 'place') {
 				let player = parseInt(mv[3]);
@@ -490,6 +481,19 @@ class Wuziqi extends GameTemplate {
 					this.animatePlay(cell);
 				}
 
+				// If we have a winner
+				if (winner != 'no winner') {
+					// If not only add a 'round over' message to the stack.
+					this.game.queue = ['roundover\t' + player];
+					return 1;
+				}
+
+				//If board full
+				if (!this.canPlayTile()) {
+					this.game.queue = ['draw\t' + player];
+					return 1;
+				}
+
 				this.game.target = this.returnNextPlayer(player);
 
 				this.playerbox.setActive(this.game.target);
@@ -497,13 +501,15 @@ class Wuziqi extends GameTemplate {
 				// Remove this item from the queue.
 				this.game.queue.splice(this.game.queue.length - 1, 1);
 
-				return 1;
 			}
 		}
 
 		if (this.game.player == this.game.target) {
 			//Let player make their move
 			this.addEvents(this.game.board);
+
+			console.log("GBA: ", this.gameBrowserActive());
+			console.log("cell: ", cell);
 
 			if (this.gameBrowserActive() && cell){
 				this.updateStatus(`Your move <span class="replay">Replay Last</span>`);

@@ -3,7 +3,6 @@
 /*********************/
 
 :root {
-  --background-color-shim-light: #0009;
   --border-radius-modal-menu: var(--border-radius-round);
 
 }
@@ -32,7 +31,7 @@
 
 
 .transparent-card-overlay {
-	max-width: 85vw;
+	width: 85vw;
 	max-height: 80vh;
 	display: grid;
 	grid-template-columns: repeat(auto-fit, 200px);
@@ -355,6 +354,7 @@ body {
 	height: 100vh;
 	/*overflow: auto; We don't want scroll bars showing up*/
 	margin-top: unset;
+	position: absolute;
 }
 
 /** Modal **/

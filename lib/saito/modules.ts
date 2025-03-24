@@ -81,8 +81,6 @@ class Mods {
     for (let i = 0; i < this.mods.length; i++) {
       // if (!!message && message.module != undefined) {
       if (this.mods[i].shouldAffixCallbackToModule(message?.module || '', tx) == 1) {
-        let affix_callback = true;
-
         //
         // module-level moderation can OVERRIDE the core moderation which
         // is why we check module-level moderation here and permit the mod
@@ -90,12 +88,16 @@ class Mods {
         //
         let mod_accepts = this.moderateModule(tx, this.mods[i]);
         if (mod_accepts == 1 || (mod_accepts == 0 && core_accepts != -1)) {
-          if (affix_callback == true) {
-            callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
-            callbackIndexArray.push(txindex);
-          }
-        }
+          callbackArray.push(this.mods[i].onConfirmation.bind(this.mods[i]));
+          callbackIndexArray.push(txindex);
+        }      
       }
+    }
+
+    // A bit of a hack to connect the ghost SaitoCrypto (from Wallet) into processing TXs on chain (for info!)
+    if (message?.module == "Saito" && this.app.wallet?.saitoCrypto) {
+      callbackArray.push(this.app.wallet.saitoCrypto.onConfirmation.bind(this.app.wallet.saitoCrypto));
+      callbackIndexArray.push(txindex);
     }
   }
 
@@ -156,9 +158,9 @@ class Mods {
     try {
       if (this.app.BROWSER === 1) {
         let mods = await this.app.storage.loadLocalApplications();
-        console.log('loaded mods:', mods);
 
         if (mods.length > 0) {
+          console.log('loaded mods:', mods);
           self['saito-js'] = require('saito-js').default;
           self['saito-js/lib/slip'] = require('saito-js/lib/slip').default;
           self['saito-js/lib/transaction'] = require('saito-js/lib/transaction').default;
@@ -177,6 +179,7 @@ class Mods {
             const current_url = window.location.toString();
             const myurl = new URL(current_url);
             const myurlpath = myurl.pathname.split('/');
+
             let active_module = myurlpath[1] ? myurlpath[1].toLowerCase() : '';
             if (active_module == '') {
               active_module = 'website';
@@ -227,6 +230,7 @@ class Mods {
               // remove any disabled / inactive modules from this.mods
               //
               if (this.app.options.modules[i].active == 0) {
+                console.log("Splice inactive module");
                 this.mods.splice(z, 1);
               }
 
@@ -239,6 +243,7 @@ class Mods {
           //
           if (!found){
             module_removed = 1;
+            console.log("Splice missing module");
             this.app.options.modules.splice(i, 1);
           }
         }
@@ -259,6 +264,9 @@ class Mods {
     // modules have the installed flag set to 0
     //
     for (let i = 0; i < this.mods.length; i++) {
+      //make sure slugs are defined
+      this.mods[i].returnSlug();
+
       let mi_idx = -1;
       let install_this_module = 1;
 
@@ -434,7 +442,7 @@ class Mods {
   }
 
   //
-  // 1 = permit, -1 = do not permit
+  // 1 = permit, -1 = do not permit, 0 = indifferent
   //
   moderateModule(tx = null, mod = null) {
     if (mod == null || tx == null) {
@@ -480,6 +488,13 @@ class Mods {
     return this.moderate(newtx);
   }
 
+  //
+  // return 1 if we permit or do not block
+  //
+  // 1 if (yes)
+  // -1 if (no)
+  // 0 if unsure
+  //
   moderate(tx = null, app = '') {
     let permit_through = 0;
 
@@ -511,10 +526,11 @@ class Mods {
     }
 
     //
-    // seems OK if we made it this far
+    // we don't know, so return 0;
     //
-    return 1;
+    return 0;
   }
+
 
   async render() {
     for (let icb = 0; icb < this.mods.length; icb++) {
@@ -687,11 +703,10 @@ class Mods {
     }
   }
 
-  async onWalletReset(nuke = false) {
+  async onUpgrade(type, privatekey, walletfile) {
     for (let i = 0; i < this.mods.length; i++) {
-      await this.mods[i].onWalletReset(nuke);
+      await this.mods[i].onUpgrade(type, privatekey, walletfile);
     }
-    return 1;
   }
 
   returnModuleBySlug(modslug) {
@@ -760,12 +775,6 @@ class Mods {
     return null;
   }
 
-  async onUpgrade(type, privatekey, walletfile) {
-    for (let i = 0; i < this.mods.length; i++) {
-      await this.mods[i].onUpgrade(type, privatekey, walletfile);
-    }
-  }
-
   async onWebSocketServer(webserver) {
     for (let i = 0; i < this.mods.length; i++) {
       let mod = this.mods[i];
@@ -780,14 +789,12 @@ class Mods {
         path: '/' + path
       });
       webserver.on('upgrade', (request: any, socket: any, head: any) => {
-        console.debug('connection on module : ' + mod.name + ' upgrade ----> ' + request.url);
         const parsedUrl = parse(request.url);
         const pathname = parsedUrl.pathname;
         const pathParts = pathname.split('/').filter(Boolean);
         const subdirectory = pathParts.length > 0 ? pathParts[0] : null;
-        console.log(subdirectory + ' - ' + path);
         if (subdirectory === path) {
-          console.log('inside handleUpgrade');
+          console.debug('connection on module : ' + mod.name + ' upgrade ----> ' + request.url);
           wss.handleUpgrade(request, socket, head, (websocket: any) => {
             console.log('handling upgrade ///');
             wss.emit('connection', websocket, request);

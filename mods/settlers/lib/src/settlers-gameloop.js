@@ -381,14 +381,6 @@ class SettlersGameloop {
 
         this.game.queue.splice(qe, 1);
 
-        //For the beginning of the game only...
-        if (this.game.state.welcome == 0 && this.browser_active) {
-          try {
-            this.welcome_overlay.render();
-          } catch (err) {}
-          this.game.state.welcome = 1;
-        }
-
         if (this.game.player == player) {
           this.playerBuildTown(mv[1], parseInt(mv[2]));
         } else {
@@ -702,6 +694,19 @@ class SettlersGameloop {
         let inResource = mv[5];
         this.game.queue.splice(qe, 1);
 
+        // Check that this is possible first
+        let check = 0;
+        for (let r of this.game.state.players[player - 1].resources){
+          if (r == outResource){
+            check++;
+          }
+        }
+
+        if (check < outCount){
+          console.warn("Attempted double trade!");
+          return 1;
+        }
+
         // let offering player know
         if (this.game.player == player) {
           this.updateStatus("your bank trade is completed", 1);
@@ -742,20 +747,21 @@ class SettlersGameloop {
           $("#rolldice").html(`<i class="fa-solid fa-dice"></i>`);
           $("#rolldice").addClass("enabled");
 
+          let timer = 3000;
           if (this.canPlayerPlayCard(true)) {
             $("#playcard").addClass("enabled");
             statushtml = "YOUR TURN:";
+            timer = 5000;
           }
 
           this.updateStatus(`${statushtml}`);
           
-          if (this.turn_limit){
-            this.clock.startClock(this.turn_limit);
-            this.sleep_timer = setTimeout(()=> {
-              $("#rolldice").click();
-            }, this.turn_limit);
+          if (this.turn_limit) {
+            this.setShotClock("#rolldice", timer);
+          }else{
+            this.promptMove("#rolldice", 7000);
           }
-
+          
           // **********************************************************
           // > To DO rewrite this if we like the new dev card interface
           // **********************************************************
@@ -763,9 +769,11 @@ class SettlersGameloop {
           //Or, choose menu option
           if (document.getElementById("rolldice")){
             document.getElementById("rolldice").onclick = (e) => {
+                e.currentTarget.onclick = null;
+                e.currentTarget.classList.remove("enabled");
                 settlers_self.addMove("roll\t" + player);
                 settlers_self.endTurn();
-                e.currentTarget.onclick = null;
+                this.updateStatus("rolling dice...");
             }
           }
         } else {
@@ -788,7 +796,7 @@ class SettlersGameloop {
         let roll = d1 + d2;
 
         // Less bandit in early game
-        if (roll == 7 && this.game.stats.history.length < 6) {
+        while (roll == 7 && this.game.stats.history.length < 5) {
           console.log("Re-roll the 7 (you're welcome)!");
           d1 = this.rollDice(6);
           d2 = this.rollDice(6);
@@ -803,6 +811,13 @@ class SettlersGameloop {
 
         this.game.stats.dice[roll]++; //Keep count of the rolls
         this.game.stats.dicePlayer[roll][player-1]++;
+        
+        for (let r in this.game.stats.famine){
+          this.game.stats.famine[r]++;
+        }        
+        this.game.stats.famine[roll] = 0;
+
+        console.log("Settlers roll: ", roll, this.game.stats.famine);
 
         // board animation
         this.animateDiceRoll(roll);

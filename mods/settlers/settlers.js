@@ -45,11 +45,8 @@ class Settlers extends GameTemplate {
 		this.sleep_timer = null;
 		this.insert_rankings = true;
 
-		this.recordOptions = {
-			container: 'body',
-			callbackAfterRecord: null,
-			active: false
-		};
+		//Deactivate screen record, but why?
+		this.recordOptions.active = false;
 
 		//
 		// UI components
@@ -173,7 +170,7 @@ class Settlers extends GameTemplate {
 				img: '/settlers/img/cards/devcards/unexpected_bounty.png',
 				title: 'Windfall',
 				subtitle: 'receive any two resources',
-				text: ' may collect any two resources',
+				text: ' collects two resources',
 				action: 2
 			},
 			{
@@ -182,7 +179,7 @@ class Settlers extends GameTemplate {
 				img: '/settlers/img/cards/devcards/monopoly.png',
 				title: 'Legal Monopoly',
 				subtitle: 'get resource from opponents',
-				text: ' may collect all available of any resource',
+				text: ' steals all of any resource',
 				action: 3
 			},
 			{
@@ -372,6 +369,8 @@ class Settlers extends GameTemplate {
 		this.menu.render();
 		this.log.render();
 		this.hexgrid.render('.main');
+		this.cardfan.render();
+        this.cardfan.addClass('bighand');
 
 		try {
 			this.playerbox.render();
@@ -481,18 +480,36 @@ class Settlers extends GameTemplate {
 				return;
 			}
 
-			if (this.app.browser.isMobileBrowser() && window.innerHeight > window.innerWidth) {
-				trade_btn.innerHTML = `<i class="fa-solid fa-users"></i>`;
+			const openTrade = (e) => {
+				if (this.game.state.ads[this.game.player - 1].offer || this.game.state.ads[this.game.player - 1].ask) {
+          			this.showTradeOverlay(this.game.player,  
+          			 this.game.state.ads[this.game.player - 1].ask,
+            		 this.game.state.ads[this.game.player - 1].offer
+          			);
+				}else{
+					this.trade_overlay.render();	
+				}
 			}
 
-			trade_btn.onclick = (e) => {
-				if (this.app.browser.isMobileBrowser() && window.innerHeight > window.innerWidth) {
+			trade_btn.onclick = openTrade;
+
+			if (this.app.browser.isMobileBrowser() && window.innerHeight > window.innerWidth) {
+				trade_btn.innerHTML = `<i class="fa-solid fa-users"></i>`;
+
+				const showPlayerBoxes = () => {
 					if (document.querySelector('.game-playerbox-manager').style.display == 'flex') {
 						document.querySelector('.game-playerbox-manager').style.display = 'none';
+						trade_btn.onclick = showPlayerBoxes;
+						trade_btn.innerHTML = `<i class="fa-solid fa-users"></i>`;
 						return;
 					} else {
 						document.querySelector('.game-playerbox-manager').style.display = 'flex';
 						try {
+							// Swap to trade functionality
+
+							trade_btn.innerHTML = `<i class="fa-solid fa-money-bill-transfer"></i>`;
+							trade_btn.onclick = openTrade;
+
 							//
 							// close playerboxen on back-click
 							//
@@ -500,23 +517,20 @@ class Settlers extends GameTemplate {
 							$('.game-playerbox-manager').on('click', () => {
 								console.log('Hide playerboxes in mobile');
 								document.querySelector('.game-playerbox-manager').style.display = 'none';
+								trade_btn.onclick = showPlayerBoxes;
+								trade_btn.innerHTML = `<i class="fa-solid fa-users"></i>`;
 							});
 						} catch (err) {
 							console.error('ERROR 485023: ' + err);
 						}
 					}
-				} else {
 
-					if (this.game.state.ads[this.game.player - 1].offer || this.game.state.ads[this.game.player - 1].ask) {
-              			this.showTradeOverlay(this.game.player,  
-              			 this.game.state.ads[this.game.player - 1].ask,
-                		 this.game.state.ads[this.game.player - 1].offer
-              			);
-					}else{
-						this.trade_overlay.render();	
-					}
 				}
-			};
+
+				trade_btn.onclick = showPlayerBoxes;
+
+			}
+
 		}
 	}
 
@@ -559,7 +573,7 @@ class Settlers extends GameTemplate {
 		// Preliminary DOM set up, adding elements to display
 		//
 		this.generateMap();
-		this.addCitiesToAdjust();
+		this.addCitiesToGameboard();
 		this.addPortsToGameboard();
 
 		this.displayBoard();
@@ -697,6 +711,8 @@ class Settlers extends GameTemplate {
 			stats.dicePlayer[i] = array;
 		}
 
+		stats.famine = {};
+
 		for (let r of this.returnResources()) {
 			let array = new Array(this.game.players.length);
 			array.fill(0);
@@ -721,12 +737,18 @@ class Settlers extends GameTemplate {
 	}
 
 	endTurn() {
+		this.halted = 0;
+
 		if (this.sleep_timer) {
 			clearTimeout(this.sleep_timer);
 			this.sleep_timer = null;
 		}
+
+		this.clearShotClock();
 		this.clock.stopClock();
 
+		this.updateStatus("submitting game move...");
+		
 		super.endTurn();
 	}
 
@@ -813,7 +835,7 @@ class Settlers extends GameTemplate {
 
 		if (document.getElementById('spend')) {
 			document.getElementById('spend').onclick = (e) => {
-				this.initialize_game_queue_run = 0;
+				this.initialize_game_run = 0;
 				e.currentTarget.onclick = null;
 				$("#spend").removeClass('enabled');
 				$("#spend").css('visibility', 'hidden');
@@ -858,9 +880,7 @@ class Settlers extends GameTemplate {
 				$('#rolldice').css('visibility', 'visible');
 				document.getElementById('rolldice').onclick = (e) => {
 					e.currentTarget.onclick = null;
-					setTimeout(() => {
-						window.location = '/' + game_details.slug;
-					}, 100);
+					navigateWindow('/' + game_details.slug, 100);
 				}
 			}
 		);

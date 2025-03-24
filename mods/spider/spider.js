@@ -129,6 +129,8 @@ class Spider extends OnePlayerGameTemplate {
 
 		this.menu.addChatMenu();
 		this.menu.render();
+		
+		this.updateScore(0);
 
 		this.cardStacks = [];
 		for (let i = 0; i < 10; i++) {

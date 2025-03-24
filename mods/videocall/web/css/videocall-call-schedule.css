@@ -146,11 +146,11 @@ input[type="datetime-local"] {
     }
 }
 
-@media screen and (max-width: 400px) {
+/*@media screen and (max-width: 400px) {
     .call-schedule-wizard-container, .call-schedule-launch-container, .call-schedule-join-container, .call-schedule-card-container {
         padding: 1rem;
     }
     .call-schedule-wizard-container input, .call-schedule-wizard-container textarea, .call-schedule-wizard-container select {
         padding: 0.8rem 1.2rem;
     }
-}
+}*/

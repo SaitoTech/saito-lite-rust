@@ -11,6 +11,7 @@ module.exports  = (title = 'Games') => {
           </div>
           <div class="saito-table-body"></div>
         </div>
+        <div class="leaderboard-updating-msg">Updating...</div>
       </div>
 
   `;

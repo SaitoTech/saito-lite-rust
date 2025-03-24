@@ -18,6 +18,12 @@ module.exports = (lesson) => {
 
        <div class="lesson-section questions"></div>
 
+       <!-- Audio player (hidden for this case, controlled by JavaScript) -->
+       <audio id="audioPlayer" preload="auto">
+          <source id="audioSource" type="audio/mp3">
+          Your browser does not support the audio element.
+       </audio>
+
        </div>
 
    `;

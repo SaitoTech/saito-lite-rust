@@ -102,6 +102,12 @@ class ChateauxOverlay {
 		this.bonus = bonus;
 		this.roll = this.mod.rollDice(6);
 
+		if (this.bonus != 0) {
+		  this.mod.updateLog("Chateaux Roll: " + this.roll + " ["+this.bonus+" bonus]");
+		} else {
+		  this.mod.updateLog("Chateaux Roll: " + this.roll);
+		}
+
 		let modified_roll = this.roll + this.bonus;
 
 		document.querySelector(

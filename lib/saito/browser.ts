@@ -1,5 +1,4 @@
 // @ts-nocheck
-
 import screenfull, { element } from 'screenfull';
 import { getDiffieHellman } from 'crypto';
 import React from 'react';
@@ -10,9 +9,7 @@ const sanitizer = require('sanitizer');
 const linkifyHtml = require('markdown-linkify');
 const emoji = require('node-emoji');
 const UserMenu = require('./ui/modals/user-menu/user-menu');
-const Deposit = require('./ui/saito-crypto/overlays/deposit');
-const Withdraw = require('./ui/saito-crypto/overlays/withdraw');
-const History = require('./ui/saito-crypto/overlays/history');
+const SaitoCrypto = require('./ui/saito-crypto/saito-crypto');
 const debounce = require('lodash/debounce');
 const SaitoMentions = require('./ui/saito-mentions/saito-mentions');
 
@@ -57,6 +54,9 @@ class Browser {
 		this.hidden_tab_property = "hidden";
 		this.tab_event_name = "visibilitychange";
 		this.title_interval = null;
+	    this.terminationEvent = 'unload';
+	    this.back_fn_queue = [];
+
 	}
 
 	async initialize(app) {
@@ -66,8 +66,8 @@ class Browser {
 
 		app.connection.on("saito-render-complete", ()=> {
 			// xclose (loading wallpaper) looks for this class on body
-			console.log("rendering complete, remove wallpaper");
 			setTimeout(()=> {
+				console.log("DOM rendering complete, remove wallpaper");
 				document.querySelector("body").classList.add("xclose");
 			}, 1000);
 		});
@@ -85,9 +85,7 @@ class Browser {
 				}
 			});
 			if (shouldReload) {
-				setTimeout(() => {
-					window.location.reload();
-				}, 300);
+				reloadWindow(300);
 			}
 		});
 
@@ -112,6 +110,9 @@ class Browser {
 				}
 			}
 
+			if ('onpagehide' in self) {
+				this.terminationEvent = 'pagehide';
+			}
 
 
 			if (!document[this.hidden_tab_property]) {
@@ -243,29 +244,10 @@ class Browser {
 				// if crypto is provided switch over
 				//
 				if (pair[0] === 'crypto') {
-					let preferred_crypto_found = 0;
-					const available_cryptos =
-						this.app.wallet.returnInstalledCryptos();
-					for (let i = 0; i < available_cryptos.length; i++) {
-						if (available_cryptos[i].ticker) {
-							if (
-								available_cryptos[i].ticker.toLowerCase() ===
-								pair[1].toLowerCase()
-							) {
-								preferred_crypto_found = 1;
-								await this.app.wallet.setPreferredCrypto(
-									available_cryptos[i].ticker
-								);
-							}
-						}
-					}
-
-					if (preferred_crypto_found == 0) {
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
+					if (!(await this.app.wallet.setPreferredCrypto(pair[1]))){
 						salert(
 							`Your compile does not contain a ${pair[1].toUpperCase()} module. Visit the AppStore or contact us about getting one built!`
-						);
+						);						
 					}
 				}
 			}
@@ -289,21 +271,9 @@ class Browser {
 			}
 
 			//
-			// crypto overlays, add so events will listen. this assumes
-			// games do not have saito-header installed.
+			// crypto overlays, add so events will listen
 			//
-			this.deposit_overlay = new Deposit(
-				this.app,
-				this.app.modules.returnActiveModule()
-			);
-			this.withdrawal_overlay = new Withdraw(
-				this.app,
-				this.app.modules.returnActiveModule()
-			);
-			this.history_overlay = new History(
-				this.app,
-				this.app.modules.returnActiveModule()
-			);
+			this.saito_crypto = new SaitoCrypto(this.app, this.app.modules.returnActiveModule());
 
 			//
 			// check if we are already open in another tab -
@@ -332,7 +302,7 @@ class Browser {
 		    this.updateThemeInHeader(theme);
 
 			const updateViewHeight = () => {
-				let vh = window.innerHeight * 0.01;
+				let vh = window.innerHeight / 100;
 				document.documentElement.style.setProperty(
 					'--saito-vh',
 					`${vh}px`
@@ -404,9 +374,14 @@ class Browser {
 			}
 		);
 
-		window.setHash = function (hash) {
-			window.history.pushState('', '', `/redsquare/#${hash}`);
-		};
+		window.onpopstate = (event)=> {
+			//console.log("Browser navigation: ", event?.state);
+			if (event.state){
+				this.popBackFn(event);	
+			}else{
+				//console.log(event);
+			}
+		}
 
 		//hide pace-js if its still active
 		setTimeout(function () {
@@ -727,6 +702,17 @@ class Browser {
 	generateQRCode(data, qrid = 'qrcode') {
 		const QRCode = require('./../helpers/qrcode');
 		let obj = document.getElementById(qrid);
+
+		if (typeof data === "object"){
+			data.width=256;
+	        data.height=256;
+	        data.colorDark="#000000";
+		    data.colorLight="#ffffff";
+		    data.correctLevel=QRCode.CorrectLevel.H;
+		}
+
+		console.log(data);
+
 		return new QRCode(obj, data);
 	}
 
@@ -823,19 +809,20 @@ class Browser {
 	}
 
 	addElementAfterId(html, id = null) {
-		if (id == null) {
-			console.warn(
-				`no id provided to addElementAfterId, so adding to DOM`
-			);
-			this.app.browser.addElementToDom(html);
-		} else {
+		if (id) {
 			let obj = document.getElementById(id);
 			if (obj) {
 				this.app.browser.addElementToDom(html, obj);
-			}else{
-				console.warn("ID not found (addelementafterid)");
+				const el = document.createElement('div');
+				el.outerHTML = html;
+				obj.insertAdjacentElement('afterend', el);
+				return;
 			}
 		}
+		console.warn(
+			`no id provided/found to addElementAfterId, so adding to DOM`
+		);
+		this.app.browser.addElementToDom(html);
 	}
 
 	prependElementToId(html, id = null) {
@@ -922,18 +909,22 @@ class Browser {
 	}
 
 	addElementAfterSelector(html, selector = '') {
-		if (selector === '') {
-			console.warn(
-				'no selector provided to addElementAfterSelector, so adding direct to DOM'
-			);
-			console.log(html);
-			this.app.browser.addElementToDom(html);
-		} else {
+		console.log("addElementAfterSelector");
+		if (selector) {
 			let container = document.querySelector(selector);
 			if (container) {
-				this.app.browser.addElementAfterElement(html, container);
+				const el = document.createElement('div');
+				container.insertAdjacentElement('afterend', el);
+				el.outerHTML = html;
+				return;
 			}
 		}
+
+		console.warn(
+			'no selector provided/found to addElementAfterSelector, so adding direct to DOM'
+		);
+		console.log(html, selector);
+		this.app.browser.addElementToDom(html);
 	}
 
 	prependElementToSelector(html, selector = '') {
@@ -1405,10 +1396,6 @@ class Browser {
 
 				e = e || window.event;
 
-				//console.log("DRAG MOUSEDOWN");
-				//console.log(e.clientX);
-				//console.log(e.offsetX);
-
 				if (
 					!e.currentTarget.id ||
 					(e.currentTarget.id != id_to_move &&
@@ -1610,12 +1597,6 @@ class Browser {
 
 				element_to_move.style.transition = 'unset';
 
-				//e.preventDefault();
-				//if (e.stopPropagation) { e.stopPropagation(); }
-				//if (e.preventDefault) { e.preventDefault(); }
-				//e.cancelBubble = true;
-				//e.returnValue = false;
-
 				const rect = element_to_move.getBoundingClientRect();
 				element_start_left = rect.left;
 				element_start_top = rect.top;
@@ -1653,6 +1634,8 @@ class Browser {
 						element_moved = true;
 					}
 
+					element_to_move.classList.add('dragging');
+					
 					// set the element's new position:
 					element_to_move.style.left =
 						element_start_left + adjustmentX + 'px';
@@ -1755,12 +1738,13 @@ class Browser {
 			}
 		};
 	}
-	
+
 	returnAddressHTML(key) {
-		return `<div class="saito-address" data-id="${key}">${this.app.keychain.returnIdentifierByPublicKey(
-			key,
-			true
-		)}</div>`;
+		let identifier = this.app.keychain.returnIdentifierByPublicKey(key, true);
+		if (identifier === key){
+			identifier = 'Anon-' + identifier.substr(0,6);
+		}
+		return `<div class="saito-address" data-id="${key}">${identifier}</div>`;
 	}
 
 	updateAddressHTML(key, id) {
@@ -1915,6 +1899,7 @@ class Browser {
 
 			text = sanitizeHtml(text, {
 				allowedTags: [
+					'a',
 					'h1',
 					'h2',
 					'h3',
@@ -1943,10 +1928,12 @@ class Browser {
 					'tr',
 					'th',
 					'td',
-					'pre',
 					'marquee',
-					'pre',
-					'span'
+					/*'pre',*/
+					'span',
+					'img',
+					'video',
+					'audio'
 				],
 				allowedAttributes: {
 					div: ['class', 'id'],
@@ -2113,11 +2100,24 @@ class Browser {
 		if (typeof window !== 'undefined') {
 			let browser_self = this;
 
+			let mutationThrottle = null;
+			let mutatedNodes = [];
 			let mutationObserver = new MutationObserver(function (mutations) {
 				mutations.forEach(function (mutation) {
 					if (mutation.addedNodes.length > 0) {
-						browser_self.treatElements(mutation.addedNodes);
-						browser_self.treatIdentifiers(mutation.addedNodes);
+						for (let m of mutation.addedNodes){
+							mutatedNodes.push(m);
+						}
+						if (mutationThrottle){
+							clearTimeout(mutationThrottle);
+						}
+						mutationThrottle = setTimeout(()=> {
+							//console.log("treat mutated nodes: ", mutatedNodes.length);
+							browser_self.treatElements(mutatedNodes);
+							browser_self.treatIdentifiers(mutatedNodes);
+							mutatedNodes = [];
+							mutationThrottle = null;
+						}, 120);
 					}
 				});
 			});
@@ -2334,6 +2334,11 @@ class Browser {
 			window.setHash = function (hash) {
 				window.history.pushState('', '', `/redsquare/#${hash}`);
 			};
+
+
+			window.reloadWindow = this.reloadWindow;
+			window.navigateWindow = this.navigateWindow.bind(this);
+
 		}
 	}
 
@@ -2499,9 +2504,7 @@ class Browser {
 				siteMessage(
 					`New software update found: ${receivedBuildNumber}. Updating...`
 				);
-				setTimeout(function () {
-					window.location.reload();
-				}, 3000);
+				reloadWindow(1000);
 			}
 		}
 	}
@@ -2655,13 +2658,140 @@ class Browser {
       } 
 	}
 
-	formatDecimals(num, string = false){
-		let pos = Math.abs((Math.log10(num))); 
-		let number = Number(num);
-	  	number = number.toFixed(pos+2);
-	  	number = (number);
-	  	return (string) ? number.toString(): number;  
+	// from saito/wallet.ts
+	formatDecimals(balance, exact_precision = false) {
+		if (typeof balance == 'undefined') {
+			balance = '0.00';
+		}
+
+		let balance_as_float = parseFloat(balance);
+
+		let options = {};
+
+		if (!exact_precision) {
+
+			let minimumFractionDigits = 4;
+			let maximumFractionDigits = 6;
+
+			if (balance_as_float >= 1) {
+				maximumFractionDigits = 5;
+			}
+
+			if (balance_as_float >= 10) {
+				minimumFractionDigits = 3;
+				maximumFractionDigits = 4;
+			}
+
+			if (balance_as_float >= 100) {
+				minimumFractionDigits = 2;
+				maximumFractionDigits = 3;
+			}
+
+			if (balance_as_float >= 1000) {
+				minimumFractionDigits = 1;
+			}
+
+			if (balance_as_float >= 10000) {
+				maximumFractionDigits = 2;
+			}
+
+			if (balance_as_float >= 100000) {
+				minimumFractionDigits = 0;
+			}
+
+			if (balance_as_float >= 1000000) {
+				maximumFractionDigits = 1;
+			}
+
+			options = {
+				minimumFractionDigits,
+				maximumFractionDigits
+			};
+		}
+
+		let locale = window.navigator?.language || 'en-US';
+		let nf = new Intl.NumberFormat(locale, options);
+
+		return nf.format(balance_as_float).toString();
 	}
+
+
+	returnBalanceHTML(balance, exact_precision){
+
+		balance = this.formatDecimals(balance, exact_precision);
+		let separator = this.getDecimalSeparator();
+		
+		let split = balance.split(`${separator}`);
+
+		let html = `<span class="balance-amount-whole">${split[0]}</span>`;
+
+		if (split[1]){
+			html += `<span class="balance-amount-separator">${separator}</span>`;
+			html += `<span class="balance-amount-decimal">${split[1]}</span>`;
+		}
+
+		return html;
+
+		document.querySelector(`.balance-amount-whole`).innerHTML = whole_amt;
+		document.querySelector(`.balance-amount-separator`).innerHTML = separator;
+		document.querySelector(`.balance-amount-decimal`).innerHTML = decimal_amt;
+
+	}
+
+	reloadWindow(delay = 0){
+		if (delay > 0) {
+			setTimeout(() => { window.location.reload(); }, delay);		
+		} else {
+			window.location.reload();
+		}
+	}
+
+	beforeUnloadHandler(event){
+		event.preventDefault();
+		event.returnValue = true;
+	}
+
+	lockNavigation(callback, beforeUnload = false){
+		this.navigation_locked = true;
+
+		if (beforeUnload){
+			window.addEventListener('beforeunload', this.beforeUnloadHandler);
+		}
+
+	    window.addEventListener(this.terminationEvent, callback);
+	    if (this.app.browser.isMobileBrowser()) {
+	      document.addEventListener('visibilitychange', callback);
+	    }
+	}
+
+	unlockNavigation(callback){
+		this.navigation_locked = false;
+
+		window.removeEventListener('beforeunload', this.beforeUnloadHandler);
+	    window.removeEventListener(this.terminationEvent, callback);
+	    if (this.app.browser.isMobileBrowser()) {
+	      document.removeEventListener('visibilitychange', callback);
+	    }
+
+	}
+
+	async navigateWindow(target, delay = 0){
+		if (this.navigation_locked){
+			let c = await sconfirm("Are you sure you want to leave this page?");
+			if (!c){
+				return;
+			}
+			window.removeEventListener('beforeunload', this.beforeUnloadHandler);
+		}
+
+		if (delay > 0){
+			setTimeout(() => { window.location.href = target; }, delay);		
+		}else{
+			window.location.href = target;	
+		}
+		
+	}
+
 		/**
 	* Creates a container div and renders a React component into it
 	* @param Component The React component to render
@@ -2717,6 +2847,39 @@ class Browser {
             root,
             cleanup
         };
+    }
+
+    pushBackFn(callback){
+    	this.back_fn_queue.push(callback);
+
+    	if (this.back_fn_queue.length == 2){
+    		console.log("HISTORY: Add back arrow");
+	    	this.app.connection.emit('saito-header-replace-logo', ()=> {
+	    		window.history.back();
+	    	});
+
+    	}
+
+    	console.log("HISTORY PUSHED: ", this.back_fn_queue);
+    }
+
+    popBackFn(event){
+    	this.back_fn_queue.pop();
+
+    	console.log("HISTORY POPPED: ", this.back_fn_queue, event);
+
+    	if (this.back_fn_queue.length > 0) {
+    		this.back_fn_queue[this.back_fn_queue.length - 1]();
+    	}
+
+    	if (this.back_fn_queue.length <= 1) {
+    		this.app.connection.emit('saito-header-reset-logo');
+    	}
+    }
+
+    resetBackFn(callback){
+    	this.back_fn_queue = [];
+    	this.pushBackFn(callback);
     }
 }
 

@@ -21,6 +21,8 @@
     if (obj.key == null)                { obj.key = name; }
     if (obj.gout == null)               { obj.gout = false; }
     if (obj.locked == null)		{ obj.locked = 0; }
+    if (obj.lost_field_battle == null)	{ obj.lost_field_battle = 0; }
+    if (obj.lost_naval_battle == null)	{ obj.lost_naval_battle = 0; }
     if (obj.relief_force == null)	{ obj.relief_force = false; }
     if (obj.already_moved == null)	{ obj.already_moved = 0; }
     if (obj.onCommitted == null) {
@@ -221,6 +223,12 @@
       this.addEvents(obj);
       this.explorers[name] = obj;
     }
+  }
+
+  returnLeaderName(key) {
+    if (this.army[leader]) { return this.army[leader].name; }
+    if (this.name[leader]) { return this.navy[leader].name; }
+    return key;
   }
 
   returnConquistadorName(key) {

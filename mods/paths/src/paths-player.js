@@ -9,6 +9,7 @@
   }
 
   returnFactionName(faction="") { return this.returnPlayerName(faction); }
+
   returnPlayerName(faction="") {
     if (faction == "central") { return "Central Powers"; }
     return "Allies";
@@ -43,8 +44,25 @@
 
   playerPlayPostCombatRetreat() {
 
+    let html = `<ul>`;
+    html    += `<li class="card" id="retreat">retreat</li>`;
+    html    += `<li class="card" id="hit">take additional hit</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Retreat?`, html);
+    this.attachCardboxEvents((action) => {
+
+      if (action === "retreat") {
 alert("Player Playing Post Combat Retreat!");
-    this.endTurn();
+	this.endTurn();
+      }
+
+      if (action === "hit") {
+alert("Player Taking Step Loss");
+	this.endTurn();
+      }
+
+    });
 
   }
 
@@ -61,6 +79,7 @@ alert("Player Playing Post Combat Retreat!");
 
     this.attachCardboxEvents((action) => {
 
+      this.guns_overlay.remove();
       this.updateStatus("selected");
 
       if (action === "guns") {
@@ -129,7 +148,6 @@ alert("Player Playing Post Combat Retreat!");
     //
     this.cardbox.hide();
 
-
     let html = `<ul>`;
     html    += `<li class="card" id="ops">ops (movement / combat)</li>`;
     html    += `<li class="card" id="sr">strategic redeployment</li>`;
@@ -137,9 +155,15 @@ alert("Player Playing Post Combat Retreat!");
     html    += `<li class="card" id="event">trigger event</li>`;
     html    += `</ul>`;
 
-    this.updateStatusWithOptions(`Playing ${this.popup(card)}`, html, true);
+
+    this.updateStatusWithOptions(`${this.returnFactionName(faction)} - playing ${this.popup(card)}`, html, true);
+
+    this.menu_overlay.render(this.game.player, faction);
     this.bindBackButtonFunction(() => { this.playerTurn(faction); });
+
     this.attachCardboxEvents((action) => {
+
+      this.menu_overlay.hide();
 
       if (action === "ops") {
 	this.playerPlayOps(faction, card, c.ops);
@@ -155,6 +179,7 @@ alert("Player Playing Post Combat Retreat!");
 
       if (action === "event") {
 	alert("event");
+	this.endTurn();
       }
 
     });
@@ -181,6 +206,11 @@ alert("Player Playing Post Combat Retreat!");
 
     let mainInterface = function(options, mainInterface, attackInterface) {
 
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("MAIN INTERFACE: " + options.length);
+
       //
       // sometimes this ends
       //
@@ -204,6 +234,8 @@ alert("Player Playing Post Combat Retreat!");
 	  }
 	}
       }
+
+console.log("UNITS TO ATTACK: " + units_to_attack);
 
       //
       // exit if nothing is left to attack with
@@ -229,7 +261,13 @@ alert("Player Playing Post Combat Retreat!");
 	    if (paths_self.returnPowerOfUnit(paths_self.game.spaces[key].units[0]) != faction) {
   	      for (let i = 0; i < paths_self.game.spaces[key].neighbours.length; i++) {
 	        let n = paths_self.game.spaces[key].neighbours[i];
-	        if (paths_self.game.spaces[n].activated_for_combat == 1) { return 1; }
+	        if (paths_self.game.spaces[n].activated_for_combat == 1) {
+		  for (let z = 0; z < paths_self.game.spaces[n].units.length; z++) {
+		    if (paths_self.game.spaces[n].units[z].attacked != 1) { return 1; }
+		  }
+		  paths_self.game.spaces[n].activated_for_combat = 0;
+		  paths_self.displaySpace(n);
+		}
 	      }
 	    }
             return 0;
@@ -238,6 +276,7 @@ alert("Player Playing Post Combat Retreat!");
 	(key) => {
 
 	  if (key === "skip") {
+alert("skip attack target!");
 	    paths_self.addMove("resolve\tplayer_play_combat");
 	    paths_self.addMove("post_combat_cleanup");
 	    paths_self.removeSelectable();
@@ -302,11 +341,12 @@ alert("Player Playing Post Combat Retreat!");
 	      for (let z = 0; z < selected.length; z++) {
   		s.push(JSON.parse(paths_self.app.crypto.base64ToString(selected[z])));
 	      }
-	      paths_self.addMove("resolve\tplayer_play_combat");
+	      //paths_self.addMove("resolve\tplayer_play_combat");
 	      paths_self.addMove("post_combat_cleanup");
 	      paths_self.addMove(`combat\t${original_key}\t${JSON.stringify(s)}`);
 	      paths_self.endTurn();
 	    } else {
+alert("skip attack target!");
 	      paths_self.addMove("resolve\tplayer_play_combat");
 	      paths_self.addMove("post_combat_cleanup");
 	      paths_self.endTurn();
@@ -351,6 +391,9 @@ alert("Player Playing Post Combat Retreat!");
       }
     );
 
+    paths_self.zoom_overlay.renderAtSpacekey(options[0]);
+    paths_self.zoom_overlay.showControls();
+
     let mainInterface = function(options, mainInterface, moveInterface, unitActionInterface) {
 
       //
@@ -393,6 +436,11 @@ alert("Player Playing Post Combat Retreat!");
 	    let everything_moved = true;
 	    for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
 	      if (paths_self.game.spaces[key].units[z].moved != 1) { everything_moved = false; }
+	    }
+	    if (everything_moved == true) {
+	      paths_self.game.spaces[key].activated_for_movement = 0;
+	      paths_self.displaySpace(key);
+alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].activated_for_movement);
 	    }
 	    if (everything_moved == false) { return 1; }
 	  }
@@ -638,18 +686,12 @@ alert("Player Playing Post Combat Retreat!");
     //
     this.cardbox.hide();
 
-    let html = `<ul>`;
-    for (let key in c.sr) {
-      html    += `<li class="card" id="${key}">${key} - ${c.sr[key]}</li>`;
-    }
-    html    += `</ul>`;
-
-    this.updateStatusWithOptions(`Add Strategic Redeployments:`, html, true);
-    this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayCard(faction, card); });
-    this.attachCardboxEvents((action) => {
-      this.addMove("rp\tfaction\t${action}\t${c.sr[key]}");
-      this.endTurn();
-    });
+    //
+    //
+    //
+    this.updateStatus("adding replacement points...");
+    this.addMove(`rp\tfaction\t${card}`);
+    this.endTurn();
 
   }
 
@@ -769,15 +811,16 @@ alert("Player Playing Post Combat Retreat!");
 
 
 
-  playerPlayStrategicRedeployment(faction, value) {
+  playerPlayStrategicRedeployment(faction, card, value) {
 
     let paths_self = this;
 
     let spaces = this.returnSpacesWithFilter((key) => {
+      if (key == "arbox" || key == "crbox") { return 1; }
       for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
         let unit = paths_self.game.spaces[key].units[z];
 	if (faction == paths_self.returnPowerOfUnit(unit)) {
-	  if (unit.type == "core" && value >= 1) { 
+	  if (unit.type == "corps" && value >= 1) { 
 	    return 1;
 	  }
 	  if (unit.type == "army" && value >= 4) {
@@ -804,6 +847,28 @@ alert("Player Playing Post Combat Retreat!");
       },
       (key) => {
 
+        if (key == "crbox") {
+  	  paths_self.reserves_overlay.pickUnitAndTriggerCallback("central", (idx) => {
+	    let unit = paths_self.game.spaces[crbox].units[idx];
+            if (unit.type == "corps") { value -= 1; }
+            if (unit.type == "army") { value -= 4; }
+	    paths_self.game.spaces[key].units[idx].moved = 1;
+	    paths_self.playerRedeployUnit(faction, card, value, key, idx);
+	  });
+	  return;
+	}
+        if (key == "arbox") {
+  	  paths_self.reserves_overlay.pickUnitAndTriggerCallback("allies", (idx) => {
+	    let unit = paths_self.game.spaces[crbox].units[idx];
+            if (unit.type == "corps") { value -= 1; }
+            if (unit.type == "army") { value -= 4; }
+	    paths_self.game.spaces[key].units[idx].moved = 1;
+	    paths_self.playerRedeployUnit(faction, card, value, key, idx);
+	  });
+	  return;
+	}
+
+
         let units = [];
         for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
   	  if (paths_self.game.spaces[key].units[z].moved != 1) {
@@ -820,16 +885,45 @@ alert("Player Playing Post Combat Retreat!");
 	  },
 	  (idx) => {
 	    let unit = paths_self.game.spaces[key].units[idx];
+            if (unit.type == "corps") { value -= 1; }
+            if (unit.type == "army") { value -= 4; }
 	    paths_self.game.spaces[key].units[idx].moved = 1;
+	    paths_self.playerRedeployUnit(faction, card, value, key, idx);
 	  },
           false
         );
-      }
+      },
+      null,
+      true
     );
 
-//    this.addMove(`sr\t${faction}\t${value}`);
-//    this.endTurn();
   }
+
+  playerRedeployUnit(faction, card, value=0, spacekey="", unit_idx=0) {
+
+    let paths_self = this;
+    let unit = paths_self.game.spaces[spacekey].units[unit_idx];
+
+    let destinations = paths_self.returnSpacesConnectedToSpaceForStrategicRedeployment(faction, spacekey);
+
+    this.playerSelectSpaceWithFilter(
+      "Select Space with Unit to Strategically Redeploy",
+      (key) => {
+        if (key == "arbox" || key == "crbox") { return 1; }
+	if (destinations.includes(key)) { return 1; }
+        return 0;
+      },
+      (key) => {
+	this.updateStatus("redeploying...");
+        this.addMove(`sr\t${faction}\t${spacekey}\t${key}\t${unit_idx}\t${value}\t${card}`);
+        this.endTurn();
+      },
+      null,
+      true
+    );
+
+  }
+
 
   playerPlayEvent(faction, card) {
 
@@ -842,7 +936,7 @@ alert("Player Playing Post Combat Retreat!");
 
     this.addMove("resolve\tplay");
 
-    this.updateStatusAndListCards(`${name}: pick a card`, hand);
+    this.updateStatusAndListCards(`${name} - select card`, hand);
     this.attachCardboxEvents((card) => {
       this.playerPlayCard(faction, card);
     });

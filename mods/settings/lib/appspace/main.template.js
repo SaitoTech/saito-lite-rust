@@ -70,15 +70,26 @@ module.exports  = (app, mod, main) => {
             ${identifier_registered}
       
             <div>Public Key:</div>
-            <div class="pubkey-containter" data-id="${publicKey}">
-              <div class="profile-public-key">${publicKey}</div>
+            <div class="pubkey-grid" data-id="${publicKey}">
+              <div>${publicKey}</div>
               <i class="fas fa-copy" id="copy-public-key"></i>
             </div>
       
             <div>Private Key:</div>
-            <div class="pubkey-containter" data-id="${main.privateKey}">
-              <div class="profile-public-key saito-password">${main.privateKey}</div>
+            <div class="pubkey-grid" data-id="${main.privateKey}">
+              <div class="saito-password">${main.privateKey}</div>
               <i class="fas fa-copy" id="copy-private-key"></i>
+            </div>
+
+            <div>Default Fee:</div>
+            <div class="default-fee-containter">
+              <input type="number" 
+                     id="profile-default-fee-input" 
+                     class="profile-default-fee" 
+                     step="0.000000001" 
+                     min="0" 
+                     value="${app.wallet.convertNolanToSaito(app.wallet.default_fee)}"
+              />
             </div>
           </div>
         </div>

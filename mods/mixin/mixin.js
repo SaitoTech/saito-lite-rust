@@ -2,12 +2,7 @@ const saito = require("./../../lib/saito/saito");
 const MixinModule = require("./lib/mixinmodule");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const fetch = require("node-fetch");
-const forge = require("node-forge");
-const { v4: uuidv4 } = require("uuid");
-const getUuid = require("uuid-by-string");
 const axios = require("axios");
-const { sharedKey: sharedKey } = require("curve25519-js");
-const LittleEndian = require("int64-buffer");
 const JSON = require("json-bigint");
 const PeerService = require("saito-js/lib/peer_service").default;
 const { MixinApi, getED25519KeyPair, signEd25519PIN, base64RawURLEncode, 
@@ -31,6 +26,9 @@ class Mixin extends ModTemplate {
     this.icon = "fas fa-wallet";
     this.class = 'utility';
 
+    //
+    // All the stuff we save in our wallet
+    //
     this.mixin = {};
     this.mixin.app_id = "";
     this.mixin.user_id = "";
@@ -42,17 +40,17 @@ class Mixin extends ModTemplate {
     this.mixin.pin_token_base64 = "";
     this.mixin.pin = "";
 
+    // No clue why we need these 
+    // ( createAccount / bare_register)
     this.bot = null;
     this.bot_data = {};
+    // ((safe_register, verifyTipPin, updateTipPin))
     this.user = null;
     this.user_data = {};
 
     this.account_created = 0;
 
-    this.mods = [];
-    this.addresses = [];
-    this.withdrawals = [];
-    this.deposits = [];
+    this.crypto_mods = [];
   }
 
   returnServices() {
@@ -67,18 +65,12 @@ class Mixin extends ModTemplate {
     await super.initialize(app);
     await this.load();
     await this.loadCryptos();
-    this.app.connection.emit('header-update-balance');
   }
 
   canRenderInto(qs) {
     return false;
   }
 
-  renderInto(qs) {}
-
-  respondTo(type = "") {
-    return null;
-  }
 
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
     if (tx == null) {
@@ -93,22 +85,30 @@ class Mixin extends ModTemplate {
       await this.receiveCreateAccountTransaction(app, tx, peer, mycallback);
     }
 
-    if (message.request === "mixin fetch address") {
-      await this.receiveFetchAddressTransaction(app, tx, peer, mycallback);
-    }
-
+    //
+    // Save user info when we create a deposit address (for a particular ticker)
+    //
     if (message.request === "mixin save user") {
       await this.receiveSaveUserTransaction(app, tx, peer, mycallback);
     }
 
+    //
+    // sendPayment, returnWithdrawalFeeForAddress
+    //
     if (message.request === "mixin fetch user") {
       await this.receiveFetchUserTransaction(app, tx, peer, mycallback);
     }
 
+    //
+    // getMixinAddress
+    //
     if (message.request === "mixin fetch user by publickey") {
       await this.receiveFetchUserByPublickeyTransaction(app, tx, peer, mycallback);
     }
 
+    //
+    // returnHistory
+    //
     if (message.request === "mixin fetch address by user id") {
       await this.receiveFetchAddressByUserIdTransaction(app, tx, peer, mycallback);
     }
@@ -120,20 +120,30 @@ class Mixin extends ModTemplate {
     let mixin_self = this;
     let rtModules = this.app.modules.respondTo("mixin-crypto");
 
+    /*
+      We define basic modules to determine which cryptos to add to the MixinWallet
+    */
     for (let i=0; i<rtModules.length; i++) {
-      let crypto_module = new MixinModule(this.app, rtModules[i].ticker, mixin_self, rtModules[i].asset_id);
+
+      // 
+      // Create a crypto module for the currency
       //
-      //Use the module's returnBalance function if provided
+      let crypto_module = new MixinModule(this.app, rtModules[i].ticker, mixin_self, rtModules[i].asset_id);
+      
+      //
+      // Use the module's returnBalance function if provided
       //
       if (rtModules[i].returnBalance) {
         crypto_module.returnBalance = rtModules[i].returnBalance;
       }
 
       await crypto_module.installModule(mixin_self.app);
-      this.mods.push(crypto_module);
+      this.crypto_mods.push(crypto_module);
       this.app.modules.mods.push(crypto_module);
-      if (mixin_self.account_created !== 0) {
-        if (crypto_module.returnIsActivated()) {
+      
+      // Do an initial balance check if we are able to
+      if (mixin_self.account_created) {
+        if (crypto_module.isActivated()) {
           await this.fetchSafeUtxoBalance();
         }
       }
@@ -141,12 +151,24 @@ class Mixin extends ModTemplate {
   }
 
 
-  onPeerServiceUp(app, peer, service = {}) {
-    let mixin_self = this;
-    if (service.service === "mixin" && this.app.BROWSER == 0 && this.account_created == 0) {
-      this.createAccount();
+  async onPeerServiceUp(app, peer, service = {}) {
+    if (!peer.hasService('mixin')) {
+      return;
     }
+
+    if (service.service === "mixin" && !this.account_created) {
+      
+      // We should never execute this code...
+      // but just in case
+      let c = this.app.wallet.returnPreferredCrypto();
+      if (c?.chain_id) {
+        console.log("user has 3rd party crypto but no mixin account");
+        this.createAccount();
+      }
+    }
+
   }
+
 
   async createAccount(callback = null){
     if (this.account_created == 0) {
@@ -191,6 +213,10 @@ class Mixin extends ModTemplate {
       // get mixin env
       let m = this.getEnv();
       if (!m) {
+        if (callback){
+          return callback({err: "MIXIN ENV variable missing."}); 
+        }
+
         console.error("MIXIN ENV variable missing.");
         return;
       }
@@ -210,7 +236,7 @@ class Mixin extends ModTemplate {
 
       const { privateKey: spendPrivateKey, publicKey: spendPublicKey, seed: sessionSeed } = getED25519KeyPair();
       
-      const spend_private_key = spendPrivateKey;
+      const spend_private_key = sessionSeed;
       const spend_public_key = spendPublicKey.toString('hex');
       const session_seed = sessionSeed.toString('hex');
     
@@ -331,11 +357,11 @@ class Mixin extends ModTemplate {
       console.log(address);
 
       if (typeof address[0].destination != 'undefined') {
-        for (let i = 0; i < this.mods.length; i++) {
-          if (this.mods[i].asset_id === asset_id) {
-            this.mods[i].address = address[0].destination;
-            this.mods[i].destination = address[0].destination;
-            this.mods[i].save();
+        for (let i = 0; i < this.crypto_mods.length; i++) {
+          if (this.crypto_mods[i].asset_id === asset_id) {
+            this.crypto_mods[i].address = address[0].destination;
+            //this.crypto_mods[i].destination = address[0].destination;
+            this.crypto_mods[i].save();
 
             await this.sendSaveUserTransaction({
               user_id: this.mixin.user_id,
@@ -368,12 +394,12 @@ class Mixin extends ModTemplate {
       console.log("asset ///");
       console.log(asset);
 
-      for (let i = 0; i < this.mods.length; i++) {
-        if (this.mods[i].asset_id === asset_id) {
+      for (let i = 0; i < this.crypto_mods.length; i++) {
+        if (this.crypto_mods[i].asset_id === asset_id) {
           if ((utxo.data).length > 0) {
-            this.mods[i].destination = address[0].destination;
+            this.crypto_mods[i].address = address[0].destination;
 	    //  removing save here for debugging purposes -- June 21, '24
-            this.mods[i].save();
+            this.crypto_mods[i].save();
           }
         }
       }
@@ -403,11 +429,11 @@ class Mixin extends ModTemplate {
       // console.log("utxo ///");
       // console.log(utxo);
 
-      for (let i = 0; i < this.mods.length; i++) {
-        if (this.mods[i].asset_id === asset_id) {  
-          this.mods[i].balance = utxo;
+      for (let i = 0; i < this.crypto_mods.length; i++) {
+        if (this.crypto_mods[i].asset_id === asset_id) {  
+          this.crypto_mods[i].balance = utxo;
 	  //  removing save here for debugging purposes -- June 21, '24
-          //this.mods[i].save();
+          //this.crypto_mods[i].save();
         }
       }
     } catch(err) {
@@ -490,7 +516,7 @@ class Mixin extends ModTemplate {
     }
   }
 
-  async checkWithdrawalFee(asset_id, recipient){
+  async returnWithdrawalFee(asset_id, recipient){
     try {
       let user = MixinApi({
         keystore: {
@@ -509,61 +535,6 @@ class Mixin extends ModTemplate {
       const fee = assetFee ?? chainFee;
       
       return fee.amount;
-    } catch(err) {
-      console.error("ERROR: Mixin error check withdrawl fee: " + err);
-      return false;
-    }
-  }
-
-  async fetchSafeTransaction(transaction_id){
-    // currently mixin node is returning error
-    // on fetching transaction details
-    // Status: contatcted mixin team
-    try {
-      let user = MixinApi({
-        keystore: {
-          app_id: this.mixin.user_id,
-          session_id: this.mixin.session_id,
-          pin_token_base64: this.mixin.tip_key_base64,
-          session_private_key: this.mixin.session_seed
-        },
-      });
-
-      const transaction = await user.utxo.fetchTransaction(transaction_id);
-      
-      console.log('transaction: ', transaction);
-
-      return transaction;
-    } catch(err) {
-      console.error("ERROR: Mixin error fetch safe transaction: " + err);
-      return false;
-    }
-  }
-
-  async createWithdrawalAddress(asset_id, withdrawal_address, tag = "", callback = null) {
-    try {
-      let user = MixinApi({
-        keystore: {
-          app_id: this.mixin.user_id,
-          session_id: this.mixin.session_id,
-          pin_token_base64: this.mixin.tip_key_base64,
-          session_private_key: this.mixin.session_seed
-        },
-      });
-
-      let address_data = await user.address.create(this.mixin.tip_key_base64, {
-        asset_id: asset_id,
-        destination: withdrawal_address,
-        tag: tag,
-        label: ''
-      });
-
-      console.log("create address //");
-      console.log(address_data);
-
-      if (callback) {
-        return callback(address_data);
-      }
     } catch(err) {
       console.error("ERROR: Mixin error check withdrawl fee: " + err);
       return false;
@@ -831,17 +802,16 @@ class Mixin extends ModTemplate {
   }
 
 
-  async sendSaveUserTransaction(params = {}){
+  async sendSaveUserTransaction(params = {}) {
     let peers = await this.app.network.getPeers();
     if (peers.length == 0) {
       console.warn("No peers");
       return;
     }
 
-    let data = params;
     await this.app.network.sendRequestAsTransaction(
       "mixin save user",
-      data,
+      params,
       function (res) {
         console.log("Callback for sendSaveUserTransaction request: ", res);
       },
@@ -895,7 +865,7 @@ class Mixin extends ModTemplate {
     }
 
     let data = params;
-    await this.app.network.sendRequestAsTransaction(
+    return this.app.network.sendRequestAsTransaction(
       "mixin fetch user",
       data,
       function (res) {
@@ -923,6 +893,8 @@ class Mixin extends ModTemplate {
     return callback(false);
   }
 
+
+  // Get MixinAddress -> returnAddressFromPublicKey
   async sendFetchUserByPublicKeyTransaction(params = {}, callback){
     let peers = await this.app.network.getPeers();
     if (peers.length == 0) {
@@ -932,14 +904,10 @@ class Mixin extends ModTemplate {
 
     console.log('params: ', params);
 
-    let data = params;
-    await this.app.network.sendRequestAsTransaction(
+    return await this.app.network.sendRequestAsTransaction(
       "mixin fetch user by publickey",
-      data,
-      function (res) {
-        console.log("Callback for sendFetchUserByPublicKeyTransaction request: ", res);
-        return callback(res);
-      },
+      params,
+      callback,
       peers[0].peerIndex
     );
   }
@@ -962,6 +930,7 @@ class Mixin extends ModTemplate {
     return callback(false);
   }
 
+  //Return History
   async sendFetchAddressByUserIdTransaction(params = {}, callback){
     let peers = await this.app.network.getPeers();
     if (peers.length == 0) {
@@ -1012,7 +981,7 @@ class Mixin extends ModTemplate {
         },
       });
 
-      if (destination == "" || destination == null) {
+      if (!destination) {
         return callback([]);
       }
 
@@ -1045,8 +1014,6 @@ class Mixin extends ModTemplate {
           this.save();
 
           await this.app.wallet.setPreferredCrypto('SAITO', 1);
-          this.app.connection.emit("header-update-balance");
-          this.app.connection.emit('update_identifier', this.publicKey);
         }
       }
     }

@@ -453,7 +453,9 @@ class Sector {
 				if (Math.abs(ypos - e.clientY) > 4) {
 					return;
 				}
-				imperium_self.sector_overlay.render(sector);
+// TEST / HACK
+				imperium_self.zoom_overlay.render(sector);
+//				imperium_self.sector_overlay.render(sector);
 			});
 		} catch (err) {
 			console.log('error attaching events to sector...');

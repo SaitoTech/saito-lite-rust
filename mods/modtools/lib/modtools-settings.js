@@ -66,10 +66,13 @@ class ModtoolsSettings {
 
     if (document.getElementById('add-whitelist')){
       document.getElementById('add-whitelist').onclick = (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          this.contacts.title = 'Saved Keys';
           this.contacts.multi_button = 'Add to Whitelist';
           this.contacts.callback = (keys) => {
             for (let key of keys) {
-              this.app.connection.emit('saito-whitelist', {publicKey: key});
+              this.app.connection.emit('saito-whitelist', {publicKey: key, duration: -1});
             }
             this.render();
           };

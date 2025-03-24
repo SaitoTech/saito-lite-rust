@@ -42,6 +42,21 @@ class Settings {
 				}
 			});
 		});
+	
+		Array.from(
+			document.querySelectorAll('input[name=\'play_mode\']')
+		).forEach((radio) => {
+			radio.addEventListener('change', (e) => {
+				if (
+					e.currentTarget.value !=
+					this.mod.loadGamePreference('settlers_play_mode')
+				) {
+					this.mod.saveGamePreference("settlers_play_mode", parseInt(e.currentTarget.value));
+				}
+			});
+		});
+
+
 	}
 }
 

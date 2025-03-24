@@ -11,8 +11,17 @@ module.exports = (app, mod, tweet) => {
 	if (tweet.data_source) {
 		html_markers += ` data-source="${tweet.data_source}"`;
 	}
+	if (tweet.source.type) {
+		html_markers += ` data-source-type="${tweet.source.type}"`;
+	}
+	if (tweet.source.node) {
+		html_markers += ` data-source-node="${tweet.source.node}"`;
+	}
 	if (tweet.data_renewal) {
 		html_markers += ` data-renewal="${tweet.data_renewal}"`;
+	}
+	if (tweet?.updated_at){
+		html_markers += ` data-timestamp="${tweet.updated_at}"`;	
 	}
 
 	if (!text && !notice && tweet.retweet_tx) {
@@ -64,6 +73,7 @@ module.exports = (app, mod, tweet) => {
         <div class="tweet tweet-${tweet.tx.signature}" data-id="${
 	tweet.tx.signature
 }"${html_markers}>
+          <div class="tweet-html-markers">${html_markers.replace(/data-/g, "<br>")}</div>
           <div class="tweet-notice">${notice}</div>
           <div class="tweet-header"></div>
           <div class="tweet-body">

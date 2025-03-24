@@ -21,11 +21,7 @@ export default class Crypto {
 		return Saito.getInstance().signBuffer(buffer, privateKey);
 	}
 
-	public verifySignature(
-		buffer: Uint8Array,
-		sig: string,
-		publicKey: string
-	): boolean {
+	public verifySignature(buffer: Uint8Array, sig: string, publicKey: string): boolean {
 		return Saito.getInstance().verifySignature(buffer, sig, publicKey);
 	}
 
@@ -209,10 +205,7 @@ export default class Crypto {
 		while (plaintext.length > key.length) {
 			key = key + key;
 		}
-		return this.xor(
-			Buffer.from(plaintext, 'hex'),
-			Buffer.from(key, 'hex')
-		).toString('hex');
+		return this.xor(Buffer.from(plaintext, 'hex'), Buffer.from(key, 'hex')).toString('hex');
 	}
 
 	//
@@ -222,10 +215,7 @@ export default class Crypto {
 		while (str.length > key.length) {
 			key = key + key;
 		}
-		return this.xor(
-			Buffer.from(str, 'hex'),
-			Buffer.from(key, 'hex')
-		).toString('hex');
+		return this.xor(Buffer.from(str, 'hex'), Buffer.from(key, 'hex')).toString('hex');
 	}
 
 	/**
@@ -256,15 +246,12 @@ export default class Crypto {
 		//    return stringify(jsobj);
 	}
 
+	// used in games
 	convertStringToDecimalPrecision(stringx, p = 8) {
 		stringx = parseFloat(stringx);
-		return stringx
-			.toFixed(p)
-			.replace(/0+$/, '')
-			.replace(/\.$/, '.0')
-			.replace(/\.0$/, '');
+		return stringx.toFixed(p).replace(/0+$/, '').replace(/\.$/, '.0').replace(/\.0$/, '');
 	}
-
+	// used in games
 	convertFloatToSmartPrecision(num, max_precision = 8, min_precision = 0) {
 		let stringx = num
 			.toFixed(max_precision)
@@ -283,30 +270,30 @@ export default class Crypto {
 		return stringx;
 	}
 
-	 isValidPublicKey (key) {
+
+	isValidPublicKey(key) {
 		if (typeof key !== 'string') {
 			return false;
 		}
-	
+
 		if (key.length !== 44) {
 			return false;
 		}
-	
+
 		const base58Regex = /^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]+$/;
 		return base58Regex.test(key);
-	};
+	}
 
-
-  	isPublicKey(publicKey: string) {
-           if (publicKey){
-                   if (publicKey.indexOf('@') <= 0) {
-                           if (this.isBase58(publicKey)) {
-                                   return 1;
-                           }
-                   }
-           }
-           return 0;
-       }
+	isPublicKey(publicKey: string) {
+		if (publicKey) {
+			if (publicKey.indexOf('@') <= 0) {
+				if (this.isBase58(publicKey)) {
+					return 1;
+				}
+			}
+		}
+		return 0;
+	}
 
 	isBase58(t: string) {
 		return /^[A-HJ-NP-Za-km-z1-9]*$/.test(t);

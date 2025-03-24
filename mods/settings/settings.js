@@ -34,7 +34,7 @@ class Settings extends ModTemplate {
 		// If you have the settings page open and you trigger a name registration event
 		// it will deactivate the button so you cannot reregister
 		//
-		this.app.connection.on('update_identifier', (publickey) => {
+		this.app.connection.on('registry-update-identifier', (publickey) => {
 			if (publickey === this.publicKey) {
 				if (document.getElementById('register-identifier-btn')) {
 					let username = app.keychain.returnIdentifierByPublicKey(
@@ -114,10 +114,13 @@ class Settings extends ModTemplate {
 
 							if (confirmation) {
 								await app.wallet.onUpgrade('nuke');
-
-								setTimeout(() => {
-									window.location.reload();
-								}, 300);
+								if (app.modules.returnActiveModule().respondTo("arcade-games")){
+									app.browser.unlockNavigation();
+									navigateWindow("/arcade", 300);
+								}else{
+									reloadWindow(300);	
+								}
+								
 							}
 						}
 					}

@@ -68,7 +68,8 @@ class Archive extends ModTemplate {
 		// settings saved and loaded from app.options
 		//
 		this.archive = {
-			index_blockchain: 0
+			index_blockchain: 0,
+			last_prune: 0
 		};
 
 		if (this.app.BROWSER == 0) {
@@ -106,9 +107,25 @@ class Archive extends ModTemplate {
 				}
 			}
 		}
+
+		let now = new Date().getTime();
+		//
+		// Don't prune more than once a day, but otherwise on connection/spin up
+		//
+		if (!this.archive?.last_prune || (this.archive.last_prune + (24*60*60*1000) < now)){
+			this.pruneArchive();
+		}
+
+		setInterval(()=> {
+			this.pruneArchive()
+		}, 24*60*60*1000 + 5000);
+
 	}
 
 	async initInBrowserDatabase() {
+
+		if (!this.app.BROWSER) { return; }
+
 		//
 		// Create Local DB schema
 		//
@@ -124,7 +141,7 @@ class Archive extends ModTemplate {
 				field2: { dataType: 'string', default: '' },
 				field3: { dataType: 'string', default: '' },
 				field4: { dataType: 'string', default: '' },
-				field5: { dataType: 'string', default: '' },
+				field5: { dataType: 'string', default: '' }, 
 				block_id: { dataType: 'number', default: 0 },
 				block_hash: { dataType: 'string', default: '' },
 				created_at: { dataType: 'number', default: 0 },
@@ -136,6 +153,12 @@ class Archive extends ModTemplate {
 			}
 		};
 
+		/*
+			Ideally one, of the 5 arbitrary fields should be number with an ability to search above/below...
+			without changing the db schemas, we will designate field5 as a string coded number 
+			(since no apps are using it yet) and pending further flexibility treat its inclusion as a >= search tag
+		*/
+
 		let db = {
 			name: 'archive_db',
 			tables: [archives]
@@ -143,11 +166,11 @@ class Archive extends ModTemplate {
 
 		var isDbCreated = await this.localDB.initDb(db);
 
-		if (isDbCreated) {
+		/*if (isDbCreated) {
 			console.log('ARCHIVE: Db Created & connection is opened');
 		} else {
 			console.log('ARCHIVE: Connection is opened');
-		}
+		}*/
 	}
 
 	async render() {
@@ -279,7 +302,12 @@ class Archive extends ModTemplate {
 				if (txs?.length > 0) {
 					this.updateTransaction(tx, { block_id, block_hash });
 				} else {
-					this.saveTransaction(tx, { block_id, block_hash });
+					// Use the storage function for standard formatting
+					let txmsg = tx.returnMessage();
+					if (txmsg?.module == "spam"){
+						return;
+					}
+					this.app.storage.saveTransaction(tx, { block_id, block_hash }, "localhost");
 				}
 			}, 10000);
 		}
@@ -454,7 +482,7 @@ try {
 		newObj.signature = obj?.signature || obj?.sig || tx?.signature || '';
 		newObj.tx = tx.serialize_to_web(this.app);
 		newObj.tx_size = newObj.tx.length;
-		newObj.updated_at = new Date().getTime();
+		newObj.updated_at = obj?.timestamp || tx?.updated_at || new Date().getTime();
 
 		if (!newObj.signature) {
 			console.warn('No tx signature for archive update:', tx);
@@ -517,6 +545,7 @@ try {
 		let timestamp_limiting_clause = '';
 
 		let order_clause = ' ORDER BY archives.id';
+		let sort = "DESC";
 
 		//For JS-Store
 		let order_obj = { by: 'id', type: 'desc' };
@@ -588,6 +617,11 @@ try {
 			where_obj = { flagged: { '=': parseInt(obj.flagged) } };
 		}
 
+		if (obj.ascending || obj.hasOwnProperty('ascending')){
+			sort = "ASC";
+			order_obj.type = "asc";
+		}
+
 		//
 		// ACCEPT REASONABLE LIMITS -- [10, 100]
 		//
@@ -604,9 +638,19 @@ try {
 
 		let param_count = 0;
 
+		let params = { $limit: limit };
+
 		let sql = `SELECT * FROM archives WHERE`;
 
-		let params = { $limit: limit };
+		//Hardcode field5 as a flexible search term
+		if (obj.field5 || obj.hasOwnProperty('field5')) {
+			where_obj['field5'] = { '>=': obj.field5 };
+			sql += ' archives.field5 >= $field5 AND';
+			params["$field5"] = obj.field5;
+			order_clause = ' ORDER BY archives.field5';
+			order_obj.by = "field5";
+			delete obj.field5;
+		}
 
 		for (let key in obj) {
 			if (this.schema.includes(key)) {
@@ -622,7 +666,7 @@ try {
 		// Should we be ordering by time stamp instead of id?
 		//
 
-		sql += timestamp_limiting_clause + order_clause + ` DESC LIMIT $limit`;
+		sql += timestamp_limiting_clause + order_clause + ` ${sort} LIMIT $limit`;
 
 		//
 		// SEARCH BASED ON CRITERIA PROVIDED
@@ -835,41 +879,42 @@ try {
 	// transactions that users have marked as prune = false, although this may change in
 	// the future if it is abused.
 	//
-	async onNewBlock() {
-
-		// 90% of blocks don't try to delete anything
-		if (Math.random() < 0.95) {
-			return;
-		}
+	async pruneArchive() {
 
 		console.log('$');
 		console.log('$');
-		console.log('$');
-		console.log('$ PURGING ARCHIVE BLOCK');
-		console.log('$');
+		console.log('$ PURGING ARCHIVE');
 		console.log('$');
 		console.log('$');
 
-		let ts = new Date().getTime() - this.prune_public_ts;
+		// SQL
+		let now = new Date().getTime();
+
+		let ts = now - this.prune_public_ts;
 
 		//
 		// delete public blockchain transactions
 		//
+		let pruned_ct = 0;
 		let sql = `DELETE FROM archives WHERE owner = "" AND updated_at < $ts AND preserve = 0`;
 		let params = { $ts: ts };
-		await this.app.storage.runDatabase(sql, params, 'archive');
-		
-console.log('$ done 1');
+		let results = await this.app.storage.runDatabase(sql, params, 'archive');
+		if (results?.changes){
+			pruned_ct += results?.changes;
+		}
 
 		//
 		// delete private transactions
 		//
-		ts = new Date().getTime() - this.prune_private_ts;
+		ts = now - this.prune_private_ts;
 		sql = `DELETE FROM archives WHERE owner != "" AND updated_at < $ts AND preserve = 0`;
 		params = { $ts: ts };
-		await this.app.storage.runDatabase(sql, params, 'archive');
+		results = await this.app.storage.runDatabase(sql, params, 'archive');
+		if (results?.changes){
+			pruned_ct += results?.changes;
+		}
 
-console.log('$ done 2');
+		console.log(`Deleted ${pruned_ct} txs from archive`);
 
 		//
 		// localDB
@@ -879,6 +924,9 @@ console.log('$ done 2');
 		// preserve flag is set to 0.
 		//
 		if (this.app.BROWSER) {
+
+			ts = now - this.prune_public_ts;
+
 			where_obj = { updated_at: { '<': ts } };
 			where_obj['preserve'] = 0;
 			rows = await this.localDB.remove({
@@ -888,18 +936,8 @@ console.log('$ done 2');
 			console.log(rows, 'automatically pruned from local archive');
 		}
 
-console.log('$ done 3');
-
-		// 90% of prunings don't vacuum
-		if (Math.random() < 0.9) {
-			return;
-		}
-
-console.log('$ done 4');
-
-		await this.app.storage.executeDatabase('VACUUM', 'archive');
-
-console.log('$ done 5');
+		this.archive.last_prune = now;
+		this.save();
 
 	}
 

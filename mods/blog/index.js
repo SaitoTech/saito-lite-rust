@@ -30,16 +30,16 @@ module.exports = (app, mod, build_number, og_card) => {
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="${og_card.twitter}" />
     <meta name="twitter:creator" content="${og_card.twitter}" />
-    <meta name="twitter:title" content="${og_card.title}" />
+    <meta name="twitter:title" content="${app.browser.escapeHTML(og_card.title)}" />
     <meta name="twitter:url" content="${og_card.url}" />
     <meta name="twitter:description" content="${app.browser.escapeHTML(og_card.description)}" />
     <meta name="twitter:image" content="${og_card.image}" />
   
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="${og_card.title}" />
+    <meta property="og:title" content="${app.browser.escapeHTML(og_card.title)}" />
     <meta property="og:url" content="${og_card.url}" />
     <meta property="og:description" content="${app.browser.escapeHTML(og_card.description)}"/>
-    <meta property="og:site_name" content="${og_card.title}" />
+    <meta property="og:site_name" content="${app.browser.escapeHTML(og_card.title)}" />
     <meta property="og:image" content="${og_card.image}"/>
     <meta property="og:image:url" content="${og_card.image}"/>
     <meta property="og:image:secure_url" content="${og_card.image}"/>
@@ -55,7 +55,7 @@ module.exports = (app, mod, build_number, og_card) => {
     <link rel="stylesheet" href="/saito/lib/pace/pace-theme.min.css">
     <link rel="stylesheet" type="text/css" href="/saito/saito.css?v=${build_number}">
     
-    <title>Saito Profile</title>
+    <title>Saito Blog</title>
   
     <style type="text/css">
     /* css for fade-out bg effect while content is loading */
@@ -81,10 +81,13 @@ module.exports = (app, mod, build_number, og_card) => {
       background-image: url('/saito/img/tiled-logo.svg');
     }
   </style>
+
+
   </head>
   
   <body>
-  
+  <script src="/blog/js/quill.js"></script>
+  https://cdn.jsdelivr.net/npm/quill-markdown-shortcuts@0.0.10/dist/markdownShortcuts.min.js
   </body>
   <script type="text/javascript" src="/saito/saito.js?build=${build_number}" >
 </script>

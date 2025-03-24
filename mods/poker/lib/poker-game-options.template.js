@@ -6,7 +6,7 @@ module.exports = (app, mod) => {
       <div class="overlay-input">
         <label for="blind_mode">Mode:</label>
         <select id="blind_mode" name="blind_mode">
-          <option value="static">static blinds</option>
+          <option value="static" selected default>static blinds</option>
           <option value="increase">increasing blinds</option>
         </select>
       </div>

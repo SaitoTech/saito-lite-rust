@@ -27,10 +27,70 @@ class ZoomOverlay {
 		}
 	}
 
+	showControls() {
+	  let ob1 = document.querySelector(".zoom-overlay .status");
+	  let ob2 = document.querySelector(".zoom-overlay .controls");
+	  if (ob1) { ob1.style.display = "block"; }
+	  if (ob2) { ob2.style.display = "block"; }
+	}
+
+	hideControls() {
+	  let ob1 = document.querySelector(".zoom-overlay .status");
+	  let ob2 = document.querySelector(".zoom-overlay .controls");
+	  if (ob1) { ob1.style.display = "none"; }
+	  if (ob2) { ob2.style.display = "none"; }
+	}
+
 	hide() {
 		this.visible = false;
 		this.overlay.hide();
 	}
+
+
+
+        renderAtSpacekey(spacekey) {
+
+                let left = 0;
+                let top = 0;
+                let board_height = 0;
+                let board_width = 0;
+
+                let element = document.querySelector(`.${spacekey}`);
+                if (element) {
+                    const rect = element.getBoundingClientRect();
+                    top = rect.top;
+                    left = rect.left;
+                }
+
+                let coords = this.renderAtCoordinates(left, top);
+
+console.log("TOP is: " + top);
+console.log("LEFT is: " + left);
+console.log("percent right: " + coords.percent_right);
+console.log("percent down: " + coords.percent_down);
+
+                let gb = document.querySelector('.theses-overlay');
+                if (gb) {
+                    board_height = gb.getBoundingClientRect().height;
+                    board_width = gb.getBoundingClientRect().width;
+                    let gb2 = document.querySelector('.theses-overlay .gameboard');
+
+                    if (coords.percent_right > 15) {
+                    }
+                    if (coords.percent_right < 62) {
+console.log("shifting left: " + (board_width/6));
+                      gb2.style.left = "-" + parseInt((board_width/6)) + "px";
+                    }
+                    if (coords.percent_down > 50) {
+console.log("shifting up: " + (board_height/3));
+                      gb2.style.top = "+" + parseInt((board_height/3)) + "px";
+                    }
+                }
+
+
+                return 0;
+
+        }
 
 	renderAtCoordinates(xpos, ypos) {
 		this.pushHudUnderOverlay();
@@ -88,6 +148,12 @@ class ZoomOverlay {
 		gb2.style.transform = `translate(-${percent_right}%, -${percent_down}%) scaleX(1) scaleY(1)`;
 
 		this.attachEvents();
+
+                return {
+                        percent_right : percent_right ,
+                        percent_down : percent_down ,
+                }
+
 	}
 
 	render() {

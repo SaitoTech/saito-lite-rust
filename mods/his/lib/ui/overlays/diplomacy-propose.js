@@ -15,7 +15,7 @@ class DiplomacyProposeOverlay {
 		this.proposal.terms = [];
 		this.proposal.parties = [];
 		this.proposal.proposer = "";
-	
+		this.game_menu_zindex = 0;
 	}
 
 	purgeProposals() {
@@ -62,10 +62,20 @@ class DiplomacyProposeOverlay {
 	hide() {
 		this.purgeProposals();
 		this.overlay.hide();
+          	let gm = document.querySelector("#saito-header");
+          	if (gm) {
+	        	gm.style.zIndex = this.game_menu_zindex;
+		}
 		return;
 	}
 
 	render(faction="") {
+
+	  let gm = document.querySelector("#saito-header");
+	  if (gm) {
+	    this.game_menu_zindex = gm.style.zIndex;
+	    gm.style.zIndex = 999;
+	  }
 
           let his_self = this.mod;
 	  let num = 0;

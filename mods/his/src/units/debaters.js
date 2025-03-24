@@ -35,7 +35,7 @@
       },  
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "translation_german_language_zone") {
-          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tluther-debater");
+          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tluther-debater\t1");
           his_self.addMove("insert_before_counter_or_acknowledge\ttranslation\tgerman");
           his_self.endTurn();
         } 
@@ -75,7 +75,7 @@
       },  
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "translation_german_language_zone") {
-          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tmelanchthon-debater");
+          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tmelanchthon-debater\t1");
           his_self.addMove("insert_before_counter_or_acknowledge\ttranslation\tgerman");
           his_self.endTurn();
         } 
@@ -747,7 +747,7 @@
       },  
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "translation_french_language_zone") {
-          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tolivetan-debater");
+          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tolivetan-debater\t1");
           his_self.addMove("insert_before_counter_or_acknowledge\ttranslation\tfrench");
           his_self.endTurn();
           his_self.updateStatus("acknowledge");
@@ -977,7 +977,7 @@
       }, 
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "translation_english_language_zone") {
-          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\ttyndale-debater");
+          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\ttyndale-debater\t1");
           his_self.addMove("insert_before_counter_or_acknowledge\ttranslation\tenglish");
           his_self.endTurn();
         }
@@ -1018,7 +1018,7 @@
       }, 
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "translation_english_language_zone") {
-          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tcoverdale-debater");
+          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tcoverdale-debater\t1");
           his_self.addMove("insert_before_counter_or_acknowledge\ttranslation\tenglish");
           his_self.endTurn();
         }

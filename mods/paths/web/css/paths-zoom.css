@@ -28,6 +28,36 @@
 	max-height: 80vh;
 }
 
+.zoom-overlay .last {
+    position: absolute;
+    height: 10rem;
+    width: 10rem;
+    top: 45%;
+    background-color: red;
+    left: 5rem;
+    z-index: 999;
+}
+.zoom-overlay .last i {
+    font-size: 10rem;
+    padding-right: 2rem;
+}
+.zoom-overlay .next i {
+    font-size: 10rem;
+    padding-left: 2rem;
+}
+
+.zoom-overlay .next {
+    position: absolute;
+    height: 10rem;
+    width: 10rem;
+    top: 45%;
+    background-color: red;
+    right: 5rem;
+    z-index: 999;
+}
+.zoom-overlay .right {
+}
+
 .zoom-overlay .controls ul {
 	overflow-y: auto;
 	display: block;
@@ -86,8 +116,3 @@
 	position: relative;
 }
 
-.zoom-overlay .status .status-text-menu ul .textchoice {
-	background-color: whitesmoke;
-	padding: 1.5rem;
-	border-radius: 0.5rem;
-}

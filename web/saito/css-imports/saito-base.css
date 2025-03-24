@@ -111,6 +111,7 @@ p, p.middle {
   color: var(--font-color-paragraph);
   font-size: var(--font-size-medium);
   overflow: auto;
+  text-indent: 0;
 }
 
 p::-webkit-scrollbar {
@@ -119,6 +120,11 @@ p::-webkit-scrollbar {
 
 p.small {
   font-size: var(--font-size-tiny);
+}
+
+li p {
+  text-indent: 0;
+  display: inline;
 }
 
 blockquote {
@@ -330,4 +336,12 @@ Media Queries
   body {
     font-size: 1.4rem;
   }
+}
+
+[data-theme^="modern"] .chess-font {
+  font-family: var(--font-chess);
+}
+
+[data-theme^="modern"] .chess7-font {
+  font-family: var(--font-chess7);
 }

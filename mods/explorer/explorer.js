@@ -21,10 +21,12 @@ class ExplorerCore extends ModTemplate {
 		// web resources //
 		///////////////////
 		expressapp.get('/explorer/', async function (req, res) {
+			const page = parseInt(req.query.page) || 0;
+
 			if (!res.finished) {
 				res.set('Content-type', 'text/html');
 				res.charset = 'UTF-8';
-				return res.send(await explorer_self.returnIndexHTML(app));
+				return res.send(await explorer_self.returnIndexHTML(page));
 			}
 			return;
 		});
@@ -116,7 +118,7 @@ class ExplorerCore extends ModTemplate {
 				}
 				return;
 			} else {
-				let html = await explorer_self.returnAllBalanceHTML(app, pubkey);
+				let html = await explorer_self.returnBalanceHTML(app, pubkey);
 				if (!res.finished) {
 					res.setHeader('Content-type', 'text/html');
 					res.charset = 'UTF-8';
@@ -227,14 +229,62 @@ class ExplorerCore extends ModTemplate {
     </div>';
 	}
 
-	async returnIndexMain() {
+	async returnIndexMain(page = 0) {
 		let txs = await S.getInstance().getMempoolTxs();
-		console.log(await this.listBlocks);
 		let balance = await this.app.wallet.getBalance();
 		let balanceSaito = balance/BigInt(100000000);
 		let nolansRemainder = balance - (balanceSaito * BigInt(100000000));
+		
+		// Update pagination controls in returnIndexMain
+		const createPaginationControls = async () => {
+			const totalBlocks = Number(await this.app.blockchain.getLatestBlockId());
+			const totalPages = Math.ceil(totalBlocks / 200);
+			const currentPage = page;
+			
+			let pages = [];
+			const range = 5;
+			
+			// Always add first page
+			pages.push(0);
+			
+			// Add pages around current page
+			for (let i = Math.max(1, currentPage - range); i <= Math.min(totalPages - 2, currentPage + range); i++) {
+				if (i === 1 && currentPage - range > 1) {
+					pages.push('...');
+				}
+				pages.push(i);
+				if (i === currentPage + range && currentPage + range < totalPages - 2) {
+					pages.push('...');
+				}
+			}
+			
+			// Always add last page if we have more than one page
+			if (totalPages > 1) {
+				pages.push(totalPages - 1);
+			}
+			
+			const pageButtons = pages.map(p => {
+				if (p === '...') {
+					return '<span class="page-ellipsis">...</span>';
+				}
+				return `<a href="/explorer?page=${p}" class="secondary-button ${p === currentPage ? 'disabled current-page' : ''}">${p + 1}</a>`;
+			}).join('');
+
+			return `
+				<div class="pagination-controls">
+					<a href="/explorer?page=0" class="secondary-button ${currentPage === 0 ? 'disabled' : ''}">First</a>
+					<a href="/explorer?page=${Math.max(0, currentPage - 1)}" class="secondary-button ${currentPage === 0 ? 'disabled' : ''}">Previous</a>
+					${pageButtons}
+					<a href="/explorer?page=${currentPage + 1}" class="secondary-button ${currentPage >= totalPages - 1 ? 'disabled' : ''}">Next</a>
+					<a href="/explorer?page=${totalPages - 1}" class="secondary-button ${currentPage >= totalPages - 1 ? 'disabled' : ''}">Last</a>
+				</div>
+			`;
+		};
+
+		const paginationControls = await createPaginationControls();
+
 		return (
-			'<div class="explorer-main"> \
+			'<div class="explorer-main explorer-main--index"> \
         <div class="block-table"> \
           <div class="explorer-data"><h4>Server Address:</h4></div> <div class="address">' +
 			(await this.app.wallet.getPublicKey()) +
@@ -251,9 +301,11 @@ class ExplorerCore extends ModTemplate {
         <form method="get" action="/explorer/block"><div class="one-line-form"><input type="text" name="hash" class="hash-search-input" /> \
         <input type="submit" id="explorer-button" class="button" value="search" /></div></form> </div> \
         <div class="explorer-data"><h3>Recent Blocks:</h3></div> \
+        ' + paginationControls + '\
         <div id="block-list">' +
-			(await this.listBlocks()) +
+			(await this.listBlocks(page)) +
 			'</div> \
+        ' + paginationControls + '\
       </div> '
 		);
 	}
@@ -266,11 +318,11 @@ class ExplorerCore extends ModTemplate {
 	/////////////////////
 	// Main Index Page //
 	/////////////////////
-	async returnIndexHTML(app) {
+	async returnIndexHTML(page) {
 		var html =
 			this.returnHead() +
 			this.returnHeader() +
-			(await this.returnIndexMain()) +
+			(await this.returnIndexMain(page)) +
 			this.returnPageClose();
 		return html;
 	}
@@ -279,7 +331,7 @@ class ExplorerCore extends ModTemplate {
 		let txs = await S.getInstance().getMempoolTxs();
 		var html = this.returnHead();
 		html += this.returnHeader();
-		html += '<div class="explorer-main">';
+		html += '<div class="explorer-main explorer-main--mempool">';
 		html +=
 			'<a class="button" href="/explorer/"><i class="fas fa-cubes"></i> back to blocks</a>';
 		html +=
@@ -296,7 +348,7 @@ class ExplorerCore extends ModTemplate {
 	async returnBlockSourceHTML(app, hash) {
 		var html = this.returnHead();
 		html += this.returnHeader();
-		html += '<div class="explorer-main">';
+		html += '<div class="explorer-main explorer-main--block-source">';
 		html +=
 			'<a class="button" href="/explorer/block?hash=' +
 			hash +
@@ -324,76 +376,78 @@ class ExplorerCore extends ModTemplate {
 		return jstxt;
 	}
 
-	async listBlocks() {
+	async listBlocks(page = 0) {
+		console.log("page: ", page);
 		var explorer_self = this;
-		let latest_block_id =
-			await explorer_self.app.blockchain.getLatestBlockId();
+		let latest_block_id = await explorer_self.app.blockchain.getLatestBlockId();
 
 		var html = '<div class="blockchain-table">';
-		html +=
-			'<div class="table-header"></div><div class="table-header">id</div><div class="table-header">block hash</div><div class="table-header">tx</div><div class="table-header">previous block</div><div class="table-header">block creator</div>';
+		html += '<div class="table-header"></div><div class="table-header">id</div><div class="table-header">block hash</div>';
+		html += '<div class="table-header">tx</div><div class="table-header">previous block</div><div class="table-header">block creator</div><div class="table-header">timestamp</div>';
 
-		for (
-			var mb = latest_block_id;
-			mb >= BigInt(0) && mb > latest_block_id - BigInt(200);
-			mb--
-		) {
-			let longest_chain_hash =
-				await explorer_self.app.blockchain.getLongestChainHashAtId(mb);
-			let hashes_at_block_id =
-				await explorer_self.app.blockchain.getHashesAtId(mb);
+		const BLOCKS_PER_PAGE = 200;
+		const startBlock = latest_block_id - (BigInt(page) * BigInt(BLOCKS_PER_PAGE));
+		let endBlock = startBlock - BigInt(BLOCKS_PER_PAGE);
+		console.log("startBlock: ", startBlock);
+		console.log("endBlock: ", endBlock);
+		
+		// Ensure endBlock doesn't go below 0
+		if (endBlock < BigInt(0)) {
+			endBlock = BigInt(0);
+		}
+
+		for (var mb = startBlock; mb >= endBlock; mb--) {
+			let longest_chain_hash = await explorer_self.app.blockchain.getLongestChainHashAtId(mb);
+			let hashes_at_block_id = await explorer_self.app.blockchain.getHashesAtId(mb);
 
 			for (let i = 0; i < hashes_at_block_id.length; i++) {
 				let txs_in_block = 0;
 				let previous_block_hash = '';
 				let block_creator = '';
+				let timestamp = '';
 
-				let block = await explorer_self.app.blockchain.getBlock(
-					hashes_at_block_id[i]
-				);
+				let block = await explorer_self.app.blockchain.getBlock(hashes_at_block_id[i]);
 
 				if (block) {
 					let blk = JSON.parse(block.toJson());
 					txs_in_block = block.transactions.length;
 					previous_block_hash = block.previousBlockHash;
 					block_creator = blk.creator;
+					
+					// Format timestamp with 24-hour time
+					const blockTime = new Date(Number(blk.timestamp));
+					const localTime = blockTime.toISOString().replace('T', ' ').slice(0, 19);
+					const timeDiff = this.getTimeDifference(Number(blk.timestamp));
+					timestamp = `<div class="timestamp" data-tooltip="${timeDiff}">${localTime}</div>`;
 				}
+
 				if (longest_chain_hash === hashes_at_block_id[i]) {
 					html += '<div>*</div>';
 				} else {
 					html += '<div></div>';
 				}
-				html +=
-					'<div class="ellipsis"><a href="/explorer/block?hash=' +
-					block.hash +
-					'">' +
-					block.id +
-					'</a></div>';
-				html +=
-					'<div class="ellipsis" title="' +
-					block.hash +
-					'"><a href="/explorer/block?hash=' +
-					block.hash +
-					'">' +
-					block.hash +
-					'</a></div>';
+
+				html += '<div class="ellipsis"><a href="/explorer/block?hash=' + block.hash + '">' + block.id + '</a></div>';
+				html += '<div class="ellipsis" title="' + block.hash + '"><a href="/explorer/block?hash=' + block.hash + '">' + block.hash + '</a></div>';
 				html += '<div>' + txs_in_block + '</div>';
-				html +=
-					'<div class="ellipsis" title="' +
-					previous_block_hash +
-					'">' +
-					previous_block_hash +
-					'</div>';
-				html +=
-					'<div class="ellipsis" title="' +
-					block_creator +
-					'">' +
-					block_creator +
-					'</div>';
+				html += '<div class="ellipsis" title="' + previous_block_hash + '">' + previous_block_hash + '</div>';
+				html += '<div class="ellipsis" title="' + block_creator + '">' + block_creator + '</div>';
+				html += timestamp;
 			}
 		}
 		html += '</div>';
 		return html;
+	}
+
+	// Fixed getTimeDifference to properly calculate time differences
+	getTimeDifference(timestamp) {
+		const now = Math.floor(Date.now() / 1000); // Convert current time to seconds
+		const diff = now - timestamp;
+		
+		if (diff < 60) return 'Just now';
+		if (diff < 3600) return `${Math.floor(diff/60)} minutes ago`;
+		if (diff < 86400) return `${Math.floor(diff/3600)} hours ago`;
+		return `${Math.floor(diff/86400)} days ago`;
 	}
 
 	////////////////////////
@@ -401,23 +455,70 @@ class ExplorerCore extends ModTemplate {
 	////////////////////////
 	async returnBlockHTML(app, hash) {
 		var html = this.returnHead() + this.returnHeader();
+		html += '<div class="explorer-main explorer-main--block-explorer">';
+		
+		// Top navigation back to block list
+		html += '<div class="block-navigation flex items-center gap-16 mt-12 mb-12">';
+		html += '<a href="/explorer" class="button text-2xl"><i class="fas fa-cubes"></i> Back to Block List</a>';
+		html += '</div>';
+		
+		html += '<h3>Block Explorer:</h3>';
+		
+		try {
+			const this_block = await this.app.blockchain.getBlock(hash);
+			if (this_block) {
+				// Initial block data
+				html += '<div class="txlist">';
+				html += '<div class="loader"></div>';
+				html += '</div>';
 
-		html +=
-			'<div class="explorer-main"> \
-      <a href="/explorer"> \
-          <button class="explorer-nav"><i class="fas fa-cubes"></i> back to blocks</button> \
-        </a> \
-      <h3>Block Explorer:</h3> \
-      <div class="txlist"><div class="loader"></div></div> \
-      </div> \
-      <script> \
-        fetchBlock("' +
-			hash +
-			'"); \
-      </script> \
-      ';
+				// Block navigation section
+				const previous_block_hash = this_block.previousBlockHash;
+				const next_block_id = Number(this_block.id) + 1;
+				
+				html += '<div class="block-navigation--controls flex justify-center items-center gap-16 mt-8 mb-8 pt-8 border-t border-saito">';
+				
+				// Previous block link
+				if (previous_block_hash) {
+					html += `<a href="/explorer/block?hash=${previous_block_hash}" class="button">
+						<i class="fas fa-chevron-left"></i> Previous Block
+					</a>`;
+				}
+				
+				// Next blocks
+				try {
+					const next_block_hashes = await this.app.blockchain.getHashesAtId(BigInt(next_block_id));
+					if (next_block_hashes && next_block_hashes.length > 0) {
+						if (next_block_hashes.length === 1) {
+							html += `<a href="/explorer/block?hash=${next_block_hashes[0]}" class="button">
+								Next Block <i class="fas fa-chevron-right"></i>
+							</a>`;
+						} else {
+							// Multiple next blocks
+							html += '<div class="dropdown">';
+							html += '<button class="button dropdown-toggle">Next Blocks <i class="fas fa-chevron-down"></i></button>';
+							html += '<div class="dropdown-content">';
+							for (let i = 0; i < next_block_hashes.length; i++) {
+								html += `<a href="/explorer/block?hash=${next_block_hashes[i]}">Block ${next_block_id} (${i + 1}/${next_block_hashes.length})</a>`;
+							}
+							html += '</div></div>';
+						}
+					}
+				} catch (err) {
+					console.log("Error fetching next blocks:", err);
+				}
+				
+				html += '</div>'; // Close block-navigation--controls
+			}
+		} catch (err) {
+			console.log("Error fetching block data:", err);
+			html += '<div class="loader"></div>';
+		}
 
+		html += '</div>'; // Close explorer-main
+		html += `<script>fetchBlock("${hash}");</script>`;
 		html += this.returnPageClose();
+		
 		return html;
 	}
 
@@ -443,7 +544,7 @@ class ExplorerCore extends ModTemplate {
 		var html = this.returnHead() + this.returnHeader();
 
 		html += `
-		<div class="explorer-main">
+		<div class="explorer-main explorer-main--balance">
 			<div class="block-table">
 				<div class="explorer-data">
 					<h4>Wallet Address:</h4>
@@ -486,7 +587,7 @@ class ExplorerCore extends ModTemplate {
 		var html = this.returnHead() + this.returnHeader();
 
 		html += `
-		<div class="explorer-main">
+		<div class="explorer-main explorer-main--all-balance">
 		
 			<div class="explorer-balance-row">
 				<a href="/explorer">

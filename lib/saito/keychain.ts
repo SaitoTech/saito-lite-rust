@@ -472,9 +472,10 @@ class Keychain {
 	saveKeys() {
 		this.app.options.keys = [...this.keys];
 		this.app.storage.saveOptions();
-		if (this.returnHash() != this.hash) {
-			this.hash = this.returnHash();
-			this.app.connection.emit('wallet-updated');
+		let new_hash = this.returnHash();
+		if (new_hash != this.hash) {
+			this.hash = new_hash;
+			this.app.connection.emit('keychain-updated');
 		}
 	}
 
@@ -483,9 +484,44 @@ class Keychain {
 		this.app.storage.saveOptions();
 		if (this.returnHash() != this.hash) {
 			this.hash = this.returnHash();
-			this.app.connection.emit('wallet-updated');
+			this.app.connection.emit('keychain-updated');
 		}
 	}
+
+
+	addCryptoAddress(publicKey, ticker, address) {
+
+		if (!publicKey || !ticker || !address) {
+			return;
+		}
+
+		// Is a contact and not myself
+		if (!this.hasPublicKey(publicKey) || publicKey == this.publicKey){
+			return;
+		}
+
+		// Is an address that needs caching
+		if (ticker == "SAITO" || address == publicKey) {
+			return;
+		}
+
+		let friend = this.returnKey(publicKey, true);
+
+		if (!friend){
+			return;
+		}
+
+		let crypto_addresses = friend?.crypto_addresses || {};
+
+		if (!crypto_addresses?.ticker || crypto_addresses.ticker !== address){
+			crypto_addresses[ticker] = address;
+			this.app.keychain.addKey(publicKey, {
+				crypto_addresses
+			});
+		}
+
+	}
+
 
 	returnIdenticon(publicKey: string, img_format = 'svg') {
 		if (this.keys != undefined) {

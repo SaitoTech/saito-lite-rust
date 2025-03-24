@@ -47,7 +47,6 @@ html[data-theme="dark"] {
   --color-shadow-bubble: #000c;
   /*MAIN BACKGROUND COLOR SECTION*/
   --background-color-main: #211f25;
-  --background-color-shim-normal: #0009;
   /*FONTS SECTION*/
   /*quick settings*/
   --font-color-primary: var(--color-tint-primary);
@@ -76,7 +75,7 @@ html[data-theme="dark"] {
   --font-color-button-hover-modal-oldschool: var(--font-color-heavy);
   --font-color-hover-icons-left-sidebar: var(--font-color-heavy);
   --font-color-button-hover-wallet-control: var(--font-color-heavy);
-  --font-color-button-wallet-control: var(--saito-primary);
+  --font-color-button-wallet-control: var(--font-color-primary);
   --font-color-calendar-today: var(--font-color-primary);
   --font-color-calendar-hover: var(--font-color-primary);
   /* Menu and Header Font Colors */
@@ -93,14 +92,15 @@ html[data-theme="dark"] {
   --font-color-module-menu-header: var(--font-color-primary);
   --font-color-overlay-form-header: var(--font-color-primary);
   --font-color-overlay-form-text: var(--font-color-primary);
-  --font-color-overlay-subform-recover: var(--font-color-primary);
   /* BORDER RADIUS */
   --border-radius-modal-menu: var(--border-radius-soft);
   --border-radius-sidebar-chat-manager: var(--border-radius-soft);
   /* BORDER THICKNESS */
+  --border-padding-qr-code: 0;
   --border-thickness-modal-menu: 0px;
   --border-thickness-button-primary: var(--border-thickness-thin);
   --border-thickness-button-hover-primary: var(--border-thickness-thin);
+  --border-thickness-qr-code: var(--border-thickness-fat); /* for contrast to be able to scan */
   /* BORDER COLORS */
   --border-color-general-dividers: var(--saito-border-color);
   --border-color-general-dividers-dark: var(--color-primary);
@@ -117,7 +117,7 @@ html[data-theme="dark"] {
   --border-color-chat-popup-docked: var(--color-primary);
   --border-color-selection-box: var(--color-highlight);
   --border-color-form-input-checkbox: var(--color-contrast);
-  --border-color-qr-code: var(--border-color-general-dividers);
+  --border-color-qr-code: var(--saito-border-color-dark); /*var(--saito-white);*/
   /* BACKGROUNDS */
   /* General Background Colors */
   --background-color-sidebar-left: var(--color-shadow-bubble-light);

@@ -38,8 +38,6 @@ class Limbo extends ModTemplate {
 		this.stun = null;
 		this.rendered = false;
 
-		this.terminationEvent = 'unload';
-
 		this.social = {
 			twitter: '@SaitoOfficial',
 			title: `🟥 ${this.returnName()}`,
@@ -210,7 +208,7 @@ class Limbo extends ModTemplate {
 					text: 'Swarmcast',
 					icon: this.icon_fa,
 					callback: function (app, id) {
-						window.location = '/' + mod_self.returnSlug();
+						navigateWindow('/' + mod_self.returnSlug());
 					}
 				});
 
@@ -440,12 +438,29 @@ class Limbo extends ModTemplate {
 				for (let key in this.dreams) {
 					document.querySelector('.spaces-list').style.display = 'flex';
 					this.createProfileCard(key, this.dreams[key], '.spaces-list');
+
 				}
+
+				Array.from(document.querySelectorAll(".spaces-list .saito-profile")).forEach(elm => {
+					elm.onclick	= (e) => {
+						let id = e.currentTarget.getAttribute("data-id");
+
+
+						let data = {
+							name: this.returnName(),
+							path: `/${this.returnSlug()}/`,
+							dream: this.app.crypto.stringToBase64(id)
+						};
+						let link_obj = new InvitationLink(this.app, this, data);
+						link_obj.buildLink();
+						let cast_link = link_obj.invite_link;
+
+						navigateWindow(cast_link);
+					}
+				})
 			});
 
-			document.querySelector('.spaces-list').onclick = (e) => {
-				window.location = '/' + this.returnSlug();
-			};
+
 		}
 	}
 
@@ -459,8 +474,6 @@ class Limbo extends ModTemplate {
 		}
 
 		if (service.service === 'inception') {
-			console.log('Limbo: onPeerServiceUp', service.service);
-
 			this.app.network.sendRequestAsTransaction(
 				'dream list',
 				{},
@@ -717,7 +730,11 @@ class Limbo extends ModTemplate {
 				if (includeCamera) {
 					options.mode = 'camera';
 					this.localStream = await navigator.mediaDevices.getUserMedia({
-						video: true,
+						video: {
+							width: { ideal: 640 },
+							height: { ideal: 480 },
+							frameRate: { ideal: 15 }
+						},
 						audio: true // Capture microphone audio
 					});
 				} else {
@@ -819,29 +836,19 @@ class Limbo extends ModTemplate {
 	}
 
 	attachMetaEvents() {
-		if ('onpagehide' in self) {
-			this.terminationEvent = 'pagehide';
-		}
 
 		this.saveMe = () => {
 			this.visibilityChange();
 		};
 
-		window.addEventListener(this.terminationEvent, this.saveMe);
-		window.addEventListener('beforeunload', this.beforeUnloadHandler);
-		if (this.app.browser.isMobileBrowser()) {
-			document.addEventListener('visibilitychange', this.saveMe);
-		}
+		this.app.browser.lockNavigation(this.saveMe);
+
 	}
 
 	detachMetaEvents() {
 		console.log('Safe to navigate!');
 
-		window.removeEventListener('beforeunload', this.beforeUnloadHandler);
-		window.removeEventListener(this.terminationEvent, this.saveMe);
-		if (this.app.browser.isMobileBrowser()) {
-			document.removeEventListener('visibilitychange', this.saveMe);
-		}
+		this.app.browser.unlockNavigation(this.saveMe);
 	}
 
 	async sendDreamTransaction(options = {}) {
@@ -1822,11 +1829,6 @@ class Limbo extends ModTemplate {
 		// const isCasting = castButtonGame.textContent.trim().toLowerCase() === 'stop cast';
 
 		// console.log('isCasting', isCasting);
-	}
-
-	beforeUnloadHandler(event) {
-		event.preventDefault();
-		event.returnValue = true;
 	}
 
 	visibilityChange() {

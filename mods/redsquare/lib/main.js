@@ -29,9 +29,9 @@ class RedSquareMain {
     // HOME-RENDER-REQUEST -- render the main thread
     //
     this.app.connection.on('redsquare-home-render-request', (scroll_to_top = false) => {
-      if (document.querySelector('.saito-back-button')) {
-        document.querySelector('.saito-back-button').remove();
-      }
+      //if (document.querySelector('.saito-back-button')) {
+      //  document.querySelector('.saito-back-button').remove();
+      //}
 
       this.manager.render('tweets');
 
@@ -90,26 +90,14 @@ class RedSquareMain {
     // when someone clicks on a tweet
     //
     this.app.connection.on('redsquare-tweet-render-request', (tweet) => {
-
-      window.history.pushState({view: "tweet"}, "", `/redsquare?tweet_id=${tweet.tx.signature}`);
       this.scrollFeed(0);
       this.manager.renderTweet(tweet);
-
-      this.app.connection.emit('saito-header-replace-logo', (e) => {
-        this.app.connection.emit('redsquare-home-render-request');
-        window.history.pushState({}, document.title, '/' + this.mod.slug);
-      });
     });
 
     this.app.connection.on('redsquare-notifications-render-request', () => {
       this.scrollFeed(0);
       this.mod.resetNotifications();
       this.manager.render('notifications');
-
-      this.app.connection.emit('saito-header-replace-logo', (e) => {
-        this.app.connection.emit('redsquare-home-render-request');
-        window.history.pushState({}, document.title, '/' + this.mod.slug);
-      });
     });
 
     //
@@ -123,11 +111,6 @@ class RedSquareMain {
       }
 
       this.manager.renderProfile(publicKey);
-
-      this.app.connection.emit('saito-header-replace-logo', (e) => {
-        this.app.connection.emit('redsquare-home-render-request');
-        window.history.pushState({}, document.title, '/' + this.mod.slug);
-      });
     });
 
     this.app.connection.on(
@@ -172,6 +155,23 @@ class RedSquareMain {
         }
       }
     });
+
+
+    this.app.connection.on('saito-blacklist', (obj) => {
+
+      let target_key = obj?.publicKey;
+
+      if (!target_key) {
+        return;
+      }
+
+      for (let tweet of this.mod.tweets){
+        if (tweet.tx.isFrom(target_key)){
+          tweet.hideTweet();
+        }
+      }
+
+    });
   }
 
   render() {
@@ -181,7 +181,17 @@ class RedSquareMain {
       this.app.browser.addElementToDom(RedSquareMainTemplate());
     }
 
-    this.manager.render();
+    console.log("Redsquare main -- Initial render");
+    window.history.replaceState({view: "home"}, '', '/' + this.mod.slug);
+    this.app.browser.pushBackFn(() => {
+      //render tweets and scroll to cached position
+      this.app.connection.emit('redsquare-home-render-request');
+      console.log("Redsquare home in history");
+    });
+
+
+    this.app.connection.emit('redsquare-home-render-request');
+
     this.attachEvents();
 
     this.monitorUserInteraction();
@@ -215,6 +225,9 @@ class RedSquareMain {
             document.getElementById("saito-header").style.padding = "0";
             triggered = true;
           }
+
+          is_running = "down";
+
         } else if (st < lastScrollTop) {
           // upscroll code
           if (triggered) {
@@ -233,11 +246,11 @@ class RedSquareMain {
       
         setTimeout(()=> {
           is_running = false;
-          if (scrollableElement.scrollTop < 70 && triggered){
+          if (scrollableElement.scrollTop < 50 && triggered){
             document.getElementById("saito-header").removeAttribute("style");
             triggered = false;
           }
-        }, 150);
+        }, 75);
       });
     }
   }

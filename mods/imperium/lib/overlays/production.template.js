@@ -17,7 +17,10 @@ module.exports  = (
 <div class="production-overlay" style="">
   <div class="production-info">
     <div class="production-header">
-      <div class="production-description">PRODUCTION: You have <span class="resources_box">${resources_available} resources</span> available to spend, and can produce a maximum of ${production_limit} units. ${cost_limit_desc}Click on the units you wish to produce.</div>
+      <div class="production-description">
+	Available: <span class="resources_box available">4 resources</span><br>
+	Required: <span class="resources_box required">0 resources</span>
+      </div>
       <div class="production-button saito-button-secondary">CONTINUE</div>
     </div>
     <div class="production-table">

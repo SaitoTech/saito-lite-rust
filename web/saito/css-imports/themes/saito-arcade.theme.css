@@ -23,7 +23,6 @@ html[data-theme="arcade"] {
   --saito-light-shim: #0001;
   --saito-box-shadow: 0 0 0 1px var(--saito-border-color);
   --saito-form-box-shadow: 0 0 0 1px var(--saito-border-color);
-  --saito-button-background: linear-gradient(45deg, #540e81, #b539e8);
   --saito-bubble-shadow: #000c;
   --saito-bubble-background: #213;
   --saito-modal-background: var(--saito-background-light);
@@ -56,7 +55,6 @@ html[data-theme="arcade"] {
   /*MAIN BACKGROUND COLOR SECTION*/
   --background-color-main: #180c24;
   --background-color-light: #140a1e;
-  --background-color-shim-normal: #0009;
   /*FONTS SECTION*/
   /*quick settings*/
   --font-color-primary: var(--color-tint-primary);
@@ -104,11 +102,12 @@ html[data-theme="arcade"] {
   --font-color-module-menu-header: var(--font-color-primary);
   --font-color-overlay-form-header: var(--font-color-primary);
   --font-color-overlay-form-text: var(--font-color-primary);
-  --font-color-overlay-subform-recover: var(--font-color-primary);
   --font-color-button-wallet-control: var(--font-color-primary);
   /* BORDER THICKNESS */
+  --border-padding-qr-code: 0;
   --border-thickness-button-primary: var(--border-thickness-thin);
   --border-thickness-button-hover-primary: var(--border-thickness-thin);
+  --border-thickness-qr-code: var(--border-thickness-fat); /* for contrast to be able to scan */
   /* BORDER COLORS */
   --border-color-general-dividers: var(--color-complement);
   --border-color-general-dividers-dark: var(--color-primary);

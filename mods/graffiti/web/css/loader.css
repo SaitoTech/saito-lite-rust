@@ -1,0 +1,42 @@
+:root {
+  --loader-color: 160, 160, 160;
+}
+
+#loader {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 2rem;
+  aspect-ratio: 1;
+}
+
+.spinner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  aspect-ratio: 1;
+  background:
+    linear-gradient(0deg,
+      rgba(var(--loader-color), 0.5) 30%,
+      rgba(var(--loader-color), 0.0) 0 70%,
+      rgba(var(--loader-color), 1.0) 0
+    ) 50% / 6% 100%,
+    linear-gradient(90deg,
+      rgba(var(--loader-color), 0.25) 30%,
+      rgba(var(--loader-color), 0.00) 0 70%,
+      rgba(var(--loader-color), 0.75) 0
+    ) 50% / 100% 6%;
+  background-repeat: no-repeat;
+  animation: spin 1.5s infinite steps(12);
+}
+
+#spinner1 { --angle:  0deg; opacity: 1;     }
+#spinner2 { --angle: 30deg; opacity: 0.915; }
+#spinner3 { --angle: 60deg; opacity: 0.83;  }
+
+@keyframes spin {
+    0% { transform: rotate(calc(var(--angle) + 0turn)); }
+  100% { transform: rotate(calc(var(--angle) + 1turn)); }
+}

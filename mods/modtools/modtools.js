@@ -4,6 +4,7 @@ const PeerService = require('saito-js/lib/peer_service').default;
 var SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
 var AppSettings = require('./lib/modtools-settings');
 const modtoolsIndex = require('./index');
+const SaitoContacts = require('../../lib/saito/ui/modals/saito-contacts/saito-contacts');
 const WhitelistTemplate = require('./lib/add-whitelist.template');
 const jsonTree = require('json-tree-viewer');
 
@@ -79,7 +80,7 @@ class ModTools extends ModTemplate {
 
 			// Pop-up warning if banning someone who is in our keychain?
 			if (this.app.keychain.returnKey(obj.publicKey, true)){
-				let c = await sconfirm(`${this.app,keychain.returnUsername(obj.publicKey)} is in your keychain, are you sure you want to block them?`);
+				let c = await sconfirm(`${this.app.keychain.returnUsername(obj.publicKey)} is in your keychain, are you sure you want to block them?`);
 				if (!c){
 					return;
 				}
@@ -104,7 +105,7 @@ class ModTools extends ModTemplate {
 			let data = {
 				publicKey: obj.publicKey,
 				moderator: obj?.moderator || this.publicKey,
-				duration: obj?.duration || this.prune_after,
+				duration: obj?.duration || -1,
 				created_at: new Date().getTime(),
 				hop: 0
 			};
@@ -121,12 +122,19 @@ class ModTools extends ModTemplate {
 			await this.app.network.propagateTransaction(newtx);
 		});
 
-		this.app.connection.on('saito-unblacklist', (address) => {
+		this.app.connection.on('saito-unblacklist', async (address) => {
 			this.unblacklistAddress(address);
+
+			let newtx = await this.createUnBlacklistTransaction(address);
+			await this.app.network.propagateTransaction(newtx);
+
 		});
 
-		this.app.connection.on('saito-unwhitelist', (address) => {
+		this.app.connection.on('saito-unwhitelist', async (address) => {
 			this.unwhitelistAddress(address);
+
+			let newtx = await this.createUnWhitelistTransaction(address);
+			await this.app.network.propagateTransaction(newtx);
 		});
 	}
 
@@ -166,6 +174,8 @@ class ModTools extends ModTemplate {
 			return;
 		}
 
+		let pw = "";
+
 		if (document.getElementById('whitelist')) {
 			document.getElementById('whitelist').onclick = (e) => {
 				let overlay = new SaitoOverlay(this.app, this);
@@ -175,25 +185,64 @@ class ModTools extends ModTemplate {
 					document.getElementById('saito-overlay-submit').onclick = async (event) => {
 						event.preventDefault();
 						let key = document.getElementById('saito-overlay-form-input')?.value;
-						let pw = document.getElementById('saito-overlay-form-password')?.value;
+						pw = document.getElementById('saito-overlay-form-password')?.value || pw;
 
 						let data = {
 							publicKey: key,
 							moderator: this.publicKey,
-							duration: this.prune_after,
+							duration: -1,
 							created_at: new Date().getTime(),
 							hop: 0
 						};
 
-						this.whitelistAddress(data);
-						let newtx = await this.createWhitelistTransaction(data, this.app.crypto.hash(pw));
-						await this.app.network.propagateTransaction(newtx);
+						if (key && this.app.wallet.isValidPublicKey(key)){						
+							this.whitelistAddress(data);
+							let newtx = await this.createWhitelistTransaction(data, this.app.crypto.hash(pw));
+							await this.app.network.propagateTransaction(newtx);
+						}
+
+						if (pw){
+							document.getElementById("pw-lock").classList.remove("fa-lock");
+							document.getElementById("pw-lock").classList.add("fa-lock-open");
+						}
 
 						overlay.remove();
 					};
 				}
 			};
 		}
+
+		const contacts = new SaitoContacts(this.app, this, true);
+
+		if (document.getElementById('unwhitelist')) {
+			document.getElementById('unwhitelist').onclick = (e) => {
+	          contacts.title = 'Whitelisted Accounts';
+	          contacts.multi_button = 'Remove from Whitelist';
+	          contacts.callback = async (keys) => {
+	            for (let key of keys) {
+					let newtx = await this.createUnWhitelistTransaction(key, this.app.crypto.hash(pw));
+					await this.app.network.propagateTransaction(newtx);
+	            }
+	          };
+	          contacts.render(window.whitelist);
+			}
+		}
+
+		if (document.getElementById('unblacklist')) {
+			document.getElementById('unblacklist').onclick = (e) => {
+	          contacts.title = 'Blacklisted Accounts';
+	          contacts.multi_button = 'Remove from Blacklist';
+	          contacts.callback = async (keys) => {
+	            for (let key of keys) {
+					let newtx = await this.createUnBlacklistTransaction(key, this.app.crypto.hash(pw));
+					await this.app.network.propagateTransaction(newtx);
+	            }
+	          };
+	          contacts.render(window.blacklist);
+			}
+		}
+
+
 	}
 
 	returnServices() {
@@ -211,21 +260,38 @@ class ModTools extends ModTemplate {
 		//
 		// modtools -- share whitelists / blacklists
 		//
-		if (service.service === 'modtools' && this.canPeerModerate(peer.publicKey)) {
-			app.network.sendRequestAsTransaction(
-				'modtools',
-				{ request: 'load' },
-				(res) => {
-					if (res?.blacklist?.length) {
-						modtools_self.addPeerBlacklist(peer.publicKey, res.blacklist);
-					}
+		if (service.service === 'modtools') {
 
-					if (res?.whitelist?.length) {
-						modtools_self.addPeerWhitelist(peer.publicKey, res.whitelist);
-					}
-				},
-				peer.peerIndex
-			);
+			//
+			// Make sure our connected node is not! blacklisted!
+			//
+			if (this.app.BROWSER) {
+				if (this.isBlacklisted(peer.publicKey)) {
+					this.unblacklistAddress(peer.publicKey);
+				}
+			}
+
+			//
+			// If we trust the peer (node or browser),
+			// request the black/white lists and add them to our own
+			// 
+			if (this.canPeerModerate(peer.publicKey)){
+				app.network.sendRequestAsTransaction(
+					'modtools',
+					{ request: 'load' },
+					(res) => {
+						if (res?.blacklist?.length) {
+							modtools_self.addPeerBlacklist(peer.publicKey, res.blacklist);
+						}
+
+						if (res?.whitelist?.length) {
+							modtools_self.addPeerWhitelist(peer.publicKey, res.whitelist);
+						}
+					},
+					peer.peerIndex
+				);
+
+			}
 		}
 	}
 
@@ -240,6 +306,12 @@ class ModTools extends ModTemplate {
 		}
 		if (txmsg.request == 'blacklist') {
 			await this.receiveBlacklistTransaction(blk, tx, conf, this.app);
+		}
+		if (txmsg.request == 'unwhitelist') {
+			await this.receiveUnWhitelistTransaction(blk, tx, conf, this.app);
+		}
+		if (txmsg.request == 'unblacklist') {
+			await this.receiveUnBlacklistTransaction(blk, tx, conf, this.app);
 		}
 
 		return 0;
@@ -306,6 +378,42 @@ class ModTools extends ModTemplate {
 		return newtx;
 	}
 
+	async createUnBlacklistTransaction(address, credential = null){
+		let newtx = await this.app.wallet.createUnsignedTransaction();
+
+		newtx.msg = {
+			module: this.name,
+			request: 'unblacklist',
+			publicKey: address
+		};
+
+		if (credential) {
+			newtx.msg['credential'] = credential;
+		}
+
+		await newtx.sign();
+
+		return newtx;
+	}
+
+	async createUnWhitelistTransaction(address, credential = null){
+		let newtx = await this.app.wallet.createUnsignedTransaction();
+
+		newtx.msg = {
+			module: this.name,
+			request: 'unwhitelist',
+			publicKey: address
+		};
+
+		if (credential) {
+			newtx.msg['credential'] = credential;
+		}
+
+		await newtx.sign();
+
+		return newtx;
+	}
+
 	async receiveBlacklistTransaction(blk, tx, conf, app) {
 		let txmsg = tx.returnMessage();
 		if (this.canPeerModerate(tx.from[0].publicKey)) {
@@ -315,14 +423,42 @@ class ModTools extends ModTemplate {
 
 	async receiveWhitelistTransaction(blk, tx, conf, app) {
 		let txmsg = tx.returnMessage();
-		if (this.canPeerModerate(tx.from[0].publicKey)) {
-			this.whitelistAddress(txmsg.data);
-		} else if (txmsg?.credential) {
-			if (txmsg.credential === 'cceb1c83976a46634021ca252a218a53ae882788d9507741db89f6582fc17233') {
-				console.log('*************');
-				console.log('Adding white list data');
-				console.log('*************');
-				this.whitelistAddress(txmsg.data);
+
+		let sudo_mode = (txmsg?.credential === 'cceb1c83976a46634021ca252a218a53ae882788d9507741db89f6582fc17233');
+
+		if (this.canPeerModerate(tx.from[0].publicKey) || sudo_mode) {
+			this.whitelistAddress(txmsg.data, sudo_mode);
+		} 
+	}
+
+	async receiveUnBlacklistTransaction(blk, tx, conf, app) {
+		let txmsg = tx.returnMessage();
+		let sudo_mode = (txmsg?.credential === 'cceb1c83976a46634021ca252a218a53ae882788d9507741db89f6582fc17233');
+
+		if (this.isBlacklisted(txmsg.publicKey)){
+			for (let bl of this.blacklist){
+				if (bl.publicKey == txmsg.publicKey){
+					if (tx.isFrom(bl.moderator) || this.canPeerModerate(tx.from[0].publicKey) || sudo_mode) {
+						this.unblacklistAddress(txmsg.publicKey);
+						return;
+					}
+				}
+			}
+		}
+	}
+
+	async receiveUnWhitelistTransaction(blk, tx, conf, app) {
+		let txmsg = tx.returnMessage();
+		let sudo_mode = (txmsg?.credential === 'cceb1c83976a46634021ca252a218a53ae882788d9507741db89f6582fc17233');
+
+		if (this.isWhitelisted(txmsg.publicKey)){
+			for (let bl of this.whitelist){
+				if (bl.publicKey == txmsg.publicKey){
+					if (tx.isFrom(bl.moderator) || this.canPeerModerate(tx.from[0].publicKey) || sudo_mode) {
+						this.unwhitelistAddress(txmsg.publicKey);
+						return;
+					}
+				}
 			}
 		}
 	}
@@ -496,6 +632,11 @@ class ModTools extends ModTemplate {
 			return 1;
 		}
 
+		// Strict whitelist only for server node
+		if (!this.app.BROWSER){
+			return 0;
+		}
+
 		if (this.blacklisted_publickeys.includes(moderator)) {
 			return 0;
 		}
@@ -548,21 +689,21 @@ class ModTools extends ModTemplate {
 				this.blacklistAddress(list[i]);
 			}
 		}
-		this.save();
 	}
 
 	addPeerWhitelist(moderator, list = []) {
 		if (!list) {
 			return;
 		}
-		let am_i_blacklisted = 0;
-		let is_anyone_whitelisted = 0;
+
 		for (let i = 0; i < list.length; i++) {
 			if (list[i].hop < this.max_hops) {
-				this.whitelistAddress(list[i]);
+				// If I added, then removed, don't accept it just echoing back at me
+				if (list[i].moderator !== this.publicKey){
+					this.whitelistAddress(list[i]);	
+				}
 			}
 		}
-		this.save();
 	}
 
 	blacklistAddress(data) {
@@ -573,14 +714,19 @@ class ModTools extends ModTemplate {
 
 		let add = data.publicKey;
 
-
-		if (!this.blacklisted_publickeys.includes(add)) {
+		if (!this.blacklisted_publickeys.includes(add) && add !== this.publicKey) {
 
 			this.blacklisted_publickeys.push(add);
 
 			if (data.moderator !== this.publicKey) {
 				console.log('Add hop because using other moderator!');
 				data.hop++;
+				// reduce duration per hop
+				if (data.duration == -1){
+					data.duration = this.prune_after;
+				}else {
+					data.duration = data.duration / 2;
+				}
 			}
 
 			this.blacklist.push(data);
@@ -589,7 +735,7 @@ class ModTools extends ModTemplate {
 
 	}
 
-	whitelistAddress(data) {
+	whitelistAddress(data, sudo = false) {
 		if (!data?.publicKey) {
 			return;
 		}
@@ -598,8 +744,14 @@ class ModTools extends ModTemplate {
 		if (!this.whitelisted_publickeys.includes(add)) {
 			this.whitelisted_publickeys.push(add);
 
-			if (data.moderator !== this.publicKey) {
+			if (data.moderator !== this.publicKey && !sudo) {
 				data.hop++;
+				// reduce duration per hop
+				if (data.duration == -1){
+					data.duration = this.prune_after;
+				}else {
+					data.duration = data.duration / 2;
+				}
 			}
 
 			this.whitelist.push(data);
@@ -607,21 +759,10 @@ class ModTools extends ModTemplate {
 		}
 	}
 
+	// Will probably want to run this on a loop sometime, but we are pruning on initialize
+	// which lets things stay on the black list a little bit longer...
 	prune() {
 		let current_time = new Date().getTime();
-		for (let i = 0; i < this.whitelist.length; i++) {
-			if (this.whitelist[i].duration != -1) {
-				if (this.whitelist[i].duration > 0) {
-					if (this.whitelist[i].duration < current_time - this.whitelist[i].created_at) {
-						this.whitelist.splice(i, 1);
-					}
-				} else {
-					if (this.prune_after < current_time - this.whitelist[i].created_at) {
-						this.whitelist.splice(i, 1);
-					}
-				}
-			}
-		}
 		for (let i = 0; i < this.blacklist.length; i++) {
 			if (this.prune_after < current_time - this.blacklist[i].created_at) {
 				this.blacklist.splice(i, 1);
@@ -662,6 +803,9 @@ class ModTools extends ModTemplate {
 		this.app.options.modtools.blacklist = this.blacklist;
 		this.app.options.modtools.permissions = this.permissions;
 		this.app.storage.saveOptions();
+
+		//Broadcast that the black or white lists have changed
+		this.app.connection.emit("modtools-lists-updated");
 	}
 
 	load() {
@@ -690,7 +834,7 @@ class ModTools extends ModTemplate {
 		this.permissions = this.app.options.modtools.permissions;
 
 		for (let i = 0; i < this.app.options.modtools.whitelist.length; i++) {
-			if (this.verifyData(this.app.options.modtools.whitelist[i])){
+			if (this.verifyData(this.app.options.modtools.whitelist[i], true)){
 				let pk = this.app.options.modtools.whitelist[i].publicKey;
 				if (!this.whitelisted_publickeys.includes(pk)) {
 					this.whitelisted_publickeys.push(pk);
@@ -699,7 +843,7 @@ class ModTools extends ModTemplate {
 			}
 		}
 		for (let i = 0; i < this.app.options.modtools.blacklist.length; i++) {
-			if (this.verifyData(this.app.options.modtools.blacklist[i])){
+			if (this.verifyData(this.app.options.modtools.blacklist[i], true)){
 				let pk = this.app.options.modtools.blacklist[i].publicKey;
 				if (!this.blacklisted_publickeys.includes(pk)) {
 					this.blacklisted_publickeys.push(pk);
@@ -711,7 +855,7 @@ class ModTools extends ModTemplate {
 		this.save();
 	}
 
-	verifyData(obj) {
+	verifyData(obj, check_time = true) {
 		// Update data structure live
 		if (!obj?.publicKey) {
 			return false;
@@ -721,20 +865,32 @@ class ModTools extends ModTemplate {
 			return false;
 		}
 
+		if (obj.publicKey == this.publicKey){
+			return false;
+		}
+
 		// Prune Old Listed Keys
-		let current_time = new Date().getTime();
-		if (obj.duration > 0) {
-			if (obj.duration < current_time - obj.created_at) {
-				return false;
-			}
-		} else {
-			if (this.prune_after < current_time - obj.created_at) {
-				return false;
+		if (check_time){
+			let current_time = new Date().getTime();
+			if (obj.duration > 0) {
+				if (obj.duration < current_time - obj.created_at) {
+					return false;
+				}
+			} else {
+				if (this.prune_after < current_time - obj.created_at) {
+					return false;
+				}
 			}
 		}
 
 		return true;
 	}
+
+
+	/*
+		Idea, prune_after should indicate prune after X time IFF we don't see said key
+	*/
+
 
 	webServer(app, expressapp, express) {
 		let webdir = `${__dirname}/../../mods/${this.dirname}/web`;

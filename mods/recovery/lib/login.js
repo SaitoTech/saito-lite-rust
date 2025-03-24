@@ -70,9 +70,7 @@ class Login {
 		this.modal_overlay.show(LoginSuccessTemplate());
 
 		document.querySelector('.saito-overlay-login-submit').onclick = (e) => {
-			setTimeout(() => {
-				window.location.reload();
-			}, 300);
+			reloadWindow(300);
 		};
 
 		this.modal_overlay.blockClose();

@@ -82,6 +82,11 @@ class Videocall extends ModTemplate {
 
 			this.app.storage.saveOptions();
 		});
+
+
+		app.connection.on('stun-connection-close', (peerId)=> {
+			this.disconnect(peerId, " has no connection");
+		});
 	}
 
 	/**
@@ -106,8 +111,6 @@ class Videocall extends ModTemplate {
 			if (this.app.options.stun.settings?.layout) {
 				this.layout = this.app.options.stun.settings?.layout;
 			}
-
-			console.log('************* LAYOUT', this.layout);
 
 			if (app.browser.returnURLParameter('stun_video_chat')) {
 				this.room_obj = JSON.parse(
@@ -384,6 +387,7 @@ class Videocall extends ModTemplate {
 					icon: 'fa-solid fa-cog',
 					prepend: true,
 					callback: function (app) {
+						console.log("***** 1");
 						app.connection.emit('videocall-show-settings');
 					}
 				}
@@ -504,7 +508,9 @@ class Videocall extends ModTemplate {
 					}
 
 					if (txmsg.request === 'peer-left') {
-						this.disconnect(tx.from[0].publicKey);
+						if (!tx.isFrom(this.publicKey)){
+							this.disconnect(tx.from[0].publicKey);	
+						}
 					}
 
 					if (txmsg.request === 'peer-kicked') {
@@ -536,6 +542,8 @@ class Videocall extends ModTemplate {
 						this.streams.remoteStreams.delete("presentation");
 						this.screen_share = null;
 					}
+
+					// Peer sharing connection state with people in the call...
 					if (txmsg.request === 'broadcast-call-list') {
 						this.receiveBroadcastListTransaction(this.app, tx);
 					}
@@ -598,6 +606,14 @@ class Videocall extends ModTemplate {
 			newtx.addTo(this.room_obj.host_public_key);
 		}
 
+		// Fallback for saved calls when blocks aren't forming correctly
+		let event = this.app.keychain.returnKey(this.room_obj.call_id, true);
+		if (event?.profile?.participants){
+			for (let participant of event.profile.participants){
+				newtx.addTo(participant);
+			}
+		}
+
 		newtx.msg.module = 'Videocall';
 		newtx.msg.request = 'call-list-request';
 		newtx.msg.call_id = this.room_obj.call_id;
@@ -616,7 +632,14 @@ class Videocall extends ModTemplate {
 
 		let from = tx.from[0].publicKey;
 
+		//Update calendar event
 		this.addCallParticipant(txmsg.call_id, from);
+
+		//Check if we have a broken stun connection
+		if (!this.stun.hasConnection(from)) {
+			console.log("Videocall: reset stun peer connection for new join");
+			this.stun.removePeerConnection(from);
+		}
 
 		//We are getting a tx for the call we are in
 		if (this?.room_obj?.call_id === txmsg.call_id) {
@@ -645,8 +668,10 @@ class Videocall extends ModTemplate {
 		}
 
 		// Process if we saved event but are not in the call!
-
+		let event = this.app.keychain.returnKey(txmsg.call_id, true);
+		
 		if (event){
+			console.log("EVENT!!!", event);
 			// I am in a different call
 			if (this.room_obj?.call_id){
 				siteMessage(`${this.app.keychain.returnUsername(from)} joined ${event.identifier}`);
@@ -655,7 +680,7 @@ class Videocall extends ModTemplate {
 				let c = await sconfirm(`${this.app.keychain.returnUsername(from)} ready for ${event.identifier}, join now?`);
 				if (c) {
 					if (event?.link){
-						window.location = event.link;	
+						navigateWindow(event.link);	
 					}else{
 						salert("No saved link");
 					}
@@ -695,6 +720,7 @@ class Videocall extends ModTemplate {
 		console.log('STUN: My peer list: ', this.room_obj.call_peers, 'Received list: ', call_list);
 
 		for (let peer of call_list) {
+			this.addCallParticipant(txmsg.call_id, peer);
 			if (peer !== this.publicKey) {
 				if (!this.room_obj?.call_peers.includes(peer)) {
 					this.room_obj?.call_peers.push(peer);
@@ -835,7 +861,6 @@ class Videocall extends ModTemplate {
 		let call_list = [];
 
 		for (let peer in txmsg.data) {
-			console.log(peer, txmsg.data[peer]);
 			if (txmsg.data[peer] == 'connected') {
 				if (peer !== this.publicKey) {
 					if (!this.room_obj.call_peers.includes(peer)) {
@@ -859,7 +884,6 @@ class Videocall extends ModTemplate {
 
 	addCallParticipant(call_id, publicKey){
 		let event = this.app.keychain.returnKey(call_id, true);
-		
 		// We will add this key as a call participant...
 		if (event){
 			if (!event?.profile){
@@ -871,13 +895,14 @@ class Videocall extends ModTemplate {
 
 			if (!event.profile.participants.includes(publicKey)){
 				event.profile.participants.push(publicKey);	
+				this.app.keychain.saveKeys();
 			}
-			this.app.keychain.saveKeys();
 		}
 	}
 
 	saveCallToKeychain(){
 
+		console.log("Saving call as event in keychain");
 		let call_link = this.generateCallLink();
 		let name = "Video Call";
 

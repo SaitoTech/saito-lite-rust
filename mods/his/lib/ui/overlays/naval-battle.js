@@ -96,6 +96,7 @@ class NavalBattleOverlay {
 		let his_self = this.mod;
 		let hitstext = ' Hits';
 		let undestroyed_corsairs = 0;
+		let undestroyed_squadrons = 0;
 		if (hits_to_assign == 1) {
 			hitstext = ' Hit';
 		}
@@ -125,6 +126,7 @@ class NavalBattleOverlay {
 		document.querySelectorAll(qs2).forEach((el) => {
 			let unit_type = el.getAttribute('data-unit-type');
 			if (unit_type == "corsair") { undestroyed_corsairs++; }
+			if (unit_type == "squadron") { undestroyed_squadrons++; }
 		});
 
 
@@ -136,15 +138,18 @@ try {
 			if (
 				factionspace === faction ||
 				his_self.returnAllyOfMinorPower(factionspace) === faction ||
-				his_self.game.player ===
-					his_self.returnPlayerCommandingFaction(faction)
+				his_self.game.player === his_self.returnPlayerCommandingFaction(faction)
 			) {
 				can_i_kill_this_guy = true;
 			}
 
 			if (can_i_kill_this_guy) {
+
 				if (factionspace) {
-					el.querySelector('.naval-battle-desc').innerHTML += ' (click to assign hit)';
+					let obj = el.querySelector('.naval-battle-desc');
+					if (obj) {
+						obj.innerHTML += ' (click to assign hit)';
+					}
 				}
 				el.classList.add('hits-assignable-hover-effect');
 
@@ -157,10 +162,18 @@ try {
 
 				el.onclick = (e) => {
 
+					let hits_left = hits_to_assign - hits_assigned;
 					let this_unit_type = e.currentTarget.getAttribute('data-unit-type');
+
 					if (hits_left == 1 && this_unit_type == "squadron") {
-						alert("Squadrons take 2 hits to destroy...");
+						alert("You must assign your last hit to a Corsair...");
 						return;
+					}
+					if (hits_left == 2 && this_unit_type == "corsair") {
+						if (undestroyed_corsairs <= 1 && undestroyed_squadrons > 0) {
+							alert("You must assign your last two hits to a Squadron...");
+							return;
+						}
 					}
 
 					document
@@ -177,7 +190,7 @@ try {
 					if (unit_type === 'squadron') {
 						hits_assigned++;
 					}
-					let hits_left = hits_to_assign - hits_assigned;
+					hits_left = hits_to_assign - hits_assigned;
 
 					if (hits_left > 0) {
 						this.mod.updateStatus(
@@ -333,6 +346,8 @@ try {
 			let roll = res.attacker_modified_rolls[modified_rolls_idx];
 			let unit_type = res.attacker_units[i];
 			let faction_name = res.attacker_units_faction[i];
+			let faction_owner = faction_name;
+			if (res.attacker_units_owners.length > i) { faction_owner = res.attacker_units_owners[i]; }
 			let how_many_hits = 1;
 			if (unit_type === 'squadron') {
 				how_many_hits = 2;
@@ -378,6 +393,8 @@ try {
 					roll = '?';
 					rrclass = '';
 				}
+
+				if (faction_owner != faction_name) { faction_name = faction_name + " / " + faction_owner; }
 
 				let html = `
               <div class="naval-battle-row ${assignable}" data-unit-type="${unit_type}" data-faction="${faction_name}">
@@ -430,6 +447,8 @@ try {
 			let roll = res.defender_modified_rolls[modified_rolls_idx];
 			let unit_type = res.defender_units[i];
 			let faction_name = res.defender_units_faction[i];
+			let faction_owner = faction_name;
+			if (res.defender_units_owners.length > i) { faction_owner = res.defender_units_owners[i]; }
 			let how_many_hits = 1;
 			if (unit_type === 'squadron') {
 				how_many_hits = 2;
@@ -475,6 +494,8 @@ try {
 					roll = '?';
 					rrclass = '';
 				}
+
+				if (faction_owner != faction_name) { faction_name = faction_name + " / " + faction_owner; }
 
 				let html = `
               <div class="naval-battle-row ${assignable}" data-unit-type="${unit_type}" data-faction="${faction_name}">

@@ -6,12 +6,13 @@
   backdrop-filter: blur(1px);
   margin: 0;
   align-items: center;
+  justify-content: space-between;
   padding: 1rem max(2rem, calc((100vw - var(--saito-width)) / 2 + 0.5rem));
   top: 0;
   left: 0;
   z-index: 15;
   height: var(--saito-header-height);
-  transition: all 0.33s linear;
+  transition: top 0.33s linear, height 0.33s linear, padding 0.33s linear;
 }
 
 #saito-header.wide-screen {
@@ -23,10 +24,17 @@
   padding-left: max(1.5rem, calc((100vw - var(--saito-arcade-width)) / 4 + 1rem));
 }
 
-#saito-header nav {
-  display: flex;
-  align-items: center;
-  margin-left: auto;
+#saito-header.game {
+  padding: 0;
+  padding-right: 2rem;
+  /* redefining base variable in game-layout doesn't work if people push themes on games */
+  background: transparent; 
+  backdrop-filter: none;
+  z-index: 90; /* to be the same as game-menu was */
+}
+
+#saito-header.game .saito-header-logo-wrapper, #saito-header.game .header-msg {
+  display: none;
 }
 
 .saito-header-logo {
@@ -43,7 +51,6 @@
   color: var(--font-color-menu-hamburger);
   display: flex;
   justify-content: center;
-  filter: var(--header-readability-drop-shadow);
 }
 
 #saito-header-menu-toggle i {
@@ -91,22 +98,23 @@
 
 .saito-header-hamburger-contents {
   display: block;
-  pointer-events: none;
-  background-color: var(--background-color-menu-hamburger-chat); /* affects chat only, it seems*/
+  background: var(--background-color-header-menu);
   border-radius: var(--border-radius-menu-hamburger);
   position: absolute;
-  right: 0;
+  right: -40rem;
   top: var(--saito-header-height);
   border-top: 1px solid var(--border-color-general-dividers);
   border-left: 1px solid var(--border-color-general-dividers);
-  transition: all 0.2s;
-  opacity: 0;
+  transition: right 0.33s, width 0.33s;
   z-index: 21;
-  width: 20rem;
+  width: 40rem;
   height: calc(100 * var(--saito-vh) - var(--saito-header-height) + 3px);
   overflow: hidden auto;
 }
 
+.saito-header-hamburger-contents.show-menu {
+  right: 0;
+}
 
 .saito-header-menu-section {
   padding: 1.5rem 0;
@@ -125,17 +133,9 @@
   border-bottom: 1px solid var(--border-color-general-dividers);
 }
 
-.show-menu {
-  opacity: 1;
-  width: 40rem;
-  -webkit-transform: translateX(0);
-  transform: translateX(0);
-  pointer-events: auto;
-  background: var(--background-color-header-menu);
-}
 
 .saito-header-backdrop {
-  display: none;
+  opacity: 0;
   pointer-events: none;
   position: fixed;
   top: var(--saito-header-height);
@@ -144,11 +144,12 @@
   height: calc(100vh - var(--saito-header-height));
   overflow: hidden;
   z-index: 19;
-  background: #11111169;
+  background: var(--background-color-shim-dark);
+  transition: opacity 0.33s;
 }
 
 .saito-header-backdrop.menu-visible {
-  display: block;
+  opacity: 1;
   pointer-events: auto;
 }
 
@@ -159,10 +160,10 @@
   align-items: center;
 }
 
-#qrcode {
+#qrcode, .qrcode {
   width: 100%;
-  max-height: 21rem;
-  height: 21.5vh;
+  max-height: 20rem;
+  height: 20vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -170,19 +171,17 @@
 }
 
 
-#qrcode img {
+#qrcode img, .qrcode img {
   height: auto;
   max-width: 20rem;
   width: 20vh;
   border: var(--border-thickness-qr-code) solid var(--border-color-qr-code);
-  padding: 0.5rem;
+  padding: var(--border-padding-qr-code);
   border-radius: var(--border-radius-qr-code);
   background: var(--background-color-qr-code);
 }
 
-.balance-amount {
-  font-size: 4.2rem;
-  margin-right: -1.5rem;
+.balance-amount{
   display: flex;
 }
 
@@ -212,6 +211,7 @@
   border: none;
   background: none;
   width: auto;
+  height: 100%;
   font-size: 2.2rem;
   color: var(--font-color-primary);
 }
@@ -247,17 +247,21 @@
 
 
 .wallet-identicon {
-  width: 3rem;
-  height: 3rem;
+  width: 3.2rem;
+  height: 3.2rem;
+  margin: auto 1rem auto 0;
 }
 
 .pubkey-containter {
   display: flex;
   flex-direction: row;
-  width: 90%;
+  width: 75%;
+  max-width: 38rem;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  gap: 1rem;
+  font-size: 1.6rem;
 }
 
 .pubkey-containter:hover i {
@@ -265,40 +269,47 @@
 }
 
 .wallet-infoo {
-  padding: 0rem;
-  margin: 0rem;
+  padding-top: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
   justify-content: space-around;
+  width: 100%;
 }
 
 .wallet-balance {
   display: flex;
   flex-direction: row;
-  gap: 2rem;
+  gap: 1rem;
   align-items: baseline;
+  height: 4.2rem;
 }
 
 .profile-public-key {
-  width: 55%;
-  font-size: 1.7rem;
+  width: fit-content;
+}
+
+.profile-public-key > div:first-child{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.profile-public-key.generate-keys {
-  width: 100%;
-}
+/*.profile-public-key.generate-keys {
+  width: fit-content;
+  max-width: 100%;
+  font-family: var(--saito-font);
+}*/
 
 
 .hamburger-container {
   display: flex;
   align-items: center;
   gap: 1rem;
+  margin-left: auto;
 }
+
 
 #header-msg {
   color: var(--font-color-header-msg);
@@ -308,7 +319,6 @@
   max-width: 20rem;
   overflow: hidden;
   text-overflow: ellipsis;
-  filter: var(--header-readability-drop-shadow);
 }
 
 #header-msg.flash {
@@ -453,7 +463,6 @@
 }
 
 .saito-header-logo-wrapper img, .saito-header-logo-wrapper i::before{
-  filter: var(--header-readability-drop-shadow);
 }
 
 .saito-back-button {
@@ -528,27 +537,18 @@
 }
 
 
-@media screen and (max-width: 768px) {
-  .saito-header-hamburger-contents {
-    width: 80vw;
-    overflow-x: hidden;
-  }
-  .slidein-panel {
-    width: 80vw;
-  }
-  .external-links {
-    padding-bottom: 10rem;
-  }
+.hide-for-fade-in {
+  opacity: 0;
+  transition: opacity 4s;
 }
 
 @media screen and (max-width: 620px) {
   .saito-header-hamburger-contents {
     width: 100vw;
-    padding: 0rem;
+    right: -100vw;
+    border-radius: unset;
   }
-  .slidein-panel {
-    width: 100vw;
-  }
+
   #saito-header {
     padding: 1.3rem 1rem;
   }

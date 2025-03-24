@@ -1,0 +1,39 @@
+.reserves-overlay {
+	min-width: 1000px;
+	min-height: 540px;
+	max-height: 90vh;
+	max-width: 90vw;
+	border-radius: 2rem;
+	background-image: url('/paths/img/CombatTables.png');
+	background-size: cover;
+}
+.reserves-overlay .controls {
+	margin-top: 0px;
+}
+.reserves-overlay .units {
+    display: flex;
+    grid-gap: 1rem;
+    column-gap: 1rem;
+    padding-top: 20rem;
+    padding: 5rem;
+    padding-top: 24rem;
+}
+.reserves-overlay .units .army-tile {
+    height: 10rem;
+    width: 10rem;
+    position: relative;
+}
+.reserves-overlay.allies {
+	background-image: url('/paths/img/backgrounds/allies-reserve-box.png');
+	height: auto;
+  	width: 80%;
+  	aspect-ratio: 1000 / 570;
+}
+.reserves-overlay.central {
+	background-image: url('/paths/img/backgrounds/central-reserve-box.png');
+	height: auto;
+  	width: 80%;
+  	aspect-ratio: 1000 / 540;
+}
+
+

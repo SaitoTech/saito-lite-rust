@@ -10,9 +10,6 @@
 
 .status-header,
 .status-message,
-.status-text-menu,
-.status-text-menu ul,
-.status-text-menu ul li,
 .textchoice {
 	background: unset;
 }
@@ -72,9 +69,8 @@
 
 @media (max-aspect-ratio: 8/7) {
 	.game-playerbox-manager {
-		margin: 0.25rem;
+		margin: 0.5rem;
 		flex-direction: row;
-		top: 5px;
 	}
 
 	.game-playerbox {

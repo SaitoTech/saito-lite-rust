@@ -44,16 +44,30 @@ class Crypto extends ModTemplate {
 
 		app.connection.on('accept-game-stake', async (sobj) => {
 			
+			console.log("accept-game-stake sobj: ", sobj);
+
 			await this.app.wallet.setPreferredCrypto(sobj.ticker);
 
-			let cryptomod = this.app.wallet.returnCryptoModuleByTicker(sobj.ticker);
-			let current_balance = await cryptomod.returnBalance();
+			let current_balance = Number(await this.app.wallet.returnPreferredCryptoBalance());
+
+			let network_fee = 0; 
+
+		  let crypto_mod = this.app.wallet.returnPreferredCrypto();
+	    await crypto_mod.checkWithdrawalFeeForAddress('', function(res){
+	      network_fee = Number(res);
+	    });
+
 			let needed_balance = (typeof sobj.stake == "object") ? parseFloat(sobj.stake.min) : parseFloat(sobj.stake);
+			
+			console.log(current_balance, needed_balance, network_fee);
+
+			needed_balance += network_fee;
 
 			if (needed_balance > current_balance){
+
 				this.app.connection.emit('saito-crypto-deposit-render-request', {
 					ticker: sobj.ticker,
-					amount: needed_balance,
+					amount: (needed_balance - current_balance),
 				});
 				return;
 			}
@@ -93,48 +107,38 @@ class Crypto extends ModTemplate {
 			};
 
 			for (let ticker in ac) {
-				menu.submenus.push({
-					parent: 'game-crypto',
-					text: ticker,
-					id: 'game-crypto-' + ticker,
-					class: 'game-crypto-ticker',
-					callback: async (app, game_mod) => {
-						this.attachStyleSheets();
+				if (!gm.game?.crypto || gm.game.crypto == ticker){
+					menu.submenus.push({
+						parent: 'game-crypto',
+						text: ticker,
+						id: 'game-crypto-' + ticker,
+						class: 'game-crypto-ticker',
+						callback: async (app, game_mod) => {
+							this.attachStyleSheets();
 
-						this.max_balance = ac[ticker];
-						this.min_balance = game_mod?.opengame ? this.max_balance : -1;
+							this.max_balance = ac[ticker];
+							this.min_balance = game_mod?.opengame ? this.max_balance : -1;
 
-						if (
-							game_mod.game.crypto &&
-							game_mod.game.crypto != 'CHIPS'
-						) {
+							if (
+								game_mod.game.crypto &&
+								game_mod.game.crypto != 'CHIPS'
+							) {
 
-							if (typeof game_mod.game.stake === "object"){
-								let str = "";
-								for (let i in game_mod.game.stake){
-									if (i !== 'min'){
-										str += `${game_mod.app.keychain.returnUsername(i)}: ${game_mod.game.stake[i]} ${game_mod.game.crypto} / `
-									}
-								}
-								str = str.substring(0, str.length - 3);
-								salert(`${str} staked on this game`);
-							}else{
-								salert(
-									`${game_mod.game.stake} ${game_mod.game.crypto} staked on this game!`
-								);
+								game_mod.showStakeOverlay();
+							
+								return;
 							}
-							return;
+
+							this.overlay.ticker = ticker;
+
+							this.overlay.render((ticker, amount) => {
+								game_mod.menu.hideSubMenus();
+								game_mod.proposeGameStake(ticker, amount);
+								app.browser.logMatomoEvent('StakeCrypto', 'viaGameMenu', ticker);
+							});
 						}
-
-						this.overlay.ticker = ticker;
-
-						this.overlay.render((ticker, amount) => {
-							game_mod.menu.hideSubMenus();
-							game_mod.proposeGameStake(ticker, amount);
-							app.browser.logMatomoEvent('StakeCrypto', 'viaGameMenu', ticker);
-						});
-					}
-				});
+					});
+				}
 			}
 
 
@@ -166,13 +170,15 @@ class Crypto extends ModTemplate {
 
 			let game_name = document.querySelector("input[name='game']")?.value;
 			if (game_name){
-				let gm = this.app.modules.returnModuleByName(game_name);
-				if (gm?.opengame){
+				this.gm = this.app.modules.returnModuleByName(game_name);
+				if (this.gm?.opengame){
 					this.min_balance = -1;
 				}
-				if (!gm?.can_bet){
+				if (!this.gm?.can_bet){
 					return;
 				}
+			}else {
+				return;
 			}
 
 			this.attachStyleSheets();
@@ -249,7 +255,25 @@ class Crypto extends ModTemplate {
 	}
 
 
+	includeFeeInMax(ticker) {
+		let fee = 0;
 
+    let crypto_mod = this.app.wallet.returnCryptoModuleByTicker(ticker);
+    crypto_mod.checkWithdrawalFeeForAddress('', function(res){
+      fee = Number(res);
+    });
+
+    let diff = Number(this.max_balance) - Number(fee);
+    diff = parseFloat(diff.toFixed(8));
+
+    if (diff < 0) {
+      this.max_balance = 0;  
+    } else {
+      this.max_balance = diff;
+    }
+
+    return fee;
+	}
 
 
 

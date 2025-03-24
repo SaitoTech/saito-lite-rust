@@ -70,7 +70,7 @@ class Saveload extends ModTemplate {
 								) {
 									let game_slug =
 										this.app.modules.mods[z].returnSlug();
-									window.location = '/' + game_slug;
+									navigateWindow('/' + game_slug);
 								}
 							}
 						}

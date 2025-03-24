@@ -6,7 +6,6 @@ const LeagueMain = require('./lib/main');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
 const JoinLeagueOverlay = require('./lib/overlays/join');
-const localforage = require('localforage');
 const PeerService = require('saito-js/lib/peer_service').default;
 
 //Trial -- So that we can display league results in game page
@@ -51,6 +50,7 @@ class League extends ModTemplate {
 		this.icon_fa = 'fas fa-user-friends';
 		this.debug = false;
 		this.last_prune = 0;
+		this.finished_games = [];
 
 		app.connection.on('league-render-into', (league_id, container) => {
 			if (!app.BROWSER) {
@@ -80,17 +80,6 @@ class League extends ModTemplate {
 			return [];
 		}
 		return [new PeerService(null, 'league', null, 'saito')];
-	}
-
-	async onUpgrade(type, privatekey, walletfile) {
-		if (type == 'nuke') {
-			if (this.app.options?.leagues?.length > 0) {
-				for (let i = 0; i < this.app.options.leagues.length; i++) {
-					await localforage.removeItem(`league_${this.app.options.leagues[i]}`);
-				}
-			}
-		}
-		return 1;
 	}
 
 	respondTo(type, obj = null) {
@@ -296,6 +285,7 @@ class League extends ModTemplate {
 					for (let i = 0; i < this.leagues.length; i++) {
 						if (this.leagues[i].game == am_name) {
 							this.fetchLeagueLeaderboard(this.leagues[i].id, () => {
+								console.log("Update league info for curent game:", this.leagues[i]);
 								this.app.connection.emit(
 									'league-leaderboard-loaded',
 									this.leagues[i].game,
@@ -505,6 +495,11 @@ class League extends ModTemplate {
 				return;
 			}
 
+			if (this.hasSeenTransaction(tx)) {
+				console.warn("Duplicate transaction in League");
+				return;
+			}
+
 			let txmsg = tx.returnMessage();
 
 			if (this.debug) {
@@ -567,6 +562,10 @@ class League extends ModTemplate {
 	async loadLeagues() {
 		let league_self = this;
 		if (this.app.BROWSER) {
+
+			//
+			// Browsers cache data for relevant leagues
+			//
 			if (this.app.options?.leagues) {
 				if (this.debug) {
 					console.log(
@@ -575,51 +574,43 @@ class League extends ModTemplate {
 					);
 				}
 
-				let cnt = this.app.options.leagues.length;
 
 				for (let lid of this.app.options.leagues) {
-					await localforage.getItem(`league_${lid}`, async function (error, value) {
-						//Because this is async, the initialize function may have created an
-						//empty default group
+					let value = await this.app.storage.getLocalForageItem(`league_${lid}`);
+					if (value) {
+						//console.log(`Loaded League ${lid.substring(0,10)} from IndexedDB`);
+						await league_self.updateLeague(value);
 
-						if (value) {
-							//console.log(`Loaded League ${lid.substring(0,10)} from IndexedDB`);
-							await league_self.updateLeague(value);
+						let league = league_self.returnLeague(lid);
 
-							let league = league_self.returnLeague(lid);
+						//Make sure we get these data right!
+						league.players = value.players;
+						league.rank = value.rank;
+						league.numPlayers = value.numPlayers;
 
-							//Make sure we get these data right!
-							league.players = value.players;
-							league.rank = value.rank;
-							league.numPlayers = value.numPlayers;
-
-							if (league.game === league_self.app.modules.returnActiveModule()?.name) {
-								console.log(
-									'Local version of this game league: ',
-									JSON.parse(JSON.stringify(league))
-								);
-							}
+						if (league.game === league_self.app.modules.returnActiveModule()?.name) {
+							console.log(
+								'Local version of this game league: ',
+								JSON.parse(JSON.stringify(league))
+							);
 						}
-
-						cnt--;
-
-						if (cnt == 0) {
-							console.log('All leagues loaded from IndexedDB --> refresh UI');
-							league_self.sortLeagues();
-							//Render initial UI based on what we have saved
-							league_self.app.connection.emit('leagues-render-request'); // league/ main
-							league_self.app.connection.emit('league-rankings-render-request'); // sidebar league list
-							league_self.app.connection.emit('finished-loading-leagues');
-						}
-					});
+					}
 				}
+
+				console.log('All leagues loaded from IndexedDB --> refresh UI');
+				league_self.sortLeagues();
+				//Render initial UI based on what we have saved
+				league_self.app.connection.emit('leagues-render-request'); // league/ main
+				league_self.app.connection.emit('league-rankings-render-request'); // sidebar league list
+				league_self.app.connection.emit('finished-loading-leagues');
+
 
 				return;
 			} else {
 				this.app.options.leagues = [];
 			}
 		} else {
-			//Do we need to make sure the service node has all the data in memory??
+
 			let sqlResults = await this.app.storage.queryDatabase(
 				`SELECT *
          FROM leagues
@@ -630,6 +621,7 @@ class League extends ModTemplate {
 			for (let league of sqlResults) {
 				await league_self.updateLeague(league);
 			}
+			console.log("Loaded leagues into memory");
 		}
 	}
 
@@ -653,13 +645,8 @@ class League extends ModTemplate {
 				//let newLeague = JSON.parse(JSON.stringify(league));
 				//delete newLeague.players;
 				this.app.options.leagues.push(league.id);
-				localforage.setItem(`league_${league.id}`, league).then(function () {
-					if (league_self.debug) {
-						console.log('Saved league data for ' + league.id);
-						console.log(JSON.parse(JSON.stringify(league)));
-					}
-					//console.log(`Saved ${++cnt} out of ${league_self.app.options.leagues.length} leagues`);
-				});
+
+				this.app.storage.setLocalForageItem(`league_${league.id}`, league);
 			}
 		}
 
@@ -990,14 +977,20 @@ class League extends ModTemplate {
 		//
 		// small grace period
 		//
-		if (
-			is_gameover &&
-			(txmsg.reason == 'cancellation' ||
+		if (is_gameover){
+			if(txmsg.reason == 'cancellation' ||
 				txmsg.reason?.includes('Wins:') ||
 				txmsg.reason?.includes('Scores: '))
-		) {
-			console.log("Don't process");
-			return;
+		 	{
+				console.log("Don't process");
+				return;
+			}
+			if (this.finished_games.includes(txmsg.game_id)){
+				console.warn("Game over already processed");
+				return;
+			}else{
+				this.finished_games.push(txmsg.game_id);
+			}
 		}
 
 		//
@@ -1028,6 +1021,10 @@ class League extends ModTemplate {
 		// update database
 		//
 		for (let leag of relevantLeagues) {
+
+			let myScore = leag.score;
+			let myRank = leag.rank;
+
 			//
 			// update rankings (ELO)
 			//
@@ -1042,10 +1039,8 @@ class League extends ModTemplate {
 			}
 
 			if (this.app.BROWSER) {
-				//console.log("Update league rankings on game over");
-				//console.log(JSON.parse(JSON.stringify(leag.players)));
-				let myScore = leag.score;
-				let myRank = leag.rank;
+				console.log("Update league rankings on game over");
+				console.log(JSON.parse(JSON.stringify(leag.players)), myScore, myRank);
 				this.fetchLeagueLeaderboard(leag.id, () => {
 					if (myRank <= 0 && leag.rank > 0) {
 						if (is_gameover) {
@@ -1153,7 +1148,7 @@ class League extends ModTemplate {
 	/////////////////////
 	/////////////////////
 	async getRelevantLeagues(game, target_league = '') {
-		let sql = `SELECT *
+		/*let sql = `SELECT *
                FROM leagues
                WHERE game = $game
                  AND (admin = "" OR id = $target)
@@ -1162,6 +1157,7 @@ class League extends ModTemplate {
 		let params = { $game: game, $target: target_league };
 
 		let sqlResults = await this.app.storage.queryDatabase(sql, params, 'league');
+		*/
 
 		let localLeagues = this.leagues.filter((l) => {
 			if (l.game === game) {
@@ -1172,7 +1168,7 @@ class League extends ModTemplate {
 			return false;
 		});
 
-		return sqlResults || localLeagues;
+		return /*sqlResults ||*/ localLeagues;
 	}
 
 	async getPlayersFromLeague(league_id, players) {
@@ -1277,6 +1273,9 @@ class League extends ModTemplate {
 		let winner = [],
 			loser = [];
 		let qsum = 0;
+
+		let playerObj = {};
+
 		for (let player of playerStats) {
 			//Convert each players ELO rating into a logistic function
 			player.q = Math.pow(10, player.score / 400);
@@ -1304,19 +1303,13 @@ class League extends ModTemplate {
 			} else {
 				loser.push(player);
 			}
+
+			playerObj[player.publicKey] = {
+				iRank: player?.rank,
+				iScore: Math.round(player.score)
+			};
+
 		}
-
-		if (winner.length !== 1 || loser.length !== 1) {
-			shouldTweet = false;
-		}
-
-		let w = winner[0];
-		let l = loser[0];
-		let w_rank = w?.rank; //? '#' + w.rank : 'Unranked';
-		let l_rank = l?.rank; //? '#' + l.rank : 'Unranked';
-		let w_points = Math.round(w.score);
-		let l_points = Math.round(l.score);
-
 
 		for (let p of winner) {
 			let outcome = winner.length == 1 ? 'games_won' : 'games_tied';
@@ -1333,40 +1326,68 @@ class League extends ModTemplate {
 		}
 
 		if (shouldTweet) {
+
 			await this.fetchRankings(league.id, playerStats);
-			let w_rank2 = w?.rank;
-			let l_rank2 = l?.rank;
 
-			let tweetContent = `###### _${league.name} Leaderboard Update_ ######\n`;
-			tweetContent += `| | ${this.app.keychain.returnUsername(w.publicKey)} | ${this.app.keychain.returnUsername(l.publicKey)} | \n |:---- |:----:|:----:| \n | Ranking | ${w_rank2} `;
-			if (w_rank){
-				if (w_rank2 < w_rank){
-					tweetContent += ` (+${w_rank - w_rank2}) ⬆️`;
-				}
-			}else{
-				tweetContent += " (NEW)";
-			}
-			tweetContent += ` | ${l_rank2}`;
-			if (l_rank){
-				if (l_rank2 > l_rank){
-					tweetContent += ` (${l_rank - l_rank2}) ⬇️`;	
-				}
-			}else{
-				tweetContent += " (NEW)";
+			let tweetContent = `###### _${league.name} Leaderboard Update_ ######\n|`;
+
+			for (let player of playerStats){
+				tweetContent += ` | ${this.app.keychain.returnUsername(player.publicKey)}`;
 			}
 
-			let w_points2 = Math.round(w.score);
-			let l_points2 = Math.round(l.score);
+			let space = ':----:|';
 
-			tweetContent += ` | \n | Points | ${w_points2} (+${w_points2-w_points}) ⬆️ | ${l_points2} (${l_points2-l_points}) ⬇️ |`;
+			tweetContent += ` | \n|:---- |${space.repeat(playerStats.length)} \n| Ranking`;
 
-			console.log(tweetContent);
+			for (let player of playerStats) {
+				tweetContent += ` | ${player.rank}`;
+				let rank = playerObj[player.publicKey]?.iRank;
+				if (rank){
+					if (player.rank < rank) {
+						tweetContent += ` (+${rank - player.rank}) ⬆️`;
+					}else if (player.rank > rank){
+						tweetContent += ` (${rank - player.rank}) ⬇️`;
+					} // else -- no change
+				}else {
+					tweetContent += " (NEW)";
+				}
+			}
+
+			tweetContent += ` | \n| Points |`;
+
+			for (let player of playerStats) {
+				let points2 = Math.round(player.score);
+				let points1 = playerObj[player.publicKey]?.iScore;
+
+				if (points2 > points1){
+					tweetContent += ` ${points2} (+${points2-points1}) ⬆️ |`;
+				}else{
+					tweetContent += ` ${points2} (${points2-points1}) ⬇️ |`;
+				}
+			}
+
+			//console.log(tweetContent);
+
+			let now = new Date().getTime();
 
 			let obj = {
 				module: 'RedSquare',
 				request: 'create tweet',
 				data: { text: tweetContent, mentions: players }
 			};
+
+			if (league?.tweetID) {
+				if (now - league.tweetTS > 1000*60*60*4){
+					// Start a new thread if it has been at least 4 hours
+					delete league.tweetID;
+					delete league.tweetTS;
+				}else{
+					league.tweetTS = now;
+					obj.data.parent_id = league.tweetID;
+					obj.data.thread_id = league.tweetID;
+					obj.data.signature = league.tweetID;
+				}
+			}
 
 			let newtx = await this.app.wallet.createUnsignedTransaction();
 			for (let player of players){
@@ -1377,6 +1398,12 @@ class League extends ModTemplate {
 
 			await newtx.sign();
 			await this.app.network.propagateTransaction(newtx);
+
+			if (!league?.tweetID){
+				league.tweetID = newtx.signature;
+				league.tweetTS = now;
+			}
+
 		}
 	}
 
@@ -1515,7 +1542,7 @@ class League extends ModTemplate {
 			if (this.leagues[i].id === league_id) {
 				this.leagues.splice(i, 1);
 				if (this.app.BROWSER) {
-					await localforage.removeItem(`league_${league_id}`);
+					await this.app.storage.removeLocalForageItem(`league_${league_id}`);
 				}
 				this.saveLeagues();
 				return;

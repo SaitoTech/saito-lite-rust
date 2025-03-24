@@ -67,7 +67,7 @@ this.updateLog(`###############`);
 
 	  if (this.game.player === this.returnPlayerOfFaction("central")) {
 	    if (this.game.deck[0].hand.includes("cp01")) {
-	      this.addMove("Central Powers start with Guns of August");
+	      this.addMove("NOTIFY\tCentral Powers start with Guns of August!");
               this.addMove("DEAL\t1\t1\t1"); // deal random other card
 	      this.endTurn()
 	    } else {
@@ -86,6 +86,14 @@ this.updateLog(`###############`);
 	  return 1;
 	}
  	if (mv[0] == "replacement_phase") {
+
+	  console.log("###");
+	  console.log("### Replacement Phase");
+	  console.log("###");
+
+	  this.game.state.rp['central'] = {};
+	  this.game.state.rp['allies'] = {};
+
           this.game.queue.splice(qe, 1);
 	  return 1;
 	}
@@ -147,16 +155,12 @@ this.updateLog(`###############`);
 	  let name = this.returnPlayerName(faction);
 	  let hand = this.returnPlayerHand();
 
-console.log("PLAYER: " + this.game.player);
-console.log("LIve: " + player);
-console.log("HAND: " + JSON.stringify(hand));
-
 	  this.onNewTurn();
 
 	  if (this.game.player == player) {
 	    this.playerTurn(faction);
 	  } else {
-	    this.updateStatusAndListCards(`${name} Turn`, hand);
+	    this.updateStatusAndListCards(`Opponent Turn`, hand);
 	  }
 	  
 	  return 0;
@@ -242,7 +246,16 @@ try {
           this.addUnitToSpace("it_army03", "maggiore");
           this.addUnitToSpace("it_army04", "asiago");
 
-}catch(err) {console.log("error initing:" + JSON.stringify(err));}
+	  // reserves boxes
+    	  this.addUnitToSpace("ge_army04", "crbox");
+    	  this.addUnitToSpace("ge_army06", "crbox");
+    	  this.addUnitToSpace("ge_army08", "crbox");
+    	  this.addUnitToSpace("fr_army01", "arbox");
+    	  this.addUnitToSpace("ru_army09", "arbox");
+    	  this.addUnitToSpace("ru_army10", "arbox");
+    	  this.addUnitToSpace("br_corps", "arbox");
+
+} catch(err) {console.log("error initing:" + JSON.stringify(err));}
 
           this.displayBoard();
 
@@ -282,22 +295,58 @@ try {
 	// modifying state //
 	/////////////////////
   	if (mv[0] === "sr") {
-	  let faction = mv[1];
+
           this.game.queue.splice(qe, 1);
-	  return 1;
+
+	  let faction = mv[1];
+	  let source = mv[2];
+          let destination = mv[3];
+	  let unit_idx = parseInt(mv[4]);
+	  let value = parseInt(mv[5]);
+	  let card = mv[6];
+
+	  let unit = this.game.spaces[source].units[unit_idx];
+	  this.game.spaces[source].units.splice(unit_idx, 1);
+	  this.game.spaces[destination].units.push(unit);
+
+	  this.displaySpace(source);
+	  this.displaySpace(destination);
+
+	  if (value > 0) {
+	    if (this.game.player == this.returnPlayerOfFaction(faction)) {
+	      this.playerPlayStrategicRedeployment(faction, card, value);
+            } else {
+	      this.updateStatus("Opponent Redeploying...");
+	    }
+	    return 0;
+	  } else {
+	    return 1;
+	  }
+
 	}
 
   	if (mv[0] === "rp") {
 
 	  let faction = mv[1];
-	  let key = mv[2];
-	  let value = mv[3];
+	  let card = mv[2];
 
-	  if (!this.game.state.rp[faction][key]) { this.game.state.rp[faction][key] = 0; }
-	  this.game.state.rp[faction][key] += parseInt(value);
+    	  let c = this.deck[card];
+    
+    	  for (let key in c.sr) {
+            if (faction == "central") {
+              if (!this.game.state.rp["central"][key]) { this.game.state.rp["central"][key] = 0; }
+              this.game.state.rp["central"][key] += c.sr[key];
+            }
+            if (faction == "allies") {
+              if (!this.game.state.rp["allies"][key]) { this.game.state.rp["allies"][key] = 0; }
+              this.game.state.rp["allies"][key] += c.sr[key];
+            }
+          } 
 
+	  this.updateLog(this.returnFactionName(faction) + " plays " + this.popup(card) + " for Replacement Points");
           this.game.queue.splice(qe, 1);
 	  return 1;
+
 	}
 
         if (mv[0] === "resolve") {
@@ -340,17 +389,24 @@ try {
 	  // returns to this, so we only want to clear this once
 	  // it is not possible to execute any more combat.
 	  //
-
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
 
           let options = this.returnSpacesWithFilter(
             (key) => {
-              if (this.game.spaces[key].activated_for_combat == 1) { return 1; }
+              if (this.game.spaces[key].activated_for_combat == 1) {
+		for (let z = 0; z < this.game.spaces[key].units.length; z++) {
+		  if (this.game.spaces[key].units[z].attacked == 0) { return 1; }
+		}
+	        return 0;
+	      }
               return 0;
             }
           );
-          if (options.length == 0) { return 1; }
+          if (options.length == 0) {
+	    this.game.queue.splice(qe, 1);
+	    return 1;
+	  }
 
 	  if (this.game.player == player) {
 	    this.playerPlayCombat(faction);
@@ -464,6 +520,7 @@ console.log("moving forward with combat!");
 	  for (let i = 0; i < this.game.state.combat.attacker.length; i++) {
 	    let unit = this.game.spaces[this.game.state.combat.attacker[i].unit_sourcekey].units[this.game.state.combat.attacker[i].unit_idx];
 	    if (unit.key.indexOf("army") > 0) { defender_table = "army"; }	    
+	    unit.attacked = 1;
 	  }
 
 	  attacker_roll = this.rollDice();
@@ -489,9 +546,17 @@ console.log("moving forward with combat!");
 	  this.game.state.combat.defender_modified_roll = defender_modified_roll;
 	  this.game.state.combat.attacker_loss_factor = this.returnAttackerLossFactor();
 	  this.game.state.combat.defender_loss_factor = this.returnDefenderLossFactor();
+	  this.game.state.combat.winner = "none";
+	  if (this.game.state.combat.attacker_loss_factor > this.game.state.combat.defender_loss_factor) {
+	    this.game.state.combat.winner = "defender";
+	  }
+	  if (this.game.state.combat.attacker_loss_factor < this.game.state.combat.defender_loss_factor) {
+	    this.game.state.combat.winner = "attacker";
+	  }
 
 console.log("#");
 console.log("#");
+console.log("# combat");
 console.log("#");
 console.log("#");
 console.log(JSON.stringify(this.game.state.combat));
@@ -540,6 +605,7 @@ console.log(JSON.stringify(this.game.state.combat));
 	    this.loss_overlay.render(power);
 	  } else {
 	    this.combat_overlay.hide();
+	    this.loss_overlay.render(power);
 	    this.unbindBackButtonFunction();
 	    this.updateStatus("Opponent Assigning Losses");
 	  }
@@ -582,8 +648,14 @@ console.log(JSON.stringify(this.game.state.combat));
 	  }
 
 	  if (does_defender_retreat) {
+console.log("#");
+console.log("#");
+console.log("# does retreat?");
+console.log("#");
+console.log(this.returnPlayerOfFaction(this.game.state.combat.defender_power) + " -- " + this.game.state.combat.defender_power);
 	    let player = this.returnPlayerOfFaction(this.game.state.combat.defender_power);
 	    if (this.game.player == player) {
+console.log("playing post combat retreat...");
 	      this.playerPlayPostCombatRetreat();
 	    } else {
 	      this.updateStatus("Opponent Retreating...");

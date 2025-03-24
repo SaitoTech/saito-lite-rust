@@ -14,12 +14,12 @@ class InviteManager {
 		this.name = 'InviteManager';
 		this.type = 'short';
 
-		this.slider = new GameSlider(this.app, this.mod, ".invite-manager");
+		this.slider = new GameSlider(this.app, this.mod, '.invite-manager');
 
 		// For filtering which games get displayed
 		// We may want to only display one type of game invite, so overwrite this before render()
 		this.list = 'all';
-		this.lists = ['mine', 'open'];
+		this.lists = ['mine', 'open', 'active'];
 
 		this.game_filter = null;
 
@@ -29,12 +29,14 @@ class InviteManager {
 		// handle requests to re-render invite manager
 		//
 		app.connection.on('arcade-invite-manager-render-request', () => {
-			console.log('arcade-invite-manager-render-request');
+			if (this.mod.debug) {
+				console.log('RERENDER ARCADE INVITES: ', this.mod.games);
+			}
 			if (!this.mod.is_game_initializing) {
 				this.mod.purgeOldGames();
 				this.render();
 			} else {
-				console.log('Don\'t update Arcade while initializing game');
+				console.log("Don't update Arcade while initializing game");
 			}
 		});
 
@@ -51,72 +53,52 @@ class InviteManager {
 			// Otherwise we launch an overlay and stick the spinner in there
 			//
 			if (!this.mod.browser_active) {
-
 				let target = '.arcade_game_overlay_loader';
 
-				let im = document.querySelector(".invite-manager");
+				let im = document.querySelector('.invite-manager');
 				//If we have an invite manager AND it is visible
-				if (im && im.getBoundingClientRect().width){
-					document.querySelector(".invite-manager").innerHTML = "";	
-					target = ".invite-manager";
-				}else{
-					this.loader_overlay.show('<div class="arcade_game_overlay_loader"></div>');	
+				if (im && im.getBoundingClientRect().width) {
+					document.querySelector('.invite-manager').innerHTML = '';
+					target = '.invite-manager';
+				} else {
+					this.loader_overlay.show('<div class="arcade_game_overlay_loader"></div>');
 				}
 
-				let game_loader = new ArcadeInitializer(
-					app,
-					mod,
-					target
-				);
+				let game_loader = new ArcadeInitializer(app, mod, target);
 
 				this.mod.is_game_initializing = true;
 				game_loader.game_id = game_id;
-				
+
 				game_loader.render();
 			}
 		});
 
-		app.connection.on(
-			'arcade-continue-game-from-options',
-			async (game_mod) => {
-
-				let id = game_mod.game?.id;
-				if (!id) {
-					return;
-				}
-
-				let game_tx = mod.returnGame(id);
-
-				if (!game_tx) {
-					console.log('Creating fresh transaction');
-					game_tx = await mod.createPseudoTransaction(game_mod.game);
-					mod.addGame(game_tx, 'closed');
-				} else {
-					delete game_tx.msg.time_finished;
-					delete game_tx.msg.method;
-					delete game_tx.msg.winner;
-					game_tx.msg.request = 'paused';
-				}
-
-				console.log(JSON.parse(JSON.stringify(game_tx)));
-				console.log(JSON.parse(JSON.stringify(game_mod.game)));
-
-				let newInvite = new Invite(
-					app,
-					mod,
-					null,
-					this.type,
-					game_tx,
-					mod.publicKey
-				);
-				let join_overlay = new JoinGameOverlay(
-					app,
-					mod,
-					newInvite.invite_data
-				);
-				join_overlay.render();
+		app.connection.on('arcade-continue-game-from-options', async (game_mod) => {
+			let id = game_mod.game?.id;
+			if (!id) {
+				return;
 			}
-		);
+
+			let game_tx = mod.returnGame(id);
+
+			if (!game_tx) {
+				console.log('Creating fresh transaction');
+				game_tx = await mod.createPseudoTransaction(game_mod.game);
+				mod.addGame(game_tx, 'closed');
+			} else {
+				delete game_tx.msg.time_finished;
+				delete game_tx.msg.method;
+				delete game_tx.msg.winner;
+				game_tx.msg.request = 'paused';
+			}
+
+			console.log(JSON.parse(JSON.stringify(game_tx)));
+			console.log(JSON.parse(JSON.stringify(game_mod.game)));
+
+			let newInvite = new Invite(app, mod, null, this.type, game_tx, mod.publicKey);
+			let join_overlay = new JoinGameOverlay(app, mod, newInvite.invite_data);
+			join_overlay.render();
+		});
 	}
 
 	render() {
@@ -126,10 +108,7 @@ class InviteManager {
 		let target = this.container + ' .invite-manager';
 
 		if (document.querySelector(target)) {
-			this.app.browser.replaceElementBySelector(
-				InviteManagerTemplate(this.app, this.mod),
-				target
-			);
+			this.app.browser.replaceElementBySelector(InviteManagerTemplate(this.app, this.mod), target);
 		} else {
 			this.app.browser.addElementToSelector(
 				InviteManagerTemplate(this.app, this.mod),
@@ -157,10 +136,18 @@ class InviteManager {
 							target
 						);
 					} else if (list == 'active') {
-						this.app.browser.addElementToSelector(
-							`<h5 class="sidebar-header">Active Matches</h5>`,
-							target
-						);
+						let valid_open_games = false;
+						for (let i = 0; i < this.mod.games[list].length; i++) {
+							if (this.mod.games[list][i].msg.options['open-table']) {
+								valid_open_games = true;
+							}
+						}
+						if (valid_open_games) {
+							this.app.browser.addElementToSelector(
+								`<h5 class="sidebar-header">Active Matches</h5>`,
+								target
+							);
+						}
 					} else if (list == 'over') {
 						this.app.browser.addElementToSelector(
 							`<h5 class="sidebar-header">Recent Matches</h5>`,
@@ -177,8 +164,11 @@ class InviteManager {
 				}
 
 				for (let i = 0; i < this.mod.games[list].length && i < 5; i++) {
-					
-					if (!this?.game_filter || this.game_filter == this.mod.games[list][i].msg.game){
+					if (!this?.game_filter || this.game_filter == this.mod.games[list][i].msg.game) {
+						if (list == 'active' && !this.mod.games[list][i].msg.options['open-table']) {
+							continue;
+						}
+
 						let newInvite = new Invite(
 							this.app,
 							this.mod,
@@ -189,23 +179,18 @@ class InviteManager {
 						);
 
 						if (newInvite.invite_data.league) {
-							if (
-								!this.mod.leagueCallback?.testMembership(
-									newInvite.invite_data.league
-								)
-							) {
+							if (!this.mod.leagueCallback?.testMembership(newInvite.invite_data.league)) {
 								continue;
 							}
 						}
 						newInvite.render();
 						rendered_content = true;
-
 					}
 				}
 			}
 		}
 
-		if (!rendered_content && !this.game_filter){
+		if (!rendered_content && !this.game_filter) {
 			this.slider.render();
 		}
 

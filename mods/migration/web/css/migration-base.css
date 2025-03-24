@@ -1,6 +1,21 @@
+.content {
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.mask {
+	border-radius: 1rem;
+	border: 1px solid var(--saito-border-color);
+	padding: 7rem;
+	background: linear-gradient(135deg, #0008, #0000);
+	max-width: 800px;
+}
+
 input[type='text'] {
 	width: 100%;
-	font-size: 1.5rem;
+	font-size: 2.5rem;
 	padding: 0.5rem;
 	margin-top: 1rem;
 	text-align: center;
@@ -14,14 +29,22 @@ input[type='text']::placeholder {
 	color: var(--saito-font-color-dark-modal);
 }
 
+.withdraw-container {
+	display: flex;
+	flex-direction: column;
+	max-width: 800px;
+	gap: 1rem;
+	margin: 1rem;
+}
+
 .withdraw-title {
 	margin-top: 1rem;
 	margin-bottom: 1rem;
-	font-size: 1.8rem;
+	font-size: 2.8rem;
 }
 
 .withdraw-intro {
-	font-size: 1.75rem;
+	font-size: 2rem;
 	line-height: 2.5rem;
 	margin-top: 2rem;
 	margin-bottom: 1rem;
@@ -32,11 +55,12 @@ input[type='text']::placeholder {
 }
 
 .withdraw-button:hover {
-    background-position: 99% 99%;
-    color: #fff;
-    text-decoration: none;
+	background-position: 99% 99%;
+	color: #fff;
+	text-decoration: none;
 }
 
-.content, p{
+.content,
+p {
 	color: var(--saito-font-color-dark-modal);
 }

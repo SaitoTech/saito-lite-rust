@@ -37,8 +37,6 @@ node_modules/*
 tests/config/env
 test/
 
-
-
 data/*.sq3
 data/*/*.blk
 data/backup/*
@@ -51,11 +49,17 @@ data/backup
 data/issuance/issuance
 data/saito.stats
 data/peer_state.txt
+data/checkpoints/*
 
 bundler
 bundler/*
 built
 built/*
+
+nettest/nettest.log
+nettest/nodes
+nettest/nodes/*
+nettest/nodes/nettest.log
 
 saito-issuance
 saito-issuance/*
@@ -77,6 +81,7 @@ web/saito/game-full.css
 web/saito/saito-full.css
 web/saito/game.css
 web/saito/saito.css
+web/saito/static/zkey/*.wasm
 
 # ignore all style.css files as these are not compiled
 style.css
@@ -120,6 +125,14 @@ mods/redsquare/web/tweets*
 mods/graffiti/web/img/snapshots/*
 
 extras/shashmap/build
+
+# Ignore ptau files
+*.ptau
+*/*.ptau
+*/*/ptau
+circuits/*.ptau
+zk/*.ptau
+zk/*/*.ptau
 
 # Ignore vim files:
 *~

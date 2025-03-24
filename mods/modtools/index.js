@@ -1,8 +1,9 @@
 module.exports = (app, mod) => {
 
-  let blacklist = app.options.modtools.blacklist;
-  let whitelist = app.options.modtools.whitelist;
+  let blacklist = mod.blacklist;
+  let whitelist = mod.whitelist;
   let node_publicKey = mod.publicKey;
+  let time_now = Date.now();
 
 	let html = `
   <!DOCTYPE html>
@@ -40,37 +41,51 @@ module.exports = (app, mod) => {
       <div class="saito-address treated" data-id="${node_publicKey}">
         ${node_publicKey}
       </div>
+      <div class="modtools-icon-holder"><i id="pw-lock" class="fa-solid fa-lock"></i></div>
     </div>
 
 
     <div class="modtools-container">
+      <div class="modtools-container-header">
         <div class="modtools-container-title">Blacklisted</div>
     `;
+      if (blacklist.length > 0) {
+        html += `<div class="saito-button-primary" id="unblacklist">Remove</div>`
+      }
+      html += "</div>";
 
       if (blacklist.length > 0) {
         for(let i=0; i<blacklist.length; i++) {
-          if (mod.verifyData(blacklist[i])){
-            let timestamp = blacklist[i].created_at;
-            var newDate = new Date();
-            newDate.setTime(timestamp);
-            let dateString = newDate.toUTCString();
+            var added = new Date(blacklist[i].created_at);
+            let dateString = added.toUTCString();
 
-            let duration = app.browser.formatTime(blacklist[i].duration);
+            let expString = "forever";
+            if (blacklist[i].duration > 0) {
+              let timeleft = blacklist[i].created_at + blacklist[i].duration - time_now;
+              if (timeleft < 0){
+                expString = "expired";
+              }else{
+                let duration = app.browser.formatTime(timeleft);
+                expString = `${duration.hours}H : ${duration.minutes}M : ${duration.seconds}S`;
+              }
+            }
+
             let publicKey = blacklist[i].publicKey;
             let identicon = app.keychain.returnIdenticon(publicKey);
 
             html += `
-                <div class="modtools-entry modtools-contact">
-                    <div class="modtools-contact-date">${dateString}</div>
-                    <div class="modtools-contact-date">${duration.hours}H : ${duration.minutes}M : ${duration.seconds}S</div>
+                <div class="modtools-contact">
                     <div class="modtools-contact-details">
-                    <div class="saito-identicon-box">
-                      <img class="saito-identicon" src="${identicon}"></div>
+                      <div class="saito-identicon-box">
+                        <img class="saito-identicon" src="${identicon}">
+                      </div>
                       <div class="saito-address treated" data-id="${publicKey}">${app.keychain.returnIdentifierByPublicKey(publicKey, true)}</div>
                     </div>
+                    <div class="modtools-contact-date">${dateString}</div>
+                    <div class="modtools-contact-date">${expString}</div>
+                    <div class="saito-address treated" data-id="${blacklist[i].moderator}">${app.keychain.returnIdentifierByPublicKey(blacklist[i].moderator, true)}</div>
                 </div>
                `; 
-          }
         }
       } else {
         html += `
@@ -85,35 +100,47 @@ module.exports = (app, mod) => {
 
     html +=  `
         <div class="modtools-container">
-          <div class="modtools-container-title">Whitelisted</div>
+          <div class="modtools-container-header">
+            <div class="modtools-container-title">Whitelisted</div>
       `;
+      if (whitelist.length > 0) {
+        html += `<div class="saito-button-primary" id="unwhitelist">Remove</div>`
+      }
+      html += `<div class="saito-button-primary" id="whitelist">Add</div></div>`;
 
       if (whitelist.length > 0) {
         for(let i=0; i<whitelist.length; i++) {
-          if (mod.verifyData(whitelist[i])){
-            let timestamp = whitelist[i].created_at;
-            var newDate = new Date();
-            newDate.setTime(timestamp);
-            let dateString = newDate.toUTCString();
+            var added = new Date(whitelist[i].created_at);
+            let dateString = added.toUTCString();
 
-            let duration = app.browser.formatTime(whitelist[i].duration);
+            let expString = "forever";
+            if (whitelist[i].duration > 0) {
+              let timeleft = whitelist[i].created_at + whitelist[i].duration - time_now;
+
+              if (timeleft < 0){
+                expString = "expired";
+              }else{
+                let duration = app.browser.formatTime(timeleft);
+                expString = `${duration.hours}H : ${duration.minutes}M : ${duration.seconds}S`;
+              }
+            }
+            
             let publicKey = whitelist[i].publicKey;
             let identicon = app.keychain.returnIdenticon(publicKey);
 
             html += `
-
-                <div class="modtools-entry modtools-contact">
-                    <div class="modtools-contact-date">${dateString}</div>
-                    <div class="modtools-contact-date">${duration.hours}H : ${duration.minutes}M : ${duration.seconds}S</div>
+                <div class="modtools-contact">
                     <div class="modtools-contact-details">
                       <div class="saito-identicon-box">
-                        <img class="saito-identicon" src="${identicon}"></div>
-                        <div class="saito-address treated" data-id="${publicKey}">${app.keychain.returnIdentifierByPublicKey(publicKey, true)}</div>
+                        <img class="saito-identicon" src="${identicon}">
                       </div>
+                      <div class="saito-address treated" data-id="${publicKey}">${app.keychain.returnIdentifierByPublicKey(publicKey, true)}</div>
+                    </div>
+                    <div class="modtools-contact-date">${dateString}</div>
+                    <div class="modtools-contact-date">${expString}</div>
+                    <div class="saito-address treated" data-id="${whitelist[i].moderator}">${app.keychain.returnIdentifierByPublicKey(whitelist[i].moderator, true)}</div>
                   </div>
                `; 
-              
-          }
 
         }
       } else {
@@ -124,7 +151,7 @@ module.exports = (app, mod) => {
 
 
     html +=`
-        <div class="saito-button-primary" id="whitelist">Add</div>
+        
         </div>
         <div id="options-space"></div>    
         </div>
@@ -176,7 +203,16 @@ html += `
 
   <script type="text/javascript">
     var options = \'${opt_str}\';
-  </script>
+    var blacklist = [];
+    var whitelist = [];`
+
+  for (let b of blacklist) {
+    html += ` blacklist.push(\`${b.publicKey}\`);`;
+  }
+  for (let w of whitelist) {
+    html += ` whitelist.push(\`${w.publicKey}\`);`;
+  }
+  html += `</script>
 
 <script type="text/javascript" src="/saito/saito.js?build=${app.build_number}"></script>
 </html>`;

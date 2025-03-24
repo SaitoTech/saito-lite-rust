@@ -4,6 +4,52 @@
   }
 
 
+  displayCustomOverlay(c="", msg="") {
+
+    //
+    // move HUD above winter if winter is showing
+    //
+    this.welcome_overlay.pullHudOverOverlay();
+    this.welcome_overlay.pushHudUnderOverlay();
+
+
+    let deck = this.returnDeck(true); // include removed
+    if (deck[c]) {
+      if (deck[c].returnCustomOverlay) {
+
+        let obj = deck[c].returnCustomOverlay();
+        let title = obj.title;
+        let text = obj.text;
+        let img = obj.img;
+        let card = this.returnCardImage(c);
+
+        if (msg == "") {
+          msg = this.popup(c) + " triggers";
+        }
+ 
+        this.welcome_overlay.renderCustom({
+          text : text,
+          title : title,
+          img : img,
+          card : card,
+        });
+      }
+    }
+
+  }
+
+  addHighlights(el) {
+//    if (!el.classList.contains("allies")) {
+//      el.classList.add('allies-highlight');
+//    }
+//    if (!el.classList.contains("neutral")) {
+//      el.classList.add('neutral-highlight');
+//    }
+//    if (!el.classList.contains("central")) {
+//      el.classList.add('central-highlight');
+//    }
+  } 
+
   addSelectable(el) {
     if (!el.classList.contains("selectable")) {
       el.classList.add('selectable');
@@ -34,12 +80,13 @@
     paths_self.displayReserveBoxes();
     paths_self.displayEliminatedUnitsBoxes();
 
-
     //
     // display the spaces on the board
     //
     try {
       this.displaySpaces();
+      this.addHighlights();
+
     } catch (err) {
 console.log("!");
 console.log("!");
@@ -106,6 +153,8 @@ console.log("!");
 
   displaySpace(key) {
 
+    if (key == "arbox" || key == "crbox") { return; }
+
     try {
 
       let space = this.game.spaces[key];
@@ -123,7 +172,8 @@ console.log("!");
       // activated for movement
       //
       if (space.activated_for_movement) {
-        html += `<img src="/paths/img/tiles/activate_move.png" class="activation-tile" />`;
+console.log("space is activated for movement: " + key);  
+      html += `<img src="/paths/img/tiles/activate_move.png" class="activation-tile" />`;
       }
       if (space.activated_for_combat) {
         html += `<img src="/paths/img/tiles/activate_attack.png" class="activation-tile" />`;
@@ -149,9 +199,15 @@ console.log("!");
 	}
       }
 
-      document.querySelectorAll(`.${key}`).forEach((el) => { el.innerHTML = html; });
+      document.querySelectorAll(`.${key}`).forEach((el) => { 
+//        if (control == "allies") { el.classList.add("allies-highlight"); }
+//        if (control == "central") { el.classList.add("central-highlight"); }
+//        if (control == "neutral") { el.classList.add("neutral-highlight"); }
+	el.innerHTML = html; 
+      });
 
     } catch (err) {
+console.log("err: " + err);
     }
   }
 
@@ -243,7 +299,7 @@ alert("display detailed space!");
       card = deck[cardname];
       html = `<img class="${cardclass}" src="/paths/img/${card.img}" />`;
       try {
-	if (card.canEvent(this)) {
+	if (!card.canEvent(this)) {
           html += `<img class="${cardclass} cancel_x" src="/paths/img/cancel_x.png" />`;
         }
       } catch (err) {}
@@ -445,11 +501,19 @@ alert("display detailed space!");
       arb.innerHTML = "";
       crb.innerHTML = "";
 
-      for (let z = 0; z < this.game.state.reserves['allies'].length; z++) {
-        arb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.state.reserves['allies'][z]}.png" />`;
+      for (let z = 0; z < this.game.spaces["arbox"].units.length; z++) {
+	if (this.game.spaces["arbox"].units[z].damaged) {
+          arb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.spaces["arbox"].units[z].back}" />`;
+        } else {
+          arb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.spaces["arbox"].units[z].front}" />`;
+	}
       }
-      for (let z = 0; z < this.game.state.reserves['central'].length; z++) {
-        crb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.state.reserves['central'][z]}.png" />`;
+      for (let z = 0; z < this.game.spaces["crbox"].units.length; z++) {
+	if (this.game.spaces["arbox"].units[z].damaged) {
+          crb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.spaces["crbox"].units[z].back}" />`;
+        } else {
+          crb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.spaces["crbox"].units[z].front}" />`;
+	}
       }
 
     } catch (err) {

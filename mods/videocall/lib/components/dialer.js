@@ -1,6 +1,5 @@
 const SaitoOverlay = require('../../../../lib/saito/ui/saito-overlay/saito-overlay.js');
 const DialerTemplate = require('./dialer.template.js');
-const CallSetting = require('../components/call-setting.js');
 const SaitoUser = require('../../../../lib/saito/ui/saito-user/saito-user');
 
 /**
@@ -14,7 +13,6 @@ class Dialer {
 		this.app = app;
 		this.mod = mod;
 		this.overlay = new SaitoOverlay(app, mod);
-		this.callSetting = new CallSetting(app, this);
 		this.receiver = {};
 		this.call_log = [];
 	}
@@ -69,10 +67,6 @@ class Dialer {
 		for (let r of Object.values(this.receiver)){
 			r.render();
 		}
-
-		//if (this.mod?.room_obj?.ui === 'video' && !making_call) {
-		//	this.callSetting.render();
-		//}
 
 		this.attachEvents();
 	}
@@ -255,13 +249,6 @@ class Dialer {
 
 		let video_switch = document.getElementById('video_call_switch');
 
-		video_switch.onchange = (e) => {
-			if (video_switch.checked) {
-				//this.callSetting.render();
-			} else {
-				//this.app.connection.emit('close-preview-window');
-			}
-		};
 	}
 
 	deactivateOptions() {

@@ -48,6 +48,7 @@ class Tweet {
 		if (!this.tx.optional.thread_id) { this.tx.optional.thread_id = ''; }
 		if (!this.tx.optional.retweeters) { this.tx.optional.retweeters = []; }
 		if (!this.tx.optional.thread_id) { this.tx.optional.thread_id = this.tx.signature; }		//
+		if (!this.tx.optional.source) { this.tx.optional.source = {}; }
 
 		//
 		// keep track of parent_id and thread_id (replies include these vars)
@@ -104,6 +105,8 @@ class Tweet {
 		this.unknown_children = [];
 		this.unknown_children_sigs_hmap = {};
 		this.user.notice = 'new post on ' + this.formatDate(this.created_at);
+		this.source = this.tx.optional.source;
+
 
 		//
 		// transactions can contain more specifi information for 
@@ -216,6 +219,27 @@ class Tweet {
 		}
 		return false;
 	}
+
+
+	hideTweet() {
+		//remove from archive
+		this.app.storage.deleteTransaction(this.tx, null, 'localhost');
+		//remove from dom
+		this.remove();
+
+		//Add to blacklist
+		this.mod.hidden_tweets.push(this.tx.signature);
+		this.mod.saveOptions();
+
+		//remove from tweet list!
+	    for (let i = 0; i < this.mod.tweets.length; i++) {
+	        if (this.mod.curated_tweets[i].tx.signature === this.tx.signature) {
+    	      this.mod.curated_tweets.splice(i, 1);
+        	  return;
+        	}
+      	}
+	}
+
 
 	remove() {
 		let eqs = `.tweet-${this.tx.signature}`;
@@ -737,9 +761,7 @@ class Tweet {
 								}
 							}, 50);
 						} else {
-							setTimeout(() => {
-								window.location.href = `/redsquare?tweet_id=${this.thread_id}`;
-							}, 300);
+							navigateWindow(`/redsquare?tweet_id=${this.thread_id}`, 300);
 						}
 					}
 				};

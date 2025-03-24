@@ -44,19 +44,18 @@ html[data-theme="sangre3000"] {
   --color-shadow-bubble: #000000E2;
   /* slightly lightened shadow */
   /*SHADOW SELECTION*/
-  --shadow-chat-popup: var(--shadow-shape-glow-big);
+  --shadow-draggable-popup: var(--shadow-shape-glow);
   --box-shadow-sidebar-elements: var(--shadow-shape-flat);
   --shadow-chat-message-bottom: 0px 0px 0px var(--color-shadow-bubble);
+  --shadow-shape-glow: 0 0 5px var(--color-primary);
   /* flattened and centered the shadow */
   --shadow-overlay: 0 0 150px -60px var(--color-primary);
   /* gives it that famous sangre glow */
   /* Spacing and padding adjustments */
   --border-padding-style: var(--border-padding-wide);
-  --border-padding-style-leaderboard-ranking: var(--border-padding-small);
   --border-padding-overlay-post: var(--border-padding-huge);
   /*MAIN BACKGROUND COLOR SECTION*/
   --background-color-main: #1f1a1b;
-  --background-color-shim-normal: #0009;
   /*FONTS SECTION*/
   /*quick settings*/
   /* normal */
@@ -104,7 +103,6 @@ html[data-theme="sangre3000"] {
   --font-color-hover-module-menu: var(--font-color-heavy);
   --font-color-overlay-form-header: var(--font-color-primary);
   --font-color-overlay-form-text: var(--font-color-primary);
-  --font-color-overlay-subform-recover: var(--font-color-primary);
   /* BORDER RADIUS */
   --border-radius-text-input: var(--border-radius-soft);
   /*chat module*/
@@ -136,16 +134,17 @@ html[data-theme="sangre3000"] {
   --border-radius-calendar-hover-today: var(--border-radius-round);
   --border-radius-status-message: var(--border-radius-round);
   --border-radius-sidebar-game-module: var(--border-radius-round);
-  --border-radius-identicon-needed: var(--border-radius-voluptuous);
   --border-radius-leaderboard-ranking: var(--border-radius-comfortable);
   --border-radius-offset: 0.3rem;
   /* BORDER THICKNESS */
+  --border-padding-qr-code: 0;
   --border-thickness-button-primary: var(--border-thickness-thin);
   --border-thickness-button-hover-primary: var(--border-thickness-thin);
   --border-thickness-identicon: var(--border-thickness-none);
   --border-thickness-overlay-post: var(--border-thickness-fat);
   --border-thickness-overlay-menu: var(--border-thickness-fat);
   --border-thickness-modal-menu: var(--border-thickness-fat);
+  --border-thickness-qr-code: var(--border-thickness-fat); /* for contrast to be able to scan */
   /* BORDER COLORS */
   --border-color-general-dividers-dark: var(--color-primary);
   --border-color-button-wallet-control: var(--color-complement);

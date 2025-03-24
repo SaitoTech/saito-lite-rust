@@ -27,6 +27,22 @@ font imports
   src: url("/saito/fonts/password.ttf") format("truetype");
 }
 
+@font-face {
+  font-family: "digital-7";
+  src: url("/saito/fonts/digital-7.mono.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "digital-7";
+  src: url("/saito/fonts/digital-7.mono.italic.ttf") format("truetype");
+  font-weight: normal;
+  font-style: italic;
+}
+
+
+
 :root {
 
   /* ====================== OLD VARIABLES SECTION =========================== */
@@ -63,7 +79,6 @@ font imports
   --saito-arcade-overlay-background: #11101ed1;
   --saito-box-shadow: 0px 12px 17px 2px hsla(0, 0%, 0%, 0.14), 0px 5px 22px 4px hsla(0, 0%, 0%, 0.12), 0px 7px 8px -4px hsla(0, 0%, 0%, 0.2);
   --saito-form-box-shadow:  1px 1px 5px var(--saito-border-color);
-  --saito-button-background: var(--saito-primary);
   --saito-modal-background: var(--dreamscape);
   --saito-font-color-dark-modal: #efefef;
   --saito-faded-icon-font: #6a6a6a;
@@ -167,14 +182,15 @@ font imports
   --border-thickness-thick: 3px;
   --border-thickness-fat: 5px;
 /*BACKGROUND SHIM COLORS*/
-  --background-color-shim-light: #0001;
-  --background-color-shim-dark: #0009;
+  --background-color-shim-light: #0003;
+  --background-color-shim-normal: #0008;
+  --background-color-shim-dark: #000B;
 
 /*========== REDEFINED ELEMENTS ===========*/
 
 /*SHADOW SELECTION*/
 --shadow-primary-button: var(--shadow-standard);
---shadow-chat-popup: var(--box-shadow-sidebar-elements);
+--shadow-draggable-popup: var(--box-shadow-sidebar-elements);
 --shadow-overlay: var(--shadow-standard);
 /*FONTS SECTION*/
 /* Quick Settings - Basic Font Colors */
@@ -200,7 +216,7 @@ font imports
   --font-color-button-chat-popup-header: var(--font-color-heavy);
   --font-color-button-hover-chat-popup-header: var(--font-color-inverse);
   --font-color-button-primary: var(--font-color-inverse);
-  --font-color-button-hover-primary: none;
+  --font-color-button-hover-primary: var(--font-color-inverse);
   --font-color-button-sidebar: none;
   --font-color-button-hover-sidebar: var(--font-color-inverse);
   --font-color-button-sidebar-chat-container-active-subtitle: var(--font-color-primary); /* chat container text below user.  */
@@ -214,7 +230,7 @@ font imports
   --font-color-button-hover-modal-oldschool: var(--font-color-inverse);
   --font-color-button-module: var(--font-color-primary);
   --font-color-button-hover-module: none;
-  --font-color-button-wallet-control: red;
+  --font-color-button-wallet-control: var(--color-primary);
   --font-color-button-hover-wallet-control: var(--font-color-inverse);
 /* Chat Popup Font Colors */
   --font-color-chat-popup: none;
@@ -237,7 +253,7 @@ font imports
   --font-color-module-menu-header: var(--font-color-inverse);
   --font-color-overlay-form-header: var(--font-color-inverse);
   --font-color-overlay-form-text: none;
-  --font-color-overlay-subform-recover: none;
+  --font-color-overlay-subform-recover: var(--font-color-primary);
 /* Form and Miscellaneous Font Colors */
   --font-color-form-input: var(--font-color-heavy);
   --font-color-form-input-body: none;
@@ -249,7 +265,6 @@ font imports
   --font-color-icons-left-sidebar: var(--font-color-primary);
   --font-color-hover-icons-left-sidebar: var(--font-color-inverse);
   --font-color-post-downward-arrow: var(--font-color-secondary);
-  --font-color-modal-arcade-body: var(--font-color-inverse);
   --font-color-main-body: var(--font-color-primary); /* MAIN system color */
   --font-color-redsquare-interaction: #e2264d; /* match the red heart animation */
 /* Alerts and Status Font Colors */
@@ -300,14 +315,13 @@ font imports
   --border-radius-arcade-game-list: var(--border-radius-soft);
   --border-radius-arcade-menu: var(--border-radius-soft);
   --border-radius-sidebar-game-module: var(--border-radius-soft);
-  --border-radius-identicon-needed: var(--border-radius-sharp);
   --border-radius-progress-bar: var(--border-radius-soft);
   --border-radius-sidebar-chat-manager: var(--border-radius-soft);
   --border-radius-leaderboard-ranking: var(--border-radius-soft);
   /*Border padding*/ 
   --border-padding-sidebar-style: var(--border-padding-normal);
-  --border-padding-style-leaderboard-ranking:; /* no override from arcade on main theme */
   --border-padding-overlay-post: var(--border-padding-ultra-wide);
+  --border-padding-qr-code: var(--border-padding-normal);
   /*thickness*/
   --border-thickness-general-dividers: var(--border-thickness-thin);
   --border-thickness-sidebar-menu: none;
@@ -477,8 +491,6 @@ font imports
   --background-color-button-hover-leaderboard-ranking: var(--background-color-button-sidebar);
   /* Special UI Components */
   --background-color-sidebar-left: var(--color-base);
-  --background-color-shim-normal: var(--background-color-shim-light);
-  --background-color-shim-warning: var(--background-color-shim-dark);
   --background-color-camera: var(--background-color-ui-elements);
   --background-color-calendar-today: var(--background-color-ui-elements);
   --background-color-calendar-hover: var(--background-color-ui-elements);
@@ -501,6 +513,39 @@ font imports
   --background-color-alert-box: var(--background-color-main);
 /* Theme Specific */
   --saito-arcade-header-background: var(--dreamscape);
+}
+
+[data-theme^="modern"] {
+  /* Keep existing modern theme variables */
+
+  /* Add Chess Fonts */
+  @font-face {
+    font-family: 'chess';
+    src: url('/chess/fonts/chess.eot');
+    src: url('/chess/fonts/chess.eot?#iefix') format('embedded-opentype'),
+         url('/chess/fonts/chess.woff2') format('woff2'),
+         url('/chess/fonts/chess.woff') format('woff'),
+         url('/chess/fonts/chess.ttf') format('truetype'),
+         url('/chess/fonts/chess.svg#chess') format('svg');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'chess7';
+    src: url('/chess/fonts/chess7.eot');
+    src: url('/chess/fonts/chess7.eot?#iefix') format('embedded-opentype'),
+         url('/chess/fonts/chess7.woff2') format('woff2'),
+         url('/chess/fonts/chess7.woff') format('woff'),
+         url('/chess/fonts/chess7.ttf') format('truetype'),
+         url('/chess/fonts/chess7.svg#chess7') format('svg');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  /* Add font variables */
+  --font-chess: 'chess', sans-serif;
+  --font-chess7: 'chess7', sans-serif;
 }
 
 

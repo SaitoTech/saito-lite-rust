@@ -1,3 +1,4 @@
+const ImportGame = require('./import-game.js');
 const GameWizardTemplate = require('./game-wizard.template.js');
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay.js');
 
@@ -9,10 +10,12 @@ const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-ove
 //
 
 class GameWizard {
+
 	constructor(app, mod, game_mod = null, obj = {}) {
 		this.app = app;
 		this.mod = mod;
 		this.game_mod = game_mod;
+		this.import_game = new ImportGame(app, mod, game_mod);
 		this.overlay = new SaitoOverlay(app, mod);
 		this.obj = obj;
 
@@ -27,7 +30,7 @@ class GameWizard {
 					//
 					if (game_mod.doWeHaveAnOngoingGame()) {
 						if (obj.skip){
-							window.location = `/${game_mod.returnSlug()}/`;
+							navigateWindow(`/${game_mod.returnSlug()}/`);
 						}else{
 							console.log('Found existing game', game_mod.game);
 							app.connection.emit(
@@ -76,7 +79,12 @@ class GameWizard {
 			}
 		} else {
 			console.log("Advanced Options!: ", advancedOptions);
+			let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button saito-button-primary">Accept</div>`;
+			if (!advancedOptions.includes(accept_button)) {
+				advancedOptions += accept_button;
+			}
 			advancedOptions = `<div id="advanced-options-overlay-container">${advancedOptions}</div>`;
+
 			this.meta_overlay = new SaitoOverlay(
 				this.app,
 				this.mod,
@@ -87,13 +95,14 @@ class GameWizard {
 			this.meta_overlay.hide();
 		}
 
+		//Hook for Crypto module (if installed) to add button to attach functionality
 		this.app.modules.renderInto("#arcade-advance-opt");
 
 		this.attachEvents();
 
 		if (this.obj?.skip){
 			if (this.game_mod.maxPlayers === 1){
-				if(!this.game_mod.returnSingularGameOption() && !this.game_mod.returnAdvancedOptions()){
+				if(!this.game_mod.returnSingularGameOption() && !advancedOptions){
 					let btn = document.querySelector(".game-invite-btn");
 					if (btn){
 						btn.click();
@@ -123,15 +132,7 @@ class GameWizard {
 			document.querySelector('.arcade-advance-opt-text');
 		if (advancedOptionsToggle) {
 			advancedOptionsToggle.onclick = (e) => {
-				//Requery advancedOptions on the click so it can dynamically update based on # of players
-				let accept_button = `<div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button saito-button-primary">Accept</div>`;
-				let advancedOptionsHTML = this.game_mod.returnAdvancedOptions();
-				if (!advancedOptionsHTML.includes(accept_button)) {
-					advancedOptionsHTML += accept_button;
-				}
-				advancedOptionsHTML = ` <div id="advanced-options-overlay-container">${advancedOptionsHTML}</div>`;
-
-				this.meta_overlay.show(advancedOptionsHTML);
+				this.meta_overlay.show();
 				this.game_mod.attachAdvancedOptionsEventListeners();
 				this.meta_overlay.blockClose();
 
@@ -190,7 +191,7 @@ class GameWizard {
 							'CreateDirectInvite',
 							options.game
 						);
-					}else if (gameType == 'async'){
+					} else if (gameType == 'async'){
 						if (options['game-wizard-players-select'] > 2) {
 							salert("Asynchronous game creation is experimental and assumes there are only two players!");
 							return;
@@ -208,6 +209,11 @@ class GameWizard {
 							'CreateOpenInvite',
 							options.game
 						);
+					}
+
+					if (gameType === "import") {
+						this.import_game.render(options.game);
+						return;
 					}
 
 					this.mod.makeGameInvite(options, gameType, this.obj);
@@ -267,6 +273,12 @@ class GameWizard {
 			this.meta_overlay.remove();
 		}
 
+		// Check for open table here
+		if (options["game-wizard-players-select"] == "open-table"){
+			options["open-table"] = 1;
+			options["game-wizard-players-select"] = 2;
+			options["game-wizard-players-select-max"] = 6;
+		}
 
 		return options;
 	}
