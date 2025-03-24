@@ -1342,6 +1342,9 @@ console.log("LATEST MOVE: " + mv);
 
     if (mv[0] === "turn") {
       this.game.state.turn_in_round++;
+console.log("Y");
+console.log("Y: " + this.game.state.turn_in_round);
+console.log("Y");
       this.game.state.events.china_card_eligible = 0;
       this.game.queue.splice(qe, 1);
       this.updateActionRound();
@@ -4240,6 +4243,9 @@ async playerTurnHeadlineSelected(card, player) {
 
       if (this.game.state.turn_in_round == 0) {
           this.game.state.turn_in_round++;
+console.log("#");
+console.log("# turn in round to " + this.game.state.turn_in_round);
+console.log("#");
           this.updateActionRound();
       }
 
@@ -6764,9 +6770,6 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     this.game.state.turn 		= 0;
     this.game.state.turn_in_round 	= 0;
     this.game.state.move 		= 0;
-
-// HACK TESTING
-    this.game.state.turn_in_round 	= 5;
 
     //
     // game over if scoring card is held
