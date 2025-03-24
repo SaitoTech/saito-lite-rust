@@ -21,7 +21,7 @@ class Arcade extends ModTemplate {
 		//
 		// DEBUGGING MODE
 		//
-		this.debug = false;
+		this.debug = true;
 
 		this.name = 'Arcade';
 		this.slug = 'arcade';
@@ -107,7 +107,10 @@ class Arcade extends ModTemplate {
 			let game = this.returnGame(game_id);
 			if (game) {
 				console.log(game);
-				this.sendJoinTransaction({ tx: game, game_name: 'open_table' }, { add_player: true });
+				let new_player_list = game.msg.options?.add_player || [];
+				new_player_list.push(this.publicKey);
+				game.msg.options.add_player = new_player_list;
+				this.sendJoinTransaction({ tx: game, game_name: 'open_table' }, "add_player");
 			}
 		});
 	}
@@ -738,6 +741,7 @@ class Arcade extends ModTemplate {
 				// public & private invites processed the same way
 				//
 				if (txmsg.request === 'open' || txmsg.request === 'private') {
+					console.log("!!!!!!!!");
 					await this.receiveOpenTransaction(tx);
 				}
 
@@ -1204,14 +1208,14 @@ class Arcade extends ModTemplate {
 			return;
 		}
 
+		//
+		// Don't add the same player twice!
+		//
 		if (!game.msg.players.includes(tx.from[0].publicKey)) {
 			if (
 				this.isAvailableGame(game) ||
 				(game.msg?.options['open-table'] && txmsg?.update_options?.add_player)
 			) {
-				//
-				// Don't add the same player twice!
-				//
 				if (txmsg.update_options) {
 					console.log(
 						`Join TX updates the invite options -- ${txmsg.update_options}!`,
@@ -1689,7 +1693,7 @@ class Arcade extends ModTemplate {
 			list = tx.msg?.request || 'open';
 		}
 
-		if (list !== 'over' && list !== 'close') {
+		if (list !== 'over' && list !== 'close' && list !== 'offline') {
 			//
 			// Sanity check the target list so my games are grouped together
 			//
