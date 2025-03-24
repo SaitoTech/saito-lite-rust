@@ -56,7 +56,7 @@ class Twilight extends GameTemplate {
     this.clock.container = "#clock_";
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 1;
+    this.is_testing 	 = 0;
     this.insert_rankings = true;
 
     //
@@ -1355,8 +1355,12 @@ console.log("LATEST MOVE: " + mv);
       return 0;
     }
 
+
     if (mv[0] === "turn") {
+console.log("TURN: ");
+console.log("incrementing turn in round...");
       this.game.state.turn_in_round++;
+console.log("turn in round now: " + this.game.state.turn_in_round);
       this.game.state.events.china_card_eligible = 0;
       this.game.queue.splice(qe, 1);
       this.updateActionRound();
