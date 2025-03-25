@@ -82,22 +82,37 @@ class Stun extends ModTemplate {
 		});
 
 		app.connection.on('stun-connection-failed', async (peerId, callback) => {
-			let c = await sconfirm('STUN: connection failed. Try again?');
+			let c = await sconfirm(`STUN: connection failed -- ${app.keychain.returnUsername(peerId)}. Keep trying?`);
 			if (c) {
+				for (let i = 0; i < this.noloop.length; i++) {
+					if (this.noloop[i] == peerId){
+						this.noloop.splice(i, 1);
+						break;
+					}
+				}
 				this.createPeerConnection(peerId, callback);
 			} else {
 				// Notify the module UI that we have given up connecting
 				app.connection.emit('stun-connection-close', peerId);
+				console.log("STUN: failed connections-- ", this.noloop);
 			}
 		});
 
 		app.connection.on('stun-connection-timeout', async (peerId, callback) => {
-			let c = await sconfirm('STUN: connection timed out. Try again?');
+			console.log('STUN: connection timeout', peerId);
+			let c = await sconfirm(`STUN: connection timed out -- ${app.keychain.returnUsername(peerId)}. Keep trying?`);
 			if (c) {
+				for (let i = 0; i < this.noloop.length; i++) {
+					if (this.noloop[i] == peerId){
+						this.noloop.splice(i, 1);
+						break;
+					}
+				}
 				this.createPeerConnection(peerId, callback);
 			} else {
 				// Notify the module UI that we have given up connecting
 				app.connection.emit('stun-connection-close', peerId);
+				console.log("STUN: failed connections-- ", this.noloop);
 			}
 		});
 	}
@@ -403,13 +418,30 @@ class Stun extends ModTemplate {
 		this.app.connection.emit('relay-transaction', newtx);
 	}
 
+	restoreConnection(peerId, pathway, callback){
+			this.removePeerConnection(peerId);
+			if (!this.noloop.includes(peerId)) {
+				console.log('Attempt STUN reconnection once');
+				this.createPeerConnection(peerId, callback);
+				this.noloop.push(peerId);
+			} else {
+				console.log('STUN reconnection attempt failed after two tries, give up!');
+				this.app.connection.emit(pathway, peerId, callback);
+			}
+	}
+
 	createPeerConnection(peerId, callback = null) {
 		console.log(
-			'STUN: Create Peer Connection with ' + peerId + ` and ${callback ? 'a' : 'no'} callback`
+			'STUN: Create Peer Connection with ' + peerId + ` and ${callback ? 'a' : 'no'} callback`, this.noloop
 		);
 
 		if (peerId === this.publicKey) {
 			console.log('STUN: Attempting to create a peer Connection with myself!');
+			return 0;
+		}
+
+		if (this.noloop.includes(peerId)){
+			console.warn("STUN: refuse to create connection with " + peerId);
 			return 0;
 		}
 
@@ -419,10 +451,8 @@ class Stun extends ModTemplate {
 
 			//If not a solid connection state..., delete and try again
 			if (pc.connectionState == 'failed' || pc.connectionState == 'disconnected') {
-				console.log('STUN: remove failed connection ...');
-				this.app.connection.emit('stun-connection-failed', peerId, callback);
-				this.removePeerConnection(peerId);
-				//this.createPeerConnection(peerId, callback);
+				console.log('STUN: old peer has broken connection, reestablish...');
+				this.restoreConnection(peerId, 'stun-connection-failed', callback);
 				return;
 			}
 
@@ -480,15 +510,7 @@ class Stun extends ModTemplate {
 
 		peerConnection.timer = setTimeout(() => {
 			console.log('STUN Connection timeout...');
-			this.removePeerConnection(peerId);
-			if (!this.noloop.includes(peerId)) {
-				console.log('Attempt STUN reconnection once');
-				this.createPeerConnection(peerId, callback);
-				this.noloop.push(peerId);
-			} else {
-				console.log('STUN reconnection attempt timed out, give up!');
-				this.app.connection.emit('stun-connection-timeout', peerId, callback);
-			}
+			this.restoreConnection(peerId, 'stun-connection-timeout', callback);
 		}, 10000);
 
 		// Handle ICE candidates
@@ -534,11 +556,9 @@ class Stun extends ModTemplate {
 						peerConnection.connectionState === 'failed' ||
 						peerConnection.connectionState === 'disconnected'
 					) {
-						this.app.connection.emit('stun-connection-failed', peerId, callback);
-						console.log('STUN: connection not restored after 5 seconds...');
-						//console.log('STUN: remove peer and attempt reconnection');
-						this.removePeerConnection(peerId);
-						//this.createPeerConnection(peerId, callback);
+						console.log(`STUN: connection not restored after ${timerAmt/1000} seconds...`);
+						this.restoreConnection(peerId, 'stun-connection-failed', callback);
+
 					} else {
 						console.log(
 							`STUN: connection okay ${peerConnection.connectionState} after timer, don't do anything`
