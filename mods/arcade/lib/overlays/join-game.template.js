@@ -136,7 +136,7 @@ module.exports = (app, mod, invite) => {
 
 		if (invite.players.length >= invite.players_needed) {
 			// Game has enough players (should be active)
-			if (mod.isMyGame(game_tx)) {
+			if (invite.players.includes(mod.publicKey)) {
 				// I can continue or quit my games
 				html += `<div id="arcade-game-controls-continue-game" class="saito-button saito-button-primary">continue game</div>`;
 				if (invite.players.length > 1) {
