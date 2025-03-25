@@ -162,24 +162,24 @@ class Invite {
 		// calculate empty slots
 		this.invite_data.empty_slots = 0;
 
-		if (!this.mod.isMyGame(tx)){
-			this.invite_data.empty_slots = Math.max(
-				0,
-				this.invite_data.players_needed - this.invite_data.players.length
-			);
+		this.invite_data.empty_slots = Math.max(
+			0,
+			this.invite_data.players_needed - this.invite_data.players.length
+		);
 			
+		if (!this.mod.isMyGame(tx)){
 			if (!this.invite_data.empty_slots && this.invite_data.max_players){
 				this.invite_data.empty_slots = Math.max(0, this.invite_data.max_players - this.invite_data.players.length);
 				if (this.invite_data.empty_slots){
 					this.invite_data.empty_slots = 1;
 				}
 			}
-
-			// remove empty slots if any players are requested
-			// because we will pre-fill in the invitees
-			this.invite_data.empty_slots -=
-				this.invite_data.desired_opponent_publickeys.length;
 		}
+
+		// remove empty slots if any players are requested
+		// because we will pre-fill in the invitees
+		this.invite_data.empty_slots -=
+			this.invite_data.desired_opponent_publickeys.length;
 
 		//if this game already exists!
 		for (let i = 0; i < this.app?.options?.games?.length; i++) {
