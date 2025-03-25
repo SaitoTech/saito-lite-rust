@@ -69,6 +69,11 @@ export default class Wallet extends SaitoWallet {
         );
     }
 
+  public async getNftList(): Promise<String> {
+      return S.getInstance().getNftList();
+  }
+
+
   public async getBalance(ticker = 'SAITO'): Promise<bigint> {
     if (ticker === 'SAITO') {
       return this.instance.get_balance();

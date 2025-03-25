@@ -141,7 +141,7 @@ class Nft {
             console.log(fee);
             console.log(nft_self.mod.publicKey);
 
-            let tx = await nft_self.app.wallet.createBoundUtxoTransaction(
+            let newtx = await nft_self.app.wallet.createBoundUtxoTransaction(
                 amount,
                 nft_self.nft.bid,
                 nft_self.nft.tid,
@@ -153,27 +153,35 @@ class Nft {
                 fee,
                 nft_self.mod.publicKey
             );
-            console.log("createBoundUtxoTransaction:", tx);
+            console.log("createBoundUtxoTransaction:", newtx);
+            await newtx.sign();
+            await nft_self.app.network.propagateTransaction(newtx);
+            console.log("propagateTransaction:", newtx);
+
+            let nft_list = await nft_self.app.wallet.getNftList();            
+            console.log("NFT list: ", nft_list);
         };
 
-        document.querySelector('.utxo-selection-button').onclick = async (e) => {
-            let utxo = this.utxo[parseInt(e.target.value)-1];
-            console.log("UTXO: " + JSON.stringify(utxo));
+        if (document.querySelector('.utxo-selection-button')) {
+            document.querySelector('.utxo-selection-button').onclick = async (e) => {
+                let utxo = this.utxo[parseInt(e.target.value)-1];
+                console.log("UTXO: " + JSON.stringify(utxo));
 
-            let block_id = utxo[1];
-            let tx_ordinal = utxo[2];
-            let slip_index = utxo[3];
-            let amount = utxo[4];
+                let block_id = utxo[1];
+                let tx_ordinal = utxo[2];
+                let slip_index = utxo[3];
+                let amount = utxo[4];
 
-    	    this.nft.bid = block_id;
-    	    this.nft.tid = tx_ordinal;
-    	    this.nft.sid = slip_index;
-    	    this.nft.amt = amount;
+        	    this.nft.bid = block_id;
+        	    this.nft.tid = tx_ordinal;
+        	    this.nft.sid = slip_index;
+        	    this.nft.amt = amount;
 
-    	    document.querySelectorAll(".nft-creator").forEach((el) => { el.classList.remove("nft-inactive"); });
-    	    document.querySelectorAll(".create-button").forEach((el) => { el.classList.remove("nft-inactive"); });
+        	    document.querySelectorAll(".nft-creator").forEach((el) => { el.classList.remove("nft-inactive"); });
+        	    document.querySelectorAll(".create-button").forEach((el) => { el.classList.remove("nft-inactive"); });
 
-        };
+            }
+        }
     }
 
 
