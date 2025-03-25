@@ -93,7 +93,7 @@ class Poker extends GameTableTemplate {
 		//console.log("score2: " + JSON.stringify(score2));
 		//console.log("winner: " + JSON.stringify(winner));
 
-		super.initializeGame(); //Update max players
+		super.initializeGame(); 
 
 		//
 		// CHIPS or CRYPTO ?
