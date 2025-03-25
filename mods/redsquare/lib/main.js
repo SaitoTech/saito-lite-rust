@@ -30,6 +30,13 @@ class RedSquareMain {
     //
     this.app.connection.on('redsquare-home-render-request', (scroll_to_top = false) => {
 
+
+      if (this.manager.mode == "profile") {
+	if (document.querySelector(".saito-main")) {
+	  document.querySelector(".saito-main").innerHTML = "";
+        }
+      }
+
       this.manager.render('tweets');
 
       let behavior = 'auto';

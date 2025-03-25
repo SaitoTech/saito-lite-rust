@@ -17,11 +17,8 @@ class TweetManager {
 		this.just_fetched_tweets = false;
 
 		this.profile = new SaitoProfile(app, mod, '.saito-main');
-
 		this.profile.tab_container = '.tweet-manager';
-
 		this.profile_tabs = ['posts', 'replies', /*'retweets',*/ 'likes'];
-
 		this.profile.reset(this.mod.publicKey, 'posts', this.profile_tabs);
 
 		//This is an in-place loader... not super useful when content is overflowing off the bottom of the screen
@@ -175,13 +172,37 @@ class TweetManager {
 		////////////
 		if (new_mode == 'tweets') {
 
+			//
+			// UI jumps if we add then remove the "no more tweets" DOM component
+			// so we have this somewhat lame check and removal function incorporated
+			// here.
+			//
+			let already_removed_no_more_tweets = false;
 			for (let tweet of this.mod.tweets) {
 				if (this.mod.curated != false) {
 					if (tweet.curated == 1 && !tweet.isRendered()) {
+						if (already_removed_no_more_tweets == false) {
+							//
+							// remove DOM element telling us nothing more exists...
+							//
+							if (document.querySelector(".saito-end-of-redsquare")) {
+								document.querySelector(".saito-end-of-redsquare").remove();
+							}
+							already_removed_no_more_tweets = true;
+						}
 						tweet.renderWithCriticalChild();
 					}
 				} else {
 					if (!tweet.isRendered()) {
+						//
+						// remove DOM element telling us nothing more exists...
+						//
+						if (already_removed_no_more_tweets == false) {
+							if (document.querySelector(".saito-end-of-redsquare")) {
+								document.querySelector(".saito-end-of-redsquare").remove();
+							}
+							already_removed_no_more_tweets = true;
+						}
 						tweet.renderWithCriticalChild();
 					}
 				}
@@ -304,6 +325,14 @@ class TweetManager {
 
 	insertOlderTweets(tx_count, peer = null) {
 
+		//
+		// UI jumps if we add then remove the "no more tweets" DOM component
+		// so we have this somewhat lame check and removal function incorporated
+		// here.
+		//
+		let already_removed_no_more_tweets = false;		
+
+
 		this.numActivePeers--;
 		if (this.mode !== 'tweets') {
 			console.log('Not on main feed anymore, currently on: ' + this.mode);
@@ -314,10 +343,28 @@ class TweetManager {
 		for (let tweet of this.mod.tweets) {
 			if (this.mod.curated == 1) {
 				if (tweet.curated && !tweet.isRendered()) {
+					if (!already_removed_no_more_tweets) {
+						//
+						// remove DOM element telling us nothing more exists...
+						//
+						if (document.querySelector(".saito-end-of-redsquare")) {
+							document.querySelector(".saito-end-of-redsquare").remove();
+						}
+						already_removed_no_more_tweets = true;
+					}
 					tweet.renderWithCriticalChild();
 				}
 			} else {
 				if (!tweet.isRendered()) {
+					if (!already_removed_no_more_tweets) {
+						//
+						// remove DOM element telling us nothing more exists...
+						//
+						if (document.querySelector(".saito-end-of-redsquare")) {
+							document.querySelector(".saito-end-of-redsquare").remove();
+						}
+						already_removed_no_more_tweets = true;
+					}
 					tweet.renderWithCriticalChild();
 				}
 			}
@@ -334,13 +381,6 @@ class TweetManager {
 			this.intersectionObserver.disconnect();
 		} else {
 
-			//
-			// remove DOM element telling us nothing more exists...
-			//
-			if (document.querySelector(".saito-end-of-redsquare")) {
-			  document.querySelector(".saito-end-of-redsquare").remove();
-			}
-
 			this.just_fetched_tweets = false;
 			this.intersectionObserver.observe(document.getElementById('intersection-observer-trigger'));
 		}
@@ -350,6 +390,7 @@ class TweetManager {
 	}
 
 	renderProfile(publicKey) {
+
 		if (this.mode == "profile" && publicKey == this.profile?.publicKey){
 			return;
 		}
@@ -680,36 +721,31 @@ class TweetManager {
 			}
 		}
 
-		if (!this?.eventsAttached){
-
-			if (document.getElementById("curated")){ // for you
-				document.getElementById("curated").onclick = (e) => {
-					e.currentTarget.classList.add("active");
-					document.getElementById("everything").classList.remove("active");
-					this.mod.curated = true;
-					this.mod.saveOptions();
-					this.clearFeed();
-					this.showLoader();
-					setTimeout(() => {
-						this.render();
-					}, 10);
-				}
+		if (document.getElementById("curated")){ // for you
+			document.getElementById("curated").onclick = (e) => {
+				e.currentTarget.classList.add("active");
+				document.getElementById("everything").classList.remove("active");
+				this.mod.curated = true;
+				this.mod.saveOptions();
+				this.clearFeed();
+				this.showLoader();
+				setTimeout(() => {
+					this.render();
+				}, 10);
 			}
-			if (document.getElementById("everything")){ // everything
-				document.getElementById("everything").onclick = (e) => {
-					e.currentTarget.classList.add("active");
-					document.getElementById("curated").classList.remove("active");
-					this.mod.curated = false;
-					this.mod.saveOptions();
-					this.showLoader();
-					this.clearFeed();
-					setTimeout(() => {
-						this.render();
-					}, 10);
-				}
+		}
+		if (document.getElementById("everything")){ // everything
+			document.getElementById("everything").onclick = (e) => {
+				e.currentTarget.classList.add("active");
+				document.getElementById("curated").classList.remove("active");
+				this.mod.curated = false;
+				this.mod.saveOptions();
+				this.showLoader();
+				this.clearFeed();
+				setTimeout(() => {
+					this.render();
+				}, 10);
 			}
-
-			this.eventsAttached = true;
 		}
 	}
 
