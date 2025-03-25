@@ -1,3 +1,5 @@
+/* Pulsing saito loader */
+
 .saito-loader {
     /* border struggles with overlay 8?
 /*  border: 1px solid aqua; */
@@ -68,6 +70,9 @@
     margin-top: 7rem;
 }
 
+
+/* Spinning loader */
+
 .game-loader-container{
   display: flex;
   flex-direction: column;
@@ -88,6 +93,18 @@
   height: 5em;
   margin-top: 3rem;
 }
+
+.observer-loader-spinner {
+  margin: auto;
+  border: 6px solid var(--color-primary);
+  border-top: 6px solid var(--color-white);
+
+  border-radius: 50%;
+  animation: spin 1.5s linear infinite;
+  width: 3rem;
+  height: 3rem;
+}
+
 
 @keyframes spin {
   0% {
