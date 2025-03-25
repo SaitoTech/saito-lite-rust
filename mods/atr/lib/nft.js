@@ -125,8 +125,8 @@ class Nft {
 
             let amount = typeof nft_self.nft.amt === "string" ? BigInt(nft_self.nft.amt) : nft_self.nft.amt;
             let depositAmt = typeof nft_self.nft.deposit === "string" ? BigInt(nft_self.nft.deposit) : nft_self.nft.deposit;
-            let change = BigInt(nft_self.nft.change);
             let fee = BigInt(nft_self.nft.fee);
+            let change = amount - depositAmt - fee;
 
             console.log("SUBMIT NFT: ");
             console.log(nft_self.nft);
@@ -160,6 +160,7 @@ class Nft {
 
             let nft_list = await nft_self.app.wallet.getNftList();            
             console.log("NFT list: ", nft_list);
+
         };
 
         if (document.querySelector('.utxo-selection-button')) {
