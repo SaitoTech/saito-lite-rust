@@ -8082,6 +8082,7 @@ try {
 
 	  this.displaySpace(source);
 	  this.displaySpace(destination);
+	  this.displayReserveBoxes();
 
 	  if (value > 0) {
 	    if (this.game.player == this.returnPlayerOfFaction(faction)) {
@@ -8543,7 +8544,7 @@ console.log(JSON.stringify(this.game.state.combat));
 	  for (let key in this.game.spaces) {
 	    let space = this.game.spaces[key];
 	    if (space.activated_for_combat || space.activated_for_movement) {
-	      for (let z = space.units.length-1;z >= 0 ; z++) {
+	      for (let z = space.units.length-1; z >= 0 ; z--) {
 	        let u = space.units[z];
 		if (u.destroyed) { space.units.splice(z, 1); }
 	      }
@@ -9713,7 +9714,7 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
 
       let movement_fnct = (movement_fnct) => {
 	this.playerSelectSpaceWithFilter(
-	  "Select Space to Activate:",
+	  `Select Space to Activate:`,
 	  (key) => {
 	    if (cost < this.returnActivationCost(key)) { return 0; }
 	    let space = this.game.spaces[key];
@@ -9944,7 +9945,8 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
     let paths_self = this;
 
     let spaces = this.returnSpacesWithFilter((key) => {
-      if (key == "arbox" || key == "crbox") { return 1; }
+      if (key == "arbox") { if (this.game.player == this.returnPlayerOfFaction("allies")) { return 1; } else { return 0; } }
+      if (key == "crbox") { if (this.game.player == this.returnPlayerOfFaction("central")) { return 1; } else { return 0; } }
       for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
         let unit = paths_self.game.spaces[key].units[z];
 	if (faction == paths_self.returnPowerOfUnit(unit)) {
@@ -9968,13 +9970,12 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
     // select box with unit
     //
     this.playerSelectSpaceWithFilter(
-      "Select Space with Unit to Strategically Redeploy",
+      `Select Space with Unit to Strategically Redeploy`,
       (key) => {
 	if (spaces.includes(key)) { return 1; }
         return 0;
       },
       (key) => {
-
         if (key == "crbox") {
   	  paths_self.reserves_overlay.pickUnitAndTriggerCallback("central", (idx) => {
 	    let unit = paths_self.game.spaces[crbox].units[idx];

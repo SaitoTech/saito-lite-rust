@@ -311,6 +311,7 @@ try {
 
 	  this.displaySpace(source);
 	  this.displaySpace(destination);
+	  this.displayReserveBoxes();
 
 	  if (value > 0) {
 	    if (this.game.player == this.returnPlayerOfFaction(faction)) {
@@ -772,7 +773,7 @@ console.log(JSON.stringify(this.game.state.combat));
 	  for (let key in this.game.spaces) {
 	    let space = this.game.spaces[key];
 	    if (space.activated_for_combat || space.activated_for_movement) {
-	      for (let z = space.units.length-1;z >= 0 ; z++) {
+	      for (let z = space.units.length-1; z >= 0 ; z--) {
 	        let u = space.units[z];
 		if (u.destroyed) { space.units.splice(z, 1); }
 	      }

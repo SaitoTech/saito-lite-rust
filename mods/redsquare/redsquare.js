@@ -830,7 +830,9 @@ class RedSquare extends ModTemplate {
       // we have two stop conditions,
       //
       // 1) when our peer has been tapped out on earlier (older) tweets, we stop querying them.
+      //
       // 2) if we are our own peer, don't look for later (newer) tweets
+      //
       // the second should keep the "loading" message flashing longer
       // though this is a hack and we will need to fix once we are loading from multiple remote peers
       // it is just a bit of a pain because we have triply nested callbacks...

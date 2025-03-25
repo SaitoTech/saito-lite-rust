@@ -8,11 +8,13 @@ const SaitoLoader = require('./../../../lib/saito/ui/saito-loader/saito-loader')
 class TweetManager {
 
 	constructor(app, mod, container = '.saito-main') {
+
 		this.app = app;
 		this.mod = mod;
 		this.container = container;
 
 		this.mode = 'loading';
+		this.just_fetched_tweets = false;
 
 		this.profile = new SaitoProfile(app, mod, '.saito-main');
 
@@ -44,9 +46,6 @@ class TweetManager {
 						// load more tweets -- from local and remote sources
 						//
 						if (this.mode === 'tweets') {
-if (this.app.BROWSER) {
-  alert("we are intersecting, so fetching more tweets!");
-}
 							this.fetchTweets();
 						}
 
@@ -123,8 +122,6 @@ if (this.app.BROWSER) {
 
 	render(new_mode = this.mode) {
 
-		console.log("Tweet Manager rendering: " + new_mode);
-		
 		this.app.connection.emit('redsquare-clear-menu-highlighting', new_mode);
 
 		if (document.querySelector('.highlight-tweet')) {
@@ -284,11 +281,12 @@ if (this.app.BROWSER) {
 	}
 
 	fetchTweets(){
+
+		if (this.just_fetched_tweets == true) { return; }
+		this.just_fetched_tweets = true;
+
 		this.intersectionObserver.disconnect();
 
-if (this.app.BROWSER) {
-  alert("disconnected intersection observer ... ");
-}
 		this.numActivePeers = this.mod.loadTweets(
 			'earlier',
 			this.insertOlderTweets.bind(this)
@@ -296,9 +294,6 @@ if (this.app.BROWSER) {
 
 		if (!this.numActivePeers) {
 			this.mod.tweets_earliest_ts--;
-if (this.app.BROWSER) {
-  alert("on numActivePeers fetchTweets...");
-}
 			numActivePeers = this.mod.loadTweets('earlier', this.insertOlderTweets.bind(this));
 			if (!numActivePeers) {
 				console.log('RS: Give up');
@@ -317,8 +312,14 @@ if (this.app.BROWSER) {
 
 		this.hideLoader();
 		for (let tweet of this.mod.tweets) {
-			if (tweet.curated && !tweet.isRendered()) {
-				tweet.renderWithCriticalChild();
+			if (this.mod.curated == 1) {
+				if (tweet.curated && !tweet.isRendered()) {
+					tweet.renderWithCriticalChild();
+				}
+			} else {
+				if (!tweet.isRendered()) {
+					tweet.renderWithCriticalChild();
+				}
 			}
 		}
 
@@ -332,6 +333,15 @@ if (this.app.BROWSER) {
 			}
 			this.intersectionObserver.disconnect();
 		} else {
+
+			//
+			// remove DOM element telling us nothing more exists...
+			//
+			if (document.querySelector(".saito-end-of-redsquare")) {
+			  document.querySelector(".saito-end-of-redsquare").remove();
+			}
+
+			this.just_fetched_tweets = false;
 			this.intersectionObserver.observe(document.getElementById('intersection-observer-trigger'));
 		}
 

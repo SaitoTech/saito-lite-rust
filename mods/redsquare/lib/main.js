@@ -54,6 +54,27 @@ class RedSquareMain {
       // check if we can refresh page (show tweets immediately) or show prompt / button
       //
       if (num_tweets > 0) {
+
+	//
+	// we only want to show the reload tweets button if there are new tweets
+	// to show, which we 
+	//
+	let are_there_new_tweets_to_show = false;
+	for (let i = 0; i < this.mod.tweets.length && i < 10; i++) {
+	  if (!this.mod.tweets[i].isRendered()) {
+	    if (this.mod.curated) {
+	      if (this.mod.tweets[i].curated) {
+	        are_there_new_tweets_to_show = true;
+	      }
+	    } else {
+	      are_there_new_tweets_to_show = true;
+	    }
+	  } else {
+	    i = this.mod.tweets.length;
+	  }
+	}
+
+	
         //
         // Don't insert new tweets or button if looking at a tweet or profile
         //
@@ -62,20 +83,22 @@ class RedSquareMain {
             this.manager.clearFeed();
             this.app.connection.emit('redsquare-home-render-request', true);
           } else {
-            setTimeout(() => {
-              if (!document.getElementById('saito-new-tweets')) {
-                this.app.browser.prependElementToSelector(
-                  `<div class="saito-button-secondary saito-new-tweets" id="saito-new-tweets">load new tweets</div>`,
-                  '.redsquare-progress-banner'
-                );
-              }
+	    if (are_there_new_tweets_to_show) {
+              setTimeout(() => {
+                if (!document.getElementById('saito-new-tweets')) {
+                  this.app.browser.prependElementToSelector(
+                    `<div class="saito-button-secondary saito-new-tweets" id="saito-new-tweets">load new tweets</div>`,
+                    '.redsquare-progress-banner'
+                  );
+                }
 
-              document.getElementById('saito-new-tweets').onclick = (e) => {
-                e.currentTarget.remove();
-                this.manager.clearFeed();
-                this.app.connection.emit('redsquare-home-render-request', true);
-              };
-            }, 1000);
+                document.getElementById('saito-new-tweets').onclick = (e) => {
+                  e.currentTarget.remove();
+                  this.manager.clearFeed();
+                  this.app.connection.emit('redsquare-home-render-request', true);
+                };
+              }, 1000);
+            }
           }
         }
       }
