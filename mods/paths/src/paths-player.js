@@ -122,7 +122,6 @@
       paths_self.endTurn();
     }
 
-
     paths_self.playerSelectSpaceWithFilter(
       `Select Advance Destination`,
       (destination) => {
@@ -132,15 +131,6 @@
         return 0;
       },
       (key) => {
-
-console.log("KEY");
-console.log("KEY");
-console.log("KEY");
-console.log("KEY");
-console.log("KEY");
-console.log("KEY");
-console.log("KEY - " + JSON.stringify(attacker_units));
-console.log("KEY");
 	for (let i = 0; i < attacker_units.length; i++) {
           let x = attacker_units[i];
       	  let skey = x.spacekey;
@@ -184,7 +174,6 @@ console.log("KEY");
     if (space.trench > 0) 		{ can_defender_cancel_retreat = true; }
 
     if (can_defender_cancel_retreat == false) {
-console.log("CAN PLAYER HANDLE RETREAT?");
       this.playerHandleRetreat();
       return;
     }
@@ -242,17 +231,13 @@ console.log("CAN PLAYER HANDLE RETREAT?");
       }
     );
 
-console.log("B4 HOW MANY SPACES WITHIN HOPS: " + spaces_within_hops.length);
-
     //
     // remove source and single-hop destination if needed
     //
     let source = this.game.spaces[this.game.state.combat.key];
     for (let i = spaces_within_hops.length-1; i >= 0; i--) {
-console.log("examining: " + spaces_within_hops[i]);
       let destination = spaces_within_hops[i];
       if (destination == this.game.state.combat.key) {
-console.log("dest is combat key!");
 	spaces_within_hops.splice(i, 1);
       }
       if (source.neighbours.includes(destination)) {
@@ -274,14 +259,10 @@ console.log("dest is combat key!");
 	  }
 	}
 	if (is_there_a_two_hop_connection == false) {
-console.log("no two hop connection...");
 	  spaces_within_hops.splice(i, 1);
 	}
       }
     }
-
-console.log("HOW MANY SPACES WITHIN HOPS: " + spaces_within_hops.length);
-
 
     //
     // no retreat options? eliminate all defenders
@@ -477,11 +458,6 @@ console.log("HOW MANY SPACES WITHIN HOPS: " + spaces_within_hops.length);
 
     let mainInterface = function(options, mainInterface, attackInterface) {
 
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("MAIN INTERFACE: " + options.length);
-
       //
       // sometimes this ends
       //
@@ -505,8 +481,6 @@ console.log("MAIN INTERFACE: " + options.length);
 	  }
 	}
       }
-
-console.log("UNITS TO ATTACK: " + units_to_attack);
 
       //
       // exit if nothing is left to attack with
@@ -756,6 +730,22 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
 	      return 0;
 	    },
 	    (key) => {
+
+	      //
+	      // if this is a fort, we need to move enough units into the fort in order
+	      // to besiege it, which is at least 1 army, or a number of Corps equal to 
+	      // the fort’s LF 
+	      //
+	      let is_the_unit_an_army = false;
+	      let is_the_destination_a_fort = false;
+	      if (paths_self.game.spaces[key].fort == 1) { is_the_destination_a_fort = true; }
+	      if (paths_self.game.spaces[sourcekey].units[idx].army == 1) { is_the_unit_an_army = true; }
+
+	      if (is_the_destination_a_fort == true && is_the_unit_an_army == false) {
+alert("corps cannot besiege unless N of them...");
+	      }
+
+
               paths_self.moveUnit(sourcekey, idx, key);
 	      paths_self.addMove(`move\t${faction}\t${sourcekey}\t${idx}\t${key}\t${paths_self.game.player}`);
               paths_self.displaySpace(key);

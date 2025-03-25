@@ -17,19 +17,14 @@
     if (this.game.spaces[spacekey].units.length == 0) { return 0; }
     let enemy_units = 0;
     let faction = this.returnPowerOfUnit(this.game.spaces[spacekey].units[0]);
-console.log("we are " + faction);
-console.log("neighs of: " + spacekey);
     for (let z = 0; z < this.game.spaces[spacekey].neighbours.length; z++) {
-console.log("looking at: " + this.game.spaces[spacekey].neighbours[z]);
       let n = this.game.spaces[this.game.spaces[spacekey].neighbours[z]];
       if (n.units.length > 0) {
 	if (this.returnPowerOfUnit(n.units[0]) != faction) {
-console.log("there are enemy units in: " + n.key);
 	  enemy_units++;
 	}
       }
     }
-console.log("found enemy units: " + enemy_units);
     if (enemy_units == 1) { return 1; }
     return 0;
   }
@@ -218,8 +213,6 @@ console.log("found enemy units: " + enemy_units);
 
   returnSpacesWithinHops(source, limit=0, passthrough_func=null) {
 
-console.log("source: " + source + " - " + limit);
-
     let paths_self = this;
 
     try { if (this.game.spaces[source]) { source = this.game.spaces[source]; } } catch (err) {}
@@ -236,8 +229,6 @@ console.log("source: " + source + " - " + limit);
       //
       for (let i = 0; i < news.length; i++) {
 
-console.log("examining: " + news[i]);
-
 	let passthrough = true;
 	if (passthrough_func != null) { if (!passthrough_func(news[i])) { passthrough = false; } } 
 
@@ -246,8 +237,6 @@ console.log("examining: " + news[i]);
 	// neighbours since we cannot route through it.
 	//
 	if (passthrough) {
-
-console.log("passthrough: " + news[i]);
 
           for (let z = 0; z < paths_self.game.spaces[news[i]].neighbours.length; z++) {
             let n = paths_self.game.spaces[news[i]].neighbours[z];
@@ -263,11 +252,8 @@ console.log("passthrough: " + news[i]);
           }
 
           if (hop != 1) {
-console.log("old 1");
 	    if (!old.includes(news[i])) {
-console.log("old 2");
 	      if (news[i] !== source.key) {
-console.log("old 3");
 	        old.push(news[i]);
 	      }
             }
@@ -278,16 +264,13 @@ console.log("old 3");
 
 
       if (hop < limit) {
-console.log("return1 " + JSON.stringify(newer));
 	  return addHop(newer, hop);
       } else {
-console.log("return2 " + JSON.stringify(old));
 	  return old;
       }
 
     }
 
-console.log("return3 source");
     return addHop([source.key], 0); 
 
   }
@@ -3258,7 +3241,9 @@ spaces['crbox'] = {
 }
 
     for (let key in spaces) {
+      spaces[key].besieged = [];
       spaces[key].units = [];
+      spaces[key].fort = 0;
       spaces[key].trench = 0;
       if (!spaces[key].control) { spaces[key].control = ""; }
       spaces[key].activated_for_movement = 0;

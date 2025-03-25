@@ -14,6 +14,7 @@
   }
 
 
+
   importUnit(key, obj) {
 
     if (!this.game.units) { this.game.units = {}; }
@@ -25,6 +26,8 @@
 
     obj.key = key;
 
+    if (!obj.army)	{ obj.army 	= 0; }
+    if (!obj.corps)	{ obj.corps 	= 0; }
     if (!obj.combat)	{ obj.combat 	= 5; }
     if (!obj.loss)	{ obj.loss 	= 3; }
     if (!obj.movement)	{ obj.movement 	= 3; }
@@ -38,6 +41,8 @@
     if (!obj.damaged)	{ obj.damaged = false; }
     if (!obj.destroyed)	{ obj.destroyed = false; }
     if (!obj.spacekey)  { obj.spacekey = ""; }
+
+    if (key.indexOf("army") > -1) { obj.army = 1; } else { obj.corps = 1; }
 
     this.game.units[key] = obj;
 
