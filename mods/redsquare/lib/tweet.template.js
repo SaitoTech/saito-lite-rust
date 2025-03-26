@@ -1,4 +1,3 @@
-//const SaitoUser = require('./../../../lib/saito/ui/templates/saito-user.template');
 
 module.exports = (app, mod, tweet) => {
 	let notice = tweet?.notice || '';
@@ -8,17 +7,14 @@ module.exports = (app, mod, tweet) => {
 	text = app.browser.markupMentions(text);
 
 	let html_markers = '';
-	if (tweet.data_source) {
-		html_markers += ` data-source="${tweet.data_source}"`;
+	if (tweet.source.text) {
+		html_markers += ` data-source="${tweet.source.text}"`;
 	}
 	if (tweet.source.type) {
 		html_markers += ` data-source-type="${tweet.source.type}"`;
 	}
 	if (tweet.source.node) {
 		html_markers += ` data-source-node="${tweet.source.node}"`;
-	}
-	if (tweet.data_renewal) {
-		html_markers += ` data-renewal="${tweet.data_renewal}"`;
 	}
 	if (tweet?.updated_at){
 		html_markers += ` data-timestamp="${tweet.updated_at}"`;	
@@ -49,25 +45,18 @@ module.exports = (app, mod, tweet) => {
                 <div class="tweet-tool tweet-tool-retweet" title="Retweet/Quote-tweet"><span class="tweet-tool-retweet-count ${is_retweeted_css}">${tweet.num_retweets}</span>
                   <i class="fa fa-repeat ${is_retweeted_css}"></i>
                 </div>
-                <div class="tweet-tool tweet-tool-like" title="Like tweet"><span class="tweet-tool-like-count ${is_liked_css}">${tweet.num_likes}</span> <div class="tweet-like-button">
-                <div class="heart-bg">
-                  <div class="heart-icon ${is_liked_css}"></div>
-                </div>
-              </div></div>
-                    
-                <div class="tweet-tool tweet-tool-share" title="Copy link to tweet"><i class="fa fa-arrow-up-from-bracket"></i>
-                </div>`;
-	if (tweet.tx.from[0].publicKey === mod.publicKey) {
-		if (tweet.created_at + 10 * 60 * 1000 > new Date().getTime()) {
-			controls += `<div class="tweet-tool tweet-tool-edit" title="Edit your tweet"><i class="fas fa-edit"></i></div>`;
-		} else {
-			controls += `<div class="tweet-tool tweet-tool-delete" title="Delete your tweet"><i class="fas fa-trash"></i></div>`;
-		}
-	} else {
-		controls += `<div class="tweet-tool tweet-tool-more" title="More options"><i class="fa-solid fa-ellipsis"></i></div>`;
-		//controls += `<div class="tweet-tool tweet-tool-flag" title="Flag tweet as inappropriate"><i class="fa fa-flag"></i></div>`;
-	}
-	controls += `           </div>`;
+                <div class="tweet-tool tweet-tool-like" title="Like tweet">
+		  <span class="tweet-tool-like-count ${is_liked_css}">${tweet.num_likes}</span>
+		  <div class="tweet-like-button">
+                    <div class="heart-bg">
+                      <div class="heart-icon ${is_liked_css}"></div>
+                    </div>
+                  </div>
+		</div>
+                <div class="tweet-tool tweet-tool-share" title="Copy link to tweet"><i class="fa fa-arrow-up-from-bracket"></i></div>
+		<div class="tweet-tool tweet-tool-more" title="More options"><i class="fa-solid fa-ellipsis"></i></div>
+	      </div>
+	`;
 
 	let html = `
         <div class="tweet tweet-${tweet.tx.signature}" data-id="${

@@ -114,6 +114,7 @@ class RedSquareNavigation {
         this.app.connection.emit('redsquare-home-render-request');
         this.app.connection.emit('redsquare-remove-loading-message', 'navigating...');
       } else {
+
         this.app.connection.emit('redsquare-home-render-request', true);
 
         let ct = this.mod.loadTweets('later', (tx_count) => {

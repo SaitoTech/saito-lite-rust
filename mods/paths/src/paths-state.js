@@ -25,6 +25,41 @@
 
   }
 
+
+  calculateReplacementPoints() {
+
+      this.game.state.general_records_track.ge_replacements = this.game.state.rp['central']["ge"];
+      this.game.state.general_records_track.ge_replacements = this.game.state.rp['central']["ge"];
+      this.game.state.general_records_track.ge_replacements = this.game.state.rp['central']["ge"];
+      this.game.state.general_records_track.ge_replacements = this.game.state.rp['central']["ge"];
+      this.game.state.general_records_track.ge_replacements = this.game.state.rp['central']["ge"];
+      this.game.state.general_records_track.ge_replacements = this.game.state.rp['central']["ge"];
+      this.game.state.general_records_track.ge_replacements = this.game.state.rp['central']["ge"];
+
+
+
+
+      document.querySelector(`.general-records-track-${this.game.state.general_records_track.ge_replacements}`).innerHTML += rp_ge;
+      document.querySelector(`.general-records-track-${this.game.state.general_records_track.ah_replacements}`).innerHTML += rp_ah;
+      document.querySelector(`.general-records-track-${this.game.state.general_records_track.allied_replacements}`).innerHTML += rp_allied;
+      document.querySelector(`.general-records-track-${this.game.state.general_records_track.br_replacements}`).innerHTML += rp_br;
+      document.querySelector(`.general-records-track-${this.game.state.general_records_track.fr_replacements}`).innerHTML += rp_fr;
+      document.querySelector(`.general-records-track-${this.game.state.general_records_track.ru_replacements}`).innerHTML += rp_ru;
+
+  }
+  calculateVictoryPoints() {
+
+    let vp = 0;
+
+    // central VP spaces
+    for (let key in this.game.spaces) { if (this.game.spaces[key].vp && this.game.spaces[key].control == "central") { vp++; } }
+
+    this.game.state.general_records_track.vp = vp;
+   
+    return vp;
+
+  }
+
   returnState() {
 
     let state = {};

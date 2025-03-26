@@ -8,18 +8,17 @@ const SaitoLoader = require('./../../../lib/saito/ui/saito-loader/saito-loader')
 class TweetManager {
 
 	constructor(app, mod, container = '.saito-main') {
+
 		this.app = app;
 		this.mod = mod;
 		this.container = container;
 
 		this.mode = 'loading';
+		this.just_fetched_tweets = false;
 
 		this.profile = new SaitoProfile(app, mod, '.saito-main');
-
 		this.profile.tab_container = '.tweet-manager';
-
 		this.profile_tabs = ['posts', 'replies', /*'retweets',*/ 'likes'];
-
 		this.profile.reset(this.mod.publicKey, 'posts', this.profile_tabs);
 
 		//This is an in-place loader... not super useful when content is overflowing off the bottom of the screen
@@ -120,8 +119,6 @@ class TweetManager {
 
 	render(new_mode = this.mode) {
 
-		console.log(this.mode, new_mode);
-		
 		this.app.connection.emit('redsquare-clear-menu-highlighting', new_mode);
 
 		if (document.querySelector('.highlight-tweet')) {
@@ -158,7 +155,6 @@ class TweetManager {
 		let managerElem = document.querySelector(myqs);
 
 		if (this.mode == 'tweets' && new_mode !== 'tweets') {
-			//console.log('Stash rendered tweets from main feed');
 			let kids = managerElem.children;
 			holder.replaceChildren(...kids);
 			if (document.getElementById('saito-new-tweets')) {
@@ -166,38 +162,55 @@ class TweetManager {
 			}
 			this.thread_id = null;
 		} else {
-			//console.log('Remove temporary content from page');
 			while (managerElem.hasChildNodes()) {
 				managerElem.firstChild.remove();
 			}
 		}
 
-		//console.log('Redsquare manager rendering: ', this.mode);
-
 		////////////
 		// tweets //
 		////////////
 		if (new_mode == 'tweets') {
-			// Do curation before rendering...
-			this.mod.reset();
 
-			if (holder) {
-				let kids = holder.children;
-				managerElem.replaceChildren(...kids);
-			}
-
-			for (let tweet of this.mod.curated_tweets) {
-				if (!tweet.isRendered()) {
-					tweet.renderWithCriticalChild();
+			//
+			// UI jumps if we add then remove the "no more tweets" DOM component
+			// so we have this somewhat lame check and removal function incorporated
+			// here.
+			//
+			let already_removed_no_more_tweets = false;
+			for (let tweet of this.mod.tweets) {
+				if (this.mod.curated != false) {
+					if (tweet.curated == 1 && !tweet.isRendered()) {
+						if (already_removed_no_more_tweets == false) {
+							//
+							// remove DOM element telling us nothing more exists...
+							//
+							if (document.querySelector(".saito-end-of-redsquare")) {
+								document.querySelector(".saito-end-of-redsquare").remove();
+							}
+							already_removed_no_more_tweets = true;
+						}
+						tweet.renderWithCriticalChild();
+					}
+				} else {
+					if (!tweet.isRendered()) {
+						//
+						// remove DOM element telling us nothing more exists...
+						//
+						if (already_removed_no_more_tweets == false) {
+							if (document.querySelector(".saito-end-of-redsquare")) {
+								document.querySelector(".saito-end-of-redsquare").remove();
+							}
+							already_removed_no_more_tweets = true;
+						}
+						tweet.renderWithCriticalChild();
+					}
 				}
 			}
 
 			//Fire up the intersection observer
 			this.attachEvents();
 			this.mode = new_mode;
-			if (this.mod.curated_tweets < 10){
-				this.fetchTweets();
-			}
 
 			return;
 		}
@@ -289,6 +302,10 @@ class TweetManager {
 	}
 
 	fetchTweets(){
+
+		if (this.just_fetched_tweets == true) { return; }
+		this.just_fetched_tweets = true;
+
 		this.intersectionObserver.disconnect();
 
 		this.numActivePeers = this.mod.loadTweets(
@@ -297,7 +314,6 @@ class TweetManager {
 		);
 
 		if (!this.numActivePeers) {
-			console.log('RS: Try again');
 			this.mod.tweets_earliest_ts--;
 			numActivePeers = this.mod.loadTweets('earlier', this.insertOlderTweets.bind(this));
 			if (!numActivePeers) {
@@ -309,61 +325,72 @@ class TweetManager {
 
 	insertOlderTweets(tx_count, peer = null) {
 
+		//
+		// UI jumps if we add then remove the "no more tweets" DOM component
+		// so we have this somewhat lame check and removal function incorporated
+		// here.
+		//
+		let already_removed_no_more_tweets = false;		
+
+
 		this.numActivePeers--;
 		if (this.mode !== 'tweets') {
 			console.log('Not on main feed anymore, currently on: ' + this.mode);
 			return;
 		}
 
-		// Curation is done after the return so we don't care about tx_count per se 
-		let acceptable_tweet_ct = this.mod.reset();
-
-		if (acceptable_tweet_ct > 0) {
-			this.hideLoader();
-			for (let tweet of this.mod.curated_tweets) {
+		this.hideLoader();
+		for (let tweet of this.mod.tweets) {
+			if (this.mod.curated == 1) {
+				if (tweet.curated && !tweet.isRendered()) {
+					if (!already_removed_no_more_tweets) {
+						//
+						// remove DOM element telling us nothing more exists...
+						//
+						if (document.querySelector(".saito-end-of-redsquare")) {
+							document.querySelector(".saito-end-of-redsquare").remove();
+						}
+						already_removed_no_more_tweets = true;
+					}
+					tweet.renderWithCriticalChild();
+				}
+			} else {
 				if (!tweet.isRendered()) {
+					if (!already_removed_no_more_tweets) {
+						//
+						// remove DOM element telling us nothing more exists...
+						//
+						if (document.querySelector(".saito-end-of-redsquare")) {
+							document.querySelector(".saito-end-of-redsquare").remove();
+						}
+						already_removed_no_more_tweets = true;
+					}
 					tweet.renderWithCriticalChild();
 				}
 			}
-
-			this.intersectionObserver.observe(document.getElementById('intersection-observer-trigger'));
-			return;
-
-		} else if (peer?.tweets_earliest_ts) {
-			console.log(
-				`${peer.publicKey} still has tweets as early as ${new Date(
-					peer.tweets_earliest_ts
-				)}, keep querying...`
-			);
-			this.mod.tweets_earliest_ts--;
-			this.numActivePeers += this.mod.loadTweets('earlier', this.insertOlderTweets.bind(this), peer);
-		} else {
-			//If all peers have returned 0, then clear feed...
-
-			let out_of_content = true;
-
-			for (let i = 0; i < this.mod.peers.length; i++) {
-				if (this.mod.peers[i].tweets_earliest_ts) {
-					out_of_content = false;
-				}
-			}
-
-			if (out_of_content) {
-				this.hideLoader();
-
-				if (!document.querySelector('.saito-end-of-redsquare')) {
-					this.app.browser.addElementToSelector(
-						`<div class="saito-end-of-redsquare">no more tweets</div>`,
-						'.tweet-manager'
-					);
-				}
-				this.intersectionObserver.disconnect();
-				console.log("RS: Out of content");
-			} 
 		}
+
+
+		if (tx_count == 0) {
+			if (!document.querySelector('.saito-end-of-redsquare')) {
+				this.app.browser.addElementToSelector(
+					`<div class="saito-end-of-redsquare">no more tweets</div>`,
+					'.tweet-manager'
+				);
+			}
+			this.intersectionObserver.disconnect();
+		} else {
+
+			this.just_fetched_tweets = false;
+			this.intersectionObserver.observe(document.getElementById('intersection-observer-trigger'));
+		}
+
+		return;
+
 	}
 
 	renderProfile(publicKey) {
+
 		if (this.mode == "profile" && publicKey == this.profile?.publicKey){
 			return;
 		}
@@ -502,10 +529,10 @@ class TweetManager {
 	}
 
 	/*
-    Liked tweets are more complicated than tweets I have sent because it is a 2-step look up
-    We can find the 1, 2...n txs where I liked the tweet, which contains the signature of the original 
-    tweet transaction. Fortunately, if I am looking at my own profile, I should have everything stored locally
-  */
+        Liked tweets are more complicated than tweets I have sent because it is a 2-step look up
+        We can find the 1, 2...n txs where I liked the tweet, which contains the signature of the original 
+        tweet transaction. Fortunately, if I am looking at my own profile, I should have everything stored locally
+        */
 	loadLikes(list_of_liked_tweet_sigs, peer) {
 		if (this.mode !== 'profile') {
 			return;
@@ -694,36 +721,31 @@ class TweetManager {
 			}
 		}
 
-		if (!this?.eventsAttached){
-
-			if (document.getElementById("curated")){ // for you
-				document.getElementById("curated").onclick = (e) => {
-					e.currentTarget.classList.add("active");
-					document.getElementById("everything").classList.remove("active");
-					this.mod.curated = true;
-					this.mod.saveOptions();
-					this.clearFeed();
-					this.showLoader();
-					setTimeout(() => {
-						this.render();
-					}, 10);
-				}
+		if (document.getElementById("curated")){ // for you
+			document.getElementById("curated").onclick = (e) => {
+				e.currentTarget.classList.add("active");
+				document.getElementById("everything").classList.remove("active");
+				this.mod.curated = true;
+				this.mod.saveOptions();
+				this.clearFeed();
+				this.showLoader();
+				setTimeout(() => {
+					this.render();
+				}, 10);
 			}
-			if (document.getElementById("everything")){ // everything
-				document.getElementById("everything").onclick = (e) => {
-					e.currentTarget.classList.add("active");
-					document.getElementById("curated").classList.remove("active");
-					this.mod.curated = false;
-					this.mod.saveOptions();
-					this.showLoader();
-					this.clearFeed();
-					setTimeout(() => {
-						this.render();
-					}, 10);
-				}
+		}
+		if (document.getElementById("everything")){ // everything
+			document.getElementById("everything").onclick = (e) => {
+				e.currentTarget.classList.add("active");
+				document.getElementById("curated").classList.remove("active");
+				this.mod.curated = false;
+				this.mod.saveOptions();
+				this.showLoader();
+				this.clearFeed();
+				setTimeout(() => {
+					this.render();
+				}, 10);
 			}
-
-			this.eventsAttached = true;
 		}
 	}
 

@@ -14,6 +14,7 @@
   }
 
 
+
   importUnit(key, obj) {
 
     if (!this.game.units) { this.game.units = {}; }
@@ -25,6 +26,9 @@
 
     obj.key = key;
 
+    if (!obj.name)      { obj.name      = "Unknown"; }
+    if (!obj.army)	{ obj.army 	= 0; }
+    if (!obj.corps)	{ obj.corps 	= 0; }
     if (!obj.combat)	{ obj.combat 	= 5; }
     if (!obj.loss)	{ obj.loss 	= 3; }
     if (!obj.movement)	{ obj.movement 	= 3; }
@@ -38,6 +42,8 @@
     if (!obj.damaged)	{ obj.damaged = false; }
     if (!obj.destroyed)	{ obj.destroyed = false; }
     if (!obj.spacekey)  { obj.spacekey = ""; }
+
+    if (key.indexOf("army") > -1) { obj.army = 1; } else { obj.corps = 1; }
 
     this.game.units[key] = obj;
 
@@ -54,18 +60,63 @@
     this.displaySpace(destinationkey);
   }
 
-  
-  returnUnitImage(unit) {
+  returnUnitImage(unit, just_link=false) {
     let key = unit.key;
     if (unit.damaged) {
+      if (just_link) { return `/paths/img/army/${key}_back.png`; }
       return `<img src="/paths/img/army/${key}_back.png" class="army-tile" />`;
     } else {
+      if (just_link) { return `/paths/img/army/${key}.png`; }
       return `<img src="/paths/img/army/${key}.png" class="army-tile" />`;
     }
+  }
+  returnUnitImageWithMouseoverOfStepwiseLoss(unit) {
+    let key = unit.key;
+    let face_img = "";
+    let back_img = "";
+
+    if (unit.damaged) {
+      face_img = `/paths/img/army/${key}_back.png`;
+      back_img = this.returnUnitImageWithStepwiseLoss(unit, true);
+    } else {
+      face_img = `/paths/img/army/${key}.png`;
+      back_img = `/paths/img/army/${key}_back.png`;
+    }
+
+    return `<img src="${face_img}" onmouseover="this.src='${back_img}'" onmouseout="this.src='${face_img}'" class="army-tile" />`;
+
   }
   returnUnitImageInSpaceWithIndex(spacekey, idx) {
     let unit = this.game.spaces[spacekey].units[idx];
     return this.returnUnitImage(unit);
+  }
+  returnUnitImageWithStepwiseLoss(unit, just_link=false) {
+
+    let key = unit.key;
+
+    if (!unit.damaged) {
+
+      if (just_link) { return `/paths/img/army/${key}_back.png`; }
+      return `<img src="/paths/img/army/${key}_back.png" class="army-tile" />`;
+
+    } else {
+
+      //
+      // replace with corps if destroyed
+      //
+      if (unit.key.indexOf('army')) {
+        let corpskey = unit.key.split('_')[0] + '_corps';
+        let new_unit = this.cloneUnit(corpskey);
+        return this.returnUnitImage(new_unit, just_link);
+      } else {
+
+	//
+	// damaged core? should show DESTROYED IMAGE
+	//
+
+      }
+
+    }
   }
 
   cloneUnit(unitkey) {

@@ -29,9 +29,13 @@ class RedSquareMain {
     // HOME-RENDER-REQUEST -- render the main thread
     //
     this.app.connection.on('redsquare-home-render-request', (scroll_to_top = false) => {
-      //if (document.querySelector('.saito-back-button')) {
-      //  document.querySelector('.saito-back-button').remove();
-      //}
+
+
+      if (this.manager.mode == "profile") {
+	if (document.querySelector(".saito-main")) {
+	  document.querySelector(".saito-main").innerHTML = "";
+        }
+      }
 
       this.manager.render('tweets');
 
@@ -52,10 +56,32 @@ class RedSquareMain {
     // page we show a button that can be clicked to do so.
     //
     this.app.connection.on('redsquare-home-postcache-render-request', (num_tweets = 0) => {
+
       //
       // check if we can refresh page (show tweets immediately) or show prompt / button
       //
       if (num_tweets > 0) {
+
+	//
+	// we only want to show the reload tweets button if there are new tweets
+	// to show, which we 
+	//
+	let are_there_new_tweets_to_show = false;
+	for (let i = 0; i < this.mod.tweets.length && i < 10; i++) {
+	  if (!this.mod.tweets[i].isRendered()) {
+	    if (this.mod.curated) {
+	      if (this.mod.tweets[i].curated) {
+	        are_there_new_tweets_to_show = true;
+	      }
+	    } else {
+	      are_there_new_tweets_to_show = true;
+	    }
+	  } else {
+	    i = this.mod.tweets.length;
+	  }
+	}
+
+	
         //
         // Don't insert new tweets or button if looking at a tweet or profile
         //
@@ -64,20 +90,22 @@ class RedSquareMain {
             this.manager.clearFeed();
             this.app.connection.emit('redsquare-home-render-request', true);
           } else {
-            setTimeout(() => {
-              if (!document.getElementById('saito-new-tweets')) {
-                this.app.browser.prependElementToSelector(
-                  `<div class="saito-button-secondary saito-new-tweets" id="saito-new-tweets">load new tweets</div>`,
-                  '.redsquare-progress-banner'
-                );
-              }
+	    if (are_there_new_tweets_to_show) {
+              setTimeout(() => {
+                if (!document.getElementById('saito-new-tweets')) {
+                  this.app.browser.prependElementToSelector(
+                    `<div class="saito-button-secondary saito-new-tweets" id="saito-new-tweets">load new tweets</div>`,
+                    '.redsquare-progress-banner'
+                  );
+                }
 
-              document.getElementById('saito-new-tweets').onclick = (e) => {
-                e.currentTarget.remove();
-                this.manager.clearFeed();
-                this.app.connection.emit('redsquare-home-render-request', true);
-              };
-            }, 1000);
+                document.getElementById('saito-new-tweets').onclick = (e) => {
+                  e.currentTarget.remove();
+                  this.manager.clearFeed();
+                  this.app.connection.emit('redsquare-home-render-request', true);
+                };
+              }, 1000);
+            }
           }
         }
       }
@@ -116,13 +144,15 @@ class RedSquareMain {
     this.app.connection.on(
       'redsquare-insert-loading-message',
       (message = 'loading new tweets...') => {
-        this.loader.render(message);
+siteMessage(message, 1000);
+//        this.loader.render(message);
       }
     );
 
     this.app.connection.on('redsquare-remove-loading-message', (message = `Finished Loading!`) => {
       //NOTE: --> COMMENT THIS OUT TO KEEP MESSAGE DISPLAYED FOR CSS TWEAKING
-      this.loader.finish(message);
+//	siteMessage();
+//      this.loader.finish(message);
     });
 
     //
@@ -175,20 +205,17 @@ class RedSquareMain {
   }
 
   render() {
+
     if (document.querySelector('.saito-container')) {
       this.app.browser.replaceElementBySelector(RedSquareMainTemplate(), '.saito-container');
     } else {
       this.app.browser.addElementToDom(RedSquareMainTemplate());
     }
 
-    console.log("Redsquare main -- Initial render");
     window.history.replaceState({view: "home"}, '', '/' + this.mod.slug);
     this.app.browser.pushBackFn(() => {
-      //render tweets and scroll to cached position
       this.app.connection.emit('redsquare-home-render-request');
-      console.log("Redsquare home in history");
     });
-
 
     this.app.connection.emit('redsquare-home-render-request');
 

@@ -15,12 +15,38 @@
     return "Allies";
   }
 
+  returnFactionOfPlayer() {
+    if (this.game.player == 1) { return "central"; }
+    return "allies";
+  }
+
   returnPlayerOfFaction(faction="") {
     if (faction == "central") { return 1; }
     return 2;
   }
 
   playerPlayAdvance() {
+
+    let can_player_advance = false;
+    let spacekey = this.game.state.combat.key;
+    let space = this.game.spaces[spacekey];
+    let attacker_units = this.returnAttackerUnits();
+
+    for (let i = 0; i < attacker_units.length; i++) {
+      let unit = attacker_units[i];
+      if (!unit.damaged) { can_player_advance = true; }
+    }
+    if (space.fort) { can_player_advance = false; }
+
+
+    //
+    // skip advance if not possible
+    //
+    if (can_player_advance == false) {
+      this.endTurn();
+      return;
+    }
+
 
     let html = `<ul>`;
     html    += `<li class="card" id="advance">advance</li>`;
@@ -31,18 +57,126 @@
     this.attachCardboxEvents((action) => {
 
       if (action === "advance") {
-	this.endTurn();
+	this.playerHandleAdvance();
+	return;
       }
 
       if (action === "refuse") {
 	this.endTurn();
+	return;
       }
 
     });
 
   }
 
+
+  playerHandleAdvance() {
+
+    let paths_self = this;
+
+    let spaces_to_retreat = 2;
+    let attacker_loss_factor = this.game.state.combat.attacker_loss_factor;
+    let defender_loss_factor = this.game.state.combat.defender_loss_factor;
+    if ((attacker_loss_factor-defender_loss_factor) == 1) { spaces_to_retreat = 1; }
+
+    let sourcekey = this.game.state.combat.retreat_sourcekey;
+    let destinationkey = this.game.state.combat.retreat_destinationkey;
+    let roptions = [];
+
+    let attacker_units = this.returnAttackerUnits();
+    let faction = this.returnFactionOfPlayer();
+    let source = this.game.spaces[sourcekey];
+    let destination = this.game.spaces[destinationkey];
+
+    roptions.push(sourcekey);
+   
+    if (spaces_to_retreat == 2) {
+      for (let i = 0; i < source.neighbours.length; i++) {
+        for (let z = 0; z < destination.neighbours.length; z++) {
+          if (source.neighbours[i] == destination.neighbours[z]) {
+	    if (!roptions.includes(source.neighbours[i])) { roptions.push(source.neighbours[i]); }
+	  }
+        }
+      }
+    }
+
+    //
+    // remove inappropriate options
+    //
+    for (let z = roptions.length-1; z >= 0; z--) {
+      let spliceout = false;
+      let s = this.game.spaces[roptions[z]];
+      if (s.fort) { spliceout = true; }
+      if (s.units.length > 0) { spliceout = true; }
+      if (spliceout == true) {
+	roptions.splice(z, 1);
+      }
+    }
+
+    //
+    // nope out if no advance options
+    //
+    if (roptions.length == 0) {
+      paths_self.addMove("NOTIFY\tAttacker no options ot advance");
+      paths_self.endTurn();
+    }
+
+    paths_self.playerSelectSpaceWithFilter(
+      `Select Advance Destination`,
+      (destination) => {
+	if (roptions.includes(destination)) {
+	  return 1;
+	}
+        return 0;
+      },
+      (key) => {
+	for (let i = 0; i < attacker_units.length; i++) {
+          let x = attacker_units[i];
+      	  let skey = x.spacekey;
+      	  let ukey = x.key;
+      	  let uidx = 0;
+	  let u = {};
+	  for (let z = 0; z < paths_self.game.spaces[skey].units.length; z++) {
+	    if (paths_self.game.spaces[skey].units[z].key === ukey) {
+	      uidx = z;
+	    } 
+	  }
+	  if (!u.damaged) {
+            paths_self.moveUnit(skey, uidx, key);
+	    paths_self.addMove(`move\t${faction}\t${skey}\t${uidx}\t${key}\t${paths_self.game.player}`);
+	  }
+          paths_self.displaySpace(skey);
+	}
+        paths_self.displaySpace(key);
+	paths_self.endTurn();
+      },
+      null,
+      true
+    );
+  }
+
+
+
   playerPlayPostCombatRetreat() {
+
+    let can_defender_cancel_retreat = false;
+
+    //
+    // Defending units in Trenches, Forests, Deserts, Mountains, or 
+    // Swamps may chose to ignore a retreat by taking one additional
+    // step loss. 
+    //
+    let space = this.game.spaces[this.game.state.combat.key];
+    if (space.terrain == "mountain") 	{ can_defender_cancel_retreat = true; }
+    if (space.terrain == "swamp") 	{ can_defender_cancel_retreat = true; }
+    if (space.terrain == "desert") 	{ can_defender_cancel_retreat = true; }
+    if (space.trench > 0) 		{ can_defender_cancel_retreat = true; }
+
+    if (can_defender_cancel_retreat == false) {
+      this.playerHandleRetreat();
+      return;
+    }
 
     let html = `<ul>`;
     html    += `<li class="card" id="retreat">retreat</li>`;
@@ -53,18 +187,131 @@
     this.attachCardboxEvents((action) => {
 
       if (action === "retreat") {
-alert("Player Playing Post Combat Retreat!");
-	this.endTurn();
+	this.loss_overlay.renderToAssignAdditionalStepwiseLoss();
+	return;
       }
 
       if (action === "hit") {
-alert("Player Taking Step Loss");
-	this.endTurn();
+	this.playerHandleRetreat();
+        return;
       }
 
     });
 
+    return;
   }
+
+
+  playerHandleRetreat() {
+
+    let paths_self = this;
+
+    let spaces_to_retreat = 3; // 2 + source
+    let attacker_loss_factor = this.game.state.combat.attacker_loss_factor;
+    let defender_loss_factor = this.game.state.combat.defender_loss_factor;
+    if ((attacker_loss_factor-defender_loss_factor) == 1) { spaces_to_retreat = 2; } // 1 + source
+    let faction = this.returnFactionOfPlayer(this.game.player);
+    let sourcekey = this.game.state.combat.key;
+
+
+    //
+    // 
+    //
+    let spaces_within_hops = paths_self.returnSpacesWithinHops(
+      this.game.state.combat.key,
+      spaces_to_retreat, 
+      (spacekey) => {
+	if (spacekey == this.game.state.combat.key) { return 1; }; // pass through
+        if (paths_self.game.spaces[spacekey].units.length > 0) {
+	  if (paths_self.returnPowerOfUnit(paths_self.game.spaces[spacekey].units[0]) != faction) { 
+  	    return 0; 
+          }
+        }
+        return 1;
+      }
+    );
+
+    //
+    // remove source and single-hop destination if needed
+    //
+    let source = this.game.spaces[this.game.state.combat.key];
+    for (let i = spaces_within_hops.length-1; i >= 0; i--) {
+      let destination = spaces_within_hops[i];
+      if (destination == this.game.state.combat.key) {
+	spaces_within_hops.splice(i, 1);
+      }
+      if (source.neighbours.includes(destination)) {
+	let is_there_a_two_hop_connection = false;
+	let d = this.game.spaces[destination];
+	//
+	// we only keep if there is a connecting, controlled space
+	// that could server as the first interstitial hop...
+	//
+        for (let z = 0; z < d.neighbours.length; z++) {
+	  if (this.doesSpaceHaveEnemyUnits(this.returnFactionOfPlayer(), d.neighbours[z])) {
+	  } else {
+	    //
+	    // check to see if it has a connection with the source
+	    //
+	    if (source.neighbours.includes(d.neighbours[z])) {
+	      is_there_a_two_hop_connection = true;
+	    }
+	  }
+	}
+	if (is_there_a_two_hop_connection == false) {
+	  spaces_within_hops.splice(i, 1);
+	}
+      }
+    }
+
+    //
+    // no retreat options? eliminate all defenders
+    //
+    if (spaces_within_hops.length == 0) {
+      for (let i = 0; i < source.units.length; i++) {
+        paths_self.addMove(`eliminate\t${source.key}\t${i}`);
+	paths_self.endTurn();
+	return;
+      }
+    }
+
+  
+    //
+    // allow UI for moving unit...
+    //
+    let retreat_function = (unit_idx, retreat_function) => {
+      let unit = source.units[unit_idx];
+      paths_self.playerSelectSpaceWithFilter(
+          `Select Retreat Destination for ${unit.name}`,
+	  (destination) => {
+	    if (spaces_within_hops.includes(destination)) {
+	      return 1;
+	    }
+	    return 0;
+	  },
+	  (key) => {
+            paths_self.moveUnit(sourcekey, unit_idx, key);
+	    paths_self.prependMove(`retreat\t${faction}\t${sourcekey}\t${unit_idx}\t${key}\t${paths_self.game.player}`);
+            paths_self.displaySpace(key);
+	    if (unit_idx <= 0) {
+	      paths_self.endTurn();
+	      return 0;
+	    } else {
+	      retreat_function(unit_idx-1, retreat_function);
+	    }
+	  },
+	  null,
+    	  true
+      );
+    };
+  
+    //
+    // now allow moves
+    //
+    retreat_function(source.units.length-1, retreat_function);
+
+  }
+
 
 
   playerPlayGunsOfAugust() {
@@ -102,12 +349,15 @@ alert("Player Taking Step Loss");
     // it is possible to launch a flank attack if we want
     //
     let html = `<ul>`;
-    html    += `<li class="card" id="yes">flank attack</li>`;
-    html    += `<li class="card" id="no">normal attack</li>`;
+    html    += `<li class="option" id="yes">flank attack</li>`;
+    html    += `<li class="option" id="no">normal attack</li>`;
     html    += `</ul>`;
 
+    this.flank_overlay.render();
     this.updateStatusWithOptions(`Flank Attack?`, html);
     this.attachCardboxEvents((action) => {
+
+      this.flank_overlay.hide();
 
       if (action === "no") {
 	this.endTurn();
@@ -121,16 +371,18 @@ alert("Player Taking Step Loss");
         let html = `<ul>`;
 	let eligible_spaces = [];
 	for (let i = 0; i < this.game.state.combat.attacker.length; i++) {
-	  let unit_spacekey = this.game.state.combat.attacker[i].unit_spacekey;
-	  if (!eligible_spaces.includes(unit_spacekey)) { eligible_spaces.push(unit_spacekey); }
+	  let unit = this.game.state.combat.attacker[i];
+	  if (!eligible_spaces.includes(unit.unit_sourcekey)) { eligible_spaces.push(unit.unit_sourcekey); }
 	}
 	for (let i = 0; i < eligible_spaces.length; i++) {
-          html    += `<li class="card" id="${i}">${eligible_spaces[i]}</li>`;
+          html    += `<li class="option" id="${i}">${eligible_spaces[i]}</li>`;
 	}
         html    += `</ul>`;
 	
-        this.updateStatusWithOptions(`Select Unit to Pin Defender:`, html, true);
+        this.flank_overlay.render();
+        this.updateStatusWithOptions(`Which Space Pins Defender:`, html, true);
         this.attachCardboxEvents((action) => {
+          this.flank_overlay.hide();
 	  this.addMove(`flank_attack_attempt\t${action}\t${JSON.stringify(eligible_spaces)}`);
 	  this.endTurn();
 	});
@@ -206,11 +458,6 @@ alert("Player Taking Step Loss");
 
     let mainInterface = function(options, mainInterface, attackInterface) {
 
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("MAIN INTERFACE: " + options.length);
-
       //
       // sometimes this ends
       //
@@ -234,8 +481,6 @@ console.log("MAIN INTERFACE: " + options.length);
 	  }
 	}
       }
-
-console.log("UNITS TO ATTACK: " + units_to_attack);
 
       //
       // exit if nothing is left to attack with
@@ -341,12 +586,10 @@ alert("skip attack target!");
 	      for (let z = 0; z < selected.length; z++) {
   		s.push(JSON.parse(paths_self.app.crypto.base64ToString(selected[z])));
 	      }
-	      //paths_self.addMove("resolve\tplayer_play_combat");
 	      paths_self.addMove("post_combat_cleanup");
 	      paths_self.addMove(`combat\t${original_key}\t${JSON.stringify(s)}`);
 	      paths_self.endTurn();
 	    } else {
-alert("skip attack target!");
 	      paths_self.addMove("resolve\tplayer_play_combat");
 	      paths_self.addMove("post_combat_cleanup");
 	      paths_self.endTurn();
@@ -425,7 +668,6 @@ alert("skip attack target!");
 	paths_self.endTurn();
       }
 
-
       paths_self.playerSelectSpaceWithFilter(
 	"Units Awaiting Command: ",
 	(key) => {
@@ -458,6 +700,7 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
       )
     }
 
+
     let unitActionInterface = function(key, idx, options, mainInterface, moveInterface, unitActionInterface) {
       let unit = paths_self.game.spaces[key].units[idx];
       let sourcekey = key;
@@ -488,6 +731,116 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
 	      return 0;
 	    },
 	    (key) => {
+
+	      //
+	      // if this is a fort, we need to move enough units into the fort in order
+	      // to besiege it, which is at least 1 army, or a number of Corps equal to 
+	      // the fort’s LF 
+	      //
+	      let is_the_unit_an_army = false;
+	      let is_the_destination_a_fort = false;
+	      if (paths_self.game.spaces[key].fort > 1) { is_the_destination_a_fort = true; }
+	      if (paths_self.game.spaces[sourcekey].units[idx].army == 1) { is_the_unit_an_army = true; }
+
+	      let units_remaining = 2;
+	
+	      //
+	      // internal function that allows for moving multiple units at the same 
+	      // time if necessary to besiege a fort. hijacks control of this function...
+	      //
+	      let select_and_add_extra_armies = (units_remaining=1, select_and_add_extra_armies) => {
+
+		//
+		// find spaces with potential units
+		//
+	        let spaces_within_hops = paths_self.returnSpacesWithinHops(
+      		  key ,
+      		  3 ,
+      		  (spacekey) => { if (paths_self.game.spaces[spacekey].activated_for_movement == 1) { 
+		    for (let z = 0; z < paths_self.game.spaces[spacekey].units.length; z++) {
+		      if (paths_self.game.spaces[spacekey].units[z].moved != 1) {
+			if (spacekey != sourcekey || z != idx) { return 1; }
+		      }
+		    }
+		  } return 0; }
+    		);
+
+		//
+		// count units available
+		//
+		let count = 0;
+		for (let z = 0; z < spaces_within_hops.length; z++) {
+		  for (let i = 0; i < this.game.spaces[spaces_within_hops[z]].units.length; i++) {
+		    if (spaces_within_hops[z] != sourcekey || i != idx) {
+		      let u = this.game.spaces[spaces_within_hops[z]].units[i];
+		      if (u.corps == 1) { count++; }
+		      if (u.army == 1) { count += 100; }
+		    }
+		  }
+		}
+
+		paths_self.playerSelectUnitWithFilter(
+		  "Select Unit to Help Besiege" ,
+		  (spacekey, unit) => {
+		    if (paths_self.game.spaces[spacekey].activated_for_movement) { 
+		      if (unit.name != paths_self.game.spaces[sourcekey].units[idx].name) { return 1; }
+		    }
+		    return 0;
+		  } ,
+		  (bspacekey, bunit_idx) => {
+
+		    let unit = paths_self.game.spaces[bspacekey].units[bunit_idx];
+		    if (unit.army) { units_remaining = 0; }
+		    if (unit.corps) { units_remaining--; }
+
+              	    paths_self.moveUnit(bspacekey, bunit_idx, key);
+	      	    paths_self.addMove(`move\t${faction}\t${bspacekey}\t${bunit_idx}\t${key}\t${paths_self.game.player}`);
+              	    paths_self.displaySpace(key);
+              	    paths_self.displaySpace(bspacekey);
+
+		    if (units_remaining > 0) {
+
+		      select_and_add_extra_armies(units_remaining, select_and_add_extra_armies);
+
+		    } else {
+
+              	      paths_self.moveUnit(sourcekey, idx, key);
+	              paths_self.addMove(`move\t${faction}\t${sourcekey}\t${idx}\t${key}\t${paths_self.game.player}`);
+                      paths_self.displaySpace(key);
+	              let mint = false;
+	              for (let z = 0; z < paths_self.game.spaces[sourcekey].units.length; z++) {
+	                if (paths_self.game.spaces[sourcekey].units[z].moved != 1) { mint = true; }
+	              }
+	              if (mint) {
+	                moveInterface(sourcekey, options, mainInterface, moveInterface, unitActionInterface);
+	              } else {
+	                mainInterface(options, mainInterface, moveInterface, unitActionInterface);
+	              }
+
+		    }
+
+		  } ,
+		  () => {
+		    alert("reload to restart please");
+		  }
+	        );
+
+		return;
+
+
+	      }
+
+	      //
+	      // besiege fort? enter sub-function to move all necessary units
+	      //
+	      if (is_the_destination_a_fort == true && is_the_unit_an_army == false) {
+		select_and_add_extra_armies((paths_self.game.spaces[key].fort-1), select_and_add_extra_armies);
+		return;
+	      }
+
+	      //
+	      // code mirrored above inside besiege section
+	      //
               paths_self.moveUnit(sourcekey, idx, key);
 	      paths_self.addMove(`move\t${faction}\t${sourcekey}\t${idx}\t${key}\t${paths_self.game.player}`);
               paths_self.displaySpace(key);
@@ -600,12 +953,9 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
 	this.endTurn();
       }
 
-      if (action === "movement") {
-	//
-	// select valid space to activate
-	//
+      let movement_fnct = (movement_fnct) => {
 	this.playerSelectSpaceWithFilter(
-	  "Select Space to Activate:",
+	  `Select Space to Activate:`,
 	  (key) => {
 	    if (cost < this.returnActivationCost(key)) { return 0; }
 	    let space = this.game.spaces[key];
@@ -624,24 +974,24 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
             this.displaySpace(key);
 	    let cost_paid = this.returnActivationCost(key); 
 	    cost -= cost_paid;
-	    if (cost < 0) { cost = 0; }
-	    if (cost > 0) {
-	      this.addMove(`player_play_ops\t${faction}\t${card}\t${cost}\t1}`);
-	    }
 	    this.addMove(`activate_for_movement\t${faction}\t${key}`);
-	    this.endTurn();
+	    if (cost <= 0) {
+	      cost = 0;
+	      this.endTurn();
+	    }
+	    if (cost > 0) {
+	      this.removeSelectable();
+	      this.playerPlayOps(faction, card, cost, 1);
+	      movement_fnct(movement_fnct);
+	      return;
+	    }
 	  },
 	  null,
 	  true,
 	);
-
       }
-
-      if (action === "combat") {
-
-	//
-	// select valid space to activate
-	//
+ 
+      let combat_fnct = (combat_fnct) => {
 	this.playerSelectSpaceWithFilter(
 	  "Select Space to Activate:",
 	  (key) => {
@@ -660,17 +1010,37 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
 	    this.activateSpaceForCombat(key);
 	    let cost_paid = this.returnActivationCost(key); 
 	    cost -= cost_paid;
-	    if (cost < 0) { cost = 0; }
-	    if (cost > 0) {
-	      this.addMove(`player_play_ops\t${faction}\t${card}\t${cost}\t1}`);
-	    }
 	    this.addMove(`activate_for_combat\t${faction}\t${key}`);
-	    this.endTurn();
+	    if (cost <= 0) {
+	      cost = 0;
+	      this.endTurn();
+	    }
+	    if (cost > 0) {
+	      this.removeSelectable();
+	      combat_fnct(combat_fnct);
+	      this.playerPlayOps(faction, card, cost, 1);
+	      return;
+	    }
 	  },
 	  null,
 	  true,
 	);
+      }
 
+      if (action === "movement") {
+	//
+	// select valid space to activate
+	//
+	this.removeSelectable();
+	movement_fnct(movement_fnct);
+      }
+
+      if (action === "combat") {
+	//
+	// select valid space to activate
+	//
+	this.removeSelectable();
+	combat_fnct(combat_fnct);
       }
 
     });
@@ -714,8 +1084,69 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
 
   }
 
+  countUnitsWithFilter(msg, filter_func) {
+
+    let paths_self = this;
+    let count = 0;
+
+    for (let key in this.game.spaces) {
+      for (let z = 0; z < this.game.spaces[key].units.length; z++) {
+        if (filter_func(key, this.game.spaces[key].units[z]) == 1) {
+	  count++;
+	}
+      }
+    }
+
+    return count;
+
+  }
 
 
+  playerSelectUnitWithFilter(msg, filter_func, mycallback = null, cancel_func = null, extra_options=[]) {
+
+    let paths_self = this;
+    let callback_run = false;
+    let at_least_one_option = false;
+    let html = '';
+    html += '<ul class="hide-scrollbar">';
+
+    for (let key in this.game.spaces) {
+      for (let z = 0; z < this.game.spaces[key].units.length; z++) {
+        if (filter_func(key, this.game.spaces[key].units[z]) == 1) {
+          at_least_one_option = true;
+          html += '<li class="option .'+key+'-'+z+'" id="' + key + '-'+z+'">' + key + ' - ' + this.game.spaces[key].units[z].name + '</li>';
+	}
+      }
+    }
+
+    if (cancel_func != null) {
+      html += '<li class="option" id="cancel">cancel</li>';
+    }
+    if (extra_options.length > 0) {
+      for (let z = 0; z < extra_options.length; z++) { html += `<li class="option ${extra_options[z].key}" id="${extra_options[z].key}">${extra_options[z].value}</li>`; }
+    }
+    html += '</ul>';
+
+    this.updateStatusWithOptions(msg, html);
+
+    $('.option').off();
+    $('.option').on('click', function () {
+
+      let action = $(this).attr("id");
+      let tmpx = action.split("-");
+      if (action == "cancel") {
+        cancel_func();
+        return 0;
+      }
+
+      mycallback(tmpx[0], tmpx[1]);
+
+    });
+
+    if (at_least_one_option) { return 1; }
+    return 0;
+
+  }
 
   playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false, extra_options=[]) {
 
@@ -816,7 +1247,8 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
     let paths_self = this;
 
     let spaces = this.returnSpacesWithFilter((key) => {
-      if (key == "arbox" || key == "crbox") { return 1; }
+      if (key == "arbox") { if (this.game.player == this.returnPlayerOfFaction("allies")) { return 1; } else { return 0; } }
+      if (key == "crbox") { if (this.game.player == this.returnPlayerOfFaction("central")) { return 1; } else { return 0; } }
       for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
         let unit = paths_self.game.spaces[key].units[z];
 	if (faction == paths_self.returnPowerOfUnit(unit)) {
@@ -840,13 +1272,12 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
     // select box with unit
     //
     this.playerSelectSpaceWithFilter(
-      "Select Space with Unit to Strategically Redeploy",
+      `Select Space with Unit to Strategically Redeploy`,
       (key) => {
 	if (spaces.includes(key)) { return 1; }
         return 0;
       },
       (key) => {
-
         if (key == "crbox") {
   	  paths_self.reserves_overlay.pickUnitAndTriggerCallback("central", (idx) => {
 	    let unit = paths_self.game.spaces[crbox].units[idx];

@@ -1,4 +1,8 @@
 
+  returnSpaceName(spacekey) {
+    return this.game.spaces[spacekey].name;
+  }
+
   activateSpaceForCombat(spacekey) {
     this.game.spaces[spacekey].activated_for_combat = 1;
     this.displaySpace(spacekey);
@@ -15,7 +19,7 @@
     let faction = this.returnPowerOfUnit(this.game.spaces[spacekey].units[0]);
     for (let z = 0; z < this.game.spaces[spacekey].neighbours.length; z++) {
       let n = this.game.spaces[this.game.spaces[spacekey].neighbours[z]];
-      if (n.units > 0) {
+      if (n.units.length > 0) {
 	if (this.returnPowerOfUnit(n.units[0]) != faction) {
 	  enemy_units++;
 	}
@@ -165,7 +169,6 @@
 
 
   returnControlOfSpace(key) {
-console.log("key: " + key);
     let space = this.game.spaces[key];
     if (space.control) { return space.control; }
     if (space.units.length > 0) { return this.returnPowerOfUnit(space.units[0]); }
@@ -258,6 +261,7 @@ console.log("key: " + key);
         }
 
       }
+
 
       if (hop < limit) {
 	  return addHop(newer, hop);
@@ -394,6 +398,7 @@ spaces['sedan'] = {
 spaces['verdun'] = {
     name: "Verdun" ,
     control : "allies" ,
+    fort : 3 ,
     top: 1354 ,
     left: 942 , 
     neighbours: ["sedan", "chateauthierry", "barleduc", "nancy", "metz"] ,
@@ -416,6 +421,7 @@ spaces['chateauthierry'] = {
 spaces['paris'] = {
     name: "Paris" ,
     control : "allies" ,
+    fort : 1 ,
     top: 1420 ,
     left: 621 , 
     neighbours: ["rouen", "amiens", "chateauthierry", "melun", "orleans"] ,
@@ -516,14 +522,6 @@ spaces['melun'] = {
     vp : true , 
    }
 
-spaces['nancy'] = {
-    name: "Nancy" ,
-    control : "allies" ,
-    neighbours: ["lemans", "paris", "melun", "stamand", "tours"] ,
-    terrain : "normal" ,
-    vp : true , 
-   }
-
 spaces['melun'] = {
     name: "Melun" ,
     control: "allies" ,
@@ -537,6 +535,7 @@ spaces['melun'] = {
 spaces['nancy'] = {
     name: "Nancy" ,
     control: "allies" ,
+    fort : 2 ,
     top: 1490 ,
     left: 1011 , 
     neighbours: ["barleduc", "verdun", "metz", "strasbourg", "belfort"] ,
@@ -686,6 +685,7 @@ spaces['grenoble'] = {
 spaces['belfort'] = {
     name: "Belfort" ,
     control: "allies" ,
+    fort : 2 ,
     top: 1635 ,
     left: 1072 , 
     neighbours: ["dijon", "nancy", "mulhouse"] ,
@@ -706,6 +706,7 @@ spaces['ostend'] = {
 spaces['antwerp'] = {
     name: "Antwerp" ,
     control: "neutral" ,
+    fort : 1 ,
     top: 1002 ,
     left: 858 , 
     neighbours: ["ostend", "brussels"] ,
@@ -726,6 +727,7 @@ spaces['brussels'] = {
 spaces['liege'] = {
     name: "Liege" ,
     control: "neutral" ,
+    fort : 3 ,
     top: 1144 ,
     left: 951 , 
     neighbours: ["brussels", "aachen", "sedan", "koblenz"] ,
@@ -777,6 +779,7 @@ spaces['koblenz'] = {
 spaces['metz'] = {
     name: "Metz" ,
     control: "central" ,
+    fort : 3 ,
     top: 1307 ,
     left: 1107 , 
     neighbours: ["verdun", "sedan", "koblenz", "strasbourg", "nancy"] ,
@@ -788,6 +791,7 @@ spaces['metz'] = {
 spaces['strasbourg'] = {
     name: "Strasbourg" ,
     control: "central" ,
+    fort : 3 ,
     top: 1448 ,
     left: 1184 , 
     neighbours: ["nancy", "metz", "mannheim", "mulhouse"] ,
@@ -998,6 +1002,7 @@ spaces['dresden'] = {
 spaces['breslau'] = {
     name: "Breslau" ,
     control: "central" ,
+    fort : 2 ,
     top: 1091 ,
     left: 2157 , 
     neighbours: ["cottbus", "posen", "lodz", "oppeln"] ,
@@ -1020,6 +1025,7 @@ spaces['oppeln'] = {
 spaces['posen'] = {
     name: "Posen" ,
     control: "central" ,
+    fort : 2 ,
     top: 904 ,
     left: 2151 , 
     neighbours: ["cottbus", "thorn", "breslau", "lodz"] ,
@@ -1040,6 +1046,7 @@ spaces['kolberg'] = {
 spaces['thorn'] = {
     name: "Thorn" ,
     control: "central" ,
+    fort : 2 ,
     top: 767 ,
     left: 2248 , 
     neighbours: ["danzig", "tannenberg", "plock", "lodz", "posen"] ,
@@ -1050,6 +1057,7 @@ spaces['thorn'] = {
 spaces['danzig'] = {
     name: "Danzig" ,
     control: "central" ,
+    fort : 2 ,
     top: 609 ,
     left: 2332 , 
     neighbours: ["kolberg", "tannenberg", "thorn"] ,
@@ -1060,6 +1068,7 @@ spaces['danzig'] = {
 spaces['konigsberg'] = {
     name: "Konigsberg" ,
     control: "central" ,
+    fort : 3 ,
     top: 549 ,
     left: 2514 , 
     neighbours: ["insterberg", "tannenberg"] ,
@@ -1309,6 +1318,7 @@ spaces['prague'] = {
 spaces['trent'] = {
     name: "Trent" ,
     control: "central" ,
+    fort : 3 ,
     top: 1742 ,
     left: 1450 , 
     neighbours: ["verona", "asiago", "innsbruck"] ,
@@ -1359,6 +1369,7 @@ spaces['villach'] = {
 spaces['trieste'] = {
     name: "Trieste" ,
     control: "central" ,
+    fort : 3 ,
     top: 1890 ,
     left: 1898 , 
     neighbours: ["udine", "villach", "zagreb"] ,
@@ -1536,6 +1547,7 @@ spaces['miskolcz'] = {
 spaces['cracow'] = {
     name: "Cracow" ,
     control: "central" ,
+    fort : 2 ,
     top: 1249 ,
     left: 2460 , 
     neighbours: ["oppeln", "czestochowa", "tarnow", "martin"] ,
@@ -1566,6 +1578,7 @@ spaces['gorlice'] = {
 spaces['przemysl'] = {
     name: "Przemysl" ,
     control: "central" ,
+    fort : 3 ,
     top: 1251 ,
     left: 2778 , 
     neighbours: ["tarnow", "lublin", "lemberg", "stanislau", "uzhgorod"] ,
@@ -1711,6 +1724,7 @@ spaces['petrograd'] = {
 spaces['riga'] = {
       name: "Riga" ,
     control: "allies" ,
+      fort : 3 ,
       top: 240 ,
       left: 2921 ,
       neighbours: ["dvinsk", "szawli", "reval"] ,
@@ -1777,6 +1791,7 @@ spaces['velikiyeluki'] = {
 spaces['kovno'] = {
       name: "Kovno" ,
     control: "allies" ,
+      fort : 1 ,
       top: 534 ,
       left: 2807 ,
       neighbours: ["szawli", "vilna", "grodno", "insterberg"] ,
@@ -1828,6 +1843,7 @@ spaces['vitebsk'] = {
 spaces['grodno'] = {
       name: "Grodno" ,
     control: "allies" ,
+      fort : 1 ,
       top: 683 ,
       left: 2881 ,
       neighbours: ["vilna", "kovno", "insterberg", "baranovichi", "bialystok"] ,
@@ -1889,6 +1905,7 @@ spaces['moscow'] = {
 spaces['lomza'] = {
       name: "Lomza" ,
     control: "allies" ,
+      fort : 1 , 
       top: 786 ,
       left: 2707 ,
       neighbours: ["tannenberg", "plock", "warsaw", "bialystok"] ,
@@ -1993,6 +2010,7 @@ spaces['lodz'] = {
 spaces['warsaw'] = {
       name: "Warsaw" ,
     control: "allies" ,
+      fort : 2 , 
       top: 918 ,
       left: 2592 ,
       neighbours: ["ivangorod", "lodz", "lomza", "plock", "brestlitovsk"] ,
@@ -2003,6 +2021,7 @@ spaces['warsaw'] = {
 spaces['brestlitovsk'] = {
       name: "Brest Litovsk" ,
     control: "allies" ,
+      fort : 1 ,
       top: 934 ,
       left: 2828 ,
       neighbours: ["warsaw", "lublin", "kovel", "pinsk", "bialystok"] ,
@@ -2053,6 +2072,7 @@ spaces['czestochowa'] = {
 spaces['ivangorod'] = {
       name: "Ivangorod" ,
     control: "allies" ,
+      fort : 1 ,
       top: 1102 ,
       left: 2648 ,
       neighbours: ["warsaw", "lublin", "tarnow", "czestochowa"] ,
@@ -2073,6 +2093,7 @@ spaces['lublin'] = {
 spaces['lutsk'] = {
       name: "Lutsk" ,
     control: "allies" ,
+      fort : 1 ,
       top: 1144 ,
       left: 3065 ,
       neighbours: ["dubno", "lemberg", "kovel", "lublin", "rovno"] ,
@@ -2094,6 +2115,7 @@ spaces['rovno'] = {
 spaces['dubno'] = {
       name: "Dubno" ,
     control: "allies" ,
+      fort : 1 ,
       top: 1252 ,
       left: 3189 ,
       neighbours: ["tarnopol", "rovno", "zhitomir", "lutsk", "kamenetspodolski"] ,
@@ -2217,6 +2239,7 @@ spaces['ismail'] = {
 spaces['odessa'] = {
       name: "Odessa" ,
     control: "allies" ,
+      fort : 3 ,
       top: 1756 ,
       left: 3644 ,
       neighbours: ["caucasus", "uman", "ismail"] ,
@@ -2381,6 +2404,7 @@ spaces['ahwaz'] = {
 spaces['basra'] = {
       name: "Basra" ,
     control: "neutral" ,
+      fort : 1 ,
       top: 2989 ,
       left: 4840 ,
       neighbours: ["ahwaz", "qurna"] ,
@@ -2718,6 +2742,7 @@ spaces['kut'] = {
 spaces['gaza'] = {
       name: "Gaza" ,
     control: "neutral" ,
+      fort : 2 ,
       top: 2872 ,
       left: 3989 ,
       neighbours: ["nablus", "sinai", "beersheba"] ,
@@ -2769,6 +2794,7 @@ spaces['sinai'] = {
 spaces['beersheba'] = {
       name: "Beersheba" ,
     control: "neutral" ,
+      fort : 2 ,
       top: 2967 ,
       left: 4101 ,
       neighbours: ["gaza", "jerusalem", "sinai", "aqaba"] ,
@@ -2779,6 +2805,7 @@ spaces['beersheba'] = {
 spaces['aqaba'] = {
       name: "Aqaba" ,
     control: "neutral" ,
+      fort : 1 ,
       top: 3077 ,
       left: 4016 ,
       neighbours: ["medina", "beersheba", "arabia"] ,
@@ -2968,6 +2995,7 @@ spaces['valjevo'] = {
 spaces['belgrade'] = {
       name: "Belgrade" ,
     control: "neutral" ,
+      fort : 1 ,
       top: 2040 ,
       left: 2580 ,
       neighbours: ["valjevo","nis","timisvar","novisad"] ,
@@ -3237,7 +3265,9 @@ spaces['crbox'] = {
 }
 
     for (let key in spaces) {
+      spaces[key].besieged = [];
       spaces[key].units = [];
+      spaces[key].fort = 0;
       spaces[key].trench = 0;
       if (!spaces[key].control) { spaces[key].control = ""; }
       spaces[key].activated_for_movement = 0;
