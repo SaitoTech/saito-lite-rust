@@ -141,7 +141,7 @@ class SettlersPlayer {
           $(".city.empty").removeClass("chover");
           $(".city.empty").off();
           settlers_self.game.state.placedCity = slot;
-          settlers_self.buildCity(settlers_self.game.player, slot);
+          //settlers_self.buildCity(settlers_self.game.player, slot);
           if (existing_cities == 1)
             settlers_self.addMove(
               `secondcity\t${settlers_self.game.player}\t${slot.replace("city_", "")}`
@@ -194,7 +194,7 @@ class SettlersPlayer {
           $(".rhover").off();
           $(".rhover").removeClass("rhover");
 
-          settlers_self.buildCity(settlers_self.game.player, slot);
+          //settlers_self.buildCity(settlers_self.game.player, slot);
           settlers_self.addMove(`build_city\t${settlers_self.game.player}\t${slot}`);
           settlers_self.endTurn();
         });
