@@ -20,6 +20,13 @@ class ExplorerX extends ModTemplate {
       res.sendFile(__dirname + '/web/components.js');
     });
 
+    expressapp.get('/explorerx/css/explorer-base.css', function (req, res) {
+			if (!res.finished) {
+				return res.sendFile(__dirname + '/web/css/explorer-base.css');
+			}
+			return;
+		});
+
     expressapp.get('/explorerx/style.css', (req, res) => {
       res.sendFile(__dirname + '/web/style.css');
     });
