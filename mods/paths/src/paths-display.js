@@ -372,32 +372,55 @@ alert("display space for: " + key);
 
     try {
 
-      let rp_ge     = `<img src="/paths/img/rp_allied.png" />`;
-      let rp_ah     = `<img src="/paths/img/rp_allied.png" />`;
-      let rp_allied = `<img src="/paths/img/rp_allied.png" />`;
-      let rp_br     = `<img src="/paths/img/rp_br.png" />`;
-      let rp_fr     = `<img src="/paths/img/rp_fr.png" />`;
-      let rp_ru     = `<img src="/paths/img/rp_ru.png" />`;
-      let vp_button = `<img src="/paths/img/vp_button.png" />`;
+      document.querySelectorAll(".general-records-track").forEach((el) => { el.classList.remove("vp"); el.innerHTML = ""; });
+
+      ////////////////////////
+      // Replacement Points //
+      ////////////////////////
+
+      // central
+      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["ge"]}`).innerHTML += `<img src="/paths/img/rp_ge.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["ah"]}`).innerHTML += `<img src="/paths/img/rp_ah.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["tu"]}`).innerHTML += `<img src="/paths/img/rp_tu.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["bg"]}`).innerHTML += `<img src="/paths/img/rp_bu.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["cp"]}`).innerHTML += `<img src="/paths/img/rp_cp.png" />`;
+
+      // allies
+      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["a"]}`).innerHTML += `<img src="/paths/img/rp_a.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["br"]}`).innerHTML += `<img src="/paths/img/rp_br.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["fr"]}`).innerHTML += `<img src="/paths/img/rp_fr.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["it"]}`).innerHTML += `<img src="/paths/img/rp_it.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["ru"]}`).innerHTML += `<img src="/paths/img/rp_ru.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["ap"]}`).innerHTML += `<img src="/paths/img/rp_ap.png" />`;
+
+      let central_rp = 0;
+      for (let key in this.game.state.rp["central"]) { central_rp += this.game.state.rp["central"][key]; }
+
+      let allied_rp = 0;
+      for (let key in this.game.state.rp["allies"]) { allied_rp += this.game.state.rp["allies"][key]; }
+
+      document.querySelector(`.general-records-track-${central_rp}`).innerHTML += `<img src="/paths/img/rp_cp.png" />`;
+      document.querySelector(`.general-records-track-${allies_rp}`).innerHTML += `<img src="/paths/img/rp_allied.png" />`;
+
+
+      ////////////////////
+      // Victory Points //
+      ////////////////////
+      this.calculateVictoryPoints();
+      document.querySelector(`.general-records-track-${this.game.state.general_records_track.vp}`).innerHTML += `<img src="/paths/img/vp_button.png" />`;
+
+
+      ////////////////
+      // War Status //
+      ////////////////
       let allies_war_status = `<img src="/paths/img/warstatus_ap.png" />`;
       let central_war_status = `<img src="/paths/img/warstatus_cp.png" />`;
       let combined_war_status = `<img src="/paths/img/warstatus_combined.png" />`;
       let current_cp_russian_vp = `<img src="/paths/img/current_cp_russian_vp.png" />`;
 
-      document.querySelectorAll(".general-records-track").forEach((el) => { el.classList.remove("vp"); el.innerHTML = ""; });
-
-      document.querySelector(`.general-records-track-${this.game.state.general_records_track.vp}`).innerHTML += vp_button;
       document.querySelector(`.general-records-track-${this.game.state.general_records_track.allies_war_status}`).innerHTML += allies_war_status;
       document.querySelector(`.general-records-track-${this.game.state.general_records_track.central_war_status}`).innerHTML += central_war_status;
       document.querySelector(`.general-records-track-${this.game.state.general_records_track.combined_war_status}`).innerHTML += combined_war_status;
-
-      document.querySelector(`.general-records-track-${this.game.state.general_records_track.ge_replacements}`).innerHTML += rp_ge;
-      document.querySelector(`.general-records-track-${this.game.state.general_records_track.ah_replacements}`).innerHTML += rp_ah;
-      document.querySelector(`.general-records-track-${this.game.state.general_records_track.allied_replacements}`).innerHTML += rp_allied;
-      document.querySelector(`.general-records-track-${this.game.state.general_records_track.br_replacements}`).innerHTML += rp_br;
-      document.querySelector(`.general-records-track-${this.game.state.general_records_track.fr_replacements}`).innerHTML += rp_fr;
-      document.querySelector(`.general-records-track-${this.game.state.general_records_track.ru_replacements}`).innerHTML += rp_ru;
-
       document.querySelector(`.general-records-track-${this.game.state.general_records_track.current_cp_russian_vp}`).innerHTML += current_cp_russian_vp;
 
     } catch (err) {
