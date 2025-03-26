@@ -700,6 +700,7 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
       )
     }
 
+
     let unitActionInterface = function(key, idx, options, mainInterface, moveInterface, unitActionInterface) {
       let unit = paths_self.game.spaces[key].units[idx];
       let sourcekey = key;
@@ -738,14 +739,108 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
 	      //
 	      let is_the_unit_an_army = false;
 	      let is_the_destination_a_fort = false;
-	      if (paths_self.game.spaces[key].fort == 1) { is_the_destination_a_fort = true; }
+	      if (paths_self.game.spaces[key].fort > 1) { is_the_destination_a_fort = true; }
 	      if (paths_self.game.spaces[sourcekey].units[idx].army == 1) { is_the_unit_an_army = true; }
 
-	      if (is_the_destination_a_fort == true && is_the_unit_an_army == false) {
-alert("corps cannot besiege unless N of them...");
+	      let units_remaining = 2;
+	
+	      //
+	      // internal function that allows for moving multiple units at the same 
+	      // time if necessary to besiege a fort. hijacks control of this function...
+	      //
+	      let select_and_add_extra_armies = (units_remaining=1, select_and_add_extra_armies) => {
+
+		//
+		// find spaces with potential units
+		//
+	        let spaces_within_hops = paths_self.returnSpacesWithinHops(
+      		  key ,
+      		  3 ,
+      		  (spacekey) => { if (paths_self.game.spaces[spacekey].activated_for_movement == 1) { 
+		    for (let z = 0; z < paths_self.game.spaces[spacekey].units.length; z++) {
+		      if (paths_self.game.spaces[spacekey].units[z].moved != 1) {
+			if (spacekey != sourcekey || z != idx) { return 1; }
+		      }
+		    }
+		  } return 0; }
+    		);
+
+		//
+		// count units available
+		//
+		let count = 0;
+		for (let z = 0; z < spaces_within_hops.length; z++) {
+		  for (let i = 0; i < this.game.spaces[spaces_within_hops[z]].units.length; i++) {
+		    if (spaces_within_hops[z] != sourcekey || i != idx) {
+		      let u = this.game.spaces[spaces_within_hops[z]].units[i];
+		      if (u.corps == 1) { count++; }
+		      if (u.army == 1) { count += 100; }
+		    }
+		  }
+		}
+
+		paths_self.playerSelectUnitWithFilter(
+		  "Select Unit to Help Besiege" ,
+		  (spacekey, unit) => {
+		    if (paths_self.game.spaces[spacekey].activated_for_movement) { 
+		      if (unit.name != paths_self.game.spaces[sourcekey].units[idx].name) { return 1; }
+		    }
+		    return 0;
+		  } ,
+		  (bspacekey, bunit_idx) => {
+
+		    let unit = paths_self.game.spaces[bspacekey].units[bunit_idx];
+		    if (unit.army) { units_remaining = 0; }
+		    if (unit.corps) { units_remaining--; }
+
+              	    paths_self.moveUnit(bspacekey, bunit_idx, key);
+	      	    paths_self.addMove(`move\t${faction}\t${bspacekey}\t${bunit_idx}\t${key}\t${paths_self.game.player}`);
+              	    paths_self.displaySpace(key);
+              	    paths_self.displaySpace(bspacekey);
+
+		    if (units_remaining > 0) {
+
+		      select_and_add_extra_armies(units_remaining, select_and_add_extra_armies);
+
+		    } else {
+
+              	      paths_self.moveUnit(sourcekey, idx, key);
+	              paths_self.addMove(`move\t${faction}\t${sourcekey}\t${idx}\t${key}\t${paths_self.game.player}`);
+                      paths_self.displaySpace(key);
+	              let mint = false;
+	              for (let z = 0; z < paths_self.game.spaces[sourcekey].units.length; z++) {
+	                if (paths_self.game.spaces[sourcekey].units[z].moved != 1) { mint = true; }
+	              }
+	              if (mint) {
+	                moveInterface(sourcekey, options, mainInterface, moveInterface, unitActionInterface);
+	              } else {
+	                mainInterface(options, mainInterface, moveInterface, unitActionInterface);
+	              }
+
+		    }
+
+		  } ,
+		  () => {
+		    alert("reload to restart please");
+		  }
+	        );
+
+		return;
+
+
 	      }
 
+	      //
+	      // besiege fort? enter sub-function to move all necessary units
+	      //
+	      if (is_the_destination_a_fort == true && is_the_unit_an_army == false) {
+		select_and_add_extra_armies((paths_self.game.spaces[key].fort-1), select_and_add_extra_armies);
+		return;
+	      }
 
+	      //
+	      // code mirrored above inside besiege section
+	      //
               paths_self.moveUnit(sourcekey, idx, key);
 	      paths_self.addMove(`move\t${faction}\t${sourcekey}\t${idx}\t${key}\t${paths_self.game.player}`);
               paths_self.displaySpace(key);
@@ -989,8 +1084,69 @@ alert("corps cannot besiege unless N of them...");
 
   }
 
+  countUnitsWithFilter(msg, filter_func) {
+
+    let paths_self = this;
+    let count = 0;
+
+    for (let key in this.game.spaces) {
+      for (let z = 0; z < this.game.spaces[key].units.length; z++) {
+        if (filter_func(key, this.game.spaces[key].units[z]) == 1) {
+	  count++;
+	}
+      }
+    }
+
+    return count;
+
+  }
 
 
+  playerSelectUnitWithFilter(msg, filter_func, mycallback = null, cancel_func = null, extra_options=[]) {
+
+    let paths_self = this;
+    let callback_run = false;
+    let at_least_one_option = false;
+    let html = '';
+    html += '<ul class="hide-scrollbar">';
+
+    for (let key in this.game.spaces) {
+      for (let z = 0; z < this.game.spaces[key].units.length; z++) {
+        if (filter_func(key, this.game.spaces[key].units[z]) == 1) {
+          at_least_one_option = true;
+          html += '<li class="option .'+key+'-'+z+'" id="' + key + '-'+z+'">' + key + ' - ' + this.game.spaces[key].units[z].name + '</li>';
+	}
+      }
+    }
+
+    if (cancel_func != null) {
+      html += '<li class="option" id="cancel">cancel</li>';
+    }
+    if (extra_options.length > 0) {
+      for (let z = 0; z < extra_options.length; z++) { html += `<li class="option ${extra_options[z].key}" id="${extra_options[z].key}">${extra_options[z].value}</li>`; }
+    }
+    html += '</ul>';
+
+    this.updateStatusWithOptions(msg, html);
+
+    $('.option').off();
+    $('.option').on('click', function () {
+
+      let action = $(this).attr("id");
+      let tmpx = action.split("-");
+      if (action == "cancel") {
+        cancel_func();
+        return 0;
+      }
+
+      mycallback(tmpx[0], tmpx[1]);
+
+    });
+
+    if (at_least_one_option) { return 1; }
+    return 0;
+
+  }
 
   playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false, extra_options=[]) {
 

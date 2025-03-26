@@ -26,6 +26,7 @@
 
     obj.key = key;
 
+    if (!obj.name)      { obj.name      = "Unknown"; }
     if (!obj.army)	{ obj.army 	= 0; }
     if (!obj.corps)	{ obj.corps 	= 0; }
     if (!obj.combat)	{ obj.combat 	= 5; }

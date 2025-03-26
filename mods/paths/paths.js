@@ -4425,19 +4425,14 @@ alert("display space for: " + key);
     if (this.game.spaces[spacekey].units.length == 0) { return 0; }
     let enemy_units = 0;
     let faction = this.returnPowerOfUnit(this.game.spaces[spacekey].units[0]);
-console.log("we are " + faction);
-console.log("neighs of: " + spacekey);
     for (let z = 0; z < this.game.spaces[spacekey].neighbours.length; z++) {
-console.log("looking at: " + this.game.spaces[spacekey].neighbours[z]);
       let n = this.game.spaces[this.game.spaces[spacekey].neighbours[z]];
       if (n.units.length > 0) {
 	if (this.returnPowerOfUnit(n.units[0]) != faction) {
-console.log("there are enemy units in: " + n.key);
 	  enemy_units++;
 	}
       }
     }
-console.log("found enemy units: " + enemy_units);
     if (enemy_units == 1) { return 1; }
     return 0;
   }
@@ -4626,8 +4621,6 @@ console.log("found enemy units: " + enemy_units);
 
   returnSpacesWithinHops(source, limit=0, passthrough_func=null) {
 
-console.log("source: " + source + " - " + limit);
-
     let paths_self = this;
 
     try { if (this.game.spaces[source]) { source = this.game.spaces[source]; } } catch (err) {}
@@ -4644,8 +4637,6 @@ console.log("source: " + source + " - " + limit);
       //
       for (let i = 0; i < news.length; i++) {
 
-console.log("examining: " + news[i]);
-
 	let passthrough = true;
 	if (passthrough_func != null) { if (!passthrough_func(news[i])) { passthrough = false; } } 
 
@@ -4654,8 +4645,6 @@ console.log("examining: " + news[i]);
 	// neighbours since we cannot route through it.
 	//
 	if (passthrough) {
-
-console.log("passthrough: " + news[i]);
 
           for (let z = 0; z < paths_self.game.spaces[news[i]].neighbours.length; z++) {
             let n = paths_self.game.spaces[news[i]].neighbours[z];
@@ -4671,11 +4660,8 @@ console.log("passthrough: " + news[i]);
           }
 
           if (hop != 1) {
-console.log("old 1");
 	    if (!old.includes(news[i])) {
-console.log("old 2");
 	      if (news[i] !== source.key) {
-console.log("old 3");
 	        old.push(news[i]);
 	      }
             }
@@ -4686,16 +4672,13 @@ console.log("old 3");
 
 
       if (hop < limit) {
-console.log("return1 " + JSON.stringify(newer));
 	  return addHop(newer, hop);
       } else {
-console.log("return2 " + JSON.stringify(old));
 	  return old;
       }
 
     }
 
-console.log("return3 source");
     return addHop([source.key], 0); 
 
   }
@@ -4823,6 +4806,7 @@ spaces['sedan'] = {
 spaces['verdun'] = {
     name: "Verdun" ,
     control : "allies" ,
+    fort : 3 ,
     top: 1354 ,
     left: 942 , 
     neighbours: ["sedan", "chateauthierry", "barleduc", "nancy", "metz"] ,
@@ -4845,6 +4829,7 @@ spaces['chateauthierry'] = {
 spaces['paris'] = {
     name: "Paris" ,
     control : "allies" ,
+    fort : 1 ,
     top: 1420 ,
     left: 621 , 
     neighbours: ["rouen", "amiens", "chateauthierry", "melun", "orleans"] ,
@@ -4945,14 +4930,6 @@ spaces['melun'] = {
     vp : true , 
    }
 
-spaces['nancy'] = {
-    name: "Nancy" ,
-    control : "allies" ,
-    neighbours: ["lemans", "paris", "melun", "stamand", "tours"] ,
-    terrain : "normal" ,
-    vp : true , 
-   }
-
 spaces['melun'] = {
     name: "Melun" ,
     control: "allies" ,
@@ -4966,6 +4943,7 @@ spaces['melun'] = {
 spaces['nancy'] = {
     name: "Nancy" ,
     control: "allies" ,
+    fort : 2 ,
     top: 1490 ,
     left: 1011 , 
     neighbours: ["barleduc", "verdun", "metz", "strasbourg", "belfort"] ,
@@ -5115,6 +5093,7 @@ spaces['grenoble'] = {
 spaces['belfort'] = {
     name: "Belfort" ,
     control: "allies" ,
+    fort : 2 ,
     top: 1635 ,
     left: 1072 , 
     neighbours: ["dijon", "nancy", "mulhouse"] ,
@@ -5135,6 +5114,7 @@ spaces['ostend'] = {
 spaces['antwerp'] = {
     name: "Antwerp" ,
     control: "neutral" ,
+    fort : 1 ,
     top: 1002 ,
     left: 858 , 
     neighbours: ["ostend", "brussels"] ,
@@ -5155,6 +5135,7 @@ spaces['brussels'] = {
 spaces['liege'] = {
     name: "Liege" ,
     control: "neutral" ,
+    fort : 3 ,
     top: 1144 ,
     left: 951 , 
     neighbours: ["brussels", "aachen", "sedan", "koblenz"] ,
@@ -5206,6 +5187,7 @@ spaces['koblenz'] = {
 spaces['metz'] = {
     name: "Metz" ,
     control: "central" ,
+    fort : 3 ,
     top: 1307 ,
     left: 1107 , 
     neighbours: ["verdun", "sedan", "koblenz", "strasbourg", "nancy"] ,
@@ -5217,6 +5199,7 @@ spaces['metz'] = {
 spaces['strasbourg'] = {
     name: "Strasbourg" ,
     control: "central" ,
+    fort : 3 ,
     top: 1448 ,
     left: 1184 , 
     neighbours: ["nancy", "metz", "mannheim", "mulhouse"] ,
@@ -5427,6 +5410,7 @@ spaces['dresden'] = {
 spaces['breslau'] = {
     name: "Breslau" ,
     control: "central" ,
+    fort : 2 ,
     top: 1091 ,
     left: 2157 , 
     neighbours: ["cottbus", "posen", "lodz", "oppeln"] ,
@@ -5449,6 +5433,7 @@ spaces['oppeln'] = {
 spaces['posen'] = {
     name: "Posen" ,
     control: "central" ,
+    fort : 2 ,
     top: 904 ,
     left: 2151 , 
     neighbours: ["cottbus", "thorn", "breslau", "lodz"] ,
@@ -5469,6 +5454,7 @@ spaces['kolberg'] = {
 spaces['thorn'] = {
     name: "Thorn" ,
     control: "central" ,
+    fort : 2 ,
     top: 767 ,
     left: 2248 , 
     neighbours: ["danzig", "tannenberg", "plock", "lodz", "posen"] ,
@@ -5479,6 +5465,7 @@ spaces['thorn'] = {
 spaces['danzig'] = {
     name: "Danzig" ,
     control: "central" ,
+    fort : 2 ,
     top: 609 ,
     left: 2332 , 
     neighbours: ["kolberg", "tannenberg", "thorn"] ,
@@ -5489,6 +5476,7 @@ spaces['danzig'] = {
 spaces['konigsberg'] = {
     name: "Konigsberg" ,
     control: "central" ,
+    fort : 3 ,
     top: 549 ,
     left: 2514 , 
     neighbours: ["insterberg", "tannenberg"] ,
@@ -5738,6 +5726,7 @@ spaces['prague'] = {
 spaces['trent'] = {
     name: "Trent" ,
     control: "central" ,
+    fort : 3 ,
     top: 1742 ,
     left: 1450 , 
     neighbours: ["verona", "asiago", "innsbruck"] ,
@@ -5788,6 +5777,7 @@ spaces['villach'] = {
 spaces['trieste'] = {
     name: "Trieste" ,
     control: "central" ,
+    fort : 3 ,
     top: 1890 ,
     left: 1898 , 
     neighbours: ["udine", "villach", "zagreb"] ,
@@ -5965,6 +5955,7 @@ spaces['miskolcz'] = {
 spaces['cracow'] = {
     name: "Cracow" ,
     control: "central" ,
+    fort : 2 ,
     top: 1249 ,
     left: 2460 , 
     neighbours: ["oppeln", "czestochowa", "tarnow", "martin"] ,
@@ -5995,6 +5986,7 @@ spaces['gorlice'] = {
 spaces['przemysl'] = {
     name: "Przemysl" ,
     control: "central" ,
+    fort : 3 ,
     top: 1251 ,
     left: 2778 , 
     neighbours: ["tarnow", "lublin", "lemberg", "stanislau", "uzhgorod"] ,
@@ -6140,6 +6132,7 @@ spaces['petrograd'] = {
 spaces['riga'] = {
       name: "Riga" ,
     control: "allies" ,
+      fort : 3 ,
       top: 240 ,
       left: 2921 ,
       neighbours: ["dvinsk", "szawli", "reval"] ,
@@ -6206,6 +6199,7 @@ spaces['velikiyeluki'] = {
 spaces['kovno'] = {
       name: "Kovno" ,
     control: "allies" ,
+      fort : 1 ,
       top: 534 ,
       left: 2807 ,
       neighbours: ["szawli", "vilna", "grodno", "insterberg"] ,
@@ -6257,6 +6251,7 @@ spaces['vitebsk'] = {
 spaces['grodno'] = {
       name: "Grodno" ,
     control: "allies" ,
+      fort : 1 ,
       top: 683 ,
       left: 2881 ,
       neighbours: ["vilna", "kovno", "insterberg", "baranovichi", "bialystok"] ,
@@ -6318,6 +6313,7 @@ spaces['moscow'] = {
 spaces['lomza'] = {
       name: "Lomza" ,
     control: "allies" ,
+      fort : 1 , 
       top: 786 ,
       left: 2707 ,
       neighbours: ["tannenberg", "plock", "warsaw", "bialystok"] ,
@@ -6422,6 +6418,7 @@ spaces['lodz'] = {
 spaces['warsaw'] = {
       name: "Warsaw" ,
     control: "allies" ,
+      fort : 2 , 
       top: 918 ,
       left: 2592 ,
       neighbours: ["ivangorod", "lodz", "lomza", "plock", "brestlitovsk"] ,
@@ -6432,6 +6429,7 @@ spaces['warsaw'] = {
 spaces['brestlitovsk'] = {
       name: "Brest Litovsk" ,
     control: "allies" ,
+      fort : 1 ,
       top: 934 ,
       left: 2828 ,
       neighbours: ["warsaw", "lublin", "kovel", "pinsk", "bialystok"] ,
@@ -6482,6 +6480,7 @@ spaces['czestochowa'] = {
 spaces['ivangorod'] = {
       name: "Ivangorod" ,
     control: "allies" ,
+      fort : 1 ,
       top: 1102 ,
       left: 2648 ,
       neighbours: ["warsaw", "lublin", "tarnow", "czestochowa"] ,
@@ -6502,6 +6501,7 @@ spaces['lublin'] = {
 spaces['lutsk'] = {
       name: "Lutsk" ,
     control: "allies" ,
+      fort : 1 ,
       top: 1144 ,
       left: 3065 ,
       neighbours: ["dubno", "lemberg", "kovel", "lublin", "rovno"] ,
@@ -6523,6 +6523,7 @@ spaces['rovno'] = {
 spaces['dubno'] = {
       name: "Dubno" ,
     control: "allies" ,
+      fort : 1 ,
       top: 1252 ,
       left: 3189 ,
       neighbours: ["tarnopol", "rovno", "zhitomir", "lutsk", "kamenetspodolski"] ,
@@ -6646,6 +6647,7 @@ spaces['ismail'] = {
 spaces['odessa'] = {
       name: "Odessa" ,
     control: "allies" ,
+      fort : 3 ,
       top: 1756 ,
       left: 3644 ,
       neighbours: ["caucasus", "uman", "ismail"] ,
@@ -6810,6 +6812,7 @@ spaces['ahwaz'] = {
 spaces['basra'] = {
       name: "Basra" ,
     control: "neutral" ,
+      fort : 1 ,
       top: 2989 ,
       left: 4840 ,
       neighbours: ["ahwaz", "qurna"] ,
@@ -7147,6 +7150,7 @@ spaces['kut'] = {
 spaces['gaza'] = {
       name: "Gaza" ,
     control: "neutral" ,
+      fort : 2 ,
       top: 2872 ,
       left: 3989 ,
       neighbours: ["nablus", "sinai", "beersheba"] ,
@@ -7198,6 +7202,7 @@ spaces['sinai'] = {
 spaces['beersheba'] = {
       name: "Beersheba" ,
     control: "neutral" ,
+      fort : 2 ,
       top: 2967 ,
       left: 4101 ,
       neighbours: ["gaza", "jerusalem", "sinai", "aqaba"] ,
@@ -7208,6 +7213,7 @@ spaces['beersheba'] = {
 spaces['aqaba'] = {
       name: "Aqaba" ,
     control: "neutral" ,
+      fort : 1 ,
       top: 3077 ,
       left: 4016 ,
       neighbours: ["medina", "beersheba", "arabia"] ,
@@ -7397,6 +7403,7 @@ spaces['valjevo'] = {
 spaces['belgrade'] = {
       name: "Belgrade" ,
     control: "neutral" ,
+      fort : 1 ,
       top: 2040 ,
       left: 2580 ,
       neighbours: ["valjevo","nis","timisvar","novisad"] ,
@@ -7666,7 +7673,9 @@ spaces['crbox'] = {
 }
 
     for (let key in spaces) {
+      spaces[key].besieged = [];
       spaces[key].units = [];
+      spaces[key].fort = 0;
       spaces[key].trench = 0;
       if (!spaces[key].control) { spaces[key].control = ""; }
       spaces[key].activated_for_movement = 0;
@@ -8966,7 +8975,6 @@ console.log("adding +1 to drm modifiers...");
       paths_self.endTurn();
     }
 
-
     paths_self.playerSelectSpaceWithFilter(
       `Select Advance Destination`,
       (destination) => {
@@ -8976,15 +8984,6 @@ console.log("adding +1 to drm modifiers...");
         return 0;
       },
       (key) => {
-
-console.log("KEY");
-console.log("KEY");
-console.log("KEY");
-console.log("KEY");
-console.log("KEY");
-console.log("KEY");
-console.log("KEY - " + JSON.stringify(attacker_units));
-console.log("KEY");
 	for (let i = 0; i < attacker_units.length; i++) {
           let x = attacker_units[i];
       	  let skey = x.spacekey;
@@ -9028,7 +9027,6 @@ console.log("KEY");
     if (space.trench > 0) 		{ can_defender_cancel_retreat = true; }
 
     if (can_defender_cancel_retreat == false) {
-console.log("CAN PLAYER HANDLE RETREAT?");
       this.playerHandleRetreat();
       return;
     }
@@ -9086,17 +9084,13 @@ console.log("CAN PLAYER HANDLE RETREAT?");
       }
     );
 
-console.log("B4 HOW MANY SPACES WITHIN HOPS: " + spaces_within_hops.length);
-
     //
     // remove source and single-hop destination if needed
     //
     let source = this.game.spaces[this.game.state.combat.key];
     for (let i = spaces_within_hops.length-1; i >= 0; i--) {
-console.log("examining: " + spaces_within_hops[i]);
       let destination = spaces_within_hops[i];
       if (destination == this.game.state.combat.key) {
-console.log("dest is combat key!");
 	spaces_within_hops.splice(i, 1);
       }
       if (source.neighbours.includes(destination)) {
@@ -9118,14 +9112,10 @@ console.log("dest is combat key!");
 	  }
 	}
 	if (is_there_a_two_hop_connection == false) {
-console.log("no two hop connection...");
 	  spaces_within_hops.splice(i, 1);
 	}
       }
     }
-
-console.log("HOW MANY SPACES WITHIN HOPS: " + spaces_within_hops.length);
-
 
     //
     // no retreat options? eliminate all defenders
@@ -9321,11 +9311,6 @@ console.log("HOW MANY SPACES WITHIN HOPS: " + spaces_within_hops.length);
 
     let mainInterface = function(options, mainInterface, attackInterface) {
 
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("MAIN INTERFACE: " + options.length);
-
       //
       // sometimes this ends
       //
@@ -9349,8 +9334,6 @@ console.log("MAIN INTERFACE: " + options.length);
 	  }
 	}
       }
-
-console.log("UNITS TO ATTACK: " + units_to_attack);
 
       //
       // exit if nothing is left to attack with
@@ -9570,6 +9553,7 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
       )
     }
 
+
     let unitActionInterface = function(key, idx, options, mainInterface, moveInterface, unitActionInterface) {
       let unit = paths_self.game.spaces[key].units[idx];
       let sourcekey = key;
@@ -9600,6 +9584,116 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
 	      return 0;
 	    },
 	    (key) => {
+
+	      //
+	      // if this is a fort, we need to move enough units into the fort in order
+	      // to besiege it, which is at least 1 army, or a number of Corps equal to 
+	      // the fort’s LF 
+	      //
+	      let is_the_unit_an_army = false;
+	      let is_the_destination_a_fort = false;
+	      if (paths_self.game.spaces[key].fort > 1) { is_the_destination_a_fort = true; }
+	      if (paths_self.game.spaces[sourcekey].units[idx].army == 1) { is_the_unit_an_army = true; }
+
+	      let units_remaining = 2;
+	
+	      //
+	      // internal function that allows for moving multiple units at the same 
+	      // time if necessary to besiege a fort. hijacks control of this function...
+	      //
+	      let select_and_add_extra_armies = (units_remaining=1, select_and_add_extra_armies) => {
+
+		//
+		// find spaces with potential units
+		//
+	        let spaces_within_hops = paths_self.returnSpacesWithinHops(
+      		  key ,
+      		  3 ,
+      		  (spacekey) => { if (paths_self.game.spaces[spacekey].activated_for_movement == 1) { 
+		    for (let z = 0; z < paths_self.game.spaces[spacekey].units.length; z++) {
+		      if (paths_self.game.spaces[spacekey].units[z].moved != 1) {
+			if (spacekey != sourcekey || z != idx) { return 1; }
+		      }
+		    }
+		  } return 0; }
+    		);
+
+		//
+		// count units available
+		//
+		let count = 0;
+		for (let z = 0; z < spaces_within_hops.length; z++) {
+		  for (let i = 0; i < this.game.spaces[spaces_within_hops[z]].units.length; i++) {
+		    if (spaces_within_hops[z] != sourcekey || i != idx) {
+		      let u = this.game.spaces[spaces_within_hops[z]].units[i];
+		      if (u.corps == 1) { count++; }
+		      if (u.army == 1) { count += 100; }
+		    }
+		  }
+		}
+
+		paths_self.playerSelectUnitWithFilter(
+		  "Select Unit to Help Besiege" ,
+		  (spacekey, unit) => {
+		    if (paths_self.game.spaces[spacekey].activated_for_movement) { 
+		      if (unit.name != paths_self.game.spaces[sourcekey].units[idx].name) { return 1; }
+		    }
+		    return 0;
+		  } ,
+		  (bspacekey, bunit_idx) => {
+
+		    let unit = paths_self.game.spaces[bspacekey].units[bunit_idx];
+		    if (unit.army) { units_remaining = 0; }
+		    if (unit.corps) { units_remaining--; }
+
+              	    paths_self.moveUnit(bspacekey, bunit_idx, key);
+	      	    paths_self.addMove(`move\t${faction}\t${bspacekey}\t${bunit_idx}\t${key}\t${paths_self.game.player}`);
+              	    paths_self.displaySpace(key);
+              	    paths_self.displaySpace(bspacekey);
+
+		    if (units_remaining > 0) {
+
+		      select_and_add_extra_armies(units_remaining, select_and_add_extra_armies);
+
+		    } else {
+
+              	      paths_self.moveUnit(sourcekey, idx, key);
+	              paths_self.addMove(`move\t${faction}\t${sourcekey}\t${idx}\t${key}\t${paths_self.game.player}`);
+                      paths_self.displaySpace(key);
+	              let mint = false;
+	              for (let z = 0; z < paths_self.game.spaces[sourcekey].units.length; z++) {
+	                if (paths_self.game.spaces[sourcekey].units[z].moved != 1) { mint = true; }
+	              }
+	              if (mint) {
+	                moveInterface(sourcekey, options, mainInterface, moveInterface, unitActionInterface);
+	              } else {
+	                mainInterface(options, mainInterface, moveInterface, unitActionInterface);
+	              }
+
+		    }
+
+		  } ,
+		  () => {
+		    alert("reload to restart please");
+		  }
+	        );
+
+		return;
+
+
+	      }
+
+	      //
+	      // besiege fort? enter sub-function to move all necessary units
+	      //
+	      if (is_the_destination_a_fort == true && is_the_unit_an_army == false) {
+		select_and_add_extra_armies((paths_self.game.spaces[key].fort-1), select_and_add_extra_armies);
+		return;
+	      }
+
+	      //
+	      // code mirrored above inside besiege section
+	      //
               paths_self.moveUnit(sourcekey, idx, key);
 	      paths_self.addMove(`move\t${faction}\t${sourcekey}\t${idx}\t${key}\t${paths_self.game.player}`);
               paths_self.displaySpace(key);
@@ -9843,8 +9937,69 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
 
   }
 
+  countUnitsWithFilter(msg, filter_func) {
+
+    let paths_self = this;
+    let count = 0;
+
+    for (let key in this.game.spaces) {
+      for (let z = 0; z < this.game.spaces[key].units.length; z++) {
+        if (filter_func(key, this.game.spaces[key].units[z]) == 1) {
+	  count++;
+	}
+      }
+    }
+
+    return count;
+
+  }
 
 
+  playerSelectUnitWithFilter(msg, filter_func, mycallback = null, cancel_func = null, extra_options=[]) {
+
+    let paths_self = this;
+    let callback_run = false;
+    let at_least_one_option = false;
+    let html = '';
+    html += '<ul class="hide-scrollbar">';
+
+    for (let key in this.game.spaces) {
+      for (let z = 0; z < this.game.spaces[key].units.length; z++) {
+        if (filter_func(key, this.game.spaces[key].units[z]) == 1) {
+          at_least_one_option = true;
+          html += '<li class="option .'+key+'-'+z+'" id="' + key + '-'+z+'">' + key + ' - ' + this.game.spaces[key].units[z].name + '</li>';
+	}
+      }
+    }
+
+    if (cancel_func != null) {
+      html += '<li class="option" id="cancel">cancel</li>';
+    }
+    if (extra_options.length > 0) {
+      for (let z = 0; z < extra_options.length; z++) { html += `<li class="option ${extra_options[z].key}" id="${extra_options[z].key}">${extra_options[z].value}</li>`; }
+    }
+    html += '</ul>';
+
+    this.updateStatusWithOptions(msg, html);
+
+    $('.option').off();
+    $('.option').on('click', function () {
+
+      let action = $(this).attr("id");
+      let tmpx = action.split("-");
+      if (action == "cancel") {
+        cancel_func();
+        return 0;
+      }
+
+      mycallback(tmpx[0], tmpx[1]);
+
+    });
+
+    if (at_least_one_option) { return 1; }
+    return 0;
+
+  }
 
   playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false, extra_options=[]) {
 
@@ -10089,6 +10244,7 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
   }
 
 
+
   importUnit(key, obj) {
 
     if (!this.game.units) { this.game.units = {}; }
@@ -10100,6 +10256,9 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
 
     obj.key = key;
 
+    if (!obj.name)      { obj.name      = "Unknown"; }
+    if (!obj.army)	{ obj.army 	= 0; }
+    if (!obj.corps)	{ obj.corps 	= 0; }
     if (!obj.combat)	{ obj.combat 	= 5; }
     if (!obj.loss)	{ obj.loss 	= 3; }
     if (!obj.movement)	{ obj.movement 	= 3; }
@@ -10113,6 +10272,8 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
     if (!obj.damaged)	{ obj.damaged = false; }
     if (!obj.destroyed)	{ obj.destroyed = false; }
     if (!obj.spacekey)  { obj.spacekey = ""; }
+
+    if (key.indexOf("army") > -1) { obj.army = 1; } else { obj.corps = 1; }
 
     this.game.units[key] = obj;
 
