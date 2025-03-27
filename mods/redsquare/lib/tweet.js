@@ -110,6 +110,9 @@ class Tweet {
 		this.unknown_children_sigs_hmap = {};
 		this.user.notice = 'new post on ' + this.formatDate(this.created_at);
 		this.source = {};
+		if (!this.source.text && this.tx?.optional?.source?.text) { this.source.text = this.tx.optional.source.text; }
+		if (!this.source.type && this.tx?.optional?.source?.type) { this.source.type = this.tx.optional.source.type; }
+		if (!this.source.peer && this.tx?.optional?.source?.peer) { this.source.peer = this.tx.optional.source.peer; }
 		if (!this.source.text)    { this.source.text = "unknown"; }
 		if (!this.source.type)    { this.source.type = "unknown"; }
 		if (!this.source.peer)    { this.source.peer = "unknown"; }
@@ -1150,6 +1153,21 @@ class Tweet {
 	// but we should prioritize our replies (better to see my snarky reply than the latest from some rando)
 	//
 	isCriticalChild(tweet) {
+/*
+		// Opt out for league tweets
+		for (let peer of this.mod.peers) {
+			if (tweet.tx.isFrom(peer.publicKey)){
+				if (peer.publicKey == this.mod.publicKey){
+					// My tweets! (because local is also a peer)
+					return true;
+				} else {
+					// Server tweets
+					return false;
+				}
+			}
+
+		}
+*/
 		if (tweet.thread_id !== this.thread_id) {
 			return false;
 		}

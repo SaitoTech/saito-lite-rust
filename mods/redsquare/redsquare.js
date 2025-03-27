@@ -367,7 +367,7 @@ class RedSquare extends ModTemplate {
 	    if (is_anonymous_user) { return 0; }
 
 	    let tweet = new Tweet(this.app, this, tx, '.tweet-manager');
-    	    if (tweet.num_replies > 0 && mod_score != -1) {
+    	    if (tweet.num_replies > 0) {
       	      return 1;
     	    }
 
@@ -601,25 +601,9 @@ class RedSquare extends ModTemplate {
     // fetch list of unknown keys and perform name-lookup
     //
     if (service.service === "registry" && !this.app.BROWSER) {
-
-      let keylist = [];
-      
-      for (let i = 0; i < this.tweets.length; i++) {
-        if (!keylist.includes(this.tweets[i].tx.from[0].publicKey)){
-          keylist.push(this.tweets[i].tx.from[0].publicKey);
-        }
-      }
-      
-      //setTimeout(()=> {
-      //  let rMod = this.app.modules.returnModule('Registry');
-      //  if (rMod) {
-      //    rMod.fetchManyIdentifiers(keylist, (answer) => {
-      //      console.log(`Prepopulated registry with ${Object.entries(answer).length} cached usernames...`);
-      //      this.cacheRecentTweets();
-      //    });
-      //  }
-      //}, 250);
-
+      this.fetchMissingUsernames((answers) => {
+	this.cacheRecentTweets(true);
+      });
     }
 
     //
@@ -1259,8 +1243,8 @@ class RedSquare extends ModTemplate {
     //
     tweet.curated = this.app.modules.moderate(tweet.tx, this.name);
 
-    if (tweet.optional?.source?.peer) {
-      if (tweet.optional?.curated) {
+    if (tweet.tx?.optional?.source?.peer) {
+      if (tweet.tx?.optional?.curated) {
         tweet.curated = 1;
       }
     }
@@ -2512,9 +2496,18 @@ class RedSquare extends ModTemplate {
 
 
     if (this.cached_tweets.length < 10 && skip_username_fetch == false){
-      this.fetchMissingUsernames((answers) => {
-	this.cacheRecentTweets(true);
-      });
+      setTimeout(() => {
+        this.fetchMissingUsernames((answers) => {
+  	  this.cacheRecentTweets(true);
+        });
+      }, 250);
+    }
+
+    //
+    // still nothing, pull the three latest
+    //
+    for (let z = 0; z < 4 && z < this.tweets.length; z++) {
+      this.cached_tweets.push(this.tweets[z].tx.serialize_to_web(this.app));
     }
 
     console.log('###');

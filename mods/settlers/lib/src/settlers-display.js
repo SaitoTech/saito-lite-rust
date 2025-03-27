@@ -51,6 +51,9 @@ class SettlersDisplay {
 
   displayScore() {
     try {
+
+      let score_change = false;
+
       for (let i = 0; i < this.game.state.players.length; i++) {
         let score = 0;
         //Count towns and cities
@@ -75,28 +78,40 @@ class SettlersDisplay {
         //Save Score
         this.game.state.players[i].vp = score;
 
-        //Check for winner
-        if (this.game.state.players[i].vp >= this.game.options.game_length) {
-          this.game.queue.push(`winner\t${i}`);
-        }
-      }
-
-      for (let i = 0; i < this.game.state.players.length; i++) {
+        //Check if there is a difference (and who went up)
         if (this.game.state.players[i].vp !== this.racetrack.players[i].score) {
+          if (this.game.state.players[i].vp > this.racetrack.players[i].score) {
+            score_change = i + 1;
+          }
           this.racetrack.players[i].score = this.game.state.players[i].vp;
           this.racetrack.render();
           this.racetrack.lock();
         }
+
+        //Check for winner
+        if (this.game.state.players[i].vp >= this.game.options.game_length) {
+          this.game.queue.push(`winner\t${i}`);
+          score_change = false;
+        }
       }
 
-      if (this.game.players.length == 2) {
+      if (this.game.players.length == 2 && score_change) {
         if (Math.abs(this.game.state.players[0].vp - this.game.state.players[1].vp) > 1) {
+          
+          let player = this.game.state.players[0].vp > this.game.state.players[1].vp ? 1 : 2;
+
+          if (score_change == player){
+            this.card_overlay.render({ player: 3-player , card : "Robin Hood"});
+            this.game.queue.push(`roll_bandit\t${player}`);
+          }
+
           console.log('Robin hood');
           $('.main').addClass('robinhood');
         } else {
           $('.main').removeClass('robinhood');
         }
       }
+
     } catch (err) {
       console.error(err);
     }

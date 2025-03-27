@@ -2056,6 +2056,9 @@ if (relief_siege == 1) {
     }
 
     if (any_need_to_intervene == false) {
+console.log("#");
+console.log("# no need to intervene - exit 1");
+console.log("#");
       his_self.endTurn();
       return 1;
     }
@@ -2063,8 +2066,13 @@ if (relief_siege == 1) {
 
     let next_unit_fnct = async (sources, sources_idx, unit_idx, next_unit_fnct) => {
 
+console.log("! " + sources.length + " -- " + sources_idx);
+
       if (sources.length < (sources_idx+1)) {
 	his_self.theses_overlay.hide();
+console.log("#");
+console.log("# no need to intervene - exit 2");
+console.log("#");
 	his_self.endTurn();
 	return 1;
       }
@@ -2083,6 +2091,8 @@ if (relief_siege == 1) {
 
       if (space.units[f].length > unit_idx) {
 
+console.log("into here...");
+
 	let unit_type = space.units[f][unit_idx].type;
 	let unit_name = "";
 	if (unit_type == "mercenary") { unit_name = "Mercenary"; }
@@ -2091,6 +2101,7 @@ if (relief_siege == 1) {
 	if (space.units[f][unit_idx].army_leader == true) { unit_type = space.units[f][unit_idx].name; }
 
         if (unit_name == "" || res.length == 0) {
+console.log(" next nuf");
 	   next_unit_fnct(sources, sources_idx, unit_idx+1, next_unit_fnct);
 	} else {
 
@@ -2110,15 +2121,24 @@ if (relief_siege == 1) {
 
 	}
       } else {
+console.log(" next aaa");
         next_unit_fnct(sources, sources_idx+1, 0, next_unit_fnct);
       }
 
     }
 
     if (sources.length > 0) {
+console.log("#");
+console.log("# sources so going into next_unit_fnct");
+console.log("#");
       next_unit_fnct(sources, 0, 0, next_unit_fnct);
+    } else {
+console.log("#");
+console.log("# no sources of any length");
+console.log("#");
+      his_self.endTurn();
     }
-          
+         
     return 0;
 
   }
@@ -3441,8 +3461,12 @@ return;
 
   }
 
-
+  //
+  // if we move into this function, we HAVE to endTurn() as we have a RESOLVE
+  //
   playerReturnWinterUnits(faction) {
+
+console.log("into player return winter units...");
 
     let his_self = this;
 
@@ -3730,6 +3754,7 @@ return;
       if (faction == "ottoman") { his_self.theses_overlay.render("ottoman"); }
       his_self.theses_overlay.pushHudUnderOverlay();
       his_self.updateStatusWithOptions(msg, opt);
+console.log("just attached options.... should be selectable..");
 
       $(".option").off();
       $(".option").on('click', function () {
