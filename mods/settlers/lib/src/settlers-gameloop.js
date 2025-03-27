@@ -15,10 +15,10 @@ class SettlersGameloop {
       //
       // catch win condition
       //
-      if (this.browser_active){
+      if (this.browser_active) {
         this.displayPlayers(); //Is it enough to update the player huds each iteration, board doesn't get redrawn at all?  
       }
-      
+
       let qe = this.game.queue.length - 1;
       let mv = this.game.queue[qe].split("\t");
 
@@ -127,8 +127,8 @@ class SettlersGameloop {
         let cardname = mv[2];
         this.game.queue.splice(qe, 1);
 
-	// show overlay
-	this.card_overlay.render({ player : player , card : cardname});
+      	// show overlay
+      	this.card_overlay.render({ player : player , card : cardname});
 
         //Score gets recounted a lot, so we save the number of VP cards
         this.game.state.players[player - 1].vpc++; //Number of victory point cards for the player
@@ -423,8 +423,9 @@ class SettlersGameloop {
 
         this.game.queue.splice(qe, 1);
 
+        this.buildCity(player, slot);
+
         if (this.game.player != player) {
-          this.buildCity(player, slot);
           this.updateStatus(`${this.game.playerNames[player - 1]} built a ${this.c1.name}`, 1);
         }else{
           this.updateStatus(`you built a ${this.c1.name}`, 1);

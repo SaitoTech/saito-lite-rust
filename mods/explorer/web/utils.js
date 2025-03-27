@@ -87,8 +87,8 @@ function listTransactions(blk, hash) {
     html += '<div class="table-header">id</div>';
     html += '<div class="table-header">sender</div>';
     html += '<div class="table-header">fee</div>';
-    html += '<div class="table-header">type</div>';
-    html += '<div class="table-header">module</div>';
+    html += '<div class="table-header">type#</div>';
+    html += '<div class="table-header">type/module</div>';
 
     for (var mt = 0; mt < blk.transactions.length; mt++) {
       var tmptx = blk.transactions[mt];
@@ -137,18 +137,40 @@ function listTransactions(blk, hash) {
       html += `<div><a onclick="showTransaction('tx-` + tmptx.id + `');">` + tx_from + `</a></div>`;
       html += "<div>" + (BigInt(tx_fees) * BigInt(nolan_per_saito)) + "</div>";
       html += "<div>" + tmptx.type + "</div>";
-      if (tmptx.type == 0) {
-        if (tmptx.msg.module) {
-          html += "<div>" + tmptx.msg.module + "</div>";
-        } else {
-          html += "<div>Money</div>";
-        }
-      }
-      if (tmptx.type == 1) {
-        html += "<div>" + tmptx.msg.name + "</div>";
-      }
-      if (tmptx.type > 1) {
-        html += "<div> </div>";
+      switch (tmptx.type) {
+        case 0: // Normal
+          if (tmptx.msg.module) {
+            html += "<div>Mod: " + tmptx.msg.module + "</div>";
+          } else {
+            html += "<div>Encrypted/Unknown</div>";
+          }
+          break;
+        case 1: // Fee
+          html += "<div>Fee Payment</div>";
+          break;
+        case 2: // GoldenTicket
+          html += "<div>Golden Ticket</div>";
+          break;
+        case 3: // ATR
+          html += "<div>ATR</div>";
+          break;
+        case 4: // Vip (deprecated)
+          html += "<div>VIP (deprecated)</div>";
+          break;
+        case 5: // SPV
+          html += "<div>SPV</div>";
+          break;
+        case 6: // Issuance
+          html += "<div>Network Issuance</div>";
+          break;
+        case 7: // BlockStake
+          html += "<div>Block Stake</div>";
+          break;
+        case 8: // Bound
+          html += "<div>Bound</div>";
+          break;
+        default:
+          html += "<div>Type not found</div>";
       }
       html += '<div class="hidden txbox tx-' + tmptx.id + '">' + JSON.stringify(tmptx) + "</div>";
     }
