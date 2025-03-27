@@ -1347,6 +1347,7 @@ if (this.game.state.events.society_of_jesus == 1) {
       }
 
       his_self.theses_overlay.space_onclick_callback = null;
+      his_self.theses_overlay.remove();
       mycallback(action);
 
     });
@@ -2059,6 +2060,7 @@ if (relief_siege == 1) {
 console.log("#");
 console.log("# no need to intervene - exit 1");
 console.log("#");
+      his_self.theses_overlay.hide();
       his_self.endTurn();
       return 1;
     }
@@ -2069,7 +2071,7 @@ console.log("#");
 console.log("! " + sources.length + " -- " + sources_idx);
 
       if (sources.length < (sources_idx+1)) {
-	his_self.theses_overlay.hide();
+        his_self.theses_overlay.hide();
 console.log("#");
 console.log("# no need to intervene - exit 2");
 console.log("#");
@@ -2136,6 +2138,7 @@ console.log("#");
 console.log("#");
 console.log("# no sources of any length");
 console.log("#");
+      his_self.theses_overlay.hide();
       his_self.endTurn();
     }
          
