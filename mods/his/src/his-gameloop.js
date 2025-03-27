@@ -651,6 +651,18 @@ this.updateLog(`###############`);
 
 	if (mv[0] === "winter_retreat_move_units_to_capital_faction_array") {
 
+console.log("*");
+console.log("*");
+console.log("*");
+console.log("*");
+console.log("*");
+console.log("*");
+console.log("*");
+console.log("*");
+console.log("*");
+console.log("* WRMUTOCF: " + this.game.player);
+console.log("* : " + JSON.stringify(this.game.confirms_needed));
+
 	  let factions = JSON.parse(mv[1]);
 	  let do_i_get_to_move = false;
 
@@ -659,6 +671,7 @@ this.updateLog(`###############`);
 	  //
 	  if (this.game.confirms_needed[this.game.player-1] == 0) {
 	    this.diplomacy_overlay.hide();
+console.log("fail 1");
 	    return 0;
 	  }
 
@@ -666,7 +679,6 @@ this.updateLog(`###############`);
 	  // exit if overlay open and visible
 	  //
 	  if (this.theses_overlay.visible) {
-
 	    //
 	    // periodically this will trigger when the overlay is NOT visible
 	    //
@@ -677,7 +689,11 @@ this.updateLog(`###############`);
 	      }
 	    }
 	  }
-	  if (this.moves.length > 0) { return 0; }
+
+	  if (this.moves.length > 0) {
+	    console.log("MOVES EXIT: " + JSON.stringify(this.moves));
+	    return 0;
+	  }
 
 	  this.addMove("RESOLVE\t"+this.publicKey);
 
@@ -685,19 +701,24 @@ this.updateLog(`###############`);
 	    let p = this.returnPlayerCommandingFaction(factions[i]);
 	    if (this.game.player == p) {
 	      this.winter_overlay.hide();
+console.log("player return winter units... w/ " + factions[i]);
 	      this.playerReturnWinterUnits(factions[i]);
 	      do_i_get_to_move = true;
+	      return 0;
             }
           }
+console.log("get to move? " + do_i_get_to_move);
 
 	  //
 	  // hey, it's me, not here...
 	  //
 	  if (do_i_get_to_move == false) {
+console.log("ending...");
 	     this.endTurn();
 	  }
 
 	  // no splice either -- cleared by RESETCONFIRMSNEEDED
+console.log("return 0...");
 	  return 0;
 
 	}
@@ -721,29 +742,42 @@ this.updateLog(`###############`);
 	  return 0;
 
 	}
+	if (mv[0] === "winter_retreat_move_units_to_fortresses_faction_array") {
 
-	if (mv[0] === "winter_retreat_move_units_to_fotresses_faction_array" || mv[0] === "winter_retreat_move_units_to_fortresses_faction_array") {
+console.log("!!!");
+console.log("!!!");
+console.log("!!! into fortresses faction array");
+console.log("!!!");
+console.log("!!!");
+console.log("!!!");
+console.log("!!!");
+console.log("!!!");
 
           let factions = JSON.parse(mv[1]);
           let do_i_get_to_move = false;
+
+          //  
+          // exit if we are already handling....
+          //
+          if (this.moves.length > 0) { console.log("!!! exit as moves exist..."); return 0; }
+          if (this.theses_overlay.visible) { console.log("! already looking at UI..."); return 0; }
               
           //  
           // skip if we have already confirmed!
           //
+console.log("I AM PLAYER: " + this.game.player);
+console.log("DO CONFIRMS EXIST: " + JSON.stringify(this.game.confirms_needed));
           if (this.game.confirms_needed[this.game.player-1] == 0) {
+console.log("!!! exit as confirmation not needed...");
             return 0;
           }   
               
-          //  
-          // exit if we are already handling....
-          //
-          if (this.moves.length > 0) { return 0; }
           this.addMove("RESOLVE\t"+this.publicKey);
-
 
           for (let i = 0; i < factions.length; i++) {
             let p = this.returnPlayerCommandingFaction(factions[i]);
             if (this.game.player == p && factions[i] != "protestant") {
+console.log("into playerPlayWinterRetreatToFortresses.... as " + factions[i]);
               this.playerPlayWinterRetreatToFortresses(factions[i], this.game.player, "");
               do_i_get_to_move = true;
             }
@@ -753,6 +787,7 @@ this.updateLog(`###############`);
           // hey, it's me, protestants
 	  //
           if (do_i_get_to_move == false) {
+console.log("cannot move, so end-turn...");
              this.endTurn();
           }
 
@@ -784,11 +819,8 @@ this.updateLog(`###############`);
 	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	  }
 
-
-
 	  let his_self = this;
 	  let moves = [];
-
 
 	  //
 	  // we have handled naval retreat, so we move stranded naval leaders back to capital port
@@ -7751,9 +7783,12 @@ try {
 	  // calculate units remaining
 	  //
           his_self.game.state.field_battle.attacker_land_units_remaining = his_self.game.state.field_battle.attacker_units.length - his_self.game.state.field_battle.defender_hits;
+	  for (let i = 0; i < his_self.game.state.field_battle.attacker_units.length; i++) {
+	    if (his_self.game.state.field_battle.attacker_units[i] == "bonus") { his_self.game.state.field_battle.attacker_land_units_remaining--; }
+	  }
 	  let du = 0;
 	  for (let i = 0; i < his_self.game.state.field_battle.defender_units.length; i++) {
-	    if (his_self.game.state.field_battle.defender_units[i] != "defender") { du++; }
+	    if (his_self.game.state.field_battle.defender_units[i] != "defender" && his_self.game.state.field_battle.defender_units[i] != "bonus") { du++; }
 	  }
 	  his_self.game.state.field_battle.defender_land_units_remaining = du - his_self.game.state.field_battle.attacker_hits;
 
@@ -13131,7 +13166,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-//cardnum = 2;
+cardnum = 1;
 //if (f == "france") { cardnum = 0; }
 //if (f == "papacy") { cardnum = 0; }
 //if (f == "hapsburg") { cardnum = 1; }
@@ -13141,7 +13176,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
-    	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
+    	        //this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
 
 		//

@@ -4188,16 +4188,16 @@ alert("display space for: " + key);
       document.querySelector(`.general-records-track-${this.game.state.rp["central"]["ge"]}`).innerHTML += `<img src="/paths/img/rp_ge.png" />`;
       document.querySelector(`.general-records-track-${this.game.state.rp["central"]["ah"]}`).innerHTML += `<img src="/paths/img/rp_ah.png" />`;
       document.querySelector(`.general-records-track-${this.game.state.rp["central"]["tu"]}`).innerHTML += `<img src="/paths/img/rp_tu.png" />`;
-      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["bg"]}`).innerHTML += `<img src="/paths/img/rp_bu.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["bu"]}`).innerHTML += `<img src="/paths/img/rp_bu.png" />`;
       document.querySelector(`.general-records-track-${this.game.state.rp["central"]["cp"]}`).innerHTML += `<img src="/paths/img/rp_cp.png" />`;
 
       // allies
-      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["a"]}`).innerHTML += `<img src="/paths/img/rp_a.png" />`;
-      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["br"]}`).innerHTML += `<img src="/paths/img/rp_br.png" />`;
-      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["fr"]}`).innerHTML += `<img src="/paths/img/rp_fr.png" />`;
-      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["it"]}`).innerHTML += `<img src="/paths/img/rp_it.png" />`;
-      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["ru"]}`).innerHTML += `<img src="/paths/img/rp_ru.png" />`;
-      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["ap"]}`).innerHTML += `<img src="/paths/img/rp_ap.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["a"]}`).innerHTML += `<img src="/paths/img/rp_a.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["br"]}`).innerHTML += `<img src="/paths/img/rp_br.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["fr"]}`).innerHTML += `<img src="/paths/img/rp_fr.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["it"]}`).innerHTML += `<img src="/paths/img/rp_it.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["ru"]}`).innerHTML += `<img src="/paths/img/rp_ru.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["ap"]}`).innerHTML += `<img src="/paths/img/rp_ap.png" />`;
 
       let central_rp = 0;
       for (let key in this.game.state.rp["central"]) { central_rp += this.game.state.rp["central"][key]; }
@@ -7737,30 +7737,24 @@ spaces['crbox'] = {
       if (redisplay) { this.displaySpace(key); }
     }
 
-  }
-
-
-  calculateReplacementPoints() {
-
-      this.game.state.general_records_track.ge_replacements = this.game.state.rp['central']["ge"];
-      this.game.state.general_records_track.ge_replacements = this.game.state.rp['central']["ge"];
-      this.game.state.general_records_track.ge_replacements = this.game.state.rp['central']["ge"];
-      this.game.state.general_records_track.ge_replacements = this.game.state.rp['central']["ge"];
-      this.game.state.general_records_track.ge_replacements = this.game.state.rp['central']["ge"];
-      this.game.state.general_records_track.ge_replacements = this.game.state.rp['central']["ge"];
-      this.game.state.general_records_track.ge_replacements = this.game.state.rp['central']["ge"];
-
-
-
-
-      document.querySelector(`.general-records-track-${this.game.state.general_records_track.ge_replacements}`).innerHTML += rp_ge;
-      document.querySelector(`.general-records-track-${this.game.state.general_records_track.ah_replacements}`).innerHTML += rp_ah;
-      document.querySelector(`.general-records-track-${this.game.state.general_records_track.allied_replacements}`).innerHTML += rp_allied;
-      document.querySelector(`.general-records-track-${this.game.state.general_records_track.br_replacements}`).innerHTML += rp_br;
-      document.querySelector(`.general-records-track-${this.game.state.general_records_track.fr_replacements}`).innerHTML += rp_fr;
-      document.querySelector(`.general-records-track-${this.game.state.general_records_track.ru_replacements}`).innerHTML += rp_ru;
+    this.game.state.rp = {};
+    this.game.state.rp['central'] = {};
+    this.game.state.rp['allies'] = {};
+    this.game.state.rp['central']['ge'] = 0;
+    this.game.state.rp['central']['ah'] = 0;
+    this.game.state.rp['central']['tu'] = 0;
+    this.game.state.rp['central']['bu'] = 0;
+    this.game.state.rp['central']['cp'] = 0;
+    this.game.state.rp['allies']['a'] = 0;
+    this.game.state.rp['allies']['br'] = 0;
+    this.game.state.rp['allies']['fr'] = 0;
+    this.game.state.rp['allies']['it'] = 0;
+    this.game.state.rp['allies']['ru'] = 0;
+    this.game.state.rp['allies']['ap'] = 0;
 
   }
+
+
   calculateVictoryPoints() {
 
     let vp = 0;
@@ -7820,7 +7814,17 @@ spaces['crbox'] = {
     state.rp = {};
     state.rp['central'] = {};
     state.rp['allies'] = {};
-
+    state.rp['central']['ge'] = 0;
+    state.rp['central']['ah'] = 0;
+    state.rp['central']['tu'] = 0;
+    state.rp['central']['bu'] = 0;
+    state.rp['central']['cp'] = 0;
+    state.rp['central']['a'] = 0;
+    state.rp['central']['br'] = 0;
+    state.rp['central']['fr'] = 0;
+    state.rp['central']['it'] = 0;
+    state.rp['central']['ru'] = 0;
+    state.rp['central']['ap'] = 0;
 
     state.active_player = -1;
 

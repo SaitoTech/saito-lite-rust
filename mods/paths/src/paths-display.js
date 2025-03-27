@@ -382,16 +382,16 @@ alert("display space for: " + key);
       document.querySelector(`.general-records-track-${this.game.state.rp["central"]["ge"]}`).innerHTML += `<img src="/paths/img/rp_ge.png" />`;
       document.querySelector(`.general-records-track-${this.game.state.rp["central"]["ah"]}`).innerHTML += `<img src="/paths/img/rp_ah.png" />`;
       document.querySelector(`.general-records-track-${this.game.state.rp["central"]["tu"]}`).innerHTML += `<img src="/paths/img/rp_tu.png" />`;
-      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["bg"]}`).innerHTML += `<img src="/paths/img/rp_bu.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["bu"]}`).innerHTML += `<img src="/paths/img/rp_bu.png" />`;
       document.querySelector(`.general-records-track-${this.game.state.rp["central"]["cp"]}`).innerHTML += `<img src="/paths/img/rp_cp.png" />`;
 
       // allies
-      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["a"]}`).innerHTML += `<img src="/paths/img/rp_a.png" />`;
-      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["br"]}`).innerHTML += `<img src="/paths/img/rp_br.png" />`;
-      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["fr"]}`).innerHTML += `<img src="/paths/img/rp_fr.png" />`;
-      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["it"]}`).innerHTML += `<img src="/paths/img/rp_it.png" />`;
-      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["ru"]}`).innerHTML += `<img src="/paths/img/rp_ru.png" />`;
-      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["ap"]}`).innerHTML += `<img src="/paths/img/rp_ap.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["a"]}`).innerHTML += `<img src="/paths/img/rp_a.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["br"]}`).innerHTML += `<img src="/paths/img/rp_br.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["fr"]}`).innerHTML += `<img src="/paths/img/rp_fr.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["it"]}`).innerHTML += `<img src="/paths/img/rp_it.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["ru"]}`).innerHTML += `<img src="/paths/img/rp_ru.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["ap"]}`).innerHTML += `<img src="/paths/img/rp_ap.png" />`;
 
       let central_rp = 0;
       for (let key in this.game.state.rp["central"]) { central_rp += this.game.state.rp["central"][key]; }
