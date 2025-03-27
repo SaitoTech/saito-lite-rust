@@ -148,6 +148,10 @@ class Poker extends GameTableTemplate {
 					okey = 'chips';
 				}
 
+				if (okey == 'eliminated') {
+					oval = JSON.stringify(oval);
+				}
+				
 				if (output_me == 1) {
 					ngoa[okey] = oval;
 				}

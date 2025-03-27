@@ -111,7 +111,7 @@ class Invite {
 				let inviteKeys = Object.keys(txmsg.options);
 
 				for (const key of inviteKeys) {
-					if (key !== 'desired_opponent_publickey' && !key.includes('game-wizard-players')){
+					if (key !== 'desired_opponent_publickey' && !key.includes('game-wizard-players') && key !== "eliminated"){
 						if (!defaultOptions[key] || defaultOptions[key] != txmsg.options[key]) {
 							alt_game_type += 'custom ';
 							this.invite_data.game_type = 'custom game';
