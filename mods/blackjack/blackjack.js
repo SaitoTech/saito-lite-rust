@@ -392,7 +392,6 @@ class Blackjack extends GameTableTemplate {
 						if (this.game.state.player[i].credit <= 0) {
 							removal = true;
 							console.log(`*** Removing Player ${i + 1}`);
-							this.removePlayerFromState(i); //Remove player from game state
 							this.removePlayer(this.game.players[i]); //Remove player in gamemodule
 						}
 					}
