@@ -27,6 +27,11 @@ class ThesesOverlay {
 		}
 	}
 
+	remove() {
+		this.visible = false;
+		this.overlay.remove();
+	}
+
 	hide() {
 		this.visible = false;
 		this.overlay.hide();

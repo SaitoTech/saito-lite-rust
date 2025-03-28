@@ -751,7 +751,7 @@ console.log("!!!");
 console.log("!!!");
 console.log("!!!");
 console.log("!!!");
-console.log("!!!");
+console.log("!!!: is overlay visible: " + this.theses_overlay.visible);
 
           let factions = JSON.parse(mv[1]);
           let do_i_get_to_move = false;
@@ -772,15 +772,20 @@ console.log("!!! exit as confirmation not needed...");
             return 0;
           }   
               
-          this.addMove("RESOLVE\t"+this.publicKey);
-
           for (let i = 0; i < factions.length; i++) {
             let p = this.returnPlayerCommandingFaction(factions[i]);
             if (this.game.player == p && factions[i] != "protestant") {
 console.log("into playerPlayWinterRetreatToFortresses.... as " + factions[i]);
-              this.playerPlayWinterRetreatToFortresses(factions[i], this.game.player, "");
-              do_i_get_to_move = true;
-            }
+	      if (this.winter_retreat_faction != factions[i] && !this.theses_overlay.visible) {
+	        this.winter_retreat_faction = factions[i];
+                this.addMove("RESOLVE\t"+this.publicKey);
+                this.playerPlayWinterRetreatToFortresses(factions[i], this.game.player, "");
+                do_i_get_to_move = true;
+	      }
+            } 
+	    if (this.game.player == p && factions[i] == "protestant") {
+	      this.winter_retreat_faction = factions[i];
+	    }
           }
 
 	  //
@@ -788,7 +793,19 @@ console.log("into playerPlayWinterRetreatToFortresses.... as " + factions[i]);
 	  //
           if (do_i_get_to_move == false) {
 console.log("cannot move, so end-turn...");
-             this.endTurn();
+//            if (this.game.player == p && factions[i] == "protestant") {
+//	      if (this.is_first_loop != 1) {
+//		return 0;
+//	      }
+//	    }
+	    let tmpx = 1;
+            for (let z = 0; z < this.game.confirms_needed.length; z++) {
+	     if (this.game.confirms_needed[z] === 0) { tmpx = 0; }
+	    }
+	    if (tmpx == 1) {
+              this.addMove("RESOLVE\t"+this.publicKey);
+              this.endTurn();
+	    }
           }
 
           return 0;
@@ -13166,7 +13183,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-cardnum = 1;
+//cardnum = 1;
 //if (f == "france") { cardnum = 0; }
 //if (f == "papacy") { cardnum = 0; }
 //if (f == "hapsburg") { cardnum = 1; }
@@ -13176,7 +13193,7 @@ cardnum = 1;
 
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
-    	        //this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
+    	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
 
 		//

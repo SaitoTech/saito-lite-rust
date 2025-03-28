@@ -188,7 +188,6 @@ class PokerQueue {
 								am_i_out = true;
 							}
 
-							this.removePlayerFromState(i);
 							this.removePlayer(this.game.players[i]);
 
 							//Adjust dealer for each removed player
