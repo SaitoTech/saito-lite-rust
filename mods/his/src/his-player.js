@@ -2069,7 +2069,6 @@ console.log("#");
     let next_unit_fnct = async (sources, sources_idx, unit_idx, next_unit_fnct) => {
 
 console.log("! " + sources.length + " -- " + sources_idx);
-      let is_leader_in_this_space = false;
 
       if (sources.length < (sources_idx+1)) {
         his_self.theses_overlay.hide();
@@ -2092,7 +2091,7 @@ console.log("#");
 
       let space = his_self.game.spaces[sources[sources_idx].spacekey];
 
-      if (space.units[f].length > unit_idx) {
+      if (unit_idx >= 0) {
 
 console.log("into here...");
 
@@ -2105,21 +2104,77 @@ console.log("into here...");
 
         if (unit_name == "" || res.length == 0) {
 console.log(" next nuf");
-	   next_unit_fnct(sources, sources_idx, unit_idx+1, next_unit_fnct);
+	   next_unit_fnct(sources, sources_idx, unit_idx-1, next_unit_fnct);
 	} else {
 
           his_self.playerSelectSpaceWithFilter(
-            "Winter "+unit_name+" (unit #"+(unit_idx+1)+") from "+his_self.returnSpaceName(space.key) ,
+            "Winter "+unit_name+" ("+(parseInt(unit_idx)+1)+") from "+his_self.returnSpaceName(space.key) ,
             function(space) {
               if (destinations.includes(space.key)) { return 1; }
 	      return 0;
             }, 
             function(spacekey) {
-	      his_self.removeUnit();
-	      his_self.addUnit();
-// HACK TEST
-	      his_self.addMove("move\t"+f+"\tland\t"+space.key+"\t"+spacekey+"\t"+unit_idx+"\t"+his_self.game.playerer);
-	      next_unit_fnct(sources, sources_idx, unit_idx+1, next_unit_fnct);
+
+	      let move_leader_with_troops = false;
+	      let moved_this_unit = false;
+              let leader_idx = [];
+
+	      for (let i = 0; i < space.units[f].length; i++) {
+		let u = space.units[f][i];
+		if (i != unit_idx && (u.army_leader || u.navy_leader)) {
+		  leader_idx.push(i);
+		}
+	      }
+
+	      if (leader_idx.length > 0) {
+		let c = confirm("Move Leader with Troops?");
+	        if (c) { move_leader_with_troops = true; }
+	      }
+
+	      //
+	      // auto-move with last unit
+	      //
+	      if (leader_idx.length == space.units[f].length-1) {
+		move_leader_with_troops = true;
+	      }
+
+alert("moving from: " + sources[sources_idx].spacekey + " to " + space.key);
+
+              his_self.addUnit(f, spacekey, unit_type);
+	      his_self.removeUnit(f, space.key, unit_type);
+	      his_self.addMove("move\t"+f+"\tland\t"+space.key+"\t"+spacekey+"\t"+unit_idx+"\t"+his_self.game.player);
+
+	      if (move_leader_with_troops) {
+		for (let z = space.units[f].length-1; z >= 0; z--) {
+		  if (space.units[f].army_leader || space.units[f].navy_leader) {
+		    let u = space.units[f];
+              	    his_self.addUnit(f, spacekey, u.type);
+	            his_self.removeUnit(f, space.key, u.type);
+	            his_self.addMove("move\t"+f+"\tland\t"+space.key+"\t"+spacekey+"\t"+unit_idx+"\t"+his_self.game.player);
+		  }
+		}
+	      }
+
+	      //
+	      // reorganize MOVES
+	      //
+	      for (let y = 0; y < his_self.moves.length-1; y++) {
+  	        let tmpx = his_self.moves[y].split("\t");
+  	        let tmpy = his_self.moves[y+1].split("\t");
+	        if (tmpx[0] == "move") {
+	          if (parseInt(tmpx[5]) > parseInt(tmpy[5])) {
+		    let x = his_self.moves[y];
+		    let y = his_self.moves[y+1];
+		    his_self.moves[y] = y;
+		    his_self.moves[y+1] = x;
+		    y = -1; // we found problem, so loop again
+	          }
+	        }
+	      }
+
+	      his_self.displaySpace(space.key);
+	      his_self.displaySpace(spacekey);
+	      next_unit_fnct(sources, sources_idx, unit_idx-1, next_unit_fnct);
             },
             null ,
             true
@@ -2127,8 +2182,9 @@ console.log(" next nuf");
 
 	}
       } else {
-console.log(" next aaa");
-        next_unit_fnct(sources, sources_idx+1, 0, next_unit_fnct);
+        let next_unit_idx = 100;
+	if (sources.length > sources_idx+1) { next_unit_idx = his_self.game.spaces[sources[sources_idx+1].spacekey].units[f].length-1; }
+        next_unit_fnct(sources, sources_idx+1, next_unit_idx, next_unit_fnct);
       }
 
     }
@@ -2137,7 +2193,9 @@ console.log(" next aaa");
 console.log("#");
 console.log("# sources so going into next_unit_fnct");
 console.log("#");
-      next_unit_fnct(sources, 0, 0, next_unit_fnct);
+      let next_unit_idx = 100;
+      next_unit_idx = his_self.game.spaces[sources[0].spacekey].units[f].length-1;
+      next_unit_fnct(sources, 0, next_unit_idx, next_unit_fnct);
     } else {
 console.log("#");
 console.log("# no sources of any length");
@@ -7010,8 +7068,6 @@ console.log("checking if squadrons are protecting!");
 
     // BACK moves us to OPS menu
     his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
-
-// TEST
 
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     let spaces_to_fix = [];
