@@ -2069,6 +2069,7 @@ console.log("#");
     let next_unit_fnct = async (sources, sources_idx, unit_idx, next_unit_fnct) => {
 
 console.log("! " + sources.length + " -- " + sources_idx);
+      let is_leader_in_this_space = false;
 
       if (sources.length < (sources_idx+1)) {
         his_self.theses_overlay.hide();
@@ -2114,7 +2115,10 @@ console.log(" next nuf");
 	      return 0;
             }, 
             function(spacekey) {
-	      his_self.addMove("move\t"+f+"\tland\t"+space.key+"\t"+spacekey+"\t"+unit_idx);
+	      his_self.removeUnit();
+	      his_self.addUnit();
+// HACK TEST
+	      his_self.addMove("move\t"+f+"\tland\t"+space.key+"\t"+spacekey+"\t"+unit_idx+"\t"+his_self.game.playerer);
 	      next_unit_fnct(sources, sources_idx, unit_idx+1, next_unit_fnct);
             },
             null ,
@@ -2258,6 +2262,9 @@ console.log("#");
 
         this.updateStatusWithOptions(`Playing ${this.popup(card)}`, html);
         this.attachCardboxEvents((user_choice) => {
+
+	  this.updateStatus("submitting...");
+
           if (user_choice === "ops") {
             let ops = this.game.deck[0].cards[card].ops;
             this.playerPlayOps(card, faction, ops);
@@ -4140,12 +4147,12 @@ does_units_to_move_have_unit = true; }
 
   }
 
-//
-// duplicates playerMoveFormationInClear -- this is the function we hit
-// if we use the shortcut "continue move". the reason we need to duplicate
-// is that the handling of the OPS is slightly different and there is a 
-// spacekey argument in the function call that doesn't exist otherwise.
-//
+  //
+  // duplicates playerMoveFormationInClear -- this is the function we hit
+  // if we use the shortcut "continue move". the reason we need to duplicate
+  // is that the handling of the OPS is slightly different and there is a 
+  // spacekey argument in the function call that doesn't exist otherwise.
+  //
   async playerContinueToMoveFormationInClear(his_self, player, faction, spacekey, ops_to_spend, ops_remaining=0) {
 
     // BACK moves us to OPS menu
@@ -4379,10 +4386,6 @@ does_units_to_move_have_unit = true; }
 	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
 	  });
 	}
-
-
-
-
 
 	//
 	// is this a rapid move ?
@@ -4716,6 +4719,7 @@ does_units_to_move_have_unit = true; }
       function(space) {
 	let num_moveable = 0;
 	if (space.key == "persia" || space.key == "egypt" || space.key == "ireland") { return 0; }
+	if (space.besieged == 2) { return 0; } // you cannot move from a town just placed under siege
 
 	for (let z in space.units) {
 	  if (space.units[z].length > 0 && his_self.returnPlayerCommandingFaction(z) == his_self.game.player && (z == faction || his_self.returnControllingPower(z) == faction)) {

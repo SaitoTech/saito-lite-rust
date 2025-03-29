@@ -756,26 +756,32 @@ console.log("!!!: is overlay visible: " + this.theses_overlay.visible);
           let factions = JSON.parse(mv[1]);
           let do_i_get_to_move = false;
 
+	  //
+	  // first time?
+	  //
+	  let is_this_our_first_time_hitting_this = true;
+	  for (let z = 0; z < this.game.confirms_needed.length; z++) {
+	    if (this.game.confirms_needed[z] == 0) { is_this_our_first_time_hitting_this = false; }
+	  }
+	  if (is_this_our_first_time_hitting_this == true) { this.theses_overlay.hide(); this.theses_overlay.visible = false; }
+
+
           //  
           // exit if we are already handling....
           //
-          if (this.moves.length > 0) { console.log("!!! exit as moves exist..."); return 0; }
+          if (this.moves.length > 0) { return 0; }
           if (this.theses_overlay.visible) { console.log("! already looking at UI..."); return 0; }
-              
+ 
           //  
           // skip if we have already confirmed!
           //
-console.log("I AM PLAYER: " + this.game.player);
-console.log("DO CONFIRMS EXIST: " + JSON.stringify(this.game.confirms_needed));
           if (this.game.confirms_needed[this.game.player-1] == 0) {
-console.log("!!! exit as confirmation not needed...");
             return 0;
           }   
               
           for (let i = 0; i < factions.length; i++) {
             let p = this.returnPlayerCommandingFaction(factions[i]);
             if (this.game.player == p && factions[i] != "protestant") {
-console.log("into playerPlayWinterRetreatToFortresses.... as " + factions[i]);
 	      if (this.winter_retreat_faction != factions[i] && !this.theses_overlay.visible) {
 	        this.winter_retreat_faction = factions[i];
                 this.addMove("RESOLVE\t"+this.publicKey);
@@ -792,12 +798,6 @@ console.log("into playerPlayWinterRetreatToFortresses.... as " + factions[i]);
           // hey, it's me, protestants
 	  //
           if (do_i_get_to_move == false) {
-console.log("cannot move, so end-turn...");
-//            if (this.game.player == p && factions[i] == "protestant") {
-//	      if (this.is_first_loop != 1) {
-//		return 0;
-//	      }
-//	    }
 	    let tmpx = 1;
             for (let z = 0; z < this.game.confirms_needed.length; z++) {
 	     if (this.game.confirms_needed[z] === 0) { tmpx = 0; }
@@ -3019,7 +3019,7 @@ console.log("----------------------------");
 	        if (lmv[0] == "interception_check" && space.besieged == 0) { // not already besieged
 
 		  //
-		  // do we need to break a seige in the place from which we are moving?
+		  // do we need to break a siege in the place from which we are moving?
 		  //
 		  let source_space = this.game.spaces[source];
 		  let hoiluis = this.returnHostileOrIndependentLandUnitsInSpace(faction, source_space);
@@ -3463,7 +3463,15 @@ console.log("fourth analysis...");
 	  let spacekey = mv[4];
           let space = this.game.spaces[spacekey];
           let relief_siege = "";
+          let tied_relief_siege = "";
 	  if (mv[6]) { relief_siege = true; }
+	  if (mv[6] === "relief_siege_tie") { tied_relief_siege = true; }
+
+
+	  if (tied_relief_siege == true) {
+	    this.game.state.field_battle_relief_battle = false;
+	    relief_siege = false;
+	  }
 
 	  //
 	  // if no-one is left to fortify
@@ -6593,6 +6601,11 @@ try {
 	    if (defender_modified_rolls[i] >= 5 && defender_results[i] < 5) { defender_hits++; }
 	  }
 
+
+// TEST / HACK
+attacker_hits = 2;
+defender_hits = 2;
+
 	  //
 	  // we have now rolled all of the dice that we need to roll at this stage
 	  // and the results have been pushed into the field_battle object. but there
@@ -7612,23 +7625,30 @@ try {
 	  let space = this.game.spaces[spacekey];
 	  let unit_destroyed = false;
 
-	  for (let i = 0; i < space.units[faction].length && unit_destroyed == false; i++) {
+	  let is_loser_attacker = false;
+	  let any_relief_force = false;
+
+	  //
+	  // we assign back to front as relief forces will always be at the start of our
+	  // units-in-space
+	  //
+	  for (let i = space.units[faction].length-1; i >= 0 && unit_destroyed == false; i--) {
 	    if (space.units[faction][i].type == unit_type) {
 	      if (this.game.state.field_battle.faction_map[faction] == this.game.state.field_battle.attacker_faction) {
-		for (let z = 0; z < this.game.state.field_battle.attacker_units.length; z++) {
+		for (let z = this.game.state.field_battle.attacker_units.length-1; z >= 0; z--) {
 		  if (this.game.state.field_battle.attacker_units[z] == space.units[faction][i].type) {
 		    if (!this.game.state.field_battle.attacker_units_destroyed.includes(z)) {
 		      this.game.state.field_battle.attacker_units_destroyed.push(z);
-		      z = 100000;
+		      z -= 100000;
 		    }
 		  }
 		}
 	      } else {
-		for (let z = 0; z < this.game.state.field_battle.defender_units.length; z++) {
+		for (let z = this.game.state.field_battle.defender_units.length-1; z >= 0; z--) {
 		  if (this.game.state.field_battle.defender_units[z].type == space.units[faction][i].type) {
 		    if (!this.game.state.field_battle.defender_units_destroyed.includes(z)) {
 		      this.game.state.field_battle.defender_units_destroyed.push(z);
-		      z = 100000;
+		      z -= 100000;
 		    }
 		  }
 		}
@@ -7958,7 +7978,7 @@ console.log("into relief siege...");
 	      //	
 	      // attackers win, defenders retreat
 	      //
-	      if (his_self.game.state.field_battle.attacker_hits >= his_self.game.state.field_battle.defender_hits) {
+	      if (his_self.game.state.field_battle.attacker_hits > his_self.game.state.field_battle.defender_hits) {
                 this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
 	      }
 
@@ -7987,7 +8007,11 @@ console.log("into relief siege...");
 		  }
 		}
                 this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
-                this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.defender_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.attacker_faction)+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key+"\trelief_siege");
+                if (his_self.game.state.field_battle.attacker_hits == his_self.game.state.field_battle.defender_hits) {
+		  this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.defender_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.attacker_faction)+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key+"\trelief_siege_tie");
+                } else {
+		  this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.defender_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.attacker_faction)+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key+"\trelief_siege");
+	        }
 	      }
 
             } else {
@@ -8084,7 +8108,7 @@ console.log("into relief siege...");
             }
 
 	    //
-	    // if the space does not belong to the attacker and is a key, we put it under seige
+	    // if the space does not belong to the attacker and is a key, we put it under siege
 	    //
 	    if (!this.isSpaceFriendly(his_self.game.state.field_battle.spacekey, his_self.game.state.field_battle.attacker_faction) && space.besieged == 0 && (space.type == "key" || space.type == "electorate" || space.type == "fortress")) {
 	      this.game.queue.push("besiege_space\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key+"\t1"); // 1 = do not force besiege units
@@ -9486,7 +9510,7 @@ console.log("into relief siege...");
 	      let x = his_self.returnFactionLandUnitsInSpace(f, space);
 	      attacker_units += x;
 	      for (let i = 0; i < space.units[f].length; i++) {
-		if (space.units[f][i].type == "regular" || space.units[f][i].type == "mercenary" || space.units[f][i].type == "cavalry") {
+		if (space.units[f][i].type == "regular" || space.units[f][i].type == "mercenary") { // no cavalry
 		  attacker_units_units.push(space.units[f][i]);
 	        }
 	      }
@@ -9499,7 +9523,7 @@ console.log("into relief siege...");
 	      let x = his_self.returnFactionLandUnitsInSpace(f, space);
 	      defender_units += x;
 	      for (let i = 0; i < space.units[f].length; i++) {
-		if (space.units[f][i].type == "regular" || space.units[f][i].type == "mercenary" || space.units[f][i].type == "cavalry") {
+		if (space.units[f][i].type == "regular" || space.units[f][i].type == "mercenary") { // no cavalry
 		  defender_units_units.push(space.units[f][i]);
 	        }
 	      }
@@ -10058,7 +10082,7 @@ console.log("into relief siege...");
 	      this.removeSiege(space.key);
 	      space.unrest = 0;
 	      this.controlSpace(attacker_faction, space.key);
-	      this.updateLog(this.returnFactionName(attacker_faction) + " wins seige, controls " + this.returnSpaceName(space.key));
+	      this.updateLog(this.returnFactionName(attacker_faction) + " wins siege, controls " + this.returnSpaceName(space.key));
 	      for (let f in space.units) {
 		if (!this.areAllies(f, attacker_faction, 1) && f != attacker_faction) {
 		  for (let i = 0; i < space.units[f].length; i++) {
@@ -10075,7 +10099,7 @@ console.log("into relief siege...");
             if (attacker_land_units_remaining == 0) {
 	      this.removeSiege(space.key);
 	      space.unrest = 0;
-	      this.updateLog(this.returnFactionName(defender_faction) + " breaks seige, controls " + this.returnSpaceName(space.key));
+	      this.updateLog(this.returnFactionName(defender_faction) + " breaks siege, controls " + this.returnSpaceName(space.key));
 	    } else {
 	      his_self.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+attacker_faction+"\t"+defender_faction+"\t"+space.key);
               his_self.game.queue.push("break_siege");
@@ -11606,7 +11630,7 @@ defender_hits - attacker_hits;
 	// space below the amount that are needed to sustain the siege. in this 
 	// case, we terminate the siege and trigger a withdrawal.
 	//
-	if (mv[0] === "check_for_broken_seiges") {
+	if (mv[0] === "check_for_broken_sieges") {
 
 	  this.game.queue.splice(qe, 1);
 
@@ -13183,7 +13207,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-//cardnum = 1;
+cardnum = 1;
 //if (f == "france") { cardnum = 0; }
 //if (f == "papacy") { cardnum = 0; }
 //if (f == "hapsburg") { cardnum = 1; }

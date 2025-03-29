@@ -10338,7 +10338,7 @@ if (space.key == "milan") {
 
         his_self.game.state.events.revolt_in_egypt = 1;
 
-        his_self.game.queue.push("check_for_broken_seiges");
+        his_self.game.queue.push("check_for_broken_sieges");
         his_self.game.queue.push("revolt_in_egypt_leader_removal\tottoman");
         his_self.game.queue.push("revolt_in_egypt_troop_removal\tottoman\t3");
         his_self.game.queue.push("revolt_in_egypt_troop_removal\tottoman\t2");
@@ -10544,7 +10544,7 @@ if (space.key == "milan") {
           his_self.game.queue.push("revolt_in_ireland_bonus_resistance\t"+faction);
 	}
 
-        his_self.game.queue.push("check_for_broken_seiges");
+        his_self.game.queue.push("check_for_broken_sieges");
         his_self.game.queue.push("revolt_in_ireland_leader_removal\tengland");
         his_self.game.queue.push("revolt_in_ireland_troop_removal\tengland\t4");
         his_self.game.queue.push("revolt_in_ireland_troop_removal\tengland\t3");
@@ -12301,7 +12301,7 @@ if (space.key == "milan") {
 
         his_self.game.state.events.war_in_persia = 1;
 
-        his_self.game.queue.push("check_for_broken_seiges");
+        his_self.game.queue.push("check_for_broken_sieges");
         his_self.game.queue.push("war_in_persia_leader_removal\tottoman");
         his_self.game.queue.push("war_in_persia_troop_removal\tottoman\t5");
         his_self.game.queue.push("war_in_persia_troop_removal\tottoman\t4");
