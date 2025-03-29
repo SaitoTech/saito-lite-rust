@@ -3464,8 +3464,17 @@ console.log("fourth analysis...");
           let space = this.game.spaces[spacekey];
           let relief_siege = "";
           let tied_relief_siege = "";
-	  if (mv[6]) { relief_siege = true; }
-	  if (mv[6] === "relief_siege_tie") { tied_relief_siege = true; }
+	  if (mv[5]) { relief_siege = true; }
+	  if (mv[5] === "relief_siege_tie") { tied_relief_siege = true; }
+
+console.log("PFB");
+console.log("PFB");
+console.log("PFB");
+console.log("PFB");
+console.log("PFB");
+console.log("PFB");
+console.log("tied relief siege? " + tied_relief_siege);
+
 
 
 	  if (tied_relief_siege == true) {
@@ -3540,6 +3549,8 @@ console.log("fourth analysis...");
 	      return 1;
 	    }
 	  }
+
+console.log("is relief siege still? " + is_relief_siege);
 
 	  //
 	  // otherwise, we have to evaluate fortifying
@@ -6602,9 +6613,11 @@ try {
 	  }
 
 
-// TEST / HACK
-attacker_hits = 2;
-defender_hits = 2;
+//
+// TEST / HACK -- control hits / adjust hits here
+//
+//attacker_hits = 2;
+//defender_hits = 2;
 
 	  //
 	  // we have now rolled all of the dice that we need to roll at this stage
@@ -7989,29 +8002,17 @@ console.log("into relief siege...");
 	        if (do_any_attacker_units_remain) {
                   this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+f+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
                   this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
-		  this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.defender_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.attacker_faction)+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
+		  this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.defender_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.attacker_faction)+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key+"\trelief_siege_tie");
 	        }
 	      }
 
 	      //
-	      // defender wins fully, only partial fortification
+	      // attackers lose
 	      //
-	      // attacker can only move the units that were previously under siege back into the fortifications...
-	      //
-	      if (his_self.game.state.field_battle.attacker_hits <= his_self.game.state.field_battle.defender_hits) {
-                for (let z = 0; z < this.game.queue.length; z++) {
-		  let lmv = this.game.queue[z].split("\t");
-		  if (lmv[0] === "purge_units_and_capture_leaders_if_unbesieged" && lmv[2] == his_self.game.state.field_battle.attacker_faction) {
-		    this.game.queue.splice(z, 1);
-		    z--;
-		  }
-		}
+	      if (his_self.game.state.field_battle.attacker_hits < his_self.game.state.field_battle.defender_hits) {
+                this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+f+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
                 this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
-                if (his_self.game.state.field_battle.attacker_hits == his_self.game.state.field_battle.defender_hits) {
-		  this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.defender_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.attacker_faction)+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key+"\trelief_siege_tie");
-                } else {
-		  this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.defender_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.attacker_faction)+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key+"\trelief_siege");
-	        }
+		this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.defender_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.attacker_faction)+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key+"\trelief_siege");
 	      }
 
             } else {
@@ -8557,6 +8558,11 @@ console.log("into relief siege...");
 
 	  this.piracy_overlay.render(pobj);
 
+//
+// TEST / HACK piracy hits
+//
+//piracy_hits = 3;
+
 	  if (piracy_hits > 0) {
             if (his_self.game.state.events.julia_gonzaga_activated == 1 && target_navalspace == "tyrrhenian") {
               his_self.game.queue.push("SETVAR\tstate\tevents\tottoman_julia_gonzaga_vp\t1");
@@ -8652,6 +8658,11 @@ console.log("into relief siege...");
 	  let target_navalspace = mv[4];
 	  let hits_given = 0;
 
+//
+// TEST / HACK - adjust piracy hits
+//
+//hits = 3;
+
 	  //
 	  // number available
 	  //
@@ -8705,6 +8716,13 @@ console.log("into relief siege...");
 	  let vp_issuable = true;
 	  let cards_issuable = true;
 	  let squadrons_issuable = true;
+
+//
+// TEST HACK piracy hits
+//
+//cards_issuable = false;
+
+
 
 	  let selectPiracyRewards = function(selectPiracyRewards) {
 
@@ -8930,6 +8948,8 @@ console.log("into relief siege...");
             his_self.updateStatusWithOptions(msg, html);
             $('.option').off();
             $('.option').on('click', function () {
+
+	      his_self.updateStatus("destroying...");
 
               let action = $(this).attr("id");
               $('.option').off();
@@ -13207,7 +13227,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-cardnum = 1;
+//cardnum = 1;
 //if (f == "france") { cardnum = 0; }
 //if (f == "papacy") { cardnum = 0; }
 //if (f == "hapsburg") { cardnum = 1; }
@@ -13217,7 +13237,7 @@ cardnum = 1;
 
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
-    	        //this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
+    	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
 
 		//

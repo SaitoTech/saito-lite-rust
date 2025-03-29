@@ -1978,6 +1978,7 @@ if (relief_siege == 1) {
         }
 
         if (id === "manual") {
+	  try { his_self.field_battle_overlay.hide(); } catch (err) {}
           selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, finishAndFortify);
           return 0;
         }
@@ -2126,6 +2127,8 @@ console.log(" next nuf");
 		}
 	      }
 
+console.log("leaders: " + leader_idx.length);
+
 	      if (leader_idx.length > 0) {
 		let c = confirm("Move Leader with Troops?");
 	        if (c) { move_leader_with_troops = true; }
@@ -2138,18 +2141,17 @@ console.log(" next nuf");
 		move_leader_with_troops = true;
 	      }
 
-alert("moving from: " + sources[sources_idx].spacekey + " to " + space.key);
-
               his_self.addUnit(f, spacekey, unit_type);
 	      his_self.removeUnit(f, space.key, unit_type);
 	      his_self.addMove("move\t"+f+"\tland\t"+space.key+"\t"+spacekey+"\t"+unit_idx+"\t"+his_self.game.player);
 
 	      if (move_leader_with_troops) {
 		for (let z = space.units[f].length-1; z >= 0; z--) {
-		  if (space.units[f].army_leader || space.units[f].navy_leader) {
-		    let u = space.units[f];
-              	    his_self.addUnit(f, spacekey, u.type);
+		  if (space.units[f][z].army_leader || space.units[f][z].navy_leader) {
+		    let u = space.units[f][z];
 	            his_self.removeUnit(f, space.key, u.type);
+	            his_self.addArmyLeader(f, spacekey, u.type);
+
 	            his_self.addMove("move\t"+f+"\tland\t"+space.key+"\t"+spacekey+"\t"+unit_idx+"\t"+his_self.game.player);
 		  }
 		}
