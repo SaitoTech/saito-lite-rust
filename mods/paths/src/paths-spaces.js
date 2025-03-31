@@ -126,12 +126,9 @@
     let pending = [spacekey];
     let examined = {};
     let sources = [];
-    let power = "allies"; // who needs to control intermediary spaces
 
-    if (faction == "central" || faction == "cp" || faction == "austria" || faction == "germany") { power = "central"; sources = ["essen","breslau","sofia","constantinople"]; }
-    if (faction == "ap" || faction == "allies" || faction == "england") { sources = ["london"]; }
-    if (faction == "fr" || faction == "france") { sources = ["london"]; }
-    if (faction == "it" || faction == "italy") { sources = ["london"]; }
+    if (faction == "cp") { sources = ["essen","breslau","sofia","constantinople"]; }
+    if (faction == "ap") { sources = ["london"]; }
     if (faction == "ru" || faction == "russia") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
     if (faction == "ro") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
     if (faction == "sb") { 
@@ -159,10 +156,10 @@
       for (let n in this.game.spaces[current].neighbours) {
         let s = this.game.spaces[current].neighbours[n];
         if (!examined[s]) {
-	  if (this.returnControlOfSpace(s) == power) {
-console.log("adding back: " + s);
+	  if (this.returnControlOfSpace(s) == faction) {
 	    pending.push(s); 
 	  }
+
 	}
       }
     }
@@ -178,21 +175,54 @@ console.log("adding back: " + s);
     return "";
   }
 
-  returnActivationCost(key) {
+  returnActivationCost(faction, key) {
 
     let space = this.game.spaces[key];
     let units = [];
+    let countries = {};
+    let total_nationalities = 0;
+
     for (let i = 0; i < space.units.length; i++) {
       if (!units.includes(space.units[i].ckey)) {
+	let u = space.units[i];
+	let ckey = space.units[i].ckey;
+	if (key == "antwerp" || key == "ostend" || key == "calais" || key == "amiens") { if (ckey == "BE") { ckey = "BR"; } }
+	if (ckey == "ANA" || ckey == "BR" || ckey == "AUS" || ckey == "CND" || ckey == "PT") { ckey = "BR"; }
+	if (ckey == "US" || ckey == "FR") { if (space.country == "france") { ckey = "FR"; } }
+	if (ckey == "SN") { ckey = "TU"; }
+	if (ckey == "MN") { ckey = "SB"; }
+	if (!countries[ckey]) { countries[ckey] = 0; } 
+	countries[ckey] += 1;
 	units.push(space.units[i].ckey);
       }
     }
 
-    if (units.length == 1) { return 1; }
-    if (units.length == 2) { return 2; }
-    if (units.length == 3) { return 3; }
+    for (let key in countries) { total_nationalities++; }
+    
+    if (faction == "central") {
+      if (this.game.state.events.falkenhayn != 1 && this.game.state.events.moltke == 1 && (space.country == "france" || space.country == "belgium")) {
+        if (units.length == 1) { return 1; }
+        if (units.length == 2) { return 2; }
+        if (units.length == 3) { return 3; }
+      }
+      if (this.game.state.events.sudarmy == 1) {
+	if (countries["GE"] >= 1 && countries["AH"] == 1) {
+	  let sud_army_eligible = false;
+	  let sud_army_excess_cost = 0;
+	  for (let z = 0; z < space.units.length; z++) {
+	    if (space.units[z].ckey == "AH" && space.units[z].army) { sud_army_eligible = true; }
+	    if (space.units[z].ckey == "AH" && space.units[z].corps) { sud_army_excess_cost++; }
+	    if (space.units[z].ckey == "GE" && space.units[z].army) { sud_army_excess_cost++; }
+	    if (space.units[z].ckey != "GE" && space.units[z].ckey != "AH") { sud_army_excess_cost++; }
+	  }
+	  if (sud_army_eligible == true) {
+	    return (1 + sud_army_excess_cost);
+	  }
+	}
+      }
+    }
 
-    return 100;
+    return total_nationalities;
 
   }
 
@@ -343,11 +373,8 @@ console.log("adding back: " + s);
 
 
   returnSpacekeysByCountry(country="") {
-    let keys = [];
-    for (let key in this.game.spaces) {
-      if (this.game.spaces[key].country == country) { keys.push(key); }
-    }
-    return keys;
+    if (country == "russia") { return ["petrograd", "reval", "pskov", "riga", "libau", "szawli", "kovno", "vilna", "dvinsk", "moldechno", "opochka", "velikiyeluki", "moscow", "smolensk", "roslavi", "mogilev", "orsha", "vitebsk", "gomel", "slutsk", "minsk", "baranovichi", "grodno", "lomza", "bialystok", "bresklitovsk", "warsaw", "kovel", "sarny", "plock", "lodz", "czestochowa", "ivangorod", "lublin", "lutsk", "rovno", "mozyr", "chernigov", "kiev", "kharkov", "zhitomir", "dubno", "vinnitsa", "kamenetspodolski", "zhmerinka", "kishinev", "caucasus", "ishmail", "odessa", "poti", "grozny", "petrovsk", "batum", "tbilisi", "kars", "erivan", "elizabethpol", "baku"]; }
+    return [];
   }
 
 
@@ -1604,7 +1631,6 @@ spaces['budapest'] = {
     vp : true , 
     country : "austria" ,
    }
-
 spaces['szeged'] = {
     name: "Szeged" ,
     control: "central" ,
@@ -3106,7 +3132,7 @@ spaces['cairo'] = {
 
 
 //
-// MONTENEGRO
+//
 //
 spaces['cetinje'] = {
       name: "Cetinje" ,
@@ -3116,13 +3142,8 @@ spaces['cetinje'] = {
       neighbours: [ "tirana", "mostar"] ,
       terrain : "mountain" ,
       vp : false ,
-      country : "montenegro" ,
 }
 
-
-//
-// ALBANIA
-//
 spaces['tirana'] = {
       name: "Tirana" ,
     control: "neutral" ,
@@ -3131,7 +3152,6 @@ spaces['tirana'] = {
       neighbours: [ "valona", "cetinje", "skopje"] ,
       terrain : "mountain" ,
       vp : false ,
-      country : "albania" ,
 }
 
 spaces['valona'] = {
@@ -3142,13 +3162,8 @@ spaces['valona'] = {
       neighbours: [ "tirana", "florina", "taranto"] ,
       terrain : "mountain" ,
       vp : false ,
-      country : "albania" ,
 }
 
-
-//
-// GREECE
-//
 spaces['florina'] = {
       name: "Florina" ,
     control: "neutral" ,
@@ -3157,8 +3172,8 @@ spaces['florina'] = {
       neighbours: [ "larisa", "valona", "salonika", "monastir"] ,
       terrain : "mountain" ,
       vp : false ,
-      country : "greece" ,
 }
+
 
 spaces['salonika'] = {
       name: "Salonika" ,
@@ -3168,7 +3183,6 @@ spaces['salonika'] = {
       neighbours: [ "strumitsa", "florina", "kavala", "monastir"] ,
       terrain : "mountain" ,
       vp : false ,
-      country : "greece" ,
 }
 
 spaces['kavala'] = {
@@ -3179,7 +3193,6 @@ spaces['kavala'] = {
       neighbours: [ "philippoli", "strumitsa", "salonika"] ,
       terrain : "mountain" ,
       vp : false ,
-      country : "greece" ,
 }
 
 spaces['larisa'] = {
@@ -3190,7 +3203,6 @@ spaces['larisa'] = {
       neighbours: ["florina", "athens"] ,
       terrain : "mountain" ,
       vp : false ,
-      country : "greece" ,
 }
 
 spaces['athens'] = {
@@ -3201,13 +3213,25 @@ spaces['athens'] = {
       neighbours: ["larisa"] ,
       terrain : "normal" ,
       vp : false ,
-      country : "greece" ,
 }
 
 
-//
-// SERBIA
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 spaces['valjevo'] = {
       name: "Valjevo" ,
     control: "neutral" ,
@@ -3216,7 +3240,6 @@ spaces['valjevo'] = {
       neighbours: ["sarajevo","belgrade","nis"] ,
       terrain : "mountain" ,
       vp : false ,
-      country : "serbia" ,
 }
 
 spaces['belgrade'] = {
@@ -3228,7 +3251,6 @@ spaces['belgrade'] = {
       neighbours: ["valjevo","nis","timisvar","novisad"] ,
       terrain : "normal" ,
       vp : true ,
-      country : "serbia" ,
 }
 
 spaces['nis'] = {
@@ -3239,7 +3261,6 @@ spaces['nis'] = {
       neighbours: ["belgrade","valjevo","sofia","skopje"] ,
       terrain : "normal" ,
       vp : false ,
-      country : "serbia" ,
 }
 
 spaces['skopje'] = {
@@ -3250,23 +3271,8 @@ spaces['skopje'] = {
       neighbours: ["nis","tirana","monastir","sofia"] ,
       terrain : "mountain" ,
       vp : false ,
-      country : "serbia" ,
 }
 
-spaces['monastir'] = {
-      name: "Skopje" ,
-    control: "neutral" ,
-      top: 2400 ,
-      left: 2645 ,
-      neighbours: ["skopje","florina","salonika","strumitsa"] ,
-      terrain : "mountain" ,
-      vp : false ,
-      country : "serbia" ,
-}
-
-//
-// BULGARIA
-//
 spaces['sofia'] = {
       name: "Sofia" ,
     control: "neutral" ,
@@ -3275,7 +3281,6 @@ spaces['sofia'] = {
       neighbours: ["strumitsa","skopje","nis","kazanlik"] ,
       terrain : "normal" ,
       vp : false ,
-      country : "bulgaria" ,
 }
 
 spaces['strumitsa'] = {
@@ -3286,7 +3291,6 @@ spaces['strumitsa'] = {
       neighbours: ["sofia","monastir","kavala","philippoli"] ,
       terrain : "mountain" ,
       vp : false ,
-      country : "bulgaria" ,
 }
 
 spaces['philippoli'] = {
@@ -3297,7 +3301,6 @@ spaces['philippoli'] = {
       neighbours: ["kavala","strumitsa","kazanlik","adrianople"] ,
       terrain : "mountain" ,
       vp : false ,
-      country : "bulgaria" ,
 }
 
 spaces['kazanlik'] = {
@@ -3308,7 +3311,6 @@ spaces['kazanlik'] = {
       neighbours: ["sofia","philippoli","burgas","plevna","varna"] ,
       terrain : "mountain" ,
       vp : false ,
-      country : "bulgaria" ,
 }
 
 spaces['burgas'] = {
@@ -3319,7 +3321,6 @@ spaces['burgas'] = {
       neighbours: ["adrianople","kazanlik","varna"] ,
       terrain : "normal" ,
       vp : false ,
-      country : "bulgaria" ,
 }
 
 spaces['varna'] = {
@@ -3330,24 +3331,8 @@ spaces['varna'] = {
       neighbours: ["burgas","kazanlik","bucharest","constanta"] ,
       terrain : "normal" ,
       vp : false ,
-      country : "bulgaria" ,
 }
 
-spaces['plevna'] = {
-      name: "Plevna" ,
-    control: "neutral" ,
-      top: 2240 ,
-      left: 3010 ,
-      neighbours: ["caracal","kazanlik","bucharest","varna"] ,
-      terrain : "normal" ,
-      vp : false ,
-      country : "bulgaria" ,
-}
-
-
-//
-// ROMANIA
-//
 spaces['bucharest'] = {
       name: "Bucharest" ,
     control: "neutral" ,
@@ -3356,7 +3341,6 @@ spaces['bucharest'] = {
       neighbours: ["plevna","varna","galatz","caracal","ploesti"] ,
       terrain : "normal" ,
       vp : true ,
-      country : "romania" ,
 }
 
 spaces['constanta'] = {
@@ -3367,7 +3351,16 @@ spaces['constanta'] = {
       neighbours: ["varna","bucharest","galatz"] ,
       terrain : "normal" ,
       vp : false ,
-      country : "romania" ,
+}
+
+spaces['plevna'] = {
+      name: "Plevna" ,
+    control: "neutral" ,
+      top: 2240 ,
+      left: 3010 ,
+      neighbours: ["caracal","kazanlik","bucharest","varna"] ,
+      terrain : "normal" ,
+      vp : false ,
 }
 
 spaces['galatz'] = {
@@ -3378,7 +3371,6 @@ spaces['galatz'] = {
       neighbours: ["constanta","bucharest","ismail","barlad"] ,
       terrain : "normal" ,
       vp : false ,
-      country : "romania" ,
 }
 
 spaces['barlad'] = {
@@ -3389,7 +3381,6 @@ spaces['barlad'] = {
       neighbours: ["jassy","kishinev","galatz","ploesti"] ,
       terrain : "normal" ,
       vp : false ,
-      country : "romania" ,
 }
 
 spaces['jassy'] = {
@@ -3400,7 +3391,6 @@ spaces['jassy'] = {
       neighbours: ["barlad","zhmerinka"] ,
       terrain : "normal" ,
       vp : false ,
-      country : "romania" ,
 }
 
 spaces['ploesti'] = {
@@ -3411,7 +3401,6 @@ spaces['ploesti'] = {
       neighbours: ["bucharest","barlad","kronstadt","cartedearges"] ,
       terrain : "mountain" ,
       vp : true ,
-      country : "romania" ,
 }
 
 spaces['caracal'] = {
@@ -3422,7 +3411,6 @@ spaces['caracal'] = {
       neighbours: ["bucharest","plevna","targujiu","cartedearges"] ,
       terrain : "normal" ,
       vp : false ,
-      country : "romania" ,
 }
 
 spaces['cartedearges'] = {
@@ -3433,7 +3421,6 @@ spaces['cartedearges'] = {
       neighbours: ["caracal","ploesti","targujiu","hermannstadt"] ,
       terrain : "mountain" ,
       vp : false ,
-      country : "romania" ,
 }
 
 spaces['targujiu'] = {
@@ -3444,13 +3431,9 @@ spaces['targujiu'] = {
       neighbours: ["ploesti","caracal","timisvar"] ,
       terrain : "normal" ,
       vp : false ,
-      country : "romania" ,
 }
 
 
-//
-// TURKEY
-//
 spaces['adrianople'] = {
       name: "Adrianople" ,
     control: "neutral" ,
@@ -3459,7 +3442,6 @@ spaces['adrianople'] = {
       neighbours: ["gallipoli","philippoli","burgas","constantinople"] ,
       terrain : "normal" ,
       vp : false ,
-      country : "turkey" ,
 }
 
 spaces['gallipoli'] = {
@@ -3470,7 +3452,6 @@ spaces['gallipoli'] = {
       neighbours: ["adrianople","constantinople"] ,
       terrain : "mountain" ,
       vp : false ,
-      country : "turkey" ,
 }
 
 spaces['constantinople'] = {
@@ -3481,7 +3462,6 @@ spaces['constantinople'] = {
       neighbours: ["adrianople","gallipoli","bursa","eskidor","adapazari"] ,
       terrain : "normal" ,
       vp : true ,
-      country : "turkey" ,
 }
 
 spaces['balikesir'] = {
@@ -3492,7 +3472,6 @@ spaces['balikesir'] = {
       neighbours: ["bursa","canakale","izmir"] ,
       terrain : "mountain" ,
       vp : false ,
-      country : "turkey" ,
 }
 
 spaces['canakale'] = {
@@ -3503,7 +3482,6 @@ spaces['canakale'] = {
       neighbours: ["balikesir"] ,
       terrain : "normal" ,
       vp : false ,
-      country : "turkey" ,
 }
 
 spaces['izmir'] = {
@@ -3514,7 +3492,6 @@ spaces['izmir'] = {
       neighbours: ["balikesir"] ,
       terrain : "normal" ,
       vp : false ,
-      country : "turkey" ,
 }
 
 spaces['arbox'] = {
@@ -3525,7 +3502,6 @@ spaces['arbox'] = {
       neighbours: [],
       terrain : "normal" ,
       vp : false ,
-      country : "" ,
 }
 
 spaces['crbox'] = {
@@ -3536,7 +3512,6 @@ spaces['crbox'] = {
       neighbours: [],
       terrain : "normal" ,
       vp : false ,
-      country : "" ,
 }
 
     for (let key in spaces) {

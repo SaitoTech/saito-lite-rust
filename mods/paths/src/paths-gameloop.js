@@ -1,5 +1,4 @@
 
-
   //
   // Core Game Logic
   //
@@ -30,7 +29,8 @@ console.log("MOVE: " + mv[0]);
         if (mv[0] === "turn") {
 
 	  this.game.state.turn++;
-	   
+	  this.game.state.round = 0;	   
+
 this.updateLog(`###############`);
 this.updateLog(`### Turn ${this.game.state.turn} ###`);
 this.updateLog(`###############`);
@@ -62,6 +62,7 @@ this.updateLog(`###############`);
 
 	}
 
+
 	if (mv[0] === "guns_of_august") {
 
 	  this.game.queue.splice(qe, 1);
@@ -85,6 +86,7 @@ this.updateLog(`###############`);
  	if (mv[0] == "draw_strategy_card_phase") {
 
           this.game.queue.splice(qe, 1);
+
 	  let all_cards = this.returnDeck("all"); 
 
           this.game.queue.push("deal_strategy_cards");
@@ -179,7 +181,10 @@ this.updateLog(`###############`);
 
 	}
 
+
 	if (mv[0] == "deal_strategy_cards") {
+
+	  this.game.queue.splice(qe, 1);
 
           let allies_cards_needed = (this.game.state.round >= 4)? 6 : 7;
           let central_cards_needed = (this.game.state.round >= 4)? 6 : 7;
@@ -193,6 +198,7 @@ this.updateLog(`###############`);
 	  return 1;
 
 	}
+
 
  	if (mv[0] == "replacement_phase") {
 
@@ -252,6 +258,7 @@ this.updateLog(`###############`);
 
 	  return 1;
 	}
+
  	if (mv[0] == "mandated_offensive_phase") {
 
 	  let central = this.rollDice();
@@ -277,7 +284,6 @@ this.updateLog(`###############`);
 	}
 
 
-
 	//////////////
 	// GAMEPLAY //
 	//////////////
@@ -287,6 +293,8 @@ this.updateLog(`###############`);
 	  let player = this.returnPlayerOfFaction(faction);
 	  let name = this.returnPlayerName(faction);
 	  let hand = this.returnPlayerHand();
+
+	  if (faction == "central") { this.game.state.round++; }
 
 	  this.onNewTurn();
 
@@ -880,6 +888,15 @@ console.log(JSON.stringify(this.game.state.combat));
 	  let units = this.returnAttackerUnits();
 	  let does_defender_retreat = false;
 
+	  //
+	  // remove all destroyed defender units
+	  //
+	  for (let z = this.game.spaces[this.game.state.combat.key].units.length-1; z >= 0; z--) {
+	    let u = this.game.spaces[this.game.state.combat.key].units[z];
+	    if (u.destroyed) { this.game.spaces[this.game.state.combat.key].units.splice(z, 1); }
+	  }
+
+
 	  if (this.game.state.combat.winner == "defender") {
 	    this.updateLog("Defender Wins, no retreat...");
 	    return 1;
@@ -941,6 +958,7 @@ console.log(JSON.stringify(this.game.state.combat));
 	  return 1;
 
 	}
+
 
 	if (mv[0] === "post_combat_cleanup") {
 
@@ -1120,6 +1138,9 @@ console.log("adding +1 to drm modifiers...");
 	  let faction = mv[1];
 	  let key = mv[2];
 
+	  for (let i = 0; i < this.game.spaces[key].units.length; i++) {
+	    this.game.spaces[key].units[i].spacekey = key;
+	  }
 	  this.activateSpaceForCombat(key);
 
 	  this.game.queue.splice(qe, 1);
@@ -1134,6 +1155,9 @@ console.log("adding +1 to drm modifiers...");
 	  let faction = mv[1];
 	  let key = mv[2];
 
+	  for (let i = 0; i < this.game.spaces[key].units.length; i++) {
+	    this.game.spaces[key].units[i].spacekey = key;
+	  }
 	  this.activateSpaceForMovement(key);
 
 	  this.game.queue.splice(qe, 1);
@@ -1224,7 +1248,6 @@ console.log("adding +1 to drm modifiers...");
 
 	  return 1;
 	}
-
 	
 
 
@@ -1240,7 +1263,6 @@ console.log("adding +1 to drm modifiers...");
 
 	}
 
-
 	if (mv[0] === "counter_or_acknowledge") {
 
 	  this.game.queue.splice(qe, 1);
@@ -1248,7 +1270,6 @@ console.log("adding +1 to drm modifiers...");
 	  return 1;
 
 	}
-
 
 
 	//
@@ -1272,6 +1293,5 @@ console.log("adding +1 to drm modifiers...");
     return 1;
 
   }
-
 
 
