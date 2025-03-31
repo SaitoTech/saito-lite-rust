@@ -42,30 +42,40 @@ class Spam extends ModTemplate {
 			// Update block ID display in UI
 			const blockIdInput = document.getElementById('spam-blockid');
 			if (blockIdInput) {
-			blockIdInput.value = blk.id;
-		}
+				blockIdInput.value = blk.id;
+			}
 
-		// Update balance display (convert from nolan to Saito)
-		this.app.wallet.getBalance()
-			.then(balance => {
-				const balanceInput = document.getElementById('spam-balance');
-				if (balanceInput) {
-					const balanceNumber = Number(balance.toString());
-					const balanceInSaito = balanceNumber / 100000000;
-					balanceInput.value = balanceInSaito.toLocaleString(undefined, { minimumFractionDigits: 8 });
-				}
-			})
-			.catch(err => console.error("Error getting balance:", err));
+			// Update address display
+			this.app.wallet.getPublicKey()
+				.then(publicKey => {
+					const addressInput = document.getElementById('spam-address');
+					if (addressInput) {
+						addressInput.value = publicKey;
+					}
+				})
+				.catch(err => console.error("Error getting public key:", err));
 
-		// Update slip count display
-		this.app.wallet.getSlips()
-			.then(slips => {
-				const slipCountInput = document.getElementById('spam-slipcount');
-				if (slipCountInput) {
-					slipCountInput.value = slips.length;
-				}
-			})
-			.catch(err => console.error("Error getting slips:", err));
+			// Update balance display (convert from nolan to Saito)
+			this.app.wallet.getBalance()
+				.then(balance => {
+					const balanceInput = document.getElementById('spam-balance');
+					if (balanceInput) {
+						const balanceNumber = Number(balance.toString());
+						const balanceInSaito = balanceNumber / 100000000;
+						balanceInput.value = balanceInSaito.toLocaleString(undefined, { minimumFractionDigits: 8 });
+					}
+				})
+				.catch(err => console.error("Error getting balance:", err));
+
+			// Update slip count display
+			this.app.wallet.getSlips()
+				.then(slips => {
+					const slipCountInput = document.getElementById('spam-slipcount');
+					if (slipCountInput) {
+						slipCountInput.value = slips.length;
+					}
+				})
+				.catch(err => console.error("Error getting slips:", err));
 		}
 	}
 
