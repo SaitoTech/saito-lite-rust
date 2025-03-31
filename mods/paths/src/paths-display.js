@@ -440,6 +440,7 @@ console.log("err: " + err);
   }
 
   displayMandatedOffensiveTracks() {
+/****
           if (central == 2) { this.game.state.mandated_offensives.central = "AH IT"; }
           if (central == 3) { this.game.state.mandated_offensives.central = "TU"; }
           if (central == 4) { this.game.state.mandated_offensives.central = "GE"; }
@@ -451,6 +452,7 @@ console.log("err: " + err);
           if (allies == 4)  { this.game.state.mandated_offensives.allies = "IT"; }
           if (allies == 5)  { this.game.state.mandated_offensives.allies = "IT"; }
           if (allies == 6)  { this.game.state.mandated_offensives.allies = "RU"; }
+****/
   }
 
   displayUSCommitmentTrack() {
