@@ -51,6 +51,7 @@ class PathsOfGlory extends GameTemplate {
     this.mandates_overlay = new MandatesOverlay(this.app, this); 
     this.welcome_overlay = new WelcomeOverlay(this.app, this); 
     this.menu_overlay = new MenuOverlay(this.app, this); 
+    this.space_overlay = new SpaceOverlay(this.app, this); 
 
     //
     // this sets the ratio used for determining

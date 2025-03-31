@@ -402,9 +402,15 @@
 
     let html = `<ul>`;
     html    += `<li class="card" id="ops">ops (movement / combat)</li>`;
-    html    += `<li class="card" id="sr">strategic redeployment</li>`;
-    html    += `<li class="card" id="rp">replacement points</li>`;
-    html    += `<li class="card" id="event">trigger event</li>`;
+    if (c.sr) {
+      html    += `<li class="card" id="sr">strategic redeployment</li>`;
+    }
+    if (c.rp) {
+      html    += `<li class="card" id="rp">replacement points</li>`;
+    }
+    if (c.canEvent()) {
+      html    += `<li class="card" id="event">trigger event</li>`;
+    }
     html    += `</ul>`;
 
 
@@ -415,6 +421,7 @@
 
     this.attachCardboxEvents((action) => {
 
+      this.updateStatus("selected...");
       this.menu_overlay.hide();
 
       if (action === "ops") {
@@ -430,8 +437,35 @@
       }
 
       if (action === "event") {
-	alert("event");
+
+	//
+	// War Status
+	//
+	if (c.ws > 0) {
+	  if (card.substring(0, 2) == "ap") {
+	    this.game.state.general_records_track.allies_war_status += c.ws;
+	    this.game.state.general_records_track.combined_war_status += c.ws;
+	  } else {
+	    this.game.state.general_records_track.central_war_status += c.ws;
+	    this.game.state.general_records_track.combined_war_status += c.ws;
+	  }
+	  this.displayGeneralRecordsTrack();
+	}
+
+	//
+	// discard the card
+	//
+	this.addMove("discard\t"+card);
+
+	//
+	// and trigger event
+	//
+	if (c.canEvent(this, faction)) {
+	  this.addMove("event\t"+card+"\t"+faction);
+	}
+
 	this.endTurn();
+	return 1;
       }
 
     });
@@ -1371,6 +1405,104 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
     this.attachCardboxEvents((card) => {
       this.playerPlayCard(faction, card);
     });
+
+  }
+
+  playerPlaceUnitOnBoard(country="", units=[], mycallback=null) {
+
+console.log("%");
+console.log("%");
+console.log("%");
+console.log("%");
+console.log("%");
+console.log("%");
+console.log("player place units by country: " + country);
+
+    let filter_func = () => {}
+    let unit_idx = 0;
+    let countries = [];
+
+    if (country == "russia") {
+      countries = this.returnSpacekeysByCountry("russia");
+      filter_func = (spacekey) => { 
+	if (countries.includes(spacekey)) {
+	  if (this.game.spaces[spacekey].control == "allies") { 
+	    if (this.checkSupplyStatus("russia", spacekey)) { return 1; }
+	  }
+	}
+	return 0;
+      }
+    }
+
+    if (country == "france") {
+      countries = this.returnSpacekeysByCountry("france");
+      filter_func = (spacekey) => { 
+	if (countries.includes(spacekey)) {
+	  if (this.game.spaces[spacekey].control == "allies") { 
+	    if (this.checkSupplyStatus("france", spacekey)) { return 1; }
+	  }
+	}
+	return 0;
+      }
+    }
+
+    if (country == "germany") {
+      countries = this.returnSpacekeysByCountry("germany");
+console.log("countries: " + JSON.stringify(countries));
+      filter_func = (spacekey) => { 
+console.log("examining: " + spacekey);
+	if (countries.includes(spacekey)) {
+console.log("exists... " + spacekey);
+	  if (this.game.spaces[spacekey].control == "central") { 
+console.log("controlled by central powers...");
+	    if (this.checkSupplyStatus("germany", spacekey)) { 
+console.log("in line of supply...");
+return 1; 
+	    }
+	  }
+	}
+	return 0;
+      }
+    }
+
+    if (country == "austria") {
+      countries = this.returnSpacekeysByCountry("austria");
+      filter_func = (spacekey) => { 
+	if (countries.includes(spacekey)) {
+	  if (this.game.spaces[spacekey].control == "central") { 
+	    if (this.checkSupplyStatus("austria", spacekey)) { return 1; }
+	  }
+	}
+	return 0;
+      }
+    }
+
+
+    let finish_fnct = (spacekey) => {
+      this.addUnitToSpace(units[unit_idx], spacekey);
+      this.displaySpace(spacekey);
+      unit_idx++;
+      if (unit_idx >= units.length) {
+	if (mycallback != null) { mycallback(); }
+	return 1;
+      } else {
+	place_unit_fnct();
+      }
+    }
+
+    let place_unit_fnct = () => {
+      this.playerSelectSpaceWithFilter(
+	`Select Space for ${this.units[units[unit_idx]].name}`,
+        filter_func, 
+	finish_fnct ,
+	null ,
+	true
+      );
+    }
+
+    if (units.length == 0) { mycallback(); return; }
+    
+    place_unit_fnct();
 
   }
 
