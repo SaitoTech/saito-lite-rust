@@ -129,13 +129,8 @@ class RedSquareNavigation {
         }
       }
 
-        window.history.replaceState({view: "home"}, '', '/' + this.mod.slug);
         this.app.connection.emit('saito-header-reset-logo');
-          // Need to clear our SPA history stack....
-        this.app.browser.resetBackFn(() => {
-          this.app.connection.emit('redsquare-home-render-request');
-          console.log("Redsquare home in history");
-        });
+
     };
 
     //
@@ -165,6 +160,9 @@ class RedSquareNavigation {
     };
   }
 
+  /*
+    To capture clicking in navigation menu and through user menu...
+  */
   openProfile(publicKey){
       this.app.connection.emit('redsquare-profile-render-request', publicKey);
       this.app.connection.emit('redsquare-remove-loading-message', 'navigating...');

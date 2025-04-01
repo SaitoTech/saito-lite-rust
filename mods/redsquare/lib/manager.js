@@ -119,6 +119,9 @@ class TweetManager {
 
 	render(new_mode = this.mode) {
 
+		//
+		// Keep sidebar highlight in sync with the current view
+		//
 		this.app.connection.emit('redsquare-clear-menu-highlighting', new_mode);
 
 		if (document.querySelector('.highlight-tweet')) {
@@ -167,6 +170,15 @@ class TweetManager {
 			}
 		}
 
+
+		//
+		// if someone asks the manager to render with a mode that is not currently
+		// set, we want to update our mode and proceed with it.
+		//
+		if (new_mode != this.mode) {
+			this.mode = new_mode;
+		}
+		
 		////////////
 		// tweets //
 		////////////
@@ -220,19 +232,6 @@ class TweetManager {
 		///////////////////
 		if (new_mode == 'notifications') {
 		    
-		    if (this.mode !== new_mode){
-		    	if (!this?.navLock){
-			    	console.log("Add notification state");
-				    window.history.pushState({view: "notifications"}, "", `/${this.mod.slug}#notifications`);
-				    this.app.browser.pushBackFn(()=>{
-				    	this.navLock = true;
-				    	this.render('notifications');
-				    	this.navLock = false;
-				    });
-		    	}
-		 		this.mode = new_mode;   	
-		    }
-
 			if (this.mod.notifications.length > 0) {
 				console.log(
 					'Redsquare render notifications: already have ' +
@@ -250,13 +249,6 @@ class TweetManager {
 			return;
 		}
 
-		//
-		// if someone asks the manager to render with a mode that is not currently
-		// set, we want to update our mode and proceed with it.
-		//
-		if (new_mode != this.mode) {
-			this.mode = new_mode;
-		}
 
 
 	}
@@ -400,17 +392,6 @@ class TweetManager {
 		if (!document.querySelector('.tweet-manager')) {
 			this.app.browser.addElementToSelector(TweetManagerTemplate(), '.saito-main');
 		}
-
-		if (!this?.navLock){
-			console.log("Add profile state");
-	        window.history.pushState({view: "profile"}, "", '/' + this.mod.slug + `/?user_id=${publicKey}`);
-		    this.app.browser.pushBackFn(()=>{
-		    	this.navLock = true;
-		    	this.renderProfile(publicKey);
-		    	this.navLock = false;
-		    });
-		}
-
 
 		//Reset Profile
 		if (publicKey != this.profile.publicKey) {
@@ -648,15 +629,6 @@ class TweetManager {
 			this.thread_id = thread_id;
 			this.showLoader();
 
-			if (!this?.navLock){
-				console.log("Add tweet thread state");
-			    window.history.pushState({view: "tweet"}, "", `/redsquare?tweet_id=${tweet.tx.signature}`);
-			    this.app.browser.pushBackFn(()=>{
-			    	this.navLock = true;
-			    	this.renderTweet(tweet);
-			    	this.navLock = false;
-			    });
-			}
 
 			this.mod.loadTweetThread(thread_id, () => {
 				//

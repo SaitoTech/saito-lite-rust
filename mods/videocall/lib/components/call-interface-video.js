@@ -38,6 +38,7 @@ class CallInterfaceVideo {
 			this.room_link = this.mod.generateCallLink();
 
 			if (this.full_screen) {
+				console.log("FULL SCREEN");
 				window.history.pushState({}, '', this.room_link);
 				document.title = 'Saito Talk';
 
@@ -182,7 +183,8 @@ class CallInterfaceVideo {
 					document.querySelector('.stun-overlay-container').remove();
 
 					let am = this.app.modules.returnActiveModule();
-					window.history.pushState({}, '', window.location.origin + '/' + am.returnSlug());
+					window.history.back();
+					//window.history.replaceState({}, '', am.returnSlug());
 				}
 			}
 		});

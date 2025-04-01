@@ -18,11 +18,10 @@ const SaitoOverlay = require('./../../lib/saito/ui/saito-overlay/saito-overlay')
 
 /*
  * lib/main.js:    this.app.connection.on("redsquare-home-render-request", () => {      // renders main tweets
- * lib/main.js:    this.app.connection.on("redsquare-postcache-home-render-request", () => {      // pushes new content into feed if possible
+ * lib/main.js:    this.app.connection.on("redsquare-home-postcache-render-request", () => {      // pushes new content into feed if possible
  * lib/main.js:    this.app.connection.on("redsquare-tweet-render-request", (tweet) => {   // renders tweet onto page, at bottom
  * lib/main.js:    this.app.connection.on("redsquare-profile-render-request", () => {     // renders profile
  * lib/main.js:    this.app.connection.on("redsquare-notifications-render-request", () => {   // renders notifications
- * lib/main.js:    this.app.connection.on("redsquare-component-render-request", (obj) => {    // renders other modules into .saito-main
  */
 
 ////////////////////////////////////////////
@@ -77,11 +76,6 @@ class RedSquare extends ModTemplate {
     // controls whether non-curated tweets will render
     //
     this.curated = true;
-
-    //
-    // set by main
-    //
-    this.manager = '';
 
     this.possibleHome = 1;
 
@@ -199,39 +193,41 @@ class RedSquare extends ModTemplate {
             });
           }
         });
-      }
+      }else{
 
-      if ((this.app.browser.isMobileBrowser() || window.innerWidth < 600) && this.browser_active) {
-        x.push({
-          text: 'RedSquare Home',
-          icon: 'fa-solid fa-house',
-          rank: 21,
-          callback: function (app, id) {
-            document.querySelector('.redsquare-menu-home').click();
-          }
-        });
-        x.push({
-          text: 'Notifications',
-          icon: 'fas fa-bell',
-          rank: 23,
-          callback: function (app, id) {
-            document.querySelector('.redsquare-menu-notifications').click();
-          },
-          event: function (id) {
-            this_mod.app.connection.on('redsquare-update-notifications', (unread) => {
-              this_mod.app.browser.addNotificationToId(unread, id);
-              this_mod.app.connection.emit('saito-header-notification', 'redsquare', unread);
-            });
-          }
-        });
-        x.push({
-          text: 'Profile',
-          icon: 'fas fa-user',
-          rank: 26,
-          callback: function (app, id) {
-            document.querySelector('.redsquare-menu-profile').click();
-          }
-        });
+        if ((this.app.browser.isMobileBrowser() || window.innerWidth < 600)) {
+          x.push({
+            text: 'RedSquare Home',
+            icon: 'fa-solid fa-house',
+            rank: 21,
+            callback: function (app, id) {
+              document.querySelector('.redsquare-menu-home').click();
+            }
+          });
+          x.push({
+            text: 'Notifications',
+            icon: 'fas fa-bell',
+            rank: 23,
+            callback: function (app, id) {
+              document.querySelector('.redsquare-menu-notifications').click();
+            },
+            event: function (id) {
+              this_mod.app.connection.on('redsquare-update-notifications', (unread) => {
+                this_mod.app.browser.addNotificationToId(unread, id);
+                this_mod.app.connection.emit('saito-header-notification', 'redsquare', unread);
+              });
+            }
+          });
+          x.push({
+            text: 'Profile',
+            icon: 'fas fa-user',
+            rank: 26,
+            callback: function (app, id) {
+              document.querySelector('.redsquare-menu-profile').click();
+            }
+          });
+        }
+
       }
 
       return x;
@@ -491,24 +487,6 @@ class RedSquare extends ModTemplate {
       return;
     }
 
-    //
-    // check url hash so we don't render conflicting things...
-    //
-    let firstRender = 'tweets';
-    let hash = window.location.hash;
-    if (hash) {
-      switch (hash) {
-        case '#notifications':
-          firstRender = 'notifications';
-          break;
-        case '#profile':
-          firstRender = 'profile';
-          break;
-        case '#bizarro':
-          this.bizarro = true;
-      }
-    }
-
     if (window?.tweets?.length) {
       for (let z = 0; z < window.tweets.length; z++) {
         let newtx = new Transaction();
@@ -530,8 +508,6 @@ class RedSquare extends ModTemplate {
       this.menu = new RedSquareNavigation(this.app, this, '.saito-sidebar.left');
       this.sidebar = new RedSquareSidebar(this.app, this, '.saito-sidebar.right');
       this.tweetMenu = new TweetMenu(this.app, this);
-      this.manager = this.main.manager;
-      this.manager.mode = firstRender;
 
       this.addComponent(this.header);
       this.addComponent(this.main);
@@ -615,7 +591,6 @@ class RedSquare extends ModTemplate {
       // add peer
       //
       this.addPeer(peer, 'tweets');
-      if (this.manager?.mode == 'tweets') {
          this.loadTweets(
 	    'later',
             (tx_count) => {
@@ -623,13 +598,11 @@ class RedSquare extends ModTemplate {
             },
             peer
 	);
-      }
 
       //
       // auto-poll for new tweets, on 5 minute interval
       //
       setInterval(() => {
-        if (this.manager?.mode == 'tweets') {
           this.loadTweets(
 	    'later',
             (tx_count) => {
@@ -637,48 +610,12 @@ class RedSquare extends ModTemplate {
             },
             peer
           );
-        }
       }, 300000);
 
-      //
-      // render user profile
-      //
-      let user_id = this.app.browser.returnURLParameter('user_id');
-      if (user_id != '') {
-        this.app.connection.emit('redsquare-profile-render-request', user_id);
-        return;
-      }
-
-      //
-      // check url hash
-      //
-      let hash = window.location.hash;
-      if (hash) {
-        switch (hash) {
-          case '#notifications':
-            this.app.connection.emit('redsquare-notifications-render-request');
-            break;
-          case '#profile':
-            this.app.connection.emit('redsquare-profile-render-request');
-            break;
-          default:
-        }
-      }
-
-      //
-      // if view specific tweet, ask for tweet/children
-      //
-      let tweet_id = this.app.browser.returnURLParameter('tweet_id');
-      if (tweet_id) {
-        this.loadTweetWithSig(tweet_id, (txs) => {
-          for (let z = 0; z < txs.length; z++) {
-            this.addTweet(txs[z], 'url_sig');
-          }
-          let tweet = this.returnTweet(tweet_id);
-          this.app.connection.emit('redsquare-tweet-render-request', tweet);
-        });
-
-        return;
+      if (this.browser_active){
+        siteMessage("Synching Redsquare...", 2000);
+        // Rerender now that we should have content coming...
+        this.main.render();
       }
 
     }
