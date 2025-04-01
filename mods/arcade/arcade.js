@@ -359,7 +359,8 @@ class Arcade extends ModTemplate {
 					let invite = new Invite(app, this, null, null, game, this.publicKey);
 					let join_overlay = new JoinGameOverlay(app, this, invite.invite_data);
 					join_overlay.render();
-					window.history.pushState('', '', `/arcade/`);
+					// Overwrite link-url with baseline url
+					window.history.replaceState('', '', `/arcade/`);
 				}
 
 				app.connection.emit('arcade-invite-manager-render-request');

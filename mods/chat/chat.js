@@ -237,7 +237,7 @@ class Chat extends ModTemplate {
         }
       }
 
-      window.history.pushState({}, document.title, '/' + this.slug);
+      window.history.replaceState({}, document.title, '/' + this.slug);
     }
   }
 
