@@ -31,9 +31,12 @@ class TweetManager {
 			(entries) => {
 				entries.forEach((entry) => {
 					if (entry.isIntersecting) {
-						console.log('IntersectionObserver');
+
+						console.log('RS -- IntersectionObserver triggerd, disabling...');
+						this.intersectionObserver.disconnect();
 
 						if (this.mode === 'tweet' || this.mode == 'loading') {
+							console.log("in wrong mode for RS IO", this.mode);
 							return;
 						}
 
@@ -50,13 +53,6 @@ class TweetManager {
 						// load more notifications
 						//
 						if (this.mode === 'notifications') {
-							if (document.querySelector('#intersection-observer-trigger')) {
-								console.log(
-									'REDSQUARE: Turn off intersection observer before loading more notifications...'
-								);
-								this.intersectionObserver.disconnect();
-							}
-
 							this.loadNotifications();
 						}
 
@@ -69,10 +65,7 @@ class TweetManager {
 						//////////////////////////////////////////////////
 					
 
-						if (this.mode === "profile"){
-							this.intersectionObserver.disconnect();
-							this.showLoader();
-
+						if (this.mode === "profile") {
 							this.loadProfile((txs) => {
 								if (this.mode !== 'profile') {
 									return;
@@ -101,6 +94,7 @@ class TweetManager {
 		//
 		// Stop observering while we rebuild the page
 		//
+		console.log('REDSQUARE: Turn off IO before clearing feed...');
 		this.intersectionObserver.disconnect();
 		let holder = document.getElementById('tweet-thread-holder');
 		let managerElem = document.querySelector('.tweet-manager');
@@ -131,7 +125,12 @@ class TweetManager {
 		//
 		// Stop observering while we rebuild the page
 		//
+		console.log('REDSQUARE: Turn off IO before rendering manager...');
 		this.intersectionObserver.disconnect();
+
+
+		// reset this with a new render
+		this.just_fetched_tweets = false;
 
 		//
 		// remove notification at end
@@ -184,40 +183,20 @@ class TweetManager {
 		////////////
 		if (new_mode == 'tweets') {
 
-			//
-			// UI jumps if we add then remove the "no more tweets" DOM component
-			// so we have this somewhat lame check and removal function incorporated
-			// here.
-			//
-			let already_removed_no_more_tweets = false;
 			for (let tweet of this.mod.tweets) {
-				if (this.mod.curated != false) {
-					if (tweet.curated == 1 && !tweet.isRendered()) {
-						if (already_removed_no_more_tweets == false) {
-							//
-							// remove DOM element telling us nothing more exists...
-							//
-							if (document.querySelector(".saito-end-of-redsquare")) {
-								document.querySelector(".saito-end-of-redsquare").remove();
-							}
-							already_removed_no_more_tweets = true;
-						}
-						tweet.renderWithCriticalChild();
-					}
-				} else {
-					if (!tweet.isRendered()) {
+				if (!tweet.isRendered()) {
+					if (!this.mod.curated || tweet.curated) {
+
 						//
 						// remove DOM element telling us nothing more exists...
 						//
-						if (already_removed_no_more_tweets == false) {
-							if (document.querySelector(".saito-end-of-redsquare")) {
-								document.querySelector(".saito-end-of-redsquare").remove();
-							}
-							already_removed_no_more_tweets = true;
+						if (document.querySelector(".saito-end-of-redsquare")) {
+							document.querySelector(".saito-end-of-redsquare").remove();
 						}
+						
 						tweet.renderWithCriticalChild();
 					}
-				}
+				} 
 			}
 
 			//Fire up the intersection observer
@@ -273,6 +252,7 @@ class TweetManager {
 					'.tweet-manager'
 				);
 				if (document.querySelector('#intersection-observer-trigger')) {
+					console.log('REDSQUARE: Turn off IO before rendering no notifications msg...');
 					this.intersectionObserver.disconnect();
 				}
 
@@ -295,10 +275,12 @@ class TweetManager {
 
 	fetchTweets(){
 
-		if (this.just_fetched_tweets == true) { return; }
+		if (this.just_fetched_tweets == true) { 
+			console.log("RS IO blocked because just_fetched_tweets");
+			return; 
+		}
+		
 		this.just_fetched_tweets = true;
-
-		this.intersectionObserver.disconnect();
 
 		this.numActivePeers = this.mod.loadTweets(
 			'earlier',
@@ -317,14 +299,6 @@ class TweetManager {
 
 	insertOlderTweets(tx_count, peer = null) {
 
-		//
-		// UI jumps if we add then remove the "no more tweets" DOM component
-		// so we have this somewhat lame check and removal function incorporated
-		// here.
-		//
-		let already_removed_no_more_tweets = false;		
-
-
 		this.numActivePeers--;
 		if (this.mode !== 'tweets') {
 			console.log('Not on main feed anymore, currently on: ' + this.mode);
@@ -332,36 +306,22 @@ class TweetManager {
 		}
 
 		this.hideLoader();
-		for (let tweet of this.mod.tweets) {
-			if (this.mod.curated == 1) {
-				if (tweet.curated && !tweet.isRendered()) {
-					if (!already_removed_no_more_tweets) {
-						//
-						// remove DOM element telling us nothing more exists...
-						//
-						if (document.querySelector(".saito-end-of-redsquare")) {
-							document.querySelector(".saito-end-of-redsquare").remove();
-						}
-						already_removed_no_more_tweets = true;
-					}
-					tweet.renderWithCriticalChild();
-				}
-			} else {
-				if (!tweet.isRendered()) {
-					if (!already_removed_no_more_tweets) {
-						//
-						// remove DOM element telling us nothing more exists...
-						//
-						if (document.querySelector(".saito-end-of-redsquare")) {
-							document.querySelector(".saito-end-of-redsquare").remove();
-						}
-						already_removed_no_more_tweets = true;
-					}
-					tweet.renderWithCriticalChild();
-				}
-			}
-		}
 
+		for (let tweet of this.mod.tweets) {
+			if (!tweet.isRendered()) {
+				if (!this.mod.curated || tweet.curated) {
+
+					//
+					// remove DOM element telling us nothing more exists...
+					//
+					if (document.querySelector(".saito-end-of-redsquare")) {
+						document.querySelector(".saito-end-of-redsquare").remove();
+					}
+					
+					tweet.renderWithCriticalChild();
+				}
+			} 
+		}
 
 		if (tx_count == 0) {
 			if (!document.querySelector('.saito-end-of-redsquare')) {
@@ -370,10 +330,12 @@ class TweetManager {
 					'.tweet-manager'
 				);
 			}
+			console.log('REDSQUARE: Turn off IO before rendering end of feed message...');
 			this.intersectionObserver.disconnect();
 		} else {
 
 			this.just_fetched_tweets = false;
+			console.log("RS -- add IO for infinite scroll (1)");
 			this.intersectionObserver.observe(document.getElementById('intersection-observer-trigger'));
 		}
 
@@ -483,6 +445,7 @@ class TweetManager {
       				}
 
       				if (txs.length == 100) {
+      					console.log("RS -- add IO for infinite scroll (2)");
       					this.intersectionObserver.observe(document.getElementById('intersection-observer-trigger'));
       				}
 
@@ -686,11 +649,14 @@ class TweetManager {
 		let ob = document.getElementById('intersection-observer-trigger');
 
 		if (ob) {
+			console.log("RS -- add IO for infinite scroll (3)");
+			this.intersectionObserver.observe(ob);
 			//Only set up intersection observer if we have more content than fits on the screen
 			//(so we don't double tap the servers)
-			if (ob.getBoundingClientRect().top > window.innerHeight) {
-				this.intersectionObserver.observe(ob);
-			}
+			/*if (ob.getBoundingClientRect().top > window.innerHeight) {
+			}else{
+				console.log("RS -- don't add IO for infinite scroll");
+			}*/
 		}
 
 		if (document.getElementById("curated")){ // for you
@@ -699,7 +665,6 @@ class TweetManager {
 				document.getElementById("everything").classList.remove("active");
 				this.mod.curated = true;
 				this.mod.saveOptions();
-				this.clearFeed();
 				this.showLoader();
 				setTimeout(() => {
 					this.render();
@@ -713,7 +678,6 @@ class TweetManager {
 				this.mod.curated = false;
 				this.mod.saveOptions();
 				this.showLoader();
-				this.clearFeed();
 				setTimeout(() => {
 					this.render();
 				}, 10);

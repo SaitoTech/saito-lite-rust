@@ -83,7 +83,7 @@ class RedSquareMain {
           this.scroll_behavior = 'smooth';
 
           if (this.canRefreshPage()) {
-            this.manager.clearFeed();
+            //this.manager.clearFeed();
             this.renderHome();
           } else {
             if (are_there_new_tweets_to_show) {
@@ -97,7 +97,7 @@ class RedSquareMain {
 
                 document.getElementById('saito-new-tweets').onclick = (e) => {
                   e.currentTarget.remove();
-                  this.manager.clearFeed();
+                  //this.manager.clearFeed();
                   this.renderHome();
                 };
               }, 1000);

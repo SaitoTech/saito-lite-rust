@@ -153,6 +153,13 @@ class RedSquare extends ModTemplate {
     return services;
   }
 
+  loadSettings(container = null) {
+    if (!container) {
+      let overlay = new SaitoOverlay(this.app, this.mod);
+      overlay.show(`<div class="module-settings-overlay"><h2>Redsquare Settings</h2></div>`);
+      container = '.module-settings-overlay';
+    }
+  }
 
   /////////////////////////////////
   // inter-module communications //
@@ -778,6 +785,9 @@ class RedSquare extends ModTemplate {
 
         if (created_at == 'earlier') {
           obj.updated_earlier_than = this.peers[i].tweets_earliest_ts;
+           console.log(
+            `REDSQUARE: fetch earlier tweets from ${this.peers[i].publicKey} / ${this.peers[i].tweets_earliest_ts}`
+          );
         } else if (created_at == 'later') {
           obj.updated_later_than = this.peers[i].tweets_latest_ts;
         } else {
@@ -795,6 +805,14 @@ class RedSquare extends ModTemplate {
                 this.peers[i].tweets_earliest_ts = 0;
               }
             }
+
+            console.log(
+              `REDSQUARE-${i} (${this.peers[i].publicKey}): returned ${
+                txs.length
+              } ${created_at} tweets, ${count} are new to the feed. New earliest timestamp -- ${new Date(
+                this.peers[i].tweets_earliest_ts
+              )}`
+            );
 
             if (created_at === 'later') {
               if (this.peers[i].peer !== 'localhost') {
@@ -893,11 +911,6 @@ class RedSquare extends ModTemplate {
     if (peer.tweets_earliest_ts < this.tweets_earliest_ts) {
       this.tweets_earliest_ts = peer.tweets_earliest_ts;
     }
-
-    //
-    // new tweets? maybe we should re-render
-    //
-    this.app.connection.emit('redsquare-home-postcache-render-request', txs.length);
 
     return count;
   }
