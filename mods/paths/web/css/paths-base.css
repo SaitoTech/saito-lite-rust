@@ -95,6 +95,12 @@
 .army-tile:hover {
 	z-index: 999;
 }
+
+.reserve-box .army-tile {
+  top: 0 !important;
+  left: 0 !important;
+}
+
 .space .army-tile:nth-child(1) {
 	top: 0;
 	left: 0;

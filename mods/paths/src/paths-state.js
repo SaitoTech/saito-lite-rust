@@ -63,8 +63,10 @@
     let state = {};
 
     state.events = {};
+
     state.players = [];
     state.removed = []; // removed cards
+    state.round = 0;
     state.turn = 0;
     state.skip_counter_or_acknowledge = 0; // don't skip
     state.cards_left = {};
@@ -127,11 +129,26 @@
 
   }
 
-  returnActivationCost(key) {
-    return 1;
-  }
 
-  returnMovementCost(key) {
-    return 1;
-  }
+  moveUnitToSpacekey(ukey, to="") {
 
+    let unit = this.game.units[ukey];
+
+    for (let key in this.game.spaces) {
+      for (let i = 0; i < this.game.spaces[key].units.length; i++) {
+        if (this.game.spaces[key].units[i].key == ukey) {
+	  unit = this.game.spaces[key].units[i];
+	  this.game.spaces[key].units.splice(i, 1);
+	  break;
+        }
+      }
+    }
+
+    unit.spacekey = to;
+    this.game.spaces[to].units.push(unit);
+
+    this.displayBoard();
+    
+    return 1;
+
+  }

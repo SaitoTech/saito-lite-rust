@@ -244,6 +244,9 @@ console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
 
 
 		for (let i = 0; i < defender_units.length; i++) {
+
+console.log("defender unit: " + JSON.stringify(defender_units[i]));
+
 			let html = `
 				<div class="loss-overlay-unit" id="${i}">${this.mod.returnUnitImageWithMouseoverOfStepwiseLoss(defender_units[i])}</div>
 			`;

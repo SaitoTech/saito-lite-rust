@@ -26,9 +26,11 @@
       if (this.game.deck[0].hand.includes(card)) {
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
 	  if (this.game.deck[0].hand[i] === card) {
-	    if (!this.game.deck[0].discards.includes(card)) {
-	      this.game.deck[0].discards.push(card);
+	    if (!this.game.deck[0].discards[card]) {
+	      this.game.deck[0].discards[card] = this.game.deck[0].cards[card];
+	      delete this.game.deck[0].cards[card];
 	    }
+	    this.game.deck[0].hand.splice(i, 1);
 	  }
 	}
       }
@@ -37,12 +39,23 @@
       if (this.game.deck[1].hand.includes(card)) {
         for (let i = 0; i < this.game.deck[1].hand.length; i++) {
 	  if (this.game.deck[1].hand[i] === card) {
-	    if (!this.game.deck[1].discards.includes(card)) {
-	      this.game.deck[1].discards.push(card);
+	    if (!this.game.deck[1].discards[card]) {
+	      this.game.deck[1].discards[card] = this.game.deck[1].cards[card];
+	      delete this.game.deck[1].cards[card];
 	    }
+	    this.game.deck[1].hand.splice(i, 1);
 	  }
 	}
       }
+    }
+
+    if (this.game.deck[1].cards[card]) {
+      this.game.deck[1].discards[card] = this.game.deck[1].cards[card];
+      delete this.game.deck[1].cards[card];
+    }
+    if (this.game.deck[1].cards[card]) {
+      this.game.deck[1].discards[card] = this.game.deck[1].cards[card];
+      delete this.game.deck[1].cards[card];
     }
 
   }
@@ -51,14 +64,14 @@
 
     for (let key in this.game.deck[0].cards) {
       if (key === card) {
+        this.game.deck[0].removed[key] = this.game.deck[0].cards[key];
         delete this.game.deck[0].cards[key];
-        this.game.deck[0].removed.push(card);
       }
     }
     for (let key in this.game.deck[1].cards) {
       if (key === card) {
+        this.game.deck[1].removed[key] = this.game.deck[1].cards[key];
         delete this.game.deck[1].cards[key];
-        this.game.deck[1].removed.push(card);
       }
     }
 
@@ -100,8 +113,10 @@ deck['ap02'] = {
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.game.state.events.blockade = 1;
+        } ,
       }
 
 deck['ap03'] = { 
@@ -214,8 +229,11 @@ deck['ap09'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.turn <= 2) { return 1; } return 0; } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.game.state.events.moltke = 1;
+	  return 1;
+	} ,
       }
 
 deck['ap10'] = { 
@@ -270,8 +288,53 @@ deck['ap12'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (this.game.state.events.entrench == 1) { return 0; } return 1; } ,
+        onEvent : function(paths_self, faction) {
+
+	  paths_self.game.state.events.entrench = 1;
+
+	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
+
+	    //
+	    // get eligible spaces
+	    //
+    	    let options = paths_self.returnSpacesWithFilter(
+      		(key) => {
+		  if (paths_self.game.spaces[key].trench > 0) { return 0; }
+        	  if (paths_self.game.spaces[key].control == "allies") {
+        	    if (paths_self.game.spaces[key].units.length > 0) {
+                      if (paths_self.checkSupplyStatus(key, "allies")) {
+		        return 1;
+		      }
+		    }
+		  }
+		} ,
+            );
+
+	    //
+	    // no placement options
+	    //
+	    if (options.length == 0) { return 1; }
+
+	    //
+	    // place a trench
+	    //
+            paths_self.playerSelectSpaceWithFilter(
+              "Add Level 1 Trench Where? ",
+              (key) => {
+          	if (options.includes(key)) { return 1; }
+              },
+              (key) => {
+ 		paths_self.addMove("entrench\tallies\t"+key);
+ 		paths_self.endTurn();
+		return 0;
+	      },
+              null, 
+              true
+            );
+	  }
+	  return 0;
+	} ,
       }
 
 deck['ap13'] = { 
@@ -325,8 +388,21 @@ deck['ap14'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.turn == 1 && paths_self.game.state.round == 1) { return 1; } return 0; } ,
+        onEvent : function(paths_self, faction) {
+
+	  paths_self.game.spaces['liege'].fort = -1;
+	  paths_self.game.spaces['liege'].control = "central";
+	  paths_self.moveUnitToSpacekey("ge_army01", "liege");
+	  paths_self.moveUnitToSpacekey("ge_army02", "liege");
+	  paths_self.game.spaces['liege'].activated_for_combat = 1;
+	  paths_self.game.spaces['koblenz'].activated_for_combat = 1;	    
+	  paths_self.game.queue.push("player_play_combat\tcentral");
+	  paths_self.displayBoard();
+
+	  return 1;
+
+	} ,
       }
 
       deck['cp02'] = { 
@@ -388,15 +464,62 @@ deck['ap14'] = {
    deck['cp06'] = { 
         key : 'entrench',
         img : "cards/card_cp06.svg" ,
-        name : "ENTRENCH" ,
+        name : "Entrench" ,
         cc : false ,
         ops : 3 ,
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.events.entrench == 1) { return 0; } return 1; } ,
+        onEvent : function(paths_self, faction) { 
+
+	  paths_self.game.state.events.entrench = 1;
+
+	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
+
+	    //
+	    // get eligible spaces
+	    //
+    	    let options = paths_self.returnSpacesWithFilter(
+      		(key) => {
+		  if (paths_self.game.spaces[key].trench > 0) { return 0; }
+        	  if (paths_self.game.spaces[key].control == "central") {
+        	    if (paths_self.game.spaces[key].units.length > 0) {
+                      if (paths_self.checkSupplyStatus(key, "central")) {
+		        return 1;
+		      }
+		    }
+		  }
+		} ,
+            );
+
+	    //
+	    // no placement options
+	    //
+	    if (options.length == 0) { return 1; }
+
+	    //
+	    // place a trench
+	    //
+            paths_self.playerSelectSpaceWithFilter(
+              "Add Level 1 Trench Where? ",
+              (key) => {
+          	if (options.includes(key)) { return 1; }
+              },
+              (key) => {
+ 		paths_self.addMove("entrench\tcentral\t"+key);
+ 		paths_self.endTurn();
+		return 0;
+	      },
+              null, 
+              true
+            );
+	  }
+
+	  return 0;
+
+	} ,
       }
 
 deck['cp07'] = { 
@@ -458,11 +581,12 @@ deck['cp10'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) { 
+	  paths_self.game.state.events.sudarmy = 1;  
+	  return 1;
+	} ,
       }
-
-
 deck['cp11'] = { 
         key : 'oberost',
         img : "cards/card_cp11.svg" ,
@@ -511,8 +635,15 @@ deck['cp12'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { 
+	  if (paths_self.game.state.turn >= 3) { return 1; }
+	  if (paths_self.game.state.events.moltke == 1) { return 1; }
+	  return 0; 
+        } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.game.state.events.falkenhayn = 1;
+	  return 1;
+	} ,
       }
 
 
@@ -526,8 +657,16 @@ deck['cp12'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.addUnitToSpace("ah_army07", "vienna");
+	  paths_self.addUnitToSpace("ah_corps", "crbox");
+	  paths_self.addUnitToSpace("ah_corps", "crbox");
+	  paths_self.displayBoard();
+	  return 1;
+
+
+	} ,
       }
 
 
@@ -2033,7 +2172,6 @@ deck['cp65'] = {
         onEvent : function(paths_self, faction) { return 1; } ,
       }
 ***** OPTIONAL ******/
-
     }
 
     return deck;
@@ -2051,6 +2189,4 @@ deck['cp65'] = {
 
     return deck;
   }
-
-
 
