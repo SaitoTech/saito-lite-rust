@@ -374,14 +374,14 @@ class Browser {
 			}
 		);
 
-		window.onpopstate = (event)=> {
-			//console.log("Browser navigation: ", event?.state);
+		/*window.onpopstate = (event)=> {
+			console.log("Browser navigation: ", event?.state);
 			if (event.state){
 				this.popBackFn(event);	
 			}else{
 				//console.log(event);
 			}
-		}
+		}*/
 
 		//hide pace-js if its still active
 		setTimeout(function () {
@@ -514,7 +514,7 @@ class Browser {
 			const entries = this.urlParams.entries();
 			for (const pair of entries) {
 				if (pair[0] == name) {
-					return pair[1];
+					return pair[1] || pair[0];
 				}
 			}
 		} catch (err) { }
@@ -2330,11 +2330,6 @@ class Browser {
 					console.err(err);
 				}
 			};
-
-			window.setHash = function (hash) {
-				window.history.pushState('', '', `/redsquare/#${hash}`);
-			};
-
 
 			window.reloadWindow = this.reloadWindow;
 			window.navigateWindow = this.navigateWindow.bind(this);

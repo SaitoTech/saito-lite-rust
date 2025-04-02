@@ -143,6 +143,7 @@
 	    } 
 	  }
 	  if (!u.damaged) {
+console.log(skey + " -- " + uidx + " -- " + key);
             paths_self.moveUnit(skey, uidx, key);
 	    paths_self.addMove(`move\t${faction}\t${skey}\t${uidx}\t${key}\t${paths_self.game.player}`);
 	  }
@@ -393,6 +394,15 @@
 
   playerPlayCard(faction, card) {
 
+    //
+    // pass is pass!
+    //
+    if (card == "pass") {
+      this.endTurn();
+      return;
+    }
+
+
     let c = this.deck[card];
 
     //
@@ -402,9 +412,15 @@
 
     let html = `<ul>`;
     html    += `<li class="card" id="ops">ops (movement / combat)</li>`;
-    html    += `<li class="card" id="sr">strategic redeployment</li>`;
-    html    += `<li class="card" id="rp">replacement points</li>`;
-    html    += `<li class="card" id="event">trigger event</li>`;
+    if (c.sr) {
+      html    += `<li class="card" id="sr">strategic redeployment</li>`;
+    }
+    if (c.rp) {
+      html    += `<li class="card" id="rp">replacement points</li>`;
+    }
+    if (c.canEvent(this, faction)) {
+      html    += `<li class="card" id="event">trigger event</li>`;
+    }
     html    += `</ul>`;
 
 
@@ -415,7 +431,13 @@
 
     this.attachCardboxEvents((action) => {
 
+      this.updateStatus("selected...");
       this.menu_overlay.hide();
+
+      //
+      // discard the card
+      //
+      this.addMove("discard\t"+card);
 
       if (action === "ops") {
 	this.playerPlayOps(faction, card, c.ops);
@@ -430,8 +452,30 @@
       }
 
       if (action === "event") {
-	alert("event");
+
+	//
+	// War Status
+	//
+	if (c.ws > 0) {
+	  if (card.substring(0, 2) == "ap") {
+	    this.game.state.general_records_track.allies_war_status += c.ws;
+	    this.game.state.general_records_track.combined_war_status += c.ws;
+	  } else {
+	    this.game.state.general_records_track.central_war_status += c.ws;
+	    this.game.state.general_records_track.combined_war_status += c.ws;
+	  }
+	  this.displayGeneralRecordsTrack();
+	}
+
+	//
+	// and trigger event
+	//
+	if (c.canEvent(this, faction)) {
+	  this.addMove("event\t"+card+"\t"+faction);
+	}
+
 	this.endTurn();
+	return 1;
       }
 
     });
@@ -521,7 +565,6 @@
 	(key) => {
 
 	  if (key === "skip") {
-alert("skip attack target!");
 	    paths_self.addMove("resolve\tplayer_play_combat");
 	    paths_self.addMove("post_combat_cleanup");
 	    paths_self.removeSelectable();
@@ -706,7 +749,9 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
       let sourcekey = key;
       let html  = `<ul>`;
           html += `<li class="option" id="move">move</li>`;
+      if (paths_self.game.state.events.entrench == 1) {
           html += `<li class="option" id="entrench">entrench</li>`;
+      }
           html += `<li class="option" id="skip">stand down</li>`;
           html += `</ul>`;
       paths_self.updateStatusWithOptions(`Select Action for Unit`, html);
@@ -919,7 +964,7 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
     }
 
     let targets = this.returnNumberOfSpacesWithFilter((key) => {
-      if (cost < this.returnActivationCost(key)) { return 0; }
+      if (cost < this.returnActivationCost(faction, key)) { return 0; }
       let space = this.game.spaces[key];
       if (space.activated_for_combat == 1) { return 0; }
       if (space.activated_for_movement == 1) { return 0; }
@@ -957,7 +1002,7 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
 	this.playerSelectSpaceWithFilter(
 	  `Select Space to Activate:`,
 	  (key) => {
-	    if (cost < this.returnActivationCost(key)) { return 0; }
+	    if (cost < this.returnActivationCost(faction, key)) { return 0; }
 	    let space = this.game.spaces[key];
 	    if (space.activated_for_combat == 1) { return 0; }
 	    if (space.activated_for_movement == 1) { return 0; }
@@ -972,7 +1017,7 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
 	    this.updateStatus("activating...");
 	    this.activateSpaceForMovement(key);
             this.displaySpace(key);
-	    let cost_paid = this.returnActivationCost(key); 
+	    let cost_paid = this.returnActivationCost(faction, key); 
 	    cost -= cost_paid;
 	    this.addMove(`activate_for_movement\t${faction}\t${key}`);
 	    if (cost <= 0) {
@@ -1008,7 +1053,7 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
 	  (key) => {
 	    this.updateStatus("activating...");
 	    this.activateSpaceForCombat(key);
-	    let cost_paid = this.returnActivationCost(key); 
+	    let cost_paid = this.returnActivationCost(faction, key); 
 	    cost -= cost_paid;
 	    this.addMove(`activate_for_combat\t${faction}\t${key}`);
 	    if (cost <= 0) {
@@ -1365,12 +1410,124 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
     let name = this.returnPlayerName(faction);
     let hand = this.returnPlayerHand();
 
+    //
+    // you can pass once only 1 card left
+    //
+    if (hand.length == 1) { hand.push("pass"); }
+
     this.addMove("resolve\tplay");
 
     this.updateStatusAndListCards(`${name} - select card`, hand);
     this.attachCardboxEvents((card) => {
       this.playerPlayCard(faction, card);
     });
+
+  }
+
+  playerPlaceUnitOnBoard(country="", units=[], mycallback=null) {
+
+console.log("%");
+console.log("%");
+console.log("%");
+console.log("%");
+console.log("%");
+console.log("%");
+console.log("player place units by country: " + country);
+
+    let filter_func = () => {}
+    let unit_idx = 0;
+    let countries = [];
+
+    if (country == "russia") {
+      countries = this.returnSpacekeysByCountry("russia");
+      filter_func = (spacekey) => { 
+	if (countries.includes(spacekey)) {
+	  if (this.game.spaces[spacekey].control == "allies") { 
+	    if (this.checkSupplyStatus("russia", spacekey)) { return 1; }
+	  }
+	}
+	return 0;
+      }
+    }
+
+    if (country == "france") {
+      countries = this.returnSpacekeysByCountry("france");
+      filter_func = (spacekey) => { 
+	if (countries.includes(spacekey)) {
+	  if (this.game.spaces[spacekey].control == "allies") { 
+	    if (this.checkSupplyStatus("france", spacekey)) { return 1; }
+	  }
+	}
+	return 0;
+      }
+    }
+
+    if (country == "germany") {
+      countries = this.returnSpacekeysByCountry("germany");
+console.log("countries: " + JSON.stringify(countries));
+      filter_func = (spacekey) => { 
+console.log("examining: " + spacekey);
+	if (countries.includes(spacekey)) {
+console.log("exists... " + spacekey);
+	  if (this.game.spaces[spacekey].control == "central") { 
+console.log("controlled by central powers...");
+	    if (this.checkSupplyStatus("germany", spacekey)) { 
+console.log("in line of supply...");
+return 1; 
+	    }
+	  }
+	}
+	return 0;
+      }
+    }
+
+    if (country == "austria") {
+      countries = this.returnSpacekeysByCountry("austria");
+      filter_func = (spacekey) => { 
+	if (countries.includes(spacekey)) {
+	  if (this.game.spaces[spacekey].control == "central") { 
+	    if (this.checkSupplyStatus("austria", spacekey)) { return 1; }
+	  }
+	}
+	return 0;
+      }
+    }
+
+
+    let finish_fnct = (spacekey) => {
+      this.addUnitToSpace(units[unit_idx], spacekey);
+      this.displaySpace(spacekey);
+      unit_idx++;
+      if (unit_idx >= units.length) {
+	if (mycallback != null) { mycallback(); }
+	return 1;
+      } else {
+	place_unit_fnct();
+      }
+    }
+
+    let place_unit_fnct = () => {
+
+      let x = "1st";
+      if (unit_idx == 1) { x = "2nd"; }
+      if (unit_idx == 2) { x = "3rd"; }
+      if (unit_idx == 3) { x = "4th"; }
+      if (unit_idx == 4) { x = "5th"; }
+      if (unit_idx == 5) { x = "6th"; }
+      if (unit_idx == 6) { x = "7th"; }
+
+      this.playerSelectSpaceWithFilter(
+	`Select Space for ${this.game.units[units[unit_idx]].name} (${x} unit)`,
+        filter_func ,
+	finish_fnct ,
+	null ,
+	true
+      );
+    }
+
+    if (units.length == 0) { mycallback(); return; }
+    
+    place_unit_fnct();
 
   }
 

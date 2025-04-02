@@ -18,11 +18,10 @@ const SaitoOverlay = require('./../../lib/saito/ui/saito-overlay/saito-overlay')
 
 /*
  * lib/main.js:    this.app.connection.on("redsquare-home-render-request", () => {      // renders main tweets
- * lib/main.js:    this.app.connection.on("redsquare-postcache-home-render-request", () => {      // pushes new content into feed if possible
+ * lib/main.js:    this.app.connection.on("redsquare-home-postcache-render-request", () => {      // pushes new content into feed if possible
  * lib/main.js:    this.app.connection.on("redsquare-tweet-render-request", (tweet) => {   // renders tweet onto page, at bottom
  * lib/main.js:    this.app.connection.on("redsquare-profile-render-request", () => {     // renders profile
  * lib/main.js:    this.app.connection.on("redsquare-notifications-render-request", () => {   // renders notifications
- * lib/main.js:    this.app.connection.on("redsquare-component-render-request", (obj) => {    // renders other modules into .saito-main
  */
 
 ////////////////////////////////////////////
@@ -78,11 +77,6 @@ class RedSquare extends ModTemplate {
     //
     this.curated = true;
 
-    //
-    // set by main
-    //
-    this.manager = '';
-
     this.possibleHome = 1;
 
     this.use_floating_plus = 1;
@@ -131,7 +125,6 @@ class RedSquare extends ModTemplate {
     });
 
     this.app.connection.on('redsquare-post-tweet', (data, keys) => {
-      console.log('Tweeting through event interface!');
       this.sendTweetTransaction(this.app, this, data, keys);
     });
 
@@ -159,6 +152,13 @@ class RedSquare extends ModTemplate {
     return services;
   }
 
+  loadSettings(container = null) {
+    if (!container) {
+      let overlay = new SaitoOverlay(this.app, this.mod);
+      overlay.show(`<div class="module-settings-overlay"><h2>Redsquare Settings</h2></div>`);
+      container = '.module-settings-overlay';
+    }
+  }
 
   /////////////////////////////////
   // inter-module communications //
@@ -199,39 +199,41 @@ class RedSquare extends ModTemplate {
             });
           }
         });
-      }
+      }else{
 
-      if ((this.app.browser.isMobileBrowser() || window.innerWidth < 600) && this.browser_active) {
-        x.push({
-          text: 'RedSquare Home',
-          icon: 'fa-solid fa-house',
-          rank: 21,
-          callback: function (app, id) {
-            document.querySelector('.redsquare-menu-home').click();
-          }
-        });
-        x.push({
-          text: 'Notifications',
-          icon: 'fas fa-bell',
-          rank: 23,
-          callback: function (app, id) {
-            document.querySelector('.redsquare-menu-notifications').click();
-          },
-          event: function (id) {
-            this_mod.app.connection.on('redsquare-update-notifications', (unread) => {
-              this_mod.app.browser.addNotificationToId(unread, id);
-              this_mod.app.connection.emit('saito-header-notification', 'redsquare', unread);
-            });
-          }
-        });
-        x.push({
-          text: 'Profile',
-          icon: 'fas fa-user',
-          rank: 26,
-          callback: function (app, id) {
-            document.querySelector('.redsquare-menu-profile').click();
-          }
-        });
+        if ((this.app.browser.isMobileBrowser() || window.innerWidth < 600)) {
+          x.push({
+            text: 'RedSquare Home',
+            icon: 'fa-solid fa-house',
+            rank: 21,
+            callback: function (app, id) {
+              document.querySelector('.redsquare-menu-home').click();
+            }
+          });
+          x.push({
+            text: 'Notifications',
+            icon: 'fas fa-bell',
+            rank: 23,
+            callback: function (app, id) {
+              document.querySelector('.redsquare-menu-notifications').click();
+            },
+            event: function (id) {
+              this_mod.app.connection.on('redsquare-update-notifications', (unread) => {
+                this_mod.app.browser.addNotificationToId(unread, id);
+                this_mod.app.connection.emit('saito-header-notification', 'redsquare', unread);
+              });
+            }
+          });
+          x.push({
+            text: 'Profile',
+            icon: 'fas fa-user',
+            rank: 26,
+            callback: function (app, id) {
+              document.querySelector('.redsquare-menu-profile').click();
+            }
+          });
+        }
+
       }
 
       return x;
@@ -433,7 +435,9 @@ class RedSquare extends ModTemplate {
     ///////////////////////
     // SERVERS EXIT HERE //
     ///////////////////////
-    if (!app.browser) { return; }
+    if (!app.BROWSER) { 
+      return; 
+    }
 
     //
     // add myself as peer...
@@ -491,24 +495,6 @@ class RedSquare extends ModTemplate {
       return;
     }
 
-    //
-    // check url hash so we don't render conflicting things...
-    //
-    let firstRender = 'tweets';
-    let hash = window.location.hash;
-    if (hash) {
-      switch (hash) {
-        case '#notifications':
-          firstRender = 'notifications';
-          break;
-        case '#profile':
-          firstRender = 'profile';
-          break;
-        case '#bizarro':
-          this.bizarro = true;
-      }
-    }
-
     if (window?.tweets?.length) {
       for (let z = 0; z < window.tweets.length; z++) {
         let newtx = new Transaction();
@@ -530,8 +516,6 @@ class RedSquare extends ModTemplate {
       this.menu = new RedSquareNavigation(this.app, this, '.saito-sidebar.left');
       this.sidebar = new RedSquareSidebar(this.app, this, '.saito-sidebar.right');
       this.tweetMenu = new TweetMenu(this.app, this);
-      this.manager = this.main.manager;
-      this.manager.mode = firstRender;
 
       this.addComponent(this.header);
       this.addComponent(this.main);
@@ -615,7 +599,6 @@ class RedSquare extends ModTemplate {
       // add peer
       //
       this.addPeer(peer, 'tweets');
-      if (this.manager?.mode == 'tweets') {
          this.loadTweets(
 	    'later',
             (tx_count) => {
@@ -623,13 +606,11 @@ class RedSquare extends ModTemplate {
             },
             peer
 	);
-      }
 
       //
       // auto-poll for new tweets, on 5 minute interval
       //
       setInterval(() => {
-        if (this.manager?.mode == 'tweets') {
           this.loadTweets(
 	    'later',
             (tx_count) => {
@@ -637,48 +618,12 @@ class RedSquare extends ModTemplate {
             },
             peer
           );
-        }
       }, 300000);
 
-      //
-      // render user profile
-      //
-      let user_id = this.app.browser.returnURLParameter('user_id');
-      if (user_id != '') {
-        this.app.connection.emit('redsquare-profile-render-request', user_id);
-        return;
-      }
-
-      //
-      // check url hash
-      //
-      let hash = window.location.hash;
-      if (hash) {
-        switch (hash) {
-          case '#notifications':
-            this.app.connection.emit('redsquare-notifications-render-request');
-            break;
-          case '#profile':
-            this.app.connection.emit('redsquare-profile-render-request');
-            break;
-          default:
-        }
-      }
-
-      //
-      // if view specific tweet, ask for tweet/children
-      //
-      let tweet_id = this.app.browser.returnURLParameter('tweet_id');
-      if (tweet_id) {
-        this.loadTweetWithSig(tweet_id, (txs) => {
-          for (let z = 0; z < txs.length; z++) {
-            this.addTweet(txs[z], 'url_sig');
-          }
-          let tweet = this.returnTweet(tweet_id);
-          this.app.connection.emit('redsquare-tweet-render-request', tweet);
-        });
-
-        return;
+      if (this.browser_active){
+        siteMessage("Synching Redsquare...", 2000);
+        // Rerender now that we should have content coming...
+        this.main.render();
       }
 
     }
@@ -729,7 +674,6 @@ class RedSquare extends ModTemplate {
       if (txmsg.request === 'follow') {
         if (this.app.BROWSER) {
           if (tx.isFrom(this.publicKey)) {
-            console.log('RS follow transaction received onchain -- success');
           } else if (tx.isTo(this.publicKey)) {
             if (!this.app.options.redsquare.followers) {
               this.app.options.redsquare.followers = [];
@@ -841,6 +785,11 @@ class RedSquare extends ModTemplate {
 
         if (created_at == 'earlier') {
           obj.updated_earlier_than = this.peers[i].tweets_earliest_ts;
+           if (this.debug){
+             console.log(
+              `REDSQUARE: fetch earlier tweets from ${this.peers[i].publicKey} / ${this.peers[i].tweets_earliest_ts}`
+            );
+           }
         } else if (created_at == 'later') {
           obj.updated_later_than = this.peers[i].tweets_latest_ts;
         } else {
@@ -857,6 +806,16 @@ class RedSquare extends ModTemplate {
               if (created_at === 'earlier') {
                 this.peers[i].tweets_earliest_ts = 0;
               }
+            }
+
+            if (this.debug){
+              console.log(
+                `REDSQUARE-${i} (${this.peers[i].publicKey}): returned ${
+                  txs.length
+                } ${created_at} tweets, ${count} are new to the feed. New earliest timestamp -- ${new Date(
+                  this.peers[i].tweets_earliest_ts
+                )}`
+              );
             }
 
             if (created_at === 'later') {
@@ -957,11 +916,6 @@ class RedSquare extends ModTemplate {
       this.tweets_earliest_ts = peer.tweets_earliest_ts;
     }
 
-    //
-    // new tweets? maybe we should re-render
-    //
-    this.app.connection.emit('redsquare-home-postcache-render-request', txs.length);
-
     return count;
   }
 
@@ -984,9 +938,11 @@ class RedSquare extends ModTemplate {
     const middle_callback = () => {
       let new_notifications = [];
 
-      console.log(
-        `Redsquare: process ${notifications.length} combined tweet and like notifications`
-      );
+      if (this.debug){
+        console.log(
+          `Redsquare: process ${notifications.length} combined tweet and like notifications`
+        );
+      }
 
       if (notifications.length > 0) {
         for (let z = 0; z < notifications.length; z++) {
@@ -1013,7 +969,10 @@ class RedSquare extends ModTemplate {
     };
 
     if (this.notifications_earliest_ts) {
-      console.log(`RS: query notifications before -- ${new Date(this.notifications_earliest_ts)}`);
+
+      if (this.debug){
+        console.log(`RS: query notifications before -- ${new Date(this.notifications_earliest_ts)}`);  
+      }
 
       this.app.storage.loadTransactions(
         {
@@ -1026,7 +985,9 @@ class RedSquare extends ModTemplate {
             notifications.push(tx);
           }
 
-          console.log(`Found ${txs.length} tweet notifications`);
+          if (this.debug){
+            console.log(`Found ${txs.length} tweet notifications`);  
+          }
 
           return_count--;
           if (return_count == 0) {
@@ -1053,7 +1014,9 @@ class RedSquare extends ModTemplate {
             notifications.push(tx);
           }
 
-          console.log(`Found ${txs.length} like notifications`);
+          if (this.debug){
+            console.log(`Found ${txs.length} like notifications`);  
+          }
 
           return_count--;
           if (return_count == 0) {
@@ -1214,7 +1177,9 @@ class RedSquare extends ModTemplate {
       txmsg.request === 'flag tweet' ||
       txmsg.request === 'retweet'
     ) {
-      console.log("Don't process " + txmsg.request);
+      if (this.debug){
+        console.log("RS.addTweet -- Don't process " + txmsg.request);  
+      }
       return 0;
     }
 
@@ -1387,7 +1352,9 @@ class RedSquare extends ModTemplate {
         // only insert notification if doesn't already exist
         //
         if (this.notifications_sigs_hmap[tx.signature] != 1) {
-          //console.log('Add notification', tx.msg, tx.timestamp);
+          if (this.debug){
+            console.log('Add notification', tx.msg, tx.timestamp);  
+          }
 
           let insertion_index = 0;
 
@@ -2465,12 +2432,13 @@ class RedSquare extends ModTemplate {
       return;
     }
 
-    console.log('###');
-    console.log('###');
-    console.log('### Caching Tweets -- ' + this.tweets.length);
-    console.log('###');
-    console.log('###');
-    console.log('###');
+    if (this.debug){
+      console.log('###');
+      console.log('###');
+      console.log('### Caching Tweets -- ' + this.tweets.length);
+      console.log('###');
+      console.log('###');
+    }
 
     this.cached_tweets = [];
 
@@ -2510,13 +2478,18 @@ class RedSquare extends ModTemplate {
       this.cached_tweets.push(this.tweets[z].tx.serialize_to_web(this.app));
     }
 
-    console.log('###');
+    if (this.debug){
+      console.log('###');
+      console.log('###');
+    }
 
   }
 
   cacheRecentTweetsCurationFunction(tweet){
-console.log("server is examining: " + tweet.text);
-console.log("moderation result is: " + this.app.modules.moderate(tweet.tx, "RedSquare"));
+    if (this.debug){
+      console.log("server is examining: " + tweet.text);
+      console.log("moderation result is: " + this.app.modules.moderate(tweet.tx, "RedSquare"));
+    }
 
     return this.app.modules.moderate(tweet.tx, "RedSquare");
    
@@ -2642,7 +2615,7 @@ console.log("moderation result is: " + this.app.modules.moderate(tweet.tx, "RedS
           }
         }
       } catch (err) {
-        console.log('Loading OG data failed with error: ' + err);
+        console.warn('Loading OG data failed with error: ' + err);
       }
 
       if (!res.finished) {

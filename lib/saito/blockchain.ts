@@ -104,15 +104,17 @@ console.log("how many txs: " + txs.length);
         const prefixLength = 500, suffixLength = 500;
         const maxStrLength =
           prefixLength + ellipsis.length + suffixLength;
-        console.log(
+        /*
+		  console.log(
           "examining tx:",
           str_txmsg2.length > maxStrLength ?
               str_txmsg2.slice(0, prefixLength)
                 + ellipsis + str_txmsg2.slice(-suffixLength)
             : str_txmsg2
         );
+        */
 
-        console.log("processing tx!");
+        //console.log("processing tx!");
 				await txs[z].decryptMessage(this.app);
 				const txmsg = txs[z].returnMessage();
 				this.app.modules.affixCallbacks(

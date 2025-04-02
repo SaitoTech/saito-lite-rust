@@ -110,6 +110,16 @@ class Arcade extends ModTemplate {
 				this.sendJoinTransaction({ tx: game, game_name: 'open_table' });
 			}
 		});
+
+		app.connection.on('arcade-gametable-removeplayer', (game_id, player_stats) => {
+			console.log('arcade-gametable-removeplayer');
+			let game = this.returnGame(game_id);
+			if (game) {
+				console.log(game);
+				this.sendLeaveTransaction(game, player_stats);
+			}
+		});
+
 	}
 
 	//////////////////////////////
@@ -349,7 +359,8 @@ class Arcade extends ModTemplate {
 					let invite = new Invite(app, this, null, null, game, this.publicKey);
 					let join_overlay = new JoinGameOverlay(app, this, invite.invite_data);
 					join_overlay.render();
-					window.history.pushState('', '', `/arcade/`);
+					// Overwrite link-url with baseline url
+					window.history.replaceState('', '', `/arcade/`);
 				}
 
 				app.connection.emit('arcade-invite-manager-render-request');
@@ -632,6 +643,11 @@ class Arcade extends ModTemplate {
 						await arcade_self.receiveJoinTransaction(tx);
 					}
 
+					// Remove player from ongoing game
+					if (txmsg.request == 'leave') {
+						await arcade_self.receiveLeaveTransaction(tx);
+					}
+
 					//
 					// cancel a join transaction / Remove a player from the game invite
 					//
@@ -749,6 +765,12 @@ class Arcade extends ModTemplate {
 				if (txmsg.request == 'join') {
 					await this.receiveJoinTransaction(tx);
 				}
+
+				// Remove player from ongoing game
+				if (txmsg.request == 'leave') {
+					await this.receiveLeaveTransaction(tx);
+				}
+
 
 				//
 				// cancel a join transaction / Remove a player from the game invite
@@ -1069,8 +1091,12 @@ class Arcade extends ModTemplate {
 
 	async receiveCloseTransaction(tx) {
 		let txmsg = tx.returnMessage();
-		this.app.connection.emit('arcade-close-game', txmsg.game_id);
-		this.changeGameStatus(txmsg.game_id, 'close');
+
+		// Mark game as closed, unless it is a player leaving an open table...
+		if (txmsg.reason !== "withdraw"){
+			this.app.connection.emit('arcade-close-game', txmsg.game_id);
+			this.changeGameStatus(txmsg.game_id, 'close');
+		}
 	}
 
 	async receiveGameStepTransaction(tx) {
@@ -1281,6 +1307,90 @@ class Arcade extends ModTemplate {
 				this.app.connection.emit('arcade-game-initialize-render-request', txmsg.game_id);
 			}
 		}
+	}
+
+
+
+	async sendLeaveTransaction(invite_tx, data) {
+		let txmsg = invite_tx.returnMessage();
+
+		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+		for (let player of txmsg.players) {
+			newtx.addTo(player);
+		}
+
+		newtx.addTo(this.publicKey);
+
+		newtx.msg = JSON.parse(JSON.stringify(txmsg));
+		newtx.msg.module = 'Arcade';
+		newtx.msg.request = 'leave';
+		newtx.msg.game_id = invite_tx.signature;
+		newtx.msg.data = data;
+
+		await newtx.sign();
+
+		this.app.network.propagateTransaction(newtx);
+
+		this.app.connection.emit('relay-send-message', {
+			recipient: 'PEERS',
+			request: 'arcade spv update',
+			data: newtx.toJson()
+		});
+
+		//this.app.browser.logMatomoEvent('GameInvite', 'LeaveGame', txmsg.game);
+		this.app.connection.emit('arcade-invite-manager-render-request');
+	}
+
+
+	async receiveLeaveTransaction(tx) {
+		if (!tx || !tx.signature) {
+			return;
+		}
+
+		let txmsg = tx.returnMessage();
+
+		//
+		// game is the copy of the original invite creation TX stored in our object of arrays.
+		//
+		let game = this.returnGame(txmsg.game_id);
+
+		//
+		// If we don't find it, or we have already marked the game as active, stop processing
+		//
+		if (!game) {
+			return;
+		}
+
+		//
+		// Don't remove the same player twice!
+		//
+		if (game.msg.players.includes(tx.from[0].publicKey)) {
+				if (this.debug) {
+					console.log(
+						`Removing Player (${tx.from[0].publicKey}) from Game: `,
+						JSON.parse(JSON.stringify(game))
+					);
+				}
+
+				let index = game.msg.players.indexOf(tx.from[0].publicKey);
+				game.msg.players.splice(index, 1);
+				game.msg.players_sigs.splice(index, 1);
+
+				if (!game.msg.options?.eliminated){
+					game.msg.options.eliminated = {};
+				}
+
+				game.msg.options.eliminated[tx.from[0].publicKey] = txmsg.data;
+
+				this.removeGame(txmsg.game_id);
+				this.addGame(game);
+
+				//Update UI
+				this.app.connection.emit('arcade-invite-manager-render-request');
+		} else {
+			console.log('Player already removed / not in game');
+		}
+
 	}
 
 	/////////////////

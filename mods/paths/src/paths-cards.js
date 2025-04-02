@@ -20,8 +20,62 @@
     return `<span class="showcard ${card}" id="${card}">${card}</span>`;
   }
 
+  removeCardFromHand(card) {
 
+    if (card[0] === 'c' && this.game.player == this.returnPlayerOfFaction("central")) {
+      if (this.game.deck[0].hand.includes(card)) {
+        for (let i = 0; i < this.game.deck[0].hand.length; i++) {
+	  if (this.game.deck[0].hand[i] === card) {
+	    if (!this.game.deck[0].discards[card]) {
+	      this.game.deck[0].discards[card] = this.game.deck[0].cards[card];
+	      delete this.game.deck[0].cards[card];
+	    }
+	    this.game.deck[0].hand.splice(i, 1);
+	  }
+	}
+      }
+    }
+    if (card[0] === 'a' && this.game.player == this.returnPlayerOfFaction("allies")) {
+      if (this.game.deck[1].hand.includes(card)) {
+        for (let i = 0; i < this.game.deck[1].hand.length; i++) {
+	  if (this.game.deck[1].hand[i] === card) {
+	    if (!this.game.deck[1].discards[card]) {
+	      this.game.deck[1].discards[card] = this.game.deck[1].cards[card];
+	      delete this.game.deck[1].cards[card];
+	    }
+	    this.game.deck[1].hand.splice(i, 1);
+	  }
+	}
+      }
+    }
 
+    if (this.game.deck[1].cards[card]) {
+      this.game.deck[1].discards[card] = this.game.deck[1].cards[card];
+      delete this.game.deck[1].cards[card];
+    }
+    if (this.game.deck[1].cards[card]) {
+      this.game.deck[1].discards[card] = this.game.deck[1].cards[card];
+      delete this.game.deck[1].cards[card];
+    }
+
+  }
+
+  removeCardFromGame(card) {
+
+    for (let key in this.game.deck[0].cards) {
+      if (key === card) {
+        this.game.deck[0].removed[key] = this.game.deck[0].cards[key];
+        delete this.game.deck[0].cards[key];
+      }
+    }
+    for (let key in this.game.deck[1].cards) {
+      if (key === card) {
+        this.game.deck[1].removed[key] = this.game.deck[1].cards[key];
+        delete this.game.deck[1].cards[key];
+      }
+    }
+
+  }
 
   returnMobilizationDeck(type="all") {
     let deck = {};
@@ -33,30 +87,37 @@
         img : "cards/card_ap01.svg" ,
         name : "British Reinforcements" ,
         cc : false ,
+	ws : 1 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.addUnitToSpace("br_army02", "london");
+	  paths_self.addUnitToSpace("br_corps", "arbox");
+	  paths_self.displayBoard();
+	  return 1;
+	} ,
     }
-
 	    
 deck['ap02'] = { 
         key : 'blockade',
         img : "cards/card_ap02.svg" ,
         name : "Blockade" ,
         cc : false ,
+	ws : 2 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.game.state.events.blockade = 1;
+        } ,
       }
-
 
 deck['ap03'] = { 
         key : 'russianreinforcements',
@@ -68,8 +129,15 @@ deck['ap03'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
+	    paths_self.playerPlaceUnitOnBoard("russia", ["ru_army11", "ru_corps"], () => {
+	      paths_self.endTurn();
+	    });
+	  }
+	  return 0;
+	} ,
       }
 
 deck['ap04'] = { 
@@ -82,8 +150,8 @@ deck['ap04'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 
@@ -97,11 +165,9 @@ deck['ap05'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
-
-
 
 deck['ap06'] = { 
         key : 'withdrawal',
@@ -113,8 +179,8 @@ deck['ap06'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 
@@ -128,12 +194,9 @@ deck['ap07'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; }
       }
-
-
-
 
 deck['ap08'] = { 
         key : 'russianreinforcements',
@@ -145,10 +208,16 @@ deck['ap08'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
+	    paths_self.playerPlaceUnitOnBoard("russia", ["ru_corps", "ru_corps"], () => {
+	      paths_self.endTurn();
+	    });
+	  }
+	  return 0;
+	} ,
       }
-
 
 deck['ap09'] = { 
         key : 'moltke',
@@ -160,10 +229,12 @@ deck['ap09'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.turn <= 2) { return 1; } return 0; } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.game.state.events.moltke = 1;
+	  return 1;
+	} ,
       }
-
 
 deck['ap10'] = { 
         key : 'frenchreinforcements',
@@ -175,11 +246,16 @@ deck['ap10'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
+	    paths_self.playerPlaceUnitOnBoard("france", ["fr_army10"], () => {
+	      paths_self.endTurn();
+	    });
+	  }
+	  return 0;
+	} ,
       }
-
-
 
 deck['ap11'] = { 
         key : 'russianreinforcements',
@@ -191,10 +267,16 @@ deck['ap11'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
+	    paths_self.playerPlaceUnitOnBoard("russia", ["ru_army09", "ru_army10"], () => {
+	      paths_self.endTurn();
+	    });
+	  }
+	  return 0;
+	} ,
       }
-
 
 deck['ap12'] = { 
         key : 'entrench',
@@ -206,768 +288,88 @@ deck['ap12'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
+        canEvent : function(paths_self, faction) { if (this.game.state.events.entrench == 1) { return 0; } return 1; } ,
+        onEvent : function(paths_self, faction) {
 
+	  paths_self.game.state.events.entrench = 1;
+
+	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
+
+	    //
+	    // get eligible spaces
+	    //
+    	    let options = paths_self.returnSpacesWithFilter(
+      		(key) => {
+		  if (paths_self.game.spaces[key].trench > 0) { return 0; }
+        	  if (paths_self.game.spaces[key].control == "allies") {
+        	    if (paths_self.game.spaces[key].units.length > 0) {
+                      if (paths_self.checkSupplyStatus(key, "allies")) {
+		        return 1;
+		      }
+		    }
+		  }
+		} ,
+            );
+
+	    //
+	    // no placement options
+	    //
+	    if (options.length == 0) { return 1; }
+
+	    //
+	    // place a trench
+	    //
+            paths_self.playerSelectSpaceWithFilter(
+              "Add Level 1 Trench Where? ",
+              (key) => {
+          	if (options.includes(key)) { return 1; }
+              },
+              (key) => {
+ 		paths_self.addMove("entrench\tallies\t"+key);
+ 		paths_self.endTurn();
+		return 0;
+	      },
+              null, 
+              true
+            );
+	  }
+	  return 0;
+	} ,
+      }
 
 deck['ap13'] = { 
         key : 'rapeofbelgium',
         img : "cards/card_ap13.svg" ,
         name : "Rape Of Belgium" ,
         cc : false ,
+	ws : 2 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
-
 
 deck['ap14'] = { 
         key : 'britishreinforcements',
         img : "cards/card_ap14.svg" ,
         name : "British Reinforcements" ,
         cc : false ,
+	ws : 1 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,       
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap15'] = { 
-        key : 'britishreinforcements',
-        img : "cards/card_ap15.svg" ,
-        name : "British Reinforcements" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap16'] = { 
-        key : 'romania',
-        img : "cards/card_ap16.svg" ,
-        name : "Romania" ,
-        cc : false ,
-        ops : 5 ,
-        sr : 5 ,        
-        rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'IT' : 2 , 'RU' : 4 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap17'] = { 
-        key : 'italy',
-        img : "cards/card_ap17.svg" ,
-        name : "Italy" ,
-        cc : false ,
-        ops : 5 ,
-        sr : 5 ,        
-        rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'RU' : 4 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap18'] = { 
-        key : 'hurricanebarrage',
-        img : "cards/card_ap18.svg" ,
-        name : "Hurricane Barrage" ,
-        cc : true ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap19'] = { 
-        key : 'airsuperiority',
-        img : "cards/card_ap19.svg" ,
-        name : "Air Superiority" ,
-        cc : true ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap20'] = { 
-        key : 'britishreinforcements',
-        img : "cards/card_ap20.svg" ,
-        name : "British Reinforcements" ,
-        cc : false ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap21'] = { 
-        key : 'phosgenegas',
-        img : "cards/card_ap21.svg" ,
-        name : "Phosgene Gas" ,
-        cc : true ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap22'] = { 
-        key : 'italianreinforcements',
-        img : "cards/card_ap22.svg" ,
-        name : "Italian Reinforcements" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap23'] = { 
-        key : 'cloakanddagger',
-        img : "cards/card_ap23.svg" ,
-        name : "Cloak And Dagger" ,
-        cc : false ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap24'] = { 
-        key : 'frenchreinforcements',
-        img : "cards/card_ap24.svg" ,
-        name : "French Reinforcements" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap25'] = { 
-        key : 'russianreinforcements',
-        img : "cards/card_ap25.svg" ,
-        name : "Russian Reinforcements" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap26'] = { 
-        key : 'lusitania',
-        img : "cards/card_ap26.svg" ,
-        name : "Lusitania" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap27'] = { 
-        key : 'greatretreat',
-        img : "cards/card_ap27.svg" ,
-        name : "Great Retreat" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap28'] = { 
-        key : 'landships',
-        img : "cards/card_ap28.svg" ,
-        name : "Landships" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1, 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap29'] = { 
-        key : 'yudenitch',
-        img : "cards/card_ap29.svg" ,
-        name : "Yudenitch" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1, 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap30'] = { 
-        key : 'salonika',
-        img : "cards/card_ap30.svg" ,
-        name : "Salonika" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1, 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap31'] = { 
-        key : 'mef',
-        img : "cards/card_ap31.svg" ,
-        name : "Mef" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1, 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap32'] = { 
-        key : 'russianreinforcements',
-        img : "cards/card_ap32.svg" ,
-        name : "Russian Reinforcements" ,
-        cc : false ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap33'] = { 
-        key : 'grandfleet',
-        img : "cards/card_ap33.svg" ,
-        name : "Grand Fleet" ,
-        cc : false ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap34'] = { 
-        key : 'britishreinforcements',
-        img : "cards/card_ap34.svg" ,
-        name : "British Reinforcements" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap35'] = { 
-        key : 'yanksandtanks',
-        img : "cards/card_ap35.svg" ,
-        name : "Yanks And Tanks" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap36'] = { 
-        key : 'mineattack',
-        img : "cards/card_ap36.svg" ,
-        name : "Mine Attack" ,
-        cc : true ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap37'] = { 
-        key : 'independentairforce',
-        img : "cards/card_ap37.svg" ,
-        name : "Independent Air Force" ,
-        cc : false ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap38'] = { 
-        key : 'usareinforcements',
-        img : "cards/card_ap38.svg" ,
-        name : "Usa Reinforcements" ,
-        cc : false ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap39'] = { 
-        key : 'theyshallnotpass',
-        img : "cards/card_ap39.svg" ,
-        name : "They Shall Not Pass" ,
-        cc : true ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap40'] = { 
-        key : '14points',
-        img : "cards/card_ap40.svg" ,
-        name : "14 Points" ,
-        cc : false ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap41'] = { 
-        key : 'arabnorthernarmy',
-        img : "cards/card_ap41.svg" ,
-        name : "Arab Northern Army" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-deck['ap42'] = { 
-        key : 'britishreinforcements',
-        img : "cards/card_ap42.svg" ,
-        name : "British Reinforcements" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap43'] = { 
-        key : 'usareinforcements',
-        img : "cards/card_ap43.svg" ,
-        name : "Usa Reinforcements" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap44'] = { 
-        key : 'greece',
-        img : "cards/card_ap44.svg" ,
-        name : "Greece" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap45'] = { 
-        key : 'kerenskyoffensive',
-        img : "cards/card_ap45.svg" ,
-        name : "Kerensky Offensive" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap46'] = { 
-        key : 'brusilovoffensive',
-        img : "cards/card_ap46.svg" ,
-        name : "Brusilov Offensive" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap47'] = { 
-        key : 'usareinforcements',
-        img : "cards/card_ap47.svg" ,
-        name : "Usa Reinforcements" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap48'] = { 
-        key : 'royaltankcorps',
-        img : "cards/card_ap48.svg" ,
-        name : "Royal Tank Corps" ,
-        cc : true ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap49'] = { 
-        key : 'sinaipipeline',
-        img : "cards/card_ap49.svg" ,
-        name : "Sinai Pipeline" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap50'] = { 
-        key : 'allenby',
-        img : "cards/card_ap50.svg" ,
-        name : "Allenby" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap51'] = { 
-        key : 'everyoneintobattle',
-        img : "cards/card_ap51.svg" ,
-        name : "Everyone Into Battle" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap52'] = { 
-        key : 'convoy',
-        img : "cards/card_ap52.svg" ,
-        name : "Convoy" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap53'] = { 
-        key : 'armyoftheorient',
-        img : "cards/card_ap53.svg" ,
-        name : "Army Of The Orient" ,
-        cc : false ,
-        ops : 5 ,
-        sr : 5 ,        
-        rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'IT' : 2 , 'RU' : 4 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap54'] = { 
-        key : 'zimmermanntelegram',
-        img : "cards/card_ap54.svg" ,
-        name : "Zimmermann Telegram" ,
-        cc : false ,
-        ops : 5 ,
-        sr : 5 ,        
-        rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'IT' : 2 , 'RU' : 4 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap55'] = { 
-        key : 'overthere',
-        img : "cards/card_ap55.svg" ,
-        name : "Over There" ,
-        cc : false ,
-        ops : 5 ,
-        sr : 5 ,        
-        rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'IT' : 2 , 'RU' : 4 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap56'] = { 
-        key : 'paristaxis',
-        img : "cards/card_ap56.png" ,
-        name : "Paris Taxis" ,
-        cc : false ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap57'] = { 
-        key : 'russiancavalry',
-        img : "cards/card_ap57.png" ,
-        name : "Russian Cavalry" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap58'] = { 
-        key : 'russianguards',
-        img : "cards/card_ap58.png" ,
-        name : "Russian Guards" ,
-        cc : true ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap59'] = { 
-        key : 'alpinetroops',
-        img : "cards/card_ap59.png" ,
-        name : "Alpine Troops" ,
-        cc : true ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 2 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap60'] = { 
-        key : 'czechlegion',
-        img : "cards/card_ap60.png" ,
-        name : "Czech Legion" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap61'] = { 
-        key : 'maude',
-        img : "cards/card_ap61.png" ,
-        name : "Maude" ,
-        cc : true ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap62'] = { 
-        key : 'Thesixtusaffair',
-        img : "cards/card_ap62.png" ,
-        name : "The Sixtus Affair" ,
-        cc : false ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap63'] = { 
-        key : 'backstothewall',
-        img : "cards/card_ap63.png" ,
-        name : "Backs To The Wall" ,
-        cc : true ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap64'] = { 
-        key : 'usareinforcements',
-        img : "cards/card_ap64.png" ,
-        name : "Usa Reinforcements" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap65'] = { 
-        key : 'influenza',
-        img : "cards/card_ap65.png" ,
-        name : "Influenza" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.addUnitToSpace("br_army01", "london");
+	  paths_self.addUnitToSpace("br_corps", "arbox");
+	  paths_self.displayBoard();
+	  return 1;
+	} ,
       }
 
 
@@ -980,13 +382,27 @@ deck['ap65'] = {
         img : "cards/card_cp01.svg" ,
         name : "Guns of August" ,
         cc : false ,
+	ws : 2 ,
         ops : 3 ,
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.turn == 1 && paths_self.game.state.round == 1) { return 1; } return 0; } ,
+        onEvent : function(paths_self, faction) {
+
+	  paths_self.game.spaces['liege'].fort = -1;
+	  paths_self.game.spaces['liege'].control = "central";
+	  paths_self.moveUnitToSpacekey("ge_army01", "liege");
+	  paths_self.moveUnitToSpacekey("ge_army02", "liege");
+	  paths_self.game.spaces['liege'].activated_for_combat = 1;
+	  paths_self.game.spaces['koblenz'].activated_for_combat = 1;	    
+	  paths_self.game.queue.push("player_play_combat\tcentral");
+	  paths_self.displayBoard();
+
+	  return 1;
+
+	} ,
       }
 
       deck['cp02'] = { 
@@ -999,8 +415,8 @@ deck['ap65'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
       deck['cp03'] = { 
@@ -1013,8 +429,8 @@ deck['ap65'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
  deck['cp04'] = { 
@@ -1027,8 +443,8 @@ deck['ap65'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
    deck['cp05'] = { 
@@ -1041,22 +457,69 @@ deck['ap65'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
    deck['cp06'] = { 
         key : 'entrench',
         img : "cards/card_cp06.svg" ,
-        name : "ENTRENCH" ,
+        name : "Entrench" ,
         cc : false ,
         ops : 3 ,
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.events.entrench == 1) { return 0; } return 1; } ,
+        onEvent : function(paths_self, faction) { 
+
+	  paths_self.game.state.events.entrench = 1;
+
+	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
+
+	    //
+	    // get eligible spaces
+	    //
+    	    let options = paths_self.returnSpacesWithFilter(
+      		(key) => {
+		  if (paths_self.game.spaces[key].trench > 0) { return 0; }
+        	  if (paths_self.game.spaces[key].control == "central") {
+        	    if (paths_self.game.spaces[key].units.length > 0) {
+                      if (paths_self.checkSupplyStatus(key, "central")) {
+		        return 1;
+		      }
+		    }
+		  }
+		} ,
+            );
+
+	    //
+	    // no placement options
+	    //
+	    if (options.length == 0) { return 1; }
+
+	    //
+	    // place a trench
+	    //
+            paths_self.playerSelectSpaceWithFilter(
+              "Add Level 1 Trench Where? ",
+              (key) => {
+          	if (options.includes(key)) { return 1; }
+              },
+              (key) => {
+ 		paths_self.addMove("entrench\tcentral\t"+key);
+ 		paths_self.endTurn();
+		return 0;
+	      },
+              null, 
+              true
+            );
+	  }
+
+	  return 0;
+
+	} ,
       }
 
 deck['cp07'] = { 
@@ -1069,8 +532,15 @@ deck['cp07'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
+	    paths_self.playerPlaceUnitOnBoard("germany", ["ge_army09"], () => {
+	      paths_self.endTurn();
+	    });
+	  }
+	  return 0;
+	} ,
       }
 
    deck['cp08'] = { 
@@ -1083,8 +553,8 @@ deck['cp07'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
    deck['cp09'] = { 
@@ -1092,13 +562,14 @@ deck['cp07'] = {
         img : "cards/card_cp09.svg" ,
         name : "Reichstag Truce" ,
         cc : false ,
+	ws : 1 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 deck['cp10'] = { 
         key : 'sudarmy',
@@ -1110,23 +581,25 @@ deck['cp10'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) { 
+	  paths_self.game.state.events.sudarmy = 1;  
+	  return 1;
+	} ,
       }
-
-
 deck['cp11'] = { 
         key : 'oberost',
         img : "cards/card_cp11.svg" ,
         name : "Oberost" ,
         cc : false ,
+	ws : 1 ,
         ops : 2 ,
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp12'] = { 
@@ -1139,21 +612,38 @@ deck['cp12'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.addUnitToSpace("ge_corps", "arbox");
+	  paths_self.addUnitToSpace("ge_corps", "arbox");
+	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
+	    paths_self.playerPlaceUnitOnBoard("germany", ["ge_army10"], () => {
+	      paths_self.endTurn();
+	    });
+          }
+	  return 0;
+	} ,
       }
     deck['cp13'] = { 
         key : 'falkenhayn',
         img : "cards/card_cp13.svg" ,
         name : "Falkenhayn" ,
         cc : false ,
+	ws : 2 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { 
+	  if (paths_self.game.state.turn >= 3) { return 1; }
+	  if (paths_self.game.state.events.moltke == 1) { return 1; }
+	  return 0; 
+        } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.game.state.events.falkenhayn = 1;
+	  return 1;
+	} ,
       }
 
 
@@ -1167,9 +657,334 @@ deck['cp12'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.addUnitToSpace("ah_army07", "vienna");
+	  paths_self.addUnitToSpace("ah_corps", "crbox");
+	  paths_self.addUnitToSpace("ah_corps", "crbox");
+	  paths_self.displayBoard();
+	  return 1;
+
+
+	} ,
       }
+
+
+    }
+
+    for (let key in deck) {
+      if (!deck[key].ws) { deck[key].ws = 0; }
+    }
+
+    return deck;
+  }
+
+  returnLimitedWarDeck(type="all") {
+
+    let deck = {};
+
+    if (type == "allies" || type == "all") {
+
+deck['ap15'] = { 
+        key : 'britishreinforcements',
+        img : "cards/card_ap15.svg" ,
+        name : "British Reinforcements" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.addUnitToSpace("br_army04", "london");
+	  paths_self.addUnitToSpace("br_corps", "arbox");
+	  paths_self.displayBoard();
+	  return 1;
+	} ,
+      }
+
+deck['ap16'] = { 
+        key : 'romania',
+        img : "cards/card_ap16.svg" ,
+        name : "Romania" ,
+        cc : false ,
+	ws : 1 ,
+        ops : 5 ,
+        sr : 5 ,        
+        rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'IT' : 2 , 'RU' : 4 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+
+deck['ap17'] = { 
+        key : 'italy',
+        img : "cards/card_ap17.svg" ,
+        name : "Italy" ,
+        cc : false ,
+	ws : 2 ,
+        ops : 5 ,
+        sr : 5 ,        
+        rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'RU' : 4 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+
+deck['ap18'] = { 
+        key : 'hurricanebarrage',
+        img : "cards/card_ap18.svg" ,
+        name : "Hurricane Barrage" ,
+        cc : true ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap19'] = { 
+        key : 'airsuperiority',
+        img : "cards/card_ap19.svg" ,
+        name : "Air Superiority" ,
+        cc : true ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap20'] = { 
+        key : 'britishreinforcements',
+        img : "cards/card_ap20.svg" ,
+        name : "British Reinforcements" ,
+        cc : false ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+
+deck['ap21'] = { 
+        key : 'phosgenegas',
+        img : "cards/card_ap21.svg" ,
+        name : "Phosgene Gas" ,
+        cc : true ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap22'] = { 
+        key : 'italianreinforcements',
+        img : "cards/card_ap22.svg" ,
+        name : "Italian Reinforcements" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap23'] = { 
+        key : 'cloakanddagger',
+        img : "cards/card_ap23.svg" ,
+        name : "Cloak And Dagger" ,
+        cc : false ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap24'] = { 
+        key : 'frenchreinforcements',
+        img : "cards/card_ap24.svg" ,
+        name : "French Reinforcements" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap25'] = { 
+        key : 'russianreinforcements',
+        img : "cards/card_ap25.svg" ,
+        name : "Russian Reinforcements" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap26'] = { 
+        key : 'lusitania',
+        img : "cards/card_ap26.svg" ,
+        name : "Lusitania" ,
+        cc : false ,
+	ws : 2 ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap27'] = { 
+        key : 'greatretreat',
+        img : "cards/card_ap27.svg" ,
+        name : "Great Retreat" ,
+        cc : false ,
+	ws : 1 ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+
+deck['ap28'] = { 
+        key : 'landships',
+        img : "cards/card_ap28.svg" ,
+        name : "Landships" ,
+        cc : false ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1, 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap29'] = { 
+        key : 'yudenitch',
+        img : "cards/card_ap29.svg" ,
+        name : "Yudenitch" ,
+        cc : false ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1, 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+
+deck['ap30'] = { 
+        key : 'salonika',
+        img : "cards/card_ap30.svg" ,
+        name : "Salonika" ,
+        cc : false ,
+	ws : 1 ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1, 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+
+deck['ap31'] = { 
+        key : 'mef',
+        img : "cards/card_ap31.svg" ,
+        name : "Mef" ,
+        cc : false ,
+	ws : 1 ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1, 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap32'] = { 
+        key : 'russianreinforcements',
+        img : "cards/card_ap32.svg" ,
+        name : "Russian Reinforcements" ,
+        cc : false ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap33'] = { 
+        key : 'grandfleet',
+        img : "cards/card_ap33.svg" ,
+        name : "Grand Fleet" ,
+        cc : false ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap34'] = { 
+        key : 'britishreinforcements',
+        img : "cards/card_ap34.svg" ,
+        name : "British Reinforcements" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+    }
+
+    if (type == "central" || type == "all") {
 
       deck['cp15'] = { 
         key : 'chlorinegas',
@@ -1181,8 +996,8 @@ deck['cp12'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
   deck['cp16'] = { 
@@ -1195,8 +1010,8 @@ deck['cp12'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 
@@ -1210,8 +1025,8 @@ deck['cp12'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
   deck['cp18'] = { 
@@ -1224,8 +1039,8 @@ deck['cp12'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
   deck['cp19'] = { 
@@ -1238,8 +1053,8 @@ deck['cp12'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 
@@ -1253,8 +1068,8 @@ deck['cp12'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
   deck['cp21'] = { 
@@ -1267,8 +1082,8 @@ deck['cp12'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
   deck['cp22'] = { 
         key : 'germanreinforcements',
@@ -1280,8 +1095,8 @@ deck['cp12'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 
@@ -1295,8 +1110,8 @@ deck['cp12'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
   deck['cp24'] = { 
@@ -1309,8 +1124,8 @@ deck['cp12'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
   deck['cp25'] = { 
         key : 'highseasfleet',
@@ -1322,8 +1137,8 @@ deck['cp12'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp26'] = { 
@@ -1331,28 +1146,29 @@ deck['cp26'] = {
         img : "cards/card_cp26.svg" ,
         name : "Place of Execution" ,
         cc : true ,
+	ws : 1 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
-
 
   deck['cp27'] = { 
         key : 'zeppelinraids',
         img : "cards/card_cp27.svg" ,
         name : "Zeppelin Raids" ,
         cc : false ,
+	ws : 1 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
   deck['cp28'] = { 
@@ -1360,13 +1176,14 @@ deck['cp26'] = {
         img : "cards/card_cp28.svg" ,
         name : "Tsar Takes Command" ,
         cc : false ,
+	ws : 1 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
   deck['cp29'] = { 
@@ -1379,8 +1196,8 @@ deck['cp26'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp30'] = { 
@@ -1393,8 +1210,8 @@ deck['cp30'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp31'] = { 
@@ -1407,8 +1224,8 @@ deck['cp31'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp32'] = { 
@@ -1416,13 +1233,14 @@ deck['cp32'] = {
         img : "cards/card_cp32.svg" ,
         name : "War in Africa" ,
         cc : false ,
+	ws : 1 ,
         ops : 3 ,
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp33'] = { 
@@ -1430,27 +1248,486 @@ deck['cp33'] = {
         img : "cards/card_cp33.svg" ,
         name : "Walter Rathenau" ,
         cc : false ,
+	ws : 2 ,
         ops : 5 ,
         sr : 5 ,        
         rp : { 'AH' : 3 , 'BU' : 1 , 'GE' : 4 , 'TU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
    deck['cp34'] = { 
         key : 'bulgaria',
         img : "cards/card_cp34.svg" ,
         name : "Bulgaria" ,
         cc : false ,
+	ws : 2 ,
         ops : 5 ,
         sr : 5 ,        
         rp : { 'AH' : 3 , 'GE' : 4 , 'TU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
+
+
+    }
+    return deck;
+  }
+
+  returnFullWarDeck(type="all") {
+    let deck = {};
+
+    if (type == "allies" || type == "all") {
+
+deck['ap35'] = { 
+        key : 'yanksandtanks',
+        img : "cards/card_ap35.svg" ,
+        name : "Yanks And Tanks" ,
+        cc : false ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap36'] = { 
+        key : 'mineattack',
+        img : "cards/card_ap36.svg" ,
+        name : "Mine Attack" ,
+        cc : true ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+
+deck['ap37'] = { 
+        key : 'independentairforce',
+        img : "cards/card_ap37.svg" ,
+        name : "Independent Air Force" ,
+        cc : false ,
+	ws : 1 ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap38'] = { 
+        key : 'usareinforcements',
+        img : "cards/card_ap38.svg" ,
+        name : "Usa Reinforcements" ,
+        cc : false ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap39'] = { 
+        key : 'theyshallnotpass',
+        img : "cards/card_ap39.svg" ,
+        name : "They Shall Not Pass" ,
+        cc : true ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap40'] = { 
+        key : '14points',
+        img : "cards/card_ap40.svg" ,
+        name : "14 Points" ,
+        cc : false ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap41'] = { 
+        key : 'arabnorthernarmy',
+        img : "cards/card_ap41.svg" ,
+        name : "Arab Northern Army" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap42'] = { 
+        key : 'britishreinforcements',
+        img : "cards/card_ap42.svg" ,
+        name : "British Reinforcements" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap43'] = { 
+        key : 'usareinforcements',
+        img : "cards/card_ap43.svg" ,
+        name : "Usa Reinforcements" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap44'] = { 
+        key : 'greece',
+        img : "cards/card_ap44.svg" ,
+        name : "Greece" ,
+        cc : false ,
+	ws : 1 ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap45'] = { 
+        key : 'kerenskyoffensive',
+        img : "cards/card_ap45.svg" ,
+        name : "Kerensky Offensive" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap46'] = { 
+        key : 'brusilovoffensive',
+        img : "cards/card_ap46.svg" ,
+        name : "Brusilov Offensive" ,
+        cc : false ,
+	ws : 2 ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap47'] = { 
+        key : 'usareinforcements',
+        img : "cards/card_ap47.svg" ,
+        name : "Usa Reinforcements" ,
+        cc : false ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap48'] = { 
+        key : 'royaltankcorps',
+        img : "cards/card_ap48.svg" ,
+        name : "Royal Tank Corps" ,
+        cc : true ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap49'] = { 
+        key : 'sinaipipeline',
+        img : "cards/card_ap49.svg" ,
+        name : "Sinai Pipeline" ,
+        cc : false ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap50'] = { 
+        key : 'allenby',
+        img : "cards/card_ap50.svg" ,
+        name : "Allenby" ,
+        cc : false ,
+	ws : 1 ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap51'] = { 
+        key : 'everyoneintobattle',
+        img : "cards/card_ap51.svg" ,
+        name : "Everyone Into Battle" ,
+        cc : false ,
+	ws : 1 ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap52'] = { 
+        key : 'convoy',
+        img : "cards/card_ap52.svg" ,
+        name : "Convoy" ,
+        cc : false ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap53'] = { 
+        key : 'armyoftheorient',
+        img : "cards/card_ap53.svg" ,
+        name : "Army Of The Orient" ,
+        cc : false ,
+        ops : 5 ,
+        sr : 5 ,        
+        rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'IT' : 2 , 'RU' : 4 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap54'] = { 
+        key : 'zimmermanntelegram',
+        img : "cards/card_ap54.svg" ,
+        name : "Zimmermann Telegram" ,
+        cc : false ,
+	ws : 2 ,
+        ops : 5 ,
+        sr : 5 ,        
+        rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'IT' : 2 , 'RU' : 4 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap55'] = { 
+        key : 'overthere',
+        img : "cards/card_ap55.svg" ,
+        name : "Over There" ,
+        cc : false ,
+        ops : 5 ,
+        sr : 5 ,        
+        rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'IT' : 2 , 'RU' : 4 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap56'] = { 
+        key : 'paristaxis',
+        img : "cards/card_ap56.png" ,
+        name : "Paris Taxis" ,
+        cc : false ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap57'] = { 
+        key : 'russiancavalry',
+        img : "cards/card_ap57.png" ,
+        name : "Russian Cavalry" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap58'] = { 
+        key : 'russianguards',
+        img : "cards/card_ap58.png" ,
+        name : "Russian Guards" ,
+        cc : true ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap59'] = { 
+        key : 'alpinetroops',
+        img : "cards/card_ap59.png" ,
+        name : "Alpine Troops" ,
+        cc : true ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 2 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+
+deck['ap60'] = { 
+        key : 'czechlegion',
+        img : "cards/card_ap60.png" ,
+        name : "Czech Legion" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap61'] = { 
+        key : 'maude',
+        img : "cards/card_ap61.png" ,
+        name : "Maude" ,
+        cc : true ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap62'] = { 
+        key : 'Thesixtusaffair',
+        img : "cards/card_ap62.png" ,
+        name : "The Sixtus Affair" ,
+        cc : false ,
+	ws : 1 ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap63'] = { 
+        key : 'backstothewall',
+        img : "cards/card_ap63.png" ,
+        name : "Backs To The Wall" ,
+        cc : true ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap64'] = { 
+        key : 'usareinforcements',
+        img : "cards/card_ap64.png" ,
+        name : "Usa Reinforcements" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap65'] = { 
+        key : 'influenza',
+        img : "cards/card_ap65.png" ,
+        name : "Influenza" ,
+        cc : false ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+    }
+
+    if (type == "central" || type == "all") {
 
    deck['cp35'] = { 
         key : 'mustardgas',
@@ -1462,8 +1739,8 @@ deck['cp33'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
    deck['cp36'] = { 
@@ -1471,13 +1748,14 @@ deck['cp33'] = {
         img : "cards/card_cp36.svg" ,
         name : "U-Boats Unleashed" ,
         cc : false ,
+	ws : 2 ,
         ops : 2 ,
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
    deck['cp37'] = { 
@@ -1485,13 +1763,14 @@ deck['cp33'] = {
         img : "cards/card_cp37.svg" ,
         name : "Hoffmann" ,
         cc : false ,
+	ws : 1 ,
         ops : 2 ,
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
    deck['cp38'] = { 
@@ -1504,8 +1783,8 @@ deck['cp33'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
    deck['cp39'] = { 
@@ -1518,8 +1797,8 @@ deck['cp33'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 
@@ -1533,8 +1812,8 @@ deck['cp33'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
    deck['cp41'] = { 
@@ -1547,8 +1826,8 @@ deck['cp33'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
    deck['cp42'] = { 
@@ -1561,8 +1840,8 @@ deck['cp33'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
    deck['cp43'] = { 
         key : 'vonbelow',
@@ -1574,8 +1853,8 @@ deck['cp33'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
    deck['cp44'] = { 
@@ -1588,8 +1867,8 @@ deck['cp33'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
    deck['cp45'] = { 
@@ -1597,13 +1876,14 @@ deck['cp33'] = {
         img : "cards/card_cp45.svg" ,
         name : "Treaty of Brest Litovsk" ,
         cc : false ,
+	ws : 1 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 
@@ -1617,8 +1897,8 @@ deck['cp33'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
   deck['cp47'] = { 
@@ -1626,13 +1906,14 @@ deck['cp33'] = {
         img : "cards/card_cp47.svg" ,
         name : "French Mutiny" ,
         cc : false ,
+	ws : 1 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp48'] = { 
@@ -1645,21 +1926,22 @@ deck['cp48'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 deck['cp49'] = { 
         key : 'michael',
         img : "cards/card_cp49.svg" ,
         name : "Michael" ,
         cc : true ,
+	ws : 1 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp50'] = { 
@@ -1672,8 +1954,8 @@ deck['cp50'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp51'] = { 
@@ -1686,8 +1968,8 @@ deck['cp51'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp52'] = { 
@@ -1700,8 +1982,8 @@ deck['cp52'] = {
         rp : { 'AH' : 3 , 'BU' : 1 , 'GE' : 4 , 'TU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp53'] = { 
@@ -1714,8 +1996,8 @@ deck['cp53'] = {
         rp : { 'AH' : 3 , 'BU' : 1 , 'GE' : 4 , 'TU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp54'] = { 
@@ -1723,13 +2005,14 @@ deck['cp54'] = {
         img : "cards/card_cp54.svg" ,
         name : "H-L Take Command" ,
         cc : false ,
+	ws : 2 ,
         ops : 5 ,
         sr : 5 ,        
         rp : { 'AH' : 3 , 'BU' : 1 , 'GE' : 4 , 'TU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp55'] = { 
@@ -1742,11 +2025,11 @@ deck['cp55'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
-
+/***** OPTIONAL ******
 deck['cp56'] = { 
         key : 'withdrawal',
         img : "cards/card_cp56.png" ,
@@ -1757,8 +2040,8 @@ deck['cp56'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp57'] = { 
@@ -1771,8 +2054,8 @@ deck['cp57'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 deck['cp58'] = { 
         key : 'stavkatimidity',
@@ -1784,8 +2067,8 @@ deck['cp58'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 
@@ -1799,8 +2082,8 @@ deck['cp59'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp60'] = { 
@@ -1813,8 +2096,8 @@ deck['cp60'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 deck['cp61'] = { 
         key : 'haig',
@@ -1826,8 +2109,8 @@ deck['cp61'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 
@@ -1841,8 +2124,8 @@ deck['cp62'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp63'] = { 
@@ -1855,8 +2138,8 @@ deck['cp63'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp64'] = { 
@@ -1869,8 +2152,8 @@ deck['cp64'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 
@@ -1879,25 +2162,18 @@ deck['cp65'] = {
         img : "cards/card_cp65.png" ,
         name : "Prince Max" ,
         cc : false ,
+	ws : 3 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
-
+***** OPTIONAL ******/
     }
 
-    return deck;
-  }
-  returnLimitedWarDeck(type="all") {
-    let deck = {};
-    return deck;
-  }
-  returnFullWarDeck(type="all") {
-    let deck = {};
     return deck;
   }
   returnDeck(type="all") {
@@ -1913,6 +2189,4 @@ deck['cp65'] = {
 
     return deck;
   }
-
-
 

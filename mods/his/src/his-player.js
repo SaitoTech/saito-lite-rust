@@ -1347,6 +1347,7 @@ if (this.game.state.events.society_of_jesus == 1) {
       }
 
       his_self.theses_overlay.space_onclick_callback = null;
+      his_self.theses_overlay.remove();
       mycallback(action);
 
     });
@@ -1977,6 +1978,7 @@ if (relief_siege == 1) {
         }
 
         if (id === "manual") {
+	  try { his_self.field_battle_overlay.hide(); } catch (err) {}
           selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, finishAndFortify);
           return 0;
         }
@@ -2059,6 +2061,7 @@ if (relief_siege == 1) {
 console.log("#");
 console.log("# no need to intervene - exit 1");
 console.log("#");
+      his_self.theses_overlay.hide();
       his_self.endTurn();
       return 1;
     }
@@ -2069,7 +2072,7 @@ console.log("#");
 console.log("! " + sources.length + " -- " + sources_idx);
 
       if (sources.length < (sources_idx+1)) {
-	his_self.theses_overlay.hide();
+        his_self.theses_overlay.hide();
 console.log("#");
 console.log("# no need to intervene - exit 2");
 console.log("#");
@@ -2089,7 +2092,7 @@ console.log("#");
 
       let space = his_self.game.spaces[sources[sources_idx].spacekey];
 
-      if (space.units[f].length > unit_idx) {
+      if (unit_idx >= 0) {
 
 console.log("into here...");
 
@@ -2102,18 +2105,78 @@ console.log("into here...");
 
         if (unit_name == "" || res.length == 0) {
 console.log(" next nuf");
-	   next_unit_fnct(sources, sources_idx, unit_idx+1, next_unit_fnct);
+	   next_unit_fnct(sources, sources_idx, unit_idx-1, next_unit_fnct);
 	} else {
 
           his_self.playerSelectSpaceWithFilter(
-            "Winter "+unit_name+" (unit #"+(unit_idx+1)+") from "+his_self.returnSpaceName(space.key) ,
+            "Winter "+unit_name+" ("+(parseInt(unit_idx)+1)+") from "+his_self.returnSpaceName(space.key) ,
             function(space) {
               if (destinations.includes(space.key)) { return 1; }
 	      return 0;
             }, 
             function(spacekey) {
-	      his_self.addMove("move\t"+f+"\tland\t"+space.key+"\t"+spacekey+"\t"+unit_idx);
-	      next_unit_fnct(sources, sources_idx, unit_idx+1, next_unit_fnct);
+
+	      let move_leader_with_troops = false;
+	      let moved_this_unit = false;
+              let leader_idx = [];
+
+	      for (let i = 0; i < space.units[f].length; i++) {
+		let u = space.units[f][i];
+		if (i != unit_idx && (u.army_leader || u.navy_leader)) {
+		  leader_idx.push(i);
+		}
+	      }
+
+console.log("leaders: " + leader_idx.length);
+
+	      if (leader_idx.length > 0) {
+		let c = confirm("Move Leader with Troops?");
+	        if (c) { move_leader_with_troops = true; }
+	      }
+
+	      //
+	      // auto-move with last unit
+	      //
+	      if (leader_idx.length == space.units[f].length-1) {
+		move_leader_with_troops = true;
+	      }
+
+              his_self.addUnit(f, spacekey, unit_type);
+	      his_self.removeUnit(f, space.key, unit_type);
+	      his_self.addMove("move\t"+f+"\tland\t"+space.key+"\t"+spacekey+"\t"+unit_idx+"\t"+his_self.game.player);
+
+	      if (move_leader_with_troops) {
+		for (let z = space.units[f].length-1; z >= 0; z--) {
+		  if (space.units[f][z].army_leader || space.units[f][z].navy_leader) {
+		    let u = space.units[f][z];
+	            his_self.removeUnit(f, space.key, u.type);
+	            his_self.addArmyLeader(f, spacekey, u.type);
+
+	            his_self.addMove("move\t"+f+"\tland\t"+space.key+"\t"+spacekey+"\t"+unit_idx+"\t"+his_self.game.player);
+		  }
+		}
+	      }
+
+	      //
+	      // reorganize MOVES
+	      //
+	      for (let y = 0; y < his_self.moves.length-1; y++) {
+  	        let tmpx = his_self.moves[y].split("\t");
+  	        let tmpy = his_self.moves[y+1].split("\t");
+	        if (tmpx[0] == "move") {
+	          if (parseInt(tmpx[5]) > parseInt(tmpy[5])) {
+		    let x = his_self.moves[y];
+		    let y = his_self.moves[y+1];
+		    his_self.moves[y] = y;
+		    his_self.moves[y+1] = x;
+		    y = -1; // we found problem, so loop again
+	          }
+	        }
+	      }
+
+	      his_self.displaySpace(space.key);
+	      his_self.displaySpace(spacekey);
+	      next_unit_fnct(sources, sources_idx, unit_idx-1, next_unit_fnct);
             },
             null ,
             true
@@ -2121,8 +2184,9 @@ console.log(" next nuf");
 
 	}
       } else {
-console.log(" next aaa");
-        next_unit_fnct(sources, sources_idx+1, 0, next_unit_fnct);
+        let next_unit_idx = 100;
+	if (sources.length > sources_idx+1) { next_unit_idx = his_self.game.spaces[sources[sources_idx+1].spacekey].units[f].length-1; }
+        next_unit_fnct(sources, sources_idx+1, next_unit_idx, next_unit_fnct);
       }
 
     }
@@ -2131,11 +2195,14 @@ console.log(" next aaa");
 console.log("#");
 console.log("# sources so going into next_unit_fnct");
 console.log("#");
-      next_unit_fnct(sources, 0, 0, next_unit_fnct);
+      let next_unit_idx = 100;
+      next_unit_idx = his_self.game.spaces[sources[0].spacekey].units[f].length-1;
+      next_unit_fnct(sources, 0, next_unit_idx, next_unit_fnct);
     } else {
 console.log("#");
 console.log("# no sources of any length");
 console.log("#");
+      his_self.theses_overlay.hide();
       his_self.endTurn();
     }
          
@@ -2255,6 +2322,9 @@ console.log("#");
 
         this.updateStatusWithOptions(`Playing ${this.popup(card)}`, html);
         this.attachCardboxEvents((user_choice) => {
+
+	  this.updateStatus("submitting...");
+
           if (user_choice === "ops") {
             let ops = this.game.deck[0].cards[card].ops;
             this.playerPlayOps(card, faction, ops);
@@ -4137,12 +4207,12 @@ does_units_to_move_have_unit = true; }
 
   }
 
-//
-// duplicates playerMoveFormationInClear -- this is the function we hit
-// if we use the shortcut "continue move". the reason we need to duplicate
-// is that the handling of the OPS is slightly different and there is a 
-// spacekey argument in the function call that doesn't exist otherwise.
-//
+  //
+  // duplicates playerMoveFormationInClear -- this is the function we hit
+  // if we use the shortcut "continue move". the reason we need to duplicate
+  // is that the handling of the OPS is slightly different and there is a 
+  // spacekey argument in the function call that doesn't exist otherwise.
+  //
   async playerContinueToMoveFormationInClear(his_self, player, faction, spacekey, ops_to_spend, ops_remaining=0) {
 
     // BACK moves us to OPS menu
@@ -4376,10 +4446,6 @@ does_units_to_move_have_unit = true; }
 	    selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
 	  });
 	}
-
-
-
-
 
 	//
 	// is this a rapid move ?
@@ -4713,6 +4779,7 @@ does_units_to_move_have_unit = true; }
       function(space) {
 	let num_moveable = 0;
 	if (space.key == "persia" || space.key == "egypt" || space.key == "ireland") { return 0; }
+	if (space.besieged == 2) { return 0; } // you cannot move from a town just placed under siege
 
 	for (let z in space.units) {
 	  if (space.units[z].length > 0 && his_self.returnPlayerCommandingFaction(z) == his_self.game.player && (z == faction || his_self.returnControllingPower(z) == faction)) {
@@ -7003,8 +7070,6 @@ console.log("checking if squadrons are protecting!");
 
     // BACK moves us to OPS menu
     his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
-
-// TEST
 
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     let spaces_to_fix = [];

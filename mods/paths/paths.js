@@ -51,6 +51,7 @@ class PathsOfGlory extends GameTemplate {
     this.mandates_overlay = new MandatesOverlay(this.app, this); 
     this.welcome_overlay = new WelcomeOverlay(this.app, this); 
     this.menu_overlay = new MenuOverlay(this.app, this); 
+    this.space_overlay = new SpaceOverlay(this.app, this); 
 
     //
     // this sets the ratio used for determining
@@ -1717,8 +1718,10 @@ console.log("\n\n\n\n");
       this.game.queue.push("READY");
       this.game.queue.push("init");
 
-      this.game.queue.push("DEAL\t2\t2\t7");
-      this.game.queue.push("DEAL\t1\t1\t6"); // player chooses Guns of August or extra card 
+      this.game.queue.push("DEAL\t2\t2\t2");
+      this.game.queue.push("DEAL\t1\t1\t1"); // player chooses Guns of August or extra card 
+//      this.game.queue.push("DEAL\t2\t2\t7");
+//      this.game.queue.push("DEAL\t1\t1\t6"); // player chooses Guns of August or extra card 
 
       this.game.queue.push("DECKENCRYPT\t2\t2");
       this.game.queue.push("DECKENCRYPT\t2\t1");
@@ -1773,8 +1776,62 @@ console.log("\n\n\n\n");
     return `<span class="showcard ${card}" id="${card}">${card}</span>`;
   }
 
+  removeCardFromHand(card) {
 
+    if (card[0] === 'c' && this.game.player == this.returnPlayerOfFaction("central")) {
+      if (this.game.deck[0].hand.includes(card)) {
+        for (let i = 0; i < this.game.deck[0].hand.length; i++) {
+	  if (this.game.deck[0].hand[i] === card) {
+	    if (!this.game.deck[0].discards[card]) {
+	      this.game.deck[0].discards[card] = this.game.deck[0].cards[card];
+	      delete this.game.deck[0].cards[card];
+	    }
+	    this.game.deck[0].hand.splice(i, 1);
+	  }
+	}
+      }
+    }
+    if (card[0] === 'a' && this.game.player == this.returnPlayerOfFaction("allies")) {
+      if (this.game.deck[1].hand.includes(card)) {
+        for (let i = 0; i < this.game.deck[1].hand.length; i++) {
+	  if (this.game.deck[1].hand[i] === card) {
+	    if (!this.game.deck[1].discards[card]) {
+	      this.game.deck[1].discards[card] = this.game.deck[1].cards[card];
+	      delete this.game.deck[1].cards[card];
+	    }
+	    this.game.deck[1].hand.splice(i, 1);
+	  }
+	}
+      }
+    }
 
+    if (this.game.deck[1].cards[card]) {
+      this.game.deck[1].discards[card] = this.game.deck[1].cards[card];
+      delete this.game.deck[1].cards[card];
+    }
+    if (this.game.deck[1].cards[card]) {
+      this.game.deck[1].discards[card] = this.game.deck[1].cards[card];
+      delete this.game.deck[1].cards[card];
+    }
+
+  }
+
+  removeCardFromGame(card) {
+
+    for (let key in this.game.deck[0].cards) {
+      if (key === card) {
+        this.game.deck[0].removed[key] = this.game.deck[0].cards[key];
+        delete this.game.deck[0].cards[key];
+      }
+    }
+    for (let key in this.game.deck[1].cards) {
+      if (key === card) {
+        this.game.deck[1].removed[key] = this.game.deck[1].cards[key];
+        delete this.game.deck[1].cards[key];
+      }
+    }
+
+  }
 
   returnMobilizationDeck(type="all") {
     let deck = {};
@@ -1786,30 +1843,37 @@ console.log("\n\n\n\n");
         img : "cards/card_ap01.svg" ,
         name : "British Reinforcements" ,
         cc : false ,
+	ws : 1 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.addUnitToSpace("br_army02", "london");
+	  paths_self.addUnitToSpace("br_corps", "arbox");
+	  paths_self.displayBoard();
+	  return 1;
+	} ,
     }
-
 	    
 deck['ap02'] = { 
         key : 'blockade',
         img : "cards/card_ap02.svg" ,
         name : "Blockade" ,
         cc : false ,
+	ws : 2 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.game.state.events.blockade = 1;
+        } ,
       }
-
 
 deck['ap03'] = { 
         key : 'russianreinforcements',
@@ -1821,8 +1885,15 @@ deck['ap03'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
+	    paths_self.playerPlaceUnitOnBoard("russia", ["ru_army11", "ru_corps"], () => {
+	      paths_self.endTurn();
+	    });
+	  }
+	  return 0;
+	} ,
       }
 
 deck['ap04'] = { 
@@ -1835,8 +1906,8 @@ deck['ap04'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 
@@ -1850,11 +1921,9 @@ deck['ap05'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
-
-
 
 deck['ap06'] = { 
         key : 'withdrawal',
@@ -1866,8 +1935,8 @@ deck['ap06'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 
@@ -1881,12 +1950,9 @@ deck['ap07'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; }
       }
-
-
-
 
 deck['ap08'] = { 
         key : 'russianreinforcements',
@@ -1898,10 +1964,16 @@ deck['ap08'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
+	    paths_self.playerPlaceUnitOnBoard("russia", ["ru_corps", "ru_corps"], () => {
+	      paths_self.endTurn();
+	    });
+	  }
+	  return 0;
+	} ,
       }
-
 
 deck['ap09'] = { 
         key : 'moltke',
@@ -1913,10 +1985,12 @@ deck['ap09'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.turn <= 2) { return 1; } return 0; } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.game.state.events.moltke = 1;
+	  return 1;
+	} ,
       }
-
 
 deck['ap10'] = { 
         key : 'frenchreinforcements',
@@ -1928,11 +2002,16 @@ deck['ap10'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
+	    paths_self.playerPlaceUnitOnBoard("france", ["fr_army10"], () => {
+	      paths_self.endTurn();
+	    });
+	  }
+	  return 0;
+	} ,
       }
-
-
 
 deck['ap11'] = { 
         key : 'russianreinforcements',
@@ -1944,10 +2023,16 @@ deck['ap11'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
+	    paths_self.playerPlaceUnitOnBoard("russia", ["ru_army09", "ru_army10"], () => {
+	      paths_self.endTurn();
+	    });
+	  }
+	  return 0;
+	} ,
       }
-
 
 deck['ap12'] = { 
         key : 'entrench',
@@ -1959,768 +2044,88 @@ deck['ap12'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
+        canEvent : function(paths_self, faction) { if (this.game.state.events.entrench == 1) { return 0; } return 1; } ,
+        onEvent : function(paths_self, faction) {
 
+	  paths_self.game.state.events.entrench = 1;
+
+	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
+
+	    //
+	    // get eligible spaces
+	    //
+    	    let options = paths_self.returnSpacesWithFilter(
+      		(key) => {
+		  if (paths_self.game.spaces[key].trench > 0) { return 0; }
+        	  if (paths_self.game.spaces[key].control == "allies") {
+        	    if (paths_self.game.spaces[key].units.length > 0) {
+                      if (paths_self.checkSupplyStatus(key, "allies")) {
+		        return 1;
+		      }
+		    }
+		  }
+		} ,
+            );
+
+	    //
+	    // no placement options
+	    //
+	    if (options.length == 0) { return 1; }
+
+	    //
+	    // place a trench
+	    //
+            paths_self.playerSelectSpaceWithFilter(
+              "Add Level 1 Trench Where? ",
+              (key) => {
+          	if (options.includes(key)) { return 1; }
+              },
+              (key) => {
+ 		paths_self.addMove("entrench\tallies\t"+key);
+ 		paths_self.endTurn();
+		return 0;
+	      },
+              null, 
+              true
+            );
+	  }
+	  return 0;
+	} ,
+      }
 
 deck['ap13'] = { 
         key : 'rapeofbelgium',
         img : "cards/card_ap13.svg" ,
         name : "Rape Of Belgium" ,
         cc : false ,
+	ws : 2 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
-
 
 deck['ap14'] = { 
         key : 'britishreinforcements',
         img : "cards/card_ap14.svg" ,
         name : "British Reinforcements" ,
         cc : false ,
+	ws : 1 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,       
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap15'] = { 
-        key : 'britishreinforcements',
-        img : "cards/card_ap15.svg" ,
-        name : "British Reinforcements" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap16'] = { 
-        key : 'romania',
-        img : "cards/card_ap16.svg" ,
-        name : "Romania" ,
-        cc : false ,
-        ops : 5 ,
-        sr : 5 ,        
-        rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'IT' : 2 , 'RU' : 4 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap17'] = { 
-        key : 'italy',
-        img : "cards/card_ap17.svg" ,
-        name : "Italy" ,
-        cc : false ,
-        ops : 5 ,
-        sr : 5 ,        
-        rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'RU' : 4 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap18'] = { 
-        key : 'hurricanebarrage',
-        img : "cards/card_ap18.svg" ,
-        name : "Hurricane Barrage" ,
-        cc : true ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap19'] = { 
-        key : 'airsuperiority',
-        img : "cards/card_ap19.svg" ,
-        name : "Air Superiority" ,
-        cc : true ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap20'] = { 
-        key : 'britishreinforcements',
-        img : "cards/card_ap20.svg" ,
-        name : "British Reinforcements" ,
-        cc : false ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap21'] = { 
-        key : 'phosgenegas',
-        img : "cards/card_ap21.svg" ,
-        name : "Phosgene Gas" ,
-        cc : true ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap22'] = { 
-        key : 'italianreinforcements',
-        img : "cards/card_ap22.svg" ,
-        name : "Italian Reinforcements" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap23'] = { 
-        key : 'cloakanddagger',
-        img : "cards/card_ap23.svg" ,
-        name : "Cloak And Dagger" ,
-        cc : false ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap24'] = { 
-        key : 'frenchreinforcements',
-        img : "cards/card_ap24.svg" ,
-        name : "French Reinforcements" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap25'] = { 
-        key : 'russianreinforcements',
-        img : "cards/card_ap25.svg" ,
-        name : "Russian Reinforcements" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap26'] = { 
-        key : 'lusitania',
-        img : "cards/card_ap26.svg" ,
-        name : "Lusitania" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap27'] = { 
-        key : 'greatretreat',
-        img : "cards/card_ap27.svg" ,
-        name : "Great Retreat" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap28'] = { 
-        key : 'landships',
-        img : "cards/card_ap28.svg" ,
-        name : "Landships" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1, 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap29'] = { 
-        key : 'yudenitch',
-        img : "cards/card_ap29.svg" ,
-        name : "Yudenitch" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1, 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap30'] = { 
-        key : 'salonika',
-        img : "cards/card_ap30.svg" ,
-        name : "Salonika" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1, 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap31'] = { 
-        key : 'mef',
-        img : "cards/card_ap31.svg" ,
-        name : "Mef" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1, 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap32'] = { 
-        key : 'russianreinforcements',
-        img : "cards/card_ap32.svg" ,
-        name : "Russian Reinforcements" ,
-        cc : false ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap33'] = { 
-        key : 'grandfleet',
-        img : "cards/card_ap33.svg" ,
-        name : "Grand Fleet" ,
-        cc : false ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap34'] = { 
-        key : 'britishreinforcements',
-        img : "cards/card_ap34.svg" ,
-        name : "British Reinforcements" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap35'] = { 
-        key : 'yanksandtanks',
-        img : "cards/card_ap35.svg" ,
-        name : "Yanks And Tanks" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap36'] = { 
-        key : 'mineattack',
-        img : "cards/card_ap36.svg" ,
-        name : "Mine Attack" ,
-        cc : true ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap37'] = { 
-        key : 'independentairforce',
-        img : "cards/card_ap37.svg" ,
-        name : "Independent Air Force" ,
-        cc : false ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap38'] = { 
-        key : 'usareinforcements',
-        img : "cards/card_ap38.svg" ,
-        name : "Usa Reinforcements" ,
-        cc : false ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap39'] = { 
-        key : 'theyshallnotpass',
-        img : "cards/card_ap39.svg" ,
-        name : "They Shall Not Pass" ,
-        cc : true ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap40'] = { 
-        key : '14points',
-        img : "cards/card_ap40.svg" ,
-        name : "14 Points" ,
-        cc : false ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap41'] = { 
-        key : 'arabnorthernarmy',
-        img : "cards/card_ap41.svg" ,
-        name : "Arab Northern Army" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-deck['ap42'] = { 
-        key : 'britishreinforcements',
-        img : "cards/card_ap42.svg" ,
-        name : "British Reinforcements" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap43'] = { 
-        key : 'usareinforcements',
-        img : "cards/card_ap43.svg" ,
-        name : "Usa Reinforcements" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap44'] = { 
-        key : 'greece',
-        img : "cards/card_ap44.svg" ,
-        name : "Greece" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap45'] = { 
-        key : 'kerenskyoffensive',
-        img : "cards/card_ap45.svg" ,
-        name : "Kerensky Offensive" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap46'] = { 
-        key : 'brusilovoffensive',
-        img : "cards/card_ap46.svg" ,
-        name : "Brusilov Offensive" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap47'] = { 
-        key : 'usareinforcements',
-        img : "cards/card_ap47.svg" ,
-        name : "Usa Reinforcements" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap48'] = { 
-        key : 'royaltankcorps',
-        img : "cards/card_ap48.svg" ,
-        name : "Royal Tank Corps" ,
-        cc : true ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap49'] = { 
-        key : 'sinaipipeline',
-        img : "cards/card_ap49.svg" ,
-        name : "Sinai Pipeline" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap50'] = { 
-        key : 'allenby',
-        img : "cards/card_ap50.svg" ,
-        name : "Allenby" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap51'] = { 
-        key : 'everyoneintobattle',
-        img : "cards/card_ap51.svg" ,
-        name : "Everyone Into Battle" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap52'] = { 
-        key : 'convoy',
-        img : "cards/card_ap52.svg" ,
-        name : "Convoy" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap53'] = { 
-        key : 'armyoftheorient',
-        img : "cards/card_ap53.svg" ,
-        name : "Army Of The Orient" ,
-        cc : false ,
-        ops : 5 ,
-        sr : 5 ,        
-        rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'IT' : 2 , 'RU' : 4 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap54'] = { 
-        key : 'zimmermanntelegram',
-        img : "cards/card_ap54.svg" ,
-        name : "Zimmermann Telegram" ,
-        cc : false ,
-        ops : 5 ,
-        sr : 5 ,        
-        rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'IT' : 2 , 'RU' : 4 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap55'] = { 
-        key : 'overthere',
-        img : "cards/card_ap55.svg" ,
-        name : "Over There" ,
-        cc : false ,
-        ops : 5 ,
-        sr : 5 ,        
-        rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'IT' : 2 , 'RU' : 4 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap56'] = { 
-        key : 'paristaxis',
-        img : "cards/card_ap56.png" ,
-        name : "Paris Taxis" ,
-        cc : false ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap57'] = { 
-        key : 'russiancavalry',
-        img : "cards/card_ap57.png" ,
-        name : "Russian Cavalry" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap58'] = { 
-        key : 'russianguards',
-        img : "cards/card_ap58.png" ,
-        name : "Russian Guards" ,
-        cc : true ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap59'] = { 
-        key : 'alpinetroops',
-        img : "cards/card_ap59.png" ,
-        name : "Alpine Troops" ,
-        cc : true ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 2 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap60'] = { 
-        key : 'czechlegion',
-        img : "cards/card_ap60.png" ,
-        name : "Czech Legion" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap61'] = { 
-        key : 'maude',
-        img : "cards/card_ap61.png" ,
-        name : "Maude" ,
-        cc : true ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-
-deck['ap62'] = { 
-        key : 'Thesixtusaffair',
-        img : "cards/card_ap62.png" ,
-        name : "The Sixtus Affair" ,
-        cc : false ,
-        ops : 2 ,
-        sr : 2 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap63'] = { 
-        key : 'backstothewall',
-        img : "cards/card_ap63.png" ,
-        name : "Backs To The Wall" ,
-        cc : true ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap64'] = { 
-        key : 'usareinforcements',
-        img : "cards/card_ap64.png" ,
-        name : "Usa Reinforcements" ,
-        cc : false ,
-        ops : 3 ,
-        sr : 4 ,        
-        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
-      }
-
-deck['ap65'] = { 
-        key : 'influenza',
-        img : "cards/card_ap65.png" ,
-        name : "Influenza" ,
-        cc : false ,
-        ops : 4 ,
-        sr : 4 ,        
-        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
-        type : "normal" ,
-        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.addUnitToSpace("br_army01", "london");
+	  paths_self.addUnitToSpace("br_corps", "arbox");
+	  paths_self.displayBoard();
+	  return 1;
+	} ,
       }
 
 
@@ -2733,13 +2138,27 @@ deck['ap65'] = {
         img : "cards/card_cp01.svg" ,
         name : "Guns of August" ,
         cc : false ,
+	ws : 2 ,
         ops : 3 ,
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.turn == 1 && paths_self.game.state.round == 1) { return 1; } return 0; } ,
+        onEvent : function(paths_self, faction) {
+
+	  paths_self.game.spaces['liege'].fort = -1;
+	  paths_self.game.spaces['liege'].control = "central";
+	  paths_self.moveUnitToSpacekey("ge_army01", "liege");
+	  paths_self.moveUnitToSpacekey("ge_army02", "liege");
+	  paths_self.game.spaces['liege'].activated_for_combat = 1;
+	  paths_self.game.spaces['koblenz'].activated_for_combat = 1;	    
+	  paths_self.game.queue.push("player_play_combat\tcentral");
+	  paths_self.displayBoard();
+
+	  return 1;
+
+	} ,
       }
 
       deck['cp02'] = { 
@@ -2752,8 +2171,8 @@ deck['ap65'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
       deck['cp03'] = { 
@@ -2766,8 +2185,8 @@ deck['ap65'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
  deck['cp04'] = { 
@@ -2780,8 +2199,8 @@ deck['ap65'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
    deck['cp05'] = { 
@@ -2794,22 +2213,69 @@ deck['ap65'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
    deck['cp06'] = { 
         key : 'entrench',
         img : "cards/card_cp06.svg" ,
-        name : "ENTRENCH" ,
+        name : "Entrench" ,
         cc : false ,
         ops : 3 ,
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.events.entrench == 1) { return 0; } return 1; } ,
+        onEvent : function(paths_self, faction) { 
+
+	  paths_self.game.state.events.entrench = 1;
+
+	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
+
+	    //
+	    // get eligible spaces
+	    //
+    	    let options = paths_self.returnSpacesWithFilter(
+      		(key) => {
+		  if (paths_self.game.spaces[key].trench > 0) { return 0; }
+        	  if (paths_self.game.spaces[key].control == "central") {
+        	    if (paths_self.game.spaces[key].units.length > 0) {
+                      if (paths_self.checkSupplyStatus(key, "central")) {
+		        return 1;
+		      }
+		    }
+		  }
+		} ,
+            );
+
+	    //
+	    // no placement options
+	    //
+	    if (options.length == 0) { return 1; }
+
+	    //
+	    // place a trench
+	    //
+            paths_self.playerSelectSpaceWithFilter(
+              "Add Level 1 Trench Where? ",
+              (key) => {
+          	if (options.includes(key)) { return 1; }
+              },
+              (key) => {
+ 		paths_self.addMove("entrench\tcentral\t"+key);
+ 		paths_self.endTurn();
+		return 0;
+	      },
+              null, 
+              true
+            );
+	  }
+
+	  return 0;
+
+	} ,
       }
 
 deck['cp07'] = { 
@@ -2822,8 +2288,15 @@ deck['cp07'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
+	    paths_self.playerPlaceUnitOnBoard("germany", ["ge_army09"], () => {
+	      paths_self.endTurn();
+	    });
+	  }
+	  return 0;
+	} ,
       }
 
    deck['cp08'] = { 
@@ -2836,8 +2309,8 @@ deck['cp07'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
    deck['cp09'] = { 
@@ -2845,13 +2318,14 @@ deck['cp07'] = {
         img : "cards/card_cp09.svg" ,
         name : "Reichstag Truce" ,
         cc : false ,
+	ws : 1 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 deck['cp10'] = { 
         key : 'sudarmy',
@@ -2863,23 +2337,25 @@ deck['cp10'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) { 
+	  paths_self.game.state.events.sudarmy = 1;  
+	  return 1;
+	} ,
       }
-
-
 deck['cp11'] = { 
         key : 'oberost',
         img : "cards/card_cp11.svg" ,
         name : "Oberost" ,
         cc : false ,
+	ws : 1 ,
         ops : 2 ,
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp12'] = { 
@@ -2892,21 +2368,38 @@ deck['cp12'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.addUnitToSpace("ge_corps", "arbox");
+	  paths_self.addUnitToSpace("ge_corps", "arbox");
+	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
+	    paths_self.playerPlaceUnitOnBoard("germany", ["ge_army10"], () => {
+	      paths_self.endTurn();
+	    });
+          }
+	  return 0;
+	} ,
       }
     deck['cp13'] = { 
         key : 'falkenhayn',
         img : "cards/card_cp13.svg" ,
         name : "Falkenhayn" ,
         cc : false ,
+	ws : 2 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { 
+	  if (paths_self.game.state.turn >= 3) { return 1; }
+	  if (paths_self.game.state.events.moltke == 1) { return 1; }
+	  return 0; 
+        } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.game.state.events.falkenhayn = 1;
+	  return 1;
+	} ,
       }
 
 
@@ -2920,9 +2413,334 @@ deck['cp12'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.addUnitToSpace("ah_army07", "vienna");
+	  paths_self.addUnitToSpace("ah_corps", "crbox");
+	  paths_self.addUnitToSpace("ah_corps", "crbox");
+	  paths_self.displayBoard();
+	  return 1;
+
+
+	} ,
       }
+
+
+    }
+
+    for (let key in deck) {
+      if (!deck[key].ws) { deck[key].ws = 0; }
+    }
+
+    return deck;
+  }
+
+  returnLimitedWarDeck(type="all") {
+
+    let deck = {};
+
+    if (type == "allies" || type == "all") {
+
+deck['ap15'] = { 
+        key : 'britishreinforcements',
+        img : "cards/card_ap15.svg" ,
+        name : "British Reinforcements" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.addUnitToSpace("br_army04", "london");
+	  paths_self.addUnitToSpace("br_corps", "arbox");
+	  paths_self.displayBoard();
+	  return 1;
+	} ,
+      }
+
+deck['ap16'] = { 
+        key : 'romania',
+        img : "cards/card_ap16.svg" ,
+        name : "Romania" ,
+        cc : false ,
+	ws : 1 ,
+        ops : 5 ,
+        sr : 5 ,        
+        rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'IT' : 2 , 'RU' : 4 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+
+deck['ap17'] = { 
+        key : 'italy',
+        img : "cards/card_ap17.svg" ,
+        name : "Italy" ,
+        cc : false ,
+	ws : 2 ,
+        ops : 5 ,
+        sr : 5 ,        
+        rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'RU' : 4 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+
+deck['ap18'] = { 
+        key : 'hurricanebarrage',
+        img : "cards/card_ap18.svg" ,
+        name : "Hurricane Barrage" ,
+        cc : true ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap19'] = { 
+        key : 'airsuperiority',
+        img : "cards/card_ap19.svg" ,
+        name : "Air Superiority" ,
+        cc : true ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap20'] = { 
+        key : 'britishreinforcements',
+        img : "cards/card_ap20.svg" ,
+        name : "British Reinforcements" ,
+        cc : false ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+
+deck['ap21'] = { 
+        key : 'phosgenegas',
+        img : "cards/card_ap21.svg" ,
+        name : "Phosgene Gas" ,
+        cc : true ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap22'] = { 
+        key : 'italianreinforcements',
+        img : "cards/card_ap22.svg" ,
+        name : "Italian Reinforcements" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap23'] = { 
+        key : 'cloakanddagger',
+        img : "cards/card_ap23.svg" ,
+        name : "Cloak And Dagger" ,
+        cc : false ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap24'] = { 
+        key : 'frenchreinforcements',
+        img : "cards/card_ap24.svg" ,
+        name : "French Reinforcements" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap25'] = { 
+        key : 'russianreinforcements',
+        img : "cards/card_ap25.svg" ,
+        name : "Russian Reinforcements" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap26'] = { 
+        key : 'lusitania',
+        img : "cards/card_ap26.svg" ,
+        name : "Lusitania" ,
+        cc : false ,
+	ws : 2 ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap27'] = { 
+        key : 'greatretreat',
+        img : "cards/card_ap27.svg" ,
+        name : "Great Retreat" ,
+        cc : false ,
+	ws : 1 ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+
+deck['ap28'] = { 
+        key : 'landships',
+        img : "cards/card_ap28.svg" ,
+        name : "Landships" ,
+        cc : false ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1, 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap29'] = { 
+        key : 'yudenitch',
+        img : "cards/card_ap29.svg" ,
+        name : "Yudenitch" ,
+        cc : false ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1, 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+
+deck['ap30'] = { 
+        key : 'salonika',
+        img : "cards/card_ap30.svg" ,
+        name : "Salonika" ,
+        cc : false ,
+	ws : 1 ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1, 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+
+deck['ap31'] = { 
+        key : 'mef',
+        img : "cards/card_ap31.svg" ,
+        name : "Mef" ,
+        cc : false ,
+	ws : 1 ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1, 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap32'] = { 
+        key : 'russianreinforcements',
+        img : "cards/card_ap32.svg" ,
+        name : "Russian Reinforcements" ,
+        cc : false ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap33'] = { 
+        key : 'grandfleet',
+        img : "cards/card_ap33.svg" ,
+        name : "Grand Fleet" ,
+        cc : false ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap34'] = { 
+        key : 'britishreinforcements',
+        img : "cards/card_ap34.svg" ,
+        name : "British Reinforcements" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+    }
+
+    if (type == "central" || type == "all") {
 
       deck['cp15'] = { 
         key : 'chlorinegas',
@@ -2934,8 +2752,8 @@ deck['cp12'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
   deck['cp16'] = { 
@@ -2948,8 +2766,8 @@ deck['cp12'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 
@@ -2963,8 +2781,8 @@ deck['cp12'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
   deck['cp18'] = { 
@@ -2977,8 +2795,8 @@ deck['cp12'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
   deck['cp19'] = { 
@@ -2991,8 +2809,8 @@ deck['cp12'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 
@@ -3006,8 +2824,8 @@ deck['cp12'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
   deck['cp21'] = { 
@@ -3020,8 +2838,8 @@ deck['cp12'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
   deck['cp22'] = { 
         key : 'germanreinforcements',
@@ -3033,8 +2851,8 @@ deck['cp12'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 
@@ -3048,8 +2866,8 @@ deck['cp12'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
   deck['cp24'] = { 
@@ -3062,8 +2880,8 @@ deck['cp12'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
   deck['cp25'] = { 
         key : 'highseasfleet',
@@ -3075,8 +2893,8 @@ deck['cp12'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp26'] = { 
@@ -3084,28 +2902,29 @@ deck['cp26'] = {
         img : "cards/card_cp26.svg" ,
         name : "Place of Execution" ,
         cc : true ,
+	ws : 1 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
-
 
   deck['cp27'] = { 
         key : 'zeppelinraids',
         img : "cards/card_cp27.svg" ,
         name : "Zeppelin Raids" ,
         cc : false ,
+	ws : 1 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
   deck['cp28'] = { 
@@ -3113,13 +2932,14 @@ deck['cp26'] = {
         img : "cards/card_cp28.svg" ,
         name : "Tsar Takes Command" ,
         cc : false ,
+	ws : 1 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
   deck['cp29'] = { 
@@ -3132,8 +2952,8 @@ deck['cp26'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp30'] = { 
@@ -3146,8 +2966,8 @@ deck['cp30'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp31'] = { 
@@ -3160,8 +2980,8 @@ deck['cp31'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp32'] = { 
@@ -3169,13 +2989,14 @@ deck['cp32'] = {
         img : "cards/card_cp32.svg" ,
         name : "War in Africa" ,
         cc : false ,
+	ws : 1 ,
         ops : 3 ,
         sr : 4 ,        
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp33'] = { 
@@ -3183,27 +3004,486 @@ deck['cp33'] = {
         img : "cards/card_cp33.svg" ,
         name : "Walter Rathenau" ,
         cc : false ,
+	ws : 2 ,
         ops : 5 ,
         sr : 5 ,        
         rp : { 'AH' : 3 , 'BU' : 1 , 'GE' : 4 , 'TU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
    deck['cp34'] = { 
         key : 'bulgaria',
         img : "cards/card_cp34.svg" ,
         name : "Bulgaria" ,
         cc : false ,
+	ws : 2 ,
         ops : 5 ,
         sr : 5 ,        
         rp : { 'AH' : 3 , 'GE' : 4 , 'TU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
+
+
+    }
+    return deck;
+  }
+
+  returnFullWarDeck(type="all") {
+    let deck = {};
+
+    if (type == "allies" || type == "all") {
+
+deck['ap35'] = { 
+        key : 'yanksandtanks',
+        img : "cards/card_ap35.svg" ,
+        name : "Yanks And Tanks" ,
+        cc : false ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap36'] = { 
+        key : 'mineattack',
+        img : "cards/card_ap36.svg" ,
+        name : "Mine Attack" ,
+        cc : true ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+
+deck['ap37'] = { 
+        key : 'independentairforce',
+        img : "cards/card_ap37.svg" ,
+        name : "Independent Air Force" ,
+        cc : false ,
+	ws : 1 ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap38'] = { 
+        key : 'usareinforcements',
+        img : "cards/card_ap38.svg" ,
+        name : "Usa Reinforcements" ,
+        cc : false ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap39'] = { 
+        key : 'theyshallnotpass',
+        img : "cards/card_ap39.svg" ,
+        name : "They Shall Not Pass" ,
+        cc : true ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap40'] = { 
+        key : '14points',
+        img : "cards/card_ap40.svg" ,
+        name : "14 Points" ,
+        cc : false ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap41'] = { 
+        key : 'arabnorthernarmy',
+        img : "cards/card_ap41.svg" ,
+        name : "Arab Northern Army" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap42'] = { 
+        key : 'britishreinforcements',
+        img : "cards/card_ap42.svg" ,
+        name : "British Reinforcements" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap43'] = { 
+        key : 'usareinforcements',
+        img : "cards/card_ap43.svg" ,
+        name : "Usa Reinforcements" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap44'] = { 
+        key : 'greece',
+        img : "cards/card_ap44.svg" ,
+        name : "Greece" ,
+        cc : false ,
+	ws : 1 ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap45'] = { 
+        key : 'kerenskyoffensive',
+        img : "cards/card_ap45.svg" ,
+        name : "Kerensky Offensive" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap46'] = { 
+        key : 'brusilovoffensive',
+        img : "cards/card_ap46.svg" ,
+        name : "Brusilov Offensive" ,
+        cc : false ,
+	ws : 2 ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap47'] = { 
+        key : 'usareinforcements',
+        img : "cards/card_ap47.svg" ,
+        name : "Usa Reinforcements" ,
+        cc : false ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap48'] = { 
+        key : 'royaltankcorps',
+        img : "cards/card_ap48.svg" ,
+        name : "Royal Tank Corps" ,
+        cc : true ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap49'] = { 
+        key : 'sinaipipeline',
+        img : "cards/card_ap49.svg" ,
+        name : "Sinai Pipeline" ,
+        cc : false ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap50'] = { 
+        key : 'allenby',
+        img : "cards/card_ap50.svg" ,
+        name : "Allenby" ,
+        cc : false ,
+	ws : 1 ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap51'] = { 
+        key : 'everyoneintobattle',
+        img : "cards/card_ap51.svg" ,
+        name : "Everyone Into Battle" ,
+        cc : false ,
+	ws : 1 ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap52'] = { 
+        key : 'convoy',
+        img : "cards/card_ap52.svg" ,
+        name : "Convoy" ,
+        cc : false ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap53'] = { 
+        key : 'armyoftheorient',
+        img : "cards/card_ap53.svg" ,
+        name : "Army Of The Orient" ,
+        cc : false ,
+        ops : 5 ,
+        sr : 5 ,        
+        rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'IT' : 2 , 'RU' : 4 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap54'] = { 
+        key : 'zimmermanntelegram',
+        img : "cards/card_ap54.svg" ,
+        name : "Zimmermann Telegram" ,
+        cc : false ,
+	ws : 2 ,
+        ops : 5 ,
+        sr : 5 ,        
+        rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'IT' : 2 , 'RU' : 4 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap55'] = { 
+        key : 'overthere',
+        img : "cards/card_ap55.svg" ,
+        name : "Over There" ,
+        cc : false ,
+        ops : 5 ,
+        sr : 5 ,        
+        rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'IT' : 2 , 'RU' : 4 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap56'] = { 
+        key : 'paristaxis',
+        img : "cards/card_ap56.png" ,
+        name : "Paris Taxis" ,
+        cc : false ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap57'] = { 
+        key : 'russiancavalry',
+        img : "cards/card_ap57.png" ,
+        name : "Russian Cavalry" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap58'] = { 
+        key : 'russianguards',
+        img : "cards/card_ap58.png" ,
+        name : "Russian Guards" ,
+        cc : true ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap59'] = { 
+        key : 'alpinetroops',
+        img : "cards/card_ap59.png" ,
+        name : "Alpine Troops" ,
+        cc : true ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 2 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+
+deck['ap60'] = { 
+        key : 'czechlegion',
+        img : "cards/card_ap60.png" ,
+        name : "Czech Legion" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap61'] = { 
+        key : 'maude',
+        img : "cards/card_ap61.png" ,
+        name : "Maude" ,
+        cc : true ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap62'] = { 
+        key : 'Thesixtusaffair',
+        img : "cards/card_ap62.png" ,
+        name : "The Sixtus Affair" ,
+        cc : false ,
+	ws : 1 ,
+        ops : 2 ,
+        sr : 2 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap63'] = { 
+        key : 'backstothewall',
+        img : "cards/card_ap63.png" ,
+        name : "Backs To The Wall" ,
+        cc : true ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap64'] = { 
+        key : 'usareinforcements',
+        img : "cards/card_ap64.png" ,
+        name : "Usa Reinforcements" ,
+        cc : false ,
+        ops : 3 ,
+        sr : 4 ,        
+        rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+deck['ap65'] = { 
+        key : 'influenza',
+        img : "cards/card_ap65.png" ,
+        name : "Influenza" ,
+        cc : false ,
+        ops : 4 ,
+        sr : 4 ,        
+        rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
+        type : "normal" ,
+        removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
+      }
+
+    }
+
+    if (type == "central" || type == "all") {
 
    deck['cp35'] = { 
         key : 'mustardgas',
@@ -3215,8 +3495,8 @@ deck['cp33'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
    deck['cp36'] = { 
@@ -3224,13 +3504,14 @@ deck['cp33'] = {
         img : "cards/card_cp36.svg" ,
         name : "U-Boats Unleashed" ,
         cc : false ,
+	ws : 2 ,
         ops : 2 ,
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
    deck['cp37'] = { 
@@ -3238,13 +3519,14 @@ deck['cp33'] = {
         img : "cards/card_cp37.svg" ,
         name : "Hoffmann" ,
         cc : false ,
+	ws : 1 ,
         ops : 2 ,
         sr : 2 ,        
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
    deck['cp38'] = { 
@@ -3257,8 +3539,8 @@ deck['cp33'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
    deck['cp39'] = { 
@@ -3271,8 +3553,8 @@ deck['cp33'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 
@@ -3286,8 +3568,8 @@ deck['cp33'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
    deck['cp41'] = { 
@@ -3300,8 +3582,8 @@ deck['cp33'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
    deck['cp42'] = { 
@@ -3314,8 +3596,8 @@ deck['cp33'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
    deck['cp43'] = { 
         key : 'vonbelow',
@@ -3327,8 +3609,8 @@ deck['cp33'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
    deck['cp44'] = { 
@@ -3341,8 +3623,8 @@ deck['cp33'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
    deck['cp45'] = { 
@@ -3350,13 +3632,14 @@ deck['cp33'] = {
         img : "cards/card_cp45.svg" ,
         name : "Treaty of Brest Litovsk" ,
         cc : false ,
+	ws : 1 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 
@@ -3370,8 +3653,8 @@ deck['cp33'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
   deck['cp47'] = { 
@@ -3379,13 +3662,14 @@ deck['cp33'] = {
         img : "cards/card_cp47.svg" ,
         name : "French Mutiny" ,
         cc : false ,
+	ws : 1 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp48'] = { 
@@ -3398,21 +3682,22 @@ deck['cp48'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 deck['cp49'] = { 
         key : 'michael',
         img : "cards/card_cp49.svg" ,
         name : "Michael" ,
         cc : true ,
+	ws : 1 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp50'] = { 
@@ -3425,8 +3710,8 @@ deck['cp50'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp51'] = { 
@@ -3439,8 +3724,8 @@ deck['cp51'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp52'] = { 
@@ -3453,8 +3738,8 @@ deck['cp52'] = {
         rp : { 'AH' : 3 , 'BU' : 1 , 'GE' : 4 , 'TU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp53'] = { 
@@ -3467,8 +3752,8 @@ deck['cp53'] = {
         rp : { 'AH' : 3 , 'BU' : 1 , 'GE' : 4 , 'TU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp54'] = { 
@@ -3476,13 +3761,14 @@ deck['cp54'] = {
         img : "cards/card_cp54.svg" ,
         name : "H-L Take Command" ,
         cc : false ,
+	ws : 2 ,
         ops : 5 ,
         sr : 5 ,        
         rp : { 'AH' : 3 , 'BU' : 1 , 'GE' : 4 , 'TU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp55'] = { 
@@ -3495,11 +3781,11 @@ deck['cp55'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
-
+/***** OPTIONAL ******
 deck['cp56'] = { 
         key : 'withdrawal',
         img : "cards/card_cp56.png" ,
@@ -3510,8 +3796,8 @@ deck['cp56'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp57'] = { 
@@ -3524,8 +3810,8 @@ deck['cp57'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 deck['cp58'] = { 
         key : 'stavkatimidity',
@@ -3537,8 +3823,8 @@ deck['cp58'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 
@@ -3552,8 +3838,8 @@ deck['cp59'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp60'] = { 
@@ -3566,8 +3852,8 @@ deck['cp60'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 deck['cp61'] = { 
         key : 'haig',
@@ -3579,8 +3865,8 @@ deck['cp61'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 
@@ -3594,8 +3880,8 @@ deck['cp62'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp63'] = { 
@@ -3608,8 +3894,8 @@ deck['cp63'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 deck['cp64'] = { 
@@ -3622,8 +3908,8 @@ deck['cp64'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
 
 
@@ -3632,25 +3918,18 @@ deck['cp65'] = {
         img : "cards/card_cp65.png" ,
         name : "Prince Max" ,
         cc : false ,
+	ws : 3 ,
         ops : 4 ,
         sr : 4 ,        
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(his_self, faction) { return 0; } ,
-        onEvent : function(his_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 0; } ,
+        onEvent : function(paths_self, faction) { return 1; } ,
       }
-
+***** OPTIONAL ******/
     }
 
-    return deck;
-  }
-  returnLimitedWarDeck(type="all") {
-    let deck = {};
-    return deck;
-  }
-  returnFullWarDeck(type="all") {
-    let deck = {};
     return deck;
   }
   returnDeck(type="all") {
@@ -3666,8 +3945,6 @@ deck['cp65'] = {
 
     return deck;
   }
-
-
 
 
   returnDefenderUnits() {
@@ -4005,6 +4282,13 @@ console.log("space is activated for movement: " + key);
 	}
       }
 
+      if (space.besieged == 1) {
+        html += `<img src="/paths/img/tiles/fort_besieged.png" class="trench-tile fort-besieged" />`;
+      }
+      if (space.fort == -1) {
+        html += `<img src="/paths/img/tiles/fort_destroyed.png" class="trench-tile fort-destroyed" />`;
+      }
+
       document.querySelectorAll(`.${key}`).forEach((el) => { 
 //        if (control == "allies") { el.classList.add("allies-highlight"); }
 //        if (control == "central") { el.classList.add("central-highlight"); }
@@ -4018,7 +4302,6 @@ console.log("err: " + err);
   }
 
   displaySpaceDetailedView(key) {
-alert("display space for: " + key);
     this.space_overlay.render(key);
   }
 
@@ -4185,19 +4468,19 @@ alert("display space for: " + key);
       ////////////////////////
 
       // central
-      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["ge"]}`).innerHTML += `<img src="/paths/img/rp_ge.png" />`;
-      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["ah"]}`).innerHTML += `<img src="/paths/img/rp_ah.png" />`;
-      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["tu"]}`).innerHTML += `<img src="/paths/img/rp_tu.png" />`;
-      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["bu"]}`).innerHTML += `<img src="/paths/img/rp_bu.png" />`;
-      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["cp"]}`).innerHTML += `<img src="/paths/img/rp_cp.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["ge"]}`).innerHTML += `<img src="/paths/img/rp/rp_ge.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["ah"]}`).innerHTML += `<img src="/paths/img/rp/rp_ah.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["tu"]}`).innerHTML += `<img src="/paths/img/rp/rp_tu.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["bu"]}`).innerHTML += `<img src="/paths/img/rp/rp_bu.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["cp"]}`).innerHTML += `<img src="/paths/img/rp/rp_cp.png" />`;
 
       // allies
-      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["a"]}`).innerHTML += `<img src="/paths/img/rp_a.png" />`;
-      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["br"]}`).innerHTML += `<img src="/paths/img/rp_br.png" />`;
-      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["fr"]}`).innerHTML += `<img src="/paths/img/rp_fr.png" />`;
-      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["it"]}`).innerHTML += `<img src="/paths/img/rp_it.png" />`;
-      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["ru"]}`).innerHTML += `<img src="/paths/img/rp_ru.png" />`;
-      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["ap"]}`).innerHTML += `<img src="/paths/img/rp_ap.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["a"]}`).innerHTML += `<img src="/paths/img/rp/rp_a.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["br"]}`).innerHTML += `<img src="/paths/img/rp/rp_br.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["fr"]}`).innerHTML += `<img src="/paths/img/rp/rp_fr.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["it"]}`).innerHTML += `<img src="/paths/img/rp/rp_it.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["ru"]}`).innerHTML += `<img src="/paths/img/rp/rp_ru.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["ap"]}`).innerHTML += `<img src="/paths/img/rp/rp_ap.png" />`;
 
       let central_rp = 0;
       for (let key in this.game.state.rp["central"]) { central_rp += this.game.state.rp["central"][key]; }
@@ -4205,8 +4488,8 @@ alert("display space for: " + key);
       let allied_rp = 0;
       for (let key in this.game.state.rp["allies"]) { allied_rp += this.game.state.rp["allies"][key]; }
 
-      document.querySelector(`.general-records-track-${central_rp}`).innerHTML += `<img src="/paths/img/rp_cp.png" />`;
-      document.querySelector(`.general-records-track-${allies_rp}`).innerHTML += `<img src="/paths/img/rp_allied.png" />`;
+      document.querySelector(`.general-records-track-${central_rp}`).innerHTML += `<img src="/paths/img/rp/rp_cp.png" />`;
+      document.querySelector(`.general-records-track-${allied_rp}`).innerHTML += `<img src="/paths/img/rp/rp_allied.png" />`;
 
 
       ////////////////////
@@ -4240,10 +4523,6 @@ alert("display space for: " + key);
   }
 
   displayMandatedOffensiveTracks() {
-/***
-    if (this.game.state.mandated_offensives.central == "AH") {
-
-    }
           if (central == 2) { this.game.state.mandated_offensives.central = "AH IT"; }
           if (central == 3) { this.game.state.mandated_offensives.central = "TU"; }
           if (central == 4) { this.game.state.mandated_offensives.central = "GE"; }
@@ -4255,7 +4534,6 @@ alert("display space for: " + key);
           if (allies == 4)  { this.game.state.mandated_offensives.allies = "IT"; }
           if (allies == 5)  { this.game.state.mandated_offensives.allies = "IT"; }
           if (allies == 6)  { this.game.state.mandated_offensives.allies = "RU"; }
-***/
   }
 
   displayUSCommitmentTrack() {
@@ -4560,7 +4838,7 @@ alert("display space for: " + key);
 
     if (faction == "cp") { sources = ["essen","breslau","sofia","constantinople"]; }
     if (faction == "ap") { sources = ["london"]; }
-    if (faction == "ru") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
+    if (faction == "ru" || faction == "russia") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
     if (faction == "ro") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
     if (faction == "sb") { 
       sources = ["moscow","petrograd","kharkov","caucasus","london"]; 
@@ -4606,21 +4884,54 @@ alert("display space for: " + key);
     return "";
   }
 
-  returnActivationCost(key) {
+  returnActivationCost(faction, key) {
 
     let space = this.game.spaces[key];
     let units = [];
+    let countries = {};
+    let total_nationalities = 0;
+
     for (let i = 0; i < space.units.length; i++) {
       if (!units.includes(space.units[i].ckey)) {
+	let u = space.units[i];
+	let ckey = space.units[i].ckey;
+	if (key == "antwerp" || key == "ostend" || key == "calais" || key == "amiens") { if (ckey == "BE") { ckey = "BR"; } }
+	if (ckey == "ANA" || ckey == "BR" || ckey == "AUS" || ckey == "CND" || ckey == "PT") { ckey = "BR"; }
+	if (ckey == "US" || ckey == "FR") { if (space.country == "france") { ckey = "FR"; } }
+	if (ckey == "SN") { ckey = "TU"; }
+	if (ckey == "MN") { ckey = "SB"; }
+	if (!countries[ckey]) { countries[ckey] = 0; } 
+	countries[ckey] += 1;
 	units.push(space.units[i].ckey);
       }
     }
 
-    if (units.length == 1) { return 1; }
-    if (units.length == 2) { return 2; }
-    if (units.length == 3) { return 3; }
+    for (let key in countries) { total_nationalities++; }
+    
+    if (faction == "central") {
+      if (this.game.state.events.falkenhayn != 1 && this.game.state.events.moltke == 1 && (space.country == "france" || space.country == "belgium")) {
+        if (units.length == 1) { return 1; }
+        if (units.length == 2) { return 2; }
+        if (units.length == 3) { return 3; }
+      }
+      if (this.game.state.events.sudarmy == 1) {
+	if (countries["GE"] >= 1 && countries["AH"] == 1) {
+	  let sud_army_eligible = false;
+	  let sud_army_excess_cost = 0;
+	  for (let z = 0; z < space.units.length; z++) {
+	    if (space.units[z].ckey == "AH" && space.units[z].army) { sud_army_eligible = true; }
+	    if (space.units[z].ckey == "AH" && space.units[z].corps) { sud_army_excess_cost++; }
+	    if (space.units[z].ckey == "GE" && space.units[z].army) { sud_army_excess_cost++; }
+	    if (space.units[z].ckey != "GE" && space.units[z].ckey != "AH") { sud_army_excess_cost++; }
+	  }
+	  if (sud_army_eligible == true) {
+	    return (1 + sud_army_excess_cost);
+	  }
+	}
+      }
+    }
 
-    return 100;
+    return total_nationalities;
 
   }
 
@@ -4769,10 +5080,21 @@ alert("display space for: " + key);
 
   }
 
+
+  returnSpacekeysByCountry(country="") {
+    if (country == "russia") { return ["petrograd", "reval", "pskov", "riga", "libau", "szawli", "kovno", "vilna", "dvinsk", "moldechno", "opochka", "velikiyeluki", "moscow", "smolensk", "roslavi", "mogilev", "orsha", "vitebsk", "gomel", "slutsk", "minsk", "baranovichi", "grodno", "lomza", "bialystok", "bresklitovsk", "warsaw", "kovel", "sarny", "plock", "lodz", "czestochowa", "ivangorod", "lublin", "lutsk", "rovno", "mozyr", "chernigov", "kiev", "kharkov", "zhitomir", "dubno", "vinnitsa", "kamenetspodolski", "zhmerinka", "kishinev", "caucasus", "ishmail", "odessa", "poti", "grozny", "petrovsk", "batum", "tbilisi", "kars", "erivan", "elizabethpol", "baku"]; }
+    return [];
+  }
+
+
   returnSpaces() {
 
     let spaces = {};
 
+
+//
+// ENGLAND
+//
 spaces['london'] = {
     name: "London" ,
     control : "allies" ,
@@ -4781,8 +5103,12 @@ spaces['london'] = {
     neighbours: ["cherbourg", "lehavre", "calais"] ,
     terrain : "normal" ,
     vp : false ,
+    country : "england" ,
    }
 
+//
+// FRANCE
+//
 spaces['calais'] = {
     name: "Calais" ,
     control : "allies" ,
@@ -4791,6 +5117,7 @@ spaces['calais'] = {
     neighbours: ["ostend", "cambrai", "amiens", "london"] ,
     terrain : "swamp" ,
     vp : true ,
+    country : "france" ,
    }
 
 spaces['amiens'] = {
@@ -4801,6 +5128,7 @@ spaces['amiens'] = {
     neighbours: ["calais", "cambrai", "paris", "rouen"] ,
     terrain : "normal" ,
     vp : true ,
+    country : "france" ,
    }
 
 spaces['cambrai'] = {
@@ -4811,8 +5139,8 @@ spaces['cambrai'] = {
     neighbours: ["amiens", "calais", "brussels", "sedan", "chateauthierry"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "france" ,
    }
-
 
 spaces['sedan'] = {
     name: "Sedan" ,
@@ -4822,9 +5150,8 @@ spaces['sedan'] = {
     neighbours: ["cambrai", "koblenz", "brussels", "liege", "chateauthierry", "verdun", "metz"] ,
     terrain : "forest" ,
     vp : true , 
+    country : "france" ,
    }
-
-
 
 spaces['verdun'] = {
     name: "Verdun" ,
@@ -4835,6 +5162,7 @@ spaces['verdun'] = {
     neighbours: ["sedan", "chateauthierry", "barleduc", "nancy", "metz"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "france" ,
    }
 
 spaces['chateauthierry'] = {
@@ -4845,6 +5173,7 @@ spaces['chateauthierry'] = {
     neighbours: ["cambrai", "sedan", "paris", "verdun", "barleduc", "melun"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "france" ,
    }
 
 
@@ -4858,6 +5187,7 @@ spaces['paris'] = {
     neighbours: ["rouen", "amiens", "chateauthierry", "melun", "orleans"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "france" ,
    }
 
 
@@ -4869,6 +5199,7 @@ spaces['rouen'] = {
     neighbours: ["lehavre", "amiens", "paris", "lemans", "caen"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "france" ,
    }
 
 spaces['lehavre'] = {
@@ -4879,6 +5210,7 @@ spaces['lehavre'] = {
     neighbours: ["rouen", "london"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "france" ,
    }
 
 spaces['cherbourg'] = {
@@ -4889,6 +5221,7 @@ spaces['cherbourg'] = {
     neighbours: ["caen", "london"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "france" ,
    }
 
 spaces['barleduc'] = {
@@ -4899,6 +5232,7 @@ spaces['barleduc'] = {
     neighbours: ["chateauthierry", "verdun", "nancy", "melun", "dijon"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "france" ,
    }
 
 spaces['caen'] = {
@@ -4909,8 +5243,8 @@ spaces['caen'] = {
     neighbours: ["cherbourg", "rouen", "lemans"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "france" ,
    }
-
 
 spaces['rennes'] = {
     name: "Rennes" ,
@@ -4920,6 +5254,7 @@ spaces['rennes'] = {
     neighbours: ["lemans", "nantes"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "france" ,
    }
 
 spaces['lemans'] = {
@@ -4930,7 +5265,7 @@ spaces['lemans'] = {
     neighbours: ["caen", "rouen", "rennes", "nantes", "tours", "orleans"] ,
     terrain : "normal" ,
     vp : false , 
-
+    country : "france" ,
    }
 
 spaces['orleans'] = {
@@ -4941,6 +5276,7 @@ spaces['orleans'] = {
     neighbours: ["lemans", "paris", "melun", "stamand", "tours"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "france" ,
    }
 
 spaces['melun'] = {
@@ -4951,16 +5287,7 @@ spaces['melun'] = {
     neighbours: ["paris", "chateauthierry", "barleduc", "nevers", "orleans"] ,
     terrain : "normal" ,
     vp : true , 
-   }
-
-spaces['melun'] = {
-    name: "Melun" ,
-    control: "allies" ,
-    top: 1551 ,
-    left: 724 , 
-    neighbours: ["paris", "chateauthierry", "barleduc", "nevers", "orleans"] ,
-    terrain : "normal" ,
-    vp : true , 
+    country : "france" ,
    }
 
 spaces['nancy'] = {
@@ -4972,6 +5299,7 @@ spaces['nancy'] = {
     neighbours: ["barleduc", "verdun", "metz", "strasbourg", "belfort"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "france" ,
    }
 
 spaces['nantes'] = {
@@ -4982,6 +5310,7 @@ spaces['nantes'] = {
     neighbours: ["rennes","lemans","tours","larochelle"] ,
     terrain : "normal" ,
     vp : false ,
+    country : "france" ,
    }
 
 spaces['tours'] = {
@@ -4992,6 +5321,7 @@ spaces['tours'] = {
     neighbours: ["lemans", "orleans", "stamand", "poitiers", "nantes"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "france" ,
    }
 
 spaces['larochelle'] = {
@@ -5002,9 +5332,8 @@ spaces['larochelle'] = {
     neighbours: ["nantes", "poitiers", "bordeaux"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "france" ,
    }
-
-
 
 spaces['bordeaux'] = {
     name: "Bordeaux" ,
@@ -5014,6 +5343,7 @@ spaces['bordeaux'] = {
     neighbours: ["larochelle"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "france" ,
    }
 
 spaces['poitiers'] = {
@@ -5024,6 +5354,7 @@ spaces['poitiers'] = {
     neighbours: ["larochelle", "tours"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "france" ,
    }
 
 spaces['stamand'] = {
@@ -5034,6 +5365,7 @@ spaces['stamand'] = {
     neighbours: ["tours", "orleans", "nevers"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "france" ,
    }
 
 spaces['nevers'] = {
@@ -5044,6 +5376,7 @@ spaces['nevers'] = {
     neighbours: ["stamand", "melun", "dijon", "lyon"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "france" ,
    }
 
 spaces['dijon'] = {
@@ -5054,6 +5387,7 @@ spaces['dijon'] = {
     neighbours: ["nevers", "barleduc", "belfort"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "france" ,
    }
 
 spaces['lyon'] = {
@@ -5064,6 +5398,7 @@ spaces['lyon'] = {
     neighbours: ["nevers", "avignon", "grenoble"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "france" ,
    }
 
 spaces['avignon'] = {
@@ -5074,6 +5409,7 @@ spaces['avignon'] = {
     neighbours: ["lyon", "marseilles"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "france" ,
    }
 
 spaces['marseilles'] = {
@@ -5084,6 +5420,7 @@ spaces['marseilles'] = {
     neighbours: ["avignon", "nice"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "france" ,
    }
 
 spaces['nice'] = {
@@ -5094,6 +5431,7 @@ spaces['nice'] = {
     neighbours: ["marseilles", "turin"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "france" ,
    }
 
 spaces['grenoble'] = {
@@ -5104,14 +5442,8 @@ spaces['grenoble'] = {
     neighbours: ["lyon", "turin"] ,
     terrain : "mountain" ,
     vp : false , 
+    country : "france" ,
    }
-
-
-
-
-
-
-
 
 spaces['belfort'] = {
     name: "Belfort" ,
@@ -5122,8 +5454,12 @@ spaces['belfort'] = {
     neighbours: ["dijon", "nancy", "mulhouse"] ,
     terrain : "mountain" ,
     vp : false , 
+    country : "france" ,
    }
 
+//
+// Belgium
+//
 spaces['ostend'] = {
     name: "Ostend" ,
     control: "neutral" ,
@@ -5132,6 +5468,7 @@ spaces['ostend'] = {
     neighbours: ["calais", "brussels", "antwerp"] ,
     terrain : "swamp" ,
     vp : true , 
+    country : "belgium" ,
    }
 
 spaces['antwerp'] = {
@@ -5143,6 +5480,7 @@ spaces['antwerp'] = {
     neighbours: ["ostend", "brussels"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "belgium" ,
    }
 
 spaces['brussels'] = {
@@ -5153,6 +5491,7 @@ spaces['brussels'] = {
     neighbours: ["ostend", "antwerp", "liege", "sedan", "cambrai"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "belgium" ,
    }
 
 spaces['liege'] = {
@@ -5164,8 +5503,13 @@ spaces['liege'] = {
     neighbours: ["brussels", "aachen", "sedan", "koblenz"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "belgium" ,
    }
 
+
+//
+// GERMANY
+//
 spaces['wilhelmshaven'] = {
     name: "Wilhelmshaven" ,
     control: "central" ,
@@ -5174,6 +5518,7 @@ spaces['wilhelmshaven'] = {
     neighbours: ["bremen"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "germany" ,
    }
 
 spaces['essen'] = {
@@ -5184,6 +5529,7 @@ spaces['essen'] = {
     neighbours: ["aachen", "bremen", "kassel"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "germany" ,
    }
 
 spaces['aachen'] = {
@@ -5194,6 +5540,7 @@ spaces['aachen'] = {
     neighbours: ["liege", "essen", "koblenz"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "germany" ,
    }
 
 spaces['koblenz'] = {
@@ -5204,8 +5551,8 @@ spaces['koblenz'] = {
     neighbours: ["liege", "aachen", "frankfurt", "sedan", "metz"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "germany" ,
    }
-
 
 spaces['metz'] = {
     name: "Metz" ,
@@ -5216,8 +5563,8 @@ spaces['metz'] = {
     neighbours: ["verdun", "sedan", "koblenz", "strasbourg", "nancy"] ,
     terrain : "forest" ,
     vp : true , 
+    country : "germany" ,
    }
-
 
 spaces['strasbourg'] = {
     name: "Strasbourg" ,
@@ -5228,6 +5575,7 @@ spaces['strasbourg'] = {
     neighbours: ["nancy", "metz", "mannheim", "mulhouse"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "germany" ,
    }
 
 spaces['mulhouse'] = {
@@ -5238,6 +5586,7 @@ spaces['mulhouse'] = {
     neighbours: ["belfort", "strasbourg"] ,
     terrain : "mountain" ,
     vp : false , 
+    country : "germany" ,
    }
 
 spaces['stuttgart'] = {
@@ -5248,8 +5597,8 @@ spaces['stuttgart'] = {
     neighbours: ["mannheim", "augsburg"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "germany" ,
    }
-
 
 spaces['mannheim'] = {
     name: "Mannheim" ,
@@ -5259,6 +5608,7 @@ spaces['mannheim'] = {
     neighbours: ["frankfurt", "strasbourg", "stuttgart"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "germany" ,
    }
 
 spaces['frankfurt'] = {
@@ -5269,6 +5619,7 @@ spaces['frankfurt'] = {
     neighbours: ["koblenz", "kassel", "mannheim"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "germany" ,
    }
 
 
@@ -5280,6 +5631,7 @@ spaces['kassel'] = {
     neighbours: ["essen", "hannover", "frankfurt", "erfurt"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "germany" ,
    }
 
 spaces['bremen'] = {
@@ -5290,6 +5642,7 @@ spaces['bremen'] = {
     neighbours: ["wilhelmshaven", "essen", "hamburg", "hannover"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "germany" ,
    }
 
 spaces['kiel'] = {
@@ -5300,7 +5653,9 @@ spaces['kiel'] = {
     neighbours: ["hamburg"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "germany" ,
    }
+
 spaces['hamburg'] = {
     name: "Hamburg" ,
     control: "central" ,
@@ -5309,6 +5664,7 @@ spaces['hamburg'] = {
     neighbours: ["kiel", "bremen", "rostock"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "germany" ,
    }
 
 spaces['hannover'] = {
@@ -5319,6 +5675,7 @@ spaces['hannover'] = {
     neighbours: ["bremen", "kassel", "berlin"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "germany" ,
    }
 
 spaces['erfurt'] = {
@@ -5329,6 +5686,7 @@ spaces['erfurt'] = {
     neighbours: ["kassel", "leipzig", "nuremberg"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "germany" ,
    }
 
 spaces['nuremberg'] = {
@@ -5339,6 +5697,7 @@ spaces['nuremberg'] = {
     neighbours: ["erfurt", "augsburg", "regensburg"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "germany" ,
    }
 
 spaces['augsburg'] = {
@@ -5349,7 +5708,9 @@ spaces['augsburg'] = {
     neighbours: ["stuttgart", "nuremberg", "innsbruck", "regensburg"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "germany" ,
    }
+
 spaces['munich'] = {
     name: "Munich" ,
     control: "central" ,
@@ -5358,6 +5719,7 @@ spaces['munich'] = {
     neighbours: ["regensburg", "spittal"] ,
     terrain : "mountain" ,
     vp : true , 
+    country : "germany" ,
    }
 
 spaces['regensburg'] = {
@@ -5368,6 +5730,7 @@ spaces['regensburg'] = {
     neighbours: ["nuremberg", "augsburg", "munich", "linz"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "germany" ,
    }
 
 spaces['leipzig'] = {
@@ -5378,6 +5741,7 @@ spaces['leipzig'] = {
     neighbours: ["berlin", "erfurt", "dresden"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "germany" ,
    }
 
 spaces['berlin'] = {
@@ -5388,6 +5752,7 @@ spaces['berlin'] = {
     neighbours: ["rostock", "stettin", "hannover", "cottbus", "leipzig"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "germany" ,
    }
 
 spaces['rostock'] = {
@@ -5398,6 +5763,7 @@ spaces['rostock'] = {
     neighbours: ["hamburg", "stettin", "berlin"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "germany" ,
    }
 
 spaces['stettin'] = {
@@ -5408,6 +5774,7 @@ spaces['stettin'] = {
     neighbours: ["rostock", "kolberg", "berlin"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "germany" ,
    }
 
 spaces['cottbus'] = {
@@ -5418,6 +5785,7 @@ spaces['cottbus'] = {
     neighbours: ["berlin", "posen", "breslau", "dresden"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "germany" ,
    }
 
 spaces['dresden'] = {
@@ -5428,6 +5796,7 @@ spaces['dresden'] = {
     neighbours: ["leipzig", "cottbus", "prague"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "germany" ,
    }
 
 spaces['breslau'] = {
@@ -5439,9 +5808,8 @@ spaces['breslau'] = {
     neighbours: ["cottbus", "posen", "lodz", "oppeln"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "germany" ,
    }
-
-
 
 spaces['oppeln'] = {
     name: "Oppeln" ,
@@ -5451,6 +5819,7 @@ spaces['oppeln'] = {
     neighbours: ["breslau", "olmutz", "czestochowa", "cracow"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "germany" ,
    }
 
 spaces['posen'] = {
@@ -5462,6 +5831,7 @@ spaces['posen'] = {
     neighbours: ["cottbus", "thorn", "breslau", "lodz"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "germany" ,
    }
 
 spaces['kolberg'] = {
@@ -5472,6 +5842,7 @@ spaces['kolberg'] = {
     neighbours: ["stettin", "danzig"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "germany" ,
    }
 
 spaces['thorn'] = {
@@ -5483,6 +5854,7 @@ spaces['thorn'] = {
     neighbours: ["danzig", "tannenberg", "plock", "lodz", "posen"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "germany" ,
    }
 
 spaces['danzig'] = {
@@ -5494,6 +5866,7 @@ spaces['danzig'] = {
     neighbours: ["kolberg", "tannenberg", "thorn"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "germany" ,
    }
 
 spaces['konigsberg'] = {
@@ -5505,6 +5878,7 @@ spaces['konigsberg'] = {
     neighbours: ["insterberg", "tannenberg"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "germany" ,
    }
 
 spaces['tannenberg'] = {
@@ -5515,6 +5889,7 @@ spaces['tannenberg'] = {
     neighbours: ["danzig", "konigsberg", "insterberg", "lomza", "plock", "thorn"] ,
     terrain : "forest" ,
     vp : false , 
+    country : "germany" ,
    }
 
 spaces['insterberg'] = {
@@ -5525,7 +5900,7 @@ spaces['insterberg'] = {
     neighbours: ["tannenberg", "konigsberg", "memel", "kovno", "grodno"] ,
     terrain : "forest" ,
     vp : false , 
-
+    country : "germany" ,
    }
 
 spaces['memel'] = {
@@ -5536,24 +5911,24 @@ spaces['memel'] = {
     neighbours: ["libau", "szawli", "insterberg"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "germany" ,
    }
-
-
-
-
-
-
 
 spaces['mulhouse'] = {
     name: "Mulhouse" ,
-    control: "allies" ,
+    control: "central" ,
     top: 1600 ,
     left: 1214 , 
     neighbours: ["belfort", "strasbourg"] ,
     terrain : "mountain" ,
     vp : false , 
+    country : "germany" ,
    }
 
+
+//
+// ITALY
+//
 spaces['turin'] = {
     name: "Turin" ,
     control: "allies" ,
@@ -5562,6 +5937,7 @@ spaces['turin'] = {
     neighbours: ["grenoble", "nice", "milan", "genoa"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "italy" ,
    }
 
 spaces['milan'] = {
@@ -5572,6 +5948,7 @@ spaces['milan'] = {
     neighbours: ["turin", "genoa", "verona"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "italy" ,
    }
 
 spaces['genoa'] = {
@@ -5582,6 +5959,7 @@ spaces['genoa'] = {
     neighbours: ["turin", "milan", "bologna"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "italy" ,
    }
 
 spaces['verona'] = {
@@ -5592,9 +5970,8 @@ spaces['verona'] = {
     neighbours: ["trent", "milan", "bologna", "venice"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "italy" ,
    }
-
-
 
 spaces['asiago'] = {
     name: "Asiago" ,
@@ -5604,6 +5981,7 @@ spaces['asiago'] = {
     neighbours: ["trent", "maggiore", "venice"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "italy" ,
    }
 
 spaces['maggiore'] = {
@@ -5614,6 +5992,7 @@ spaces['maggiore'] = {
     neighbours: ["asiago", "udine", "villach"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "italy" ,
    }
 
 spaces['udine'] = {
@@ -5624,6 +6003,7 @@ spaces['udine'] = {
     neighbours: ["trieste", "venice", "maggiore"] ,
     terrain: "normal" ,
     vp : false ,
+    country : "italy" ,
    }
 
 spaces['venice'] = {
@@ -5634,6 +6014,7 @@ spaces['venice'] = {
     neighbours: ["bologna", "verona", "asiago", "udine", "ravenna"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "italy" ,
    }
 
 spaces['bologna'] = {
@@ -5644,6 +6025,7 @@ spaces['bologna'] = {
     neighbours: ["genoa", "verona", "venice", "florence"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "italy" ,
    }
 
 spaces['florence'] = {
@@ -5654,6 +6036,7 @@ spaces['florence'] = {
     neighbours: ["bologna", "ravenna", "viterbo"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "italy" ,
    }
 
 spaces['ravenna'] = {
@@ -5664,6 +6047,7 @@ spaces['ravenna'] = {
     neighbours: ["venice", "florence", "ancona"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "italy" ,
    }
 
 spaces['ancona'] = {
@@ -5674,6 +6058,7 @@ spaces['ancona'] = {
     neighbours: ["ravenna", "pescara"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "italy" ,
    }
 
 spaces['viterbo'] = {
@@ -5684,8 +6069,8 @@ spaces['viterbo'] = {
     neighbours: ["florence", "rome"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "italy" ,
    }
-
 
 spaces['rome'] = {
     name: "Rome" ,
@@ -5695,6 +6080,7 @@ spaces['rome'] = {
     neighbours: ["viterbo", "naples"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "italy" ,
    }
 
 spaces['pescara'] = {
@@ -5705,7 +6091,9 @@ spaces['pescara'] = {
     neighbours: ["ancona", "foggia"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "italy" ,
    }
+
 spaces['naples'] = {
     name: "Naples" ,
     control: "allies" ,
@@ -5714,6 +6102,7 @@ spaces['naples'] = {
     neighbours: ["rome", "foggia"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "italy" ,
    }
 
 spaces['foggia'] = {
@@ -5724,6 +6113,7 @@ spaces['foggia'] = {
     neighbours: ["pescara", "naples", "taranto"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "italy" ,
    }
 
 spaces['taranto'] = {
@@ -5734,8 +6124,13 @@ spaces['taranto'] = {
     neighbours: ["foggia", "valona"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "italy" ,
    }
 
+
+//
+// AUSTRIA
+//
 spaces['prague'] = {
     name: "Prague" ,
     control: "central" ,
@@ -5744,6 +6139,7 @@ spaces['prague'] = {
     neighbours: ["dresden", "kolin"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['trent'] = {
@@ -5755,6 +6151,7 @@ spaces['trent'] = {
     neighbours: ["verona", "asiago", "innsbruck"] ,
     terrain : "mountain" ,
     vp : true , 
+    country : "austria" ,
    }
 
 spaces['innsbruck'] = {
@@ -5765,6 +6162,7 @@ spaces['innsbruck'] = {
     neighbours: ["trent", "augsburg", "spittal"] ,
     terrain : "mountain" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['spittal'] = {
@@ -5775,6 +6173,7 @@ spaces['spittal'] = {
     neighbours: ["innsbruck", "munich", "villach"] ,
     terrain : "mountain" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['linz'] = {
@@ -5785,6 +6184,7 @@ spaces['linz'] = {
     neighbours: ["regensburg", "vienna", "graz"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['villach'] = {
@@ -5795,6 +6195,7 @@ spaces['villach'] = {
     neighbours: ["spittal", "maggiore", "graz", "trieste"] ,
     terrain : "mountain" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['trieste'] = {
@@ -5806,6 +6207,7 @@ spaces['trieste'] = {
     neighbours: ["udine", "villach", "zagreb"] ,
     terrain : "mountain" ,
     vp : true , 
+    country : "austria" ,
    }
 
 spaces['kolin'] = {
@@ -5816,6 +6218,7 @@ spaces['kolin'] = {
     neighbours: ["prague", "brun"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['brun'] = {
@@ -5826,6 +6229,7 @@ spaces['brun'] = {
     neighbours: ["kolin", "olmutz", "vienna"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "austria" ,
    }
 spaces['vienna'] = {
     name: "Vienna" ,
@@ -5835,6 +6239,7 @@ spaces['vienna'] = {
     neighbours: ["linz", "brun", "budapest", "graz"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "austria" ,
    }
 
 spaces['graz'] = {
@@ -5845,6 +6250,7 @@ spaces['graz'] = {
     neighbours: ["linz", "vienna", "zagreb", "villach"] ,
     terrain : "mountain" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['zagreb'] = {
@@ -5855,6 +6261,7 @@ spaces['zagreb'] = {
     neighbours: ["trieste", "graz", "pecs", "banjaluka"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['banjaluka'] = {
@@ -5865,6 +6272,7 @@ spaces['banjaluka'] = {
     neighbours: ["zagreb", "sarajevo"] ,
     terrain : "mountain" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['mostar'] = {
@@ -5875,6 +6283,7 @@ spaces['mostar'] = {
     neighbours: ["sarajevo", "cetinje"] ,
     terrain : "mountain" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['sarajevo'] = {
@@ -5885,6 +6294,7 @@ spaces['sarajevo'] = {
     neighbours: ["mostar", "banjaluka", "novisad", "valjevo"] ,
     terrain : "mountain" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['pecs'] = {
@@ -5895,6 +6305,7 @@ spaces['pecs'] = {
     neighbours: ["zagreb", "budapest", "szeged", "novisad"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['olmutz'] = {
@@ -5905,6 +6316,7 @@ spaces['olmutz'] = {
     neighbours: ["oppeln", "martin", "brun"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['martin'] = {
@@ -5915,6 +6327,7 @@ spaces['martin'] = {
     neighbours: ["olmutz", "cracow", "budapest", "gorlice"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['budapest'] = {
@@ -5925,6 +6338,7 @@ spaces['budapest'] = {
     neighbours: ["vienna", "martin", "miskolcz", "szeged", "pecs"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "austria" ,
    }
 spaces['szeged'] = {
     name: "Szeged" ,
@@ -5934,6 +6348,7 @@ spaces['szeged'] = {
     neighbours: ["pecs", "budapest", "debrecen", "timisvar", "novisad"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['novisad'] = {
@@ -5944,6 +6359,7 @@ spaces['novisad'] = {
     neighbours: ["pecs", "szeged", "belgrade", "sarajevo"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['timisvar'] = {
@@ -5954,6 +6370,7 @@ spaces['timisvar'] = {
     neighbours: ["szeged", "belgrade", "targujiu"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['debrecen'] = {
@@ -5964,6 +6381,7 @@ spaces['debrecen'] = {
     neighbours: ["miskolcz", "cluj", "szeged"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "austria" ,
    }
 
 spaces['miskolcz'] = {
@@ -5974,7 +6392,9 @@ spaces['miskolcz'] = {
     neighbours: ["gorlice", "uzhgorod", "debrecen", "budapest"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "austria" ,
    }
+
 spaces['cracow'] = {
     name: "Cracow" ,
     control: "central" ,
@@ -5984,6 +6404,7 @@ spaces['cracow'] = {
     neighbours: ["oppeln", "czestochowa", "tarnow", "martin"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "austria" ,
    }
 
 spaces['tarnow'] = {
@@ -5994,6 +6415,7 @@ spaces['tarnow'] = {
     neighbours: ["cracow", "ivangorod", "przemysl", "gorlice"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['gorlice'] = {
@@ -6004,6 +6426,7 @@ spaces['gorlice'] = {
     neighbours: ["martin", "tarnow", "uzhgorod", "miskolcz"] ,
     terrain : "mountain" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['przemysl'] = {
@@ -6015,6 +6438,7 @@ spaces['przemysl'] = {
     neighbours: ["tarnow", "lublin", "lemberg", "stanislau", "uzhgorod"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['uzhgorod'] = {
@@ -6025,7 +6449,9 @@ spaces['uzhgorod'] = {
     neighbours: ["miskolcz", "gorlice", "przemysl", "stanislau", "munkacs"] ,
     terrain : "mountain" ,
     vp : false , 
+    country : "austria" ,
    }
+
 spaces['lemberg'] = {
     name: "Lemberg" ,
     control: "central" ,
@@ -6034,6 +6460,7 @@ spaces['lemberg'] = {
     neighbours: ["przemysl", "lutsk", "tarnopol", "stanislau"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "austria" ,
    }
 
 spaces['stanislau'] = {
@@ -6044,6 +6471,7 @@ spaces['stanislau'] = {
     neighbours: ["uzhgorod", "przemysl", "lemberg", "tarnopol", "czernowitz", "munkacs"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['munkacs'] = {
@@ -6054,6 +6482,7 @@ spaces['munkacs'] = {
     neighbours: ["uzhgorod", "stanislau", "czernowitz", "cluj"] ,
     terrain : "mountain" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['cluj'] = {
@@ -6064,8 +6493,8 @@ spaces['cluj'] = {
     neighbours: ["debrecen", "munkacs", "schossburg", "hermannstadt"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "austria" ,
    }
-
 
 spaces['hermannstadt'] = {
     name: "Hermannstadt" ,
@@ -6075,6 +6504,7 @@ spaces['hermannstadt'] = {
     neighbours: ["cluj", "kronstadt", "cartedearges"] ,
     terrain : "mountain" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['kronstadt'] = {
@@ -6085,6 +6515,7 @@ spaces['kronstadt'] = {
     neighbours: ["hermannstadt", "schossburg", "ploesti"] ,
     terrain : "mountain" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['schossburg'] = {
@@ -6095,6 +6526,7 @@ spaces['schossburg'] = {
     neighbours: ["cluj", "kronstadt"] ,
     terrain : "mountain" ,
     vp : false , 
+    country : "austria" ,
    }
 
 spaces['czernowitz'] = {
@@ -6105,6 +6537,7 @@ spaces['czernowitz'] = {
     neighbours: ["munkacs", "stanislau", "tarnopol", "kamenetspodolski"] ,
     terrain : "normal" ,
     vp : true , 
+    country : "austria" ,
    }
 
 spaces['tarnopol'] = {
@@ -6115,9 +6548,13 @@ spaces['tarnopol'] = {
     neighbours: ["stanislau", "lemberg", "dubno", "kamenetspodolski", "czernowitz"] ,
     terrain : "normal" ,
     vp : false , 
+    country : "austria" ,
    }
 
 
+//
+// RUSSIA
+//
 spaces['reval'] = {
       name: "Reval" ,
     control: "allies" ,
@@ -6126,8 +6563,8 @@ spaces['reval'] = {
       neighbours: ["riga", "petrograd"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
-
 
 spaces['pskov'] = {
       name: "Pskov" ,
@@ -6137,9 +6574,8 @@ spaces['pskov'] = {
       neighbours: ["opochka", "petrograd"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
-
-
 
 spaces['petrograd'] = {
       name: "Petrograd" ,
@@ -6149,8 +6585,8 @@ spaces['petrograd'] = {
       neighbours: ["velikiyeluki", "pskov", "reval"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
-
 
 spaces['riga'] = {
       name: "Riga" ,
@@ -6161,6 +6597,7 @@ spaces['riga'] = {
       neighbours: ["dvinsk", "szawli", "reval"] ,
       terrain : "normal" ,
       vp : true ,
+      country : "russia" ,
 }
 
 spaces['libau'] = {
@@ -6171,6 +6608,7 @@ spaces['libau'] = {
       neighbours: ["memel", "szawli"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['szawli'] = {
@@ -6181,8 +6619,8 @@ spaces['szawli'] = {
       neighbours: ["libau", "riga", "memel", "kovno", "dvinsk"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
-
 
 spaces['dvinsk'] = {
       name: "Dvinsk" ,
@@ -6192,10 +6630,8 @@ spaces['dvinsk'] = {
       neighbours: ["szawli", "riga", "vilna", "moldechno", "polotsk", "opochka"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
-
-
-
 
 spaces['opochka'] = {
       name: "Opochka" ,
@@ -6205,8 +6641,8 @@ spaces['opochka'] = {
       neighbours: ["pskov", "dvinsk", "polotsk", "velikiyeluki"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
-
 
 spaces['velikiyeluki'] = {
       name: "Velikiye Luki" ,
@@ -6216,8 +6652,8 @@ spaces['velikiyeluki'] = {
       neighbours: ["petrograd", "opochka", "vitebsk", "moscow"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
-
 
 spaces['kovno'] = {
       name: "Kovno" ,
@@ -6228,6 +6664,7 @@ spaces['kovno'] = {
       neighbours: ["szawli", "vilna", "grodno", "insterberg"] ,
       terrain : "normal" ,
       vp : true ,
+      country : "russia" ,
 }
 
 spaces['vilna'] = {
@@ -6238,6 +6675,7 @@ spaces['vilna'] = {
       neighbours: ["kovno", "grodno", "moldechno", "dvinsk"] ,
       terrain : "normal" ,
       vp : true ,
+      country : "russia" ,
 }
 
 spaces['moldechno'] = {
@@ -6248,6 +6686,7 @@ spaces['moldechno'] = {
       neighbours: ["polotsk", "vilna", "dvinsk", "minsk"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['polotsk'] = {
@@ -6258,6 +6697,7 @@ spaces['polotsk'] = {
       neighbours: ["dvinsk", "opochka", "moldechno", "vitebsk", "orsha"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['vitebsk'] = {
@@ -6268,8 +6708,8 @@ spaces['vitebsk'] = {
       neighbours: ["velikiyeluki", "smolensk", "polotsk", "orsha"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
-
 
 spaces['grodno'] = {
       name: "Grodno" ,
@@ -6280,6 +6720,7 @@ spaces['grodno'] = {
       neighbours: ["vilna", "kovno", "insterberg", "baranovichi", "bialystok"] ,
       terrain : "forest" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['baranovichi'] = {
@@ -6290,6 +6731,7 @@ spaces['baranovichi'] = {
       neighbours: ["grodno", "minsk", "slutsk"] ,
       terrain : "forest" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['minsk'] = {
@@ -6300,6 +6742,7 @@ spaces['minsk'] = {
       neighbours: ["orsha", "slutsk", "baranovichi", "moldechno"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['orsha'] = {
@@ -6310,6 +6753,7 @@ spaces['orsha'] = {
       neighbours: ["minsk", "polotsk", "vitebsk", "smolensk", "mogilev"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['smolensk'] = {
@@ -6320,8 +6764,8 @@ spaces['smolensk'] = {
       neighbours: ["orsha", "moscow", "vitebsk", "roslavl"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
-
 
 spaces['moscow'] = {
       name: "Moscow" ,
@@ -6331,6 +6775,7 @@ spaces['moscow'] = {
       neighbours: ["smolensk", "velikiyeluki"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['lomza'] = {
@@ -6342,6 +6787,7 @@ spaces['lomza'] = {
       neighbours: ["tannenberg", "plock", "warsaw", "bialystok"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['bialystok'] = {
@@ -6352,6 +6798,7 @@ spaces['bialystok'] = {
       neighbours: ["lomza", "grodno", "brestlitovsk"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['pinsk'] = {
@@ -6362,6 +6809,7 @@ spaces['pinsk'] = {
       neighbours: ["brestlitovsk", "kovel", "sarny"] ,
       terrain : "swamp" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['sarny'] = {
@@ -6372,10 +6820,8 @@ spaces['sarny'] = {
       neighbours: ["rovno", "kovel", "pinsk"] ,
       terrain : "swamp" ,
       vp : false ,
+      country : "russia" ,
 }
-
-
-
 
 spaces['slutsk'] = {
       name: "Slutsk" ,
@@ -6385,6 +6831,7 @@ spaces['slutsk'] = {
       neighbours: ["baranovichi", "minsk", "mogilev", "mozyr"] ,
       terrain : "forest" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['mogilev'] = {
@@ -6395,6 +6842,7 @@ spaces['mogilev'] = {
       neighbours: ["orsha", "gomel", "slutsk", "roslavl"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['gomel'] = {
@@ -6405,6 +6853,7 @@ spaces['gomel'] = {
       neighbours: ["chernigov", "mogilev", "roslavl"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 
@@ -6416,6 +6865,7 @@ spaces['roslavl'] = {
       neighbours: ["gomel", "mogilev", "smolensk"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['plock'] = {
@@ -6426,6 +6876,7 @@ spaces['plock'] = {
       neighbours: ["tannenberg", "warsaw", "lomza", "lodz", "thorn"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['lodz'] = {
@@ -6436,6 +6887,7 @@ spaces['lodz'] = {
       neighbours: ["posen", "warsaw", "breslau", "plock", "thorn", "czestochowa"] ,
       terrain : "normal" ,
       vp : true ,
+      country : "russia" ,
 }
 
 spaces['warsaw'] = {
@@ -6447,6 +6899,7 @@ spaces['warsaw'] = {
       neighbours: ["ivangorod", "lodz", "lomza", "plock", "brestlitovsk"] ,
       terrain : "normal" ,
       vp : true ,
+      country : "russia" ,
 }
 
 spaces['brestlitovsk'] = {
@@ -6458,6 +6911,7 @@ spaces['brestlitovsk'] = {
       neighbours: ["warsaw", "lublin", "kovel", "pinsk", "bialystok"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['kovel'] = {
@@ -6468,6 +6922,7 @@ spaces['kovel'] = {
       neighbours: ["lublin", "brestlitovsk", "lutsk", "sarny", "pinsk"] ,
       terrain : "sawmp" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['mozyr'] = {
@@ -6478,6 +6933,7 @@ spaces['mozyr'] = {
       neighbours: ["slutsk", "zhitomir"] ,
       terrain : "sawmp" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['chernigov'] = {
@@ -6488,6 +6944,7 @@ spaces['chernigov'] = {
       neighbours: ["gomel", "kiev"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['czestochowa'] = {
@@ -6498,6 +6955,7 @@ spaces['czestochowa'] = {
       neighbours: ["lodz", "ivangorod", "cracow", "oppeln"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['ivangorod'] = {
@@ -6509,6 +6967,7 @@ spaces['ivangorod'] = {
       neighbours: ["warsaw", "lublin", "tarnow", "czestochowa"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['lublin'] = {
@@ -6519,6 +6978,7 @@ spaces['lublin'] = {
       neighbours: ["ivangorod", "brestlitovsk", "kovel", "lutsk", "przemysl"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['lutsk'] = {
@@ -6530,8 +6990,8 @@ spaces['lutsk'] = {
       neighbours: ["dubno", "lemberg", "kovel", "lublin", "rovno"] ,
       terrain : "forest" ,
       vp : false ,
+      country : "russia" ,
 }
-
 
 spaces['rovno'] = {
       name: "Rovno" ,
@@ -6541,6 +7001,7 @@ spaces['rovno'] = {
       neighbours: ["dubno", "sarny", "zhitomir", "lutsk"] ,
       terrain : "forest" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['dubno'] = {
@@ -6552,6 +7013,7 @@ spaces['dubno'] = {
       neighbours: ["tarnopol", "rovno", "zhitomir", "lutsk", "kamenetspodolski"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['zhitomir'] = {
@@ -6562,6 +7024,7 @@ spaces['zhitomir'] = {
       neighbours: ["dubno", "rovno", "mozyr", "kiev", "belayatserkov"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['kiev'] = {
@@ -6572,6 +7035,7 @@ spaces['kiev'] = {
       neighbours: ["zhitomir", "chernigov", "kharkov", "belayatserkov"] ,
       terrain : "normal" ,
       vp : true ,
+      country : "russia" ,
 }
 
 spaces['kharkov'] = {
@@ -6582,6 +7046,7 @@ spaces['kharkov'] = {
       neighbours: ["kiev"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['kamenetspodolski'] = {
@@ -6592,6 +7057,7 @@ spaces['kamenetspodolski'] = {
       neighbours: ["dubno", "tarnopol", "vinnitsa", "zhmerinka", "czernowitz"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['vinnitsa'] = {
@@ -6602,6 +7068,7 @@ spaces['vinnitsa'] = {
       neighbours: ["uman", "kamenetspodolski", "zhmerinka", "belayatserkov"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['belayatserkov'] = {
@@ -6612,6 +7079,7 @@ spaces['belayatserkov'] = {
       neighbours: ["uman", "vinnitsa", "kiev", "zhitomir"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['zhmerinka'] = {
@@ -6622,6 +7090,7 @@ spaces['zhmerinka'] = {
       neighbours: ["kamenetspodolski", "vinnitsa", "jassy", "kishinev"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['uman'] = {
@@ -6632,10 +7101,8 @@ spaces['uman'] = {
       neighbours: ["odessa", "vinnitsa", "belayatserkov", "caucasus"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
-
-
-
 
 spaces['kishinev'] = {
       name: "Kishinev" ,
@@ -6645,6 +7112,7 @@ spaces['kishinev'] = {
       neighbours: ["ismail", "barlad", "zhmerinka"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['caucasus'] = {
@@ -6655,6 +7123,7 @@ spaces['caucasus'] = {
       neighbours: ["uman", "odessa", "poti", "grozny"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['ismail'] = {
@@ -6665,6 +7134,7 @@ spaces['ismail'] = {
       neighbours: ["kishinev", "odessa", "galatz"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['odessa'] = {
@@ -6676,6 +7146,7 @@ spaces['odessa'] = {
       neighbours: ["caucasus", "uman", "ismail"] ,
       terrain : "normal" ,
       vp : true ,
+      country : "russia" ,
 }
 
 spaces['poti'] = {
@@ -6686,10 +7157,8 @@ spaces['poti'] = {
       neighbours: ["caucasus", "batum"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "russia" ,
 }
-
-
-
 
 spaces['grozny'] = {
       name: "Grozny" ,
@@ -6699,6 +7168,7 @@ spaces['grozny'] = {
       neighbours: ["caucasus", "petrovsk", "tbilisi"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['petrovsk'] = {
@@ -6709,6 +7179,7 @@ spaces['petrovsk'] = {
       neighbours: ["grozny", "tbilisi"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['batum'] = {
@@ -6719,6 +7190,7 @@ spaces['batum'] = {
       neighbours: ["kars", "poti", "rize"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['kars'] = {
@@ -6729,6 +7201,7 @@ spaces['kars'] = {
       neighbours: ["batum", "erzerum", "tbilisi"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['tbilisi'] = {
@@ -6739,8 +7212,8 @@ spaces['tbilisi'] = {
       neighbours: ["grozny", "kars", "petrovsk", "erivan", "elizabethpol"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "russia" ,
 }
-
 
 spaces['erivan'] = {
       name: "Erivan" ,
@@ -6750,6 +7223,7 @@ spaces['erivan'] = {
       neighbours: ["tbilisi", "dilman", "eleskrit"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['elizabethpol'] = {
@@ -6760,6 +7234,7 @@ spaces['elizabethpol'] = {
       neighbours: ["tbilisi", "baku"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "russia" ,
 }
 
 spaces['baku'] = {
@@ -6770,8 +7245,13 @@ spaces['baku'] = {
       neighbours: ["elizabethpol"] ,
       terrain : "normal" ,
       vp : true ,
+      country : "russia" ,
 }   
 
+
+//
+// PERSIA
+//
 spaces['dilman'] = {
       name: "Dilman" ,
     control: "neutral" ,
@@ -6780,6 +7260,7 @@ spaces['dilman'] = {
       neighbours: ["erivan", "van", "tabriz"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "persia" ,
 }
 
 spaces['tabriz'] = {
@@ -6790,6 +7271,7 @@ spaces['tabriz'] = {
        neighbours: ["dilman", "hamadan"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "persia" ,
 }
 
 spaces['hamadan'] = {
@@ -6800,6 +7282,7 @@ spaces['hamadan'] = {
       neighbours: ["tabriz", "khorramabad", "kermanshah"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "persia" ,
 }
 
 spaces['kermanshah'] = {
@@ -6810,6 +7293,7 @@ spaces['kermanshah'] = {
       neighbours: ["hamadan", "khorramabad", "baghdad"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "persia" ,
 }
 
 spaces['khorramabad'] = {
@@ -6820,6 +7304,7 @@ spaces['khorramabad'] = {
       neighbours: ["hamadan", "kermanshah", "ahwaz"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "persia" ,
 }
 
 spaces['ahwaz'] = {
@@ -6830,6 +7315,7 @@ spaces['ahwaz'] = {
       neighbours: ["basra", "qurna", "khorramabad"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "persia" ,
 }
 
 spaces['basra'] = {
@@ -6841,8 +7327,13 @@ spaces['basra'] = {
       neighbours: ["ahwaz", "qurna"] ,
       terrain : "normal" ,
       vp : true ,
+      country : "persia" ,
 }
 
+
+//
+// TURKEY
+//
 spaces['adapazari'] = {
       name: "Adapazari" ,
     control: "neutral" ,
@@ -6851,6 +7342,7 @@ spaces['adapazari'] = {
       neighbours: ["constantinople", "sinope"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['sinope'] = {
@@ -6861,6 +7353,7 @@ spaces['sinope'] = {
       neighbours: ["samsun", "adapazari"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['samsun'] = {
@@ -6871,6 +7364,7 @@ spaces['samsun'] = {
       neighbours: ["sinope", "giresun", "sivas", "ankara"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 
@@ -6882,8 +7376,8 @@ spaces['giresun'] = {
       neighbours: ["samsun", "trebizond"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
-
 
 spaces['trebizond'] = {
       name: "Trebizond" ,
@@ -6893,8 +7387,8 @@ spaces['trebizond'] = {
       neighbours: ["giresun", "rize", "erzingan"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
-
 
 spaces['rize'] = {
       name: "Rize" ,
@@ -6904,8 +7398,8 @@ spaces['rize'] = {
       neighbours: ["trebizond", "batum"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
-
 
 spaces['bursa'] = {
       name: "Bursa" ,
@@ -6915,8 +7409,8 @@ spaces['bursa'] = {
       neighbours: ["constantinople", "eskidor"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
-
 
 spaces['eskidor'] = {
       name: "Eskidor" ,
@@ -6926,8 +7420,8 @@ spaces['eskidor'] = {
       neighbours: ["constantinople", "bursa", "ankara", "konya"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "turkey" ,
 }
-
 
 spaces['ankara'] = {
       name: "Ankara" ,
@@ -6937,8 +7431,8 @@ spaces['ankara'] = {
       neighbours: ["eskidor", "samsun", "sivas"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "turkey" ,
 }
-
 
 spaces['sivas'] = {
       name: "Sivas" ,
@@ -6948,8 +7442,8 @@ spaces['sivas'] = {
        neighbours: ["ankara", "samsun", "erzingan", "kayseri"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "turkey" ,
 }
-
 
 spaces['erzingan'] = {
       name: "Erzingan" ,
@@ -6959,8 +7453,8 @@ spaces['erzingan'] = {
       neighbours: ["sivas", "trebizond", "erzerum", "kharput"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "turkey" ,
 }
-
 
 spaces['erzerum'] = {
       name: "Erzerum" ,
@@ -6970,8 +7464,8 @@ spaces['erzerum'] = {
       neighbours: ["diyarbakir", "eleskrit", "erzingan", "kars"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "turkey" ,
 }
-
 
 spaces['eleskrit'] = {
       name: "Eleskrit" ,
@@ -6981,6 +7475,7 @@ spaces['eleskrit'] = {
       neighbours: ["erzerum", "van", "erivan"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['konya'] = {
@@ -6991,8 +7486,8 @@ spaces['konya'] = {
       neighbours: ["eskidor", "adana"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "turkey" ,
 }
-
 
 spaces['kayseri'] = {
       name: "Kayseri" ,
@@ -7002,8 +7497,8 @@ spaces['kayseri'] = {
       neighbours: ["sivas", "adana", "erzingan"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
-
 
 spaces['kharput'] = {
       name: "Kharput" ,
@@ -7013,8 +7508,8 @@ spaces['kharput'] = {
       neighbours: ["urfa", "kayseri", "erzingan", "diyarbakir"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
-
 
 spaces['diyarbakir'] = {
       name: "Diyarbakir" ,
@@ -7024,8 +7519,8 @@ spaces['diyarbakir'] = {
       neighbours: ["mardin", "bitlis", "kharput", "erzerum"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
-
 
 spaces['bitlis'] = {
       name: "Bitlis" ,
@@ -7035,8 +7530,8 @@ spaces['bitlis'] = {
       neighbours: ["diyarbakir", "van"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "turkey" ,
 }
-
 
 spaces['van'] = {
       name: "Van" ,
@@ -7046,8 +7541,8 @@ spaces['van'] = {
       neighbours: ["bitlis", "dilman", "eleskrit"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "turkey" ,
 }
-
 
 spaces['adana'] = {
       name: "Adana" ,
@@ -7057,8 +7552,8 @@ spaces['adana'] = {
       neighbours: ["konya", "kayseri", "aleppo"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "turkey" ,
 }
-
 
 spaces['aleppo'] = {
       name: "Aleppo" ,
@@ -7068,6 +7563,7 @@ spaces['aleppo'] = {
       neighbours: ["beirut", "urfa", "adana", "damascus"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['urfa'] = {
@@ -7078,6 +7574,7 @@ spaces['urfa'] = {
       neighbours: ["mardin", "aleppo", "kharput"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['mardin'] = {
@@ -7088,6 +7585,7 @@ spaces['mardin'] = {
       neighbours: ["urfa", "diyarbakir", "mosul"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['mosul'] = {
@@ -7098,6 +7596,7 @@ spaces['mosul'] = {
       neighbours: ["mardin", "kirkuk"] ,
       terrain : "normal" ,
       vp : true ,
+      country : "turkey" ,
 }
 
 spaces['beirut'] = {
@@ -7108,6 +7607,7 @@ spaces['beirut'] = {
       neighbours: ["aleppo", "nablus"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['damascus'] = {
@@ -7118,6 +7618,7 @@ spaces['damascus'] = {
       neighbours: ["aleppo", "nablus", "amman"] ,
       terrain : "normal" ,
       vp : true ,
+      country : "turkey" ,
 }
 
 spaces['kirkuk'] = {
@@ -7128,6 +7629,7 @@ spaces['kirkuk'] = {
       neighbours: ["mosul", "baghdad"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['nablus'] = {
@@ -7138,6 +7640,7 @@ spaces['nablus'] = {
       neighbours: ["beirut", "damascus", "jerusalem", "gaza"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['amman'] = {
@@ -7148,6 +7651,7 @@ spaces['amman'] = {
       neighbours: ["arabia", "damascus", "jerusalem"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['baghdad'] = {
@@ -7158,6 +7662,7 @@ spaces['baghdad'] = {
       neighbours: ["kirkuk", "samawah", "kut", "kermanshah"] ,
       terrain : "normal" ,
       vp : true ,
+      country : "turkey" ,
 }
 
 spaces['kut'] = {
@@ -7168,6 +7673,7 @@ spaces['kut'] = {
       neighbours: ["baghdad", "qurna"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['gaza'] = {
@@ -7179,6 +7685,7 @@ spaces['gaza'] = {
       neighbours: ["nablus", "sinai", "beersheba"] ,
       terrain : "desert" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['jerusalem'] = {
@@ -7189,6 +7696,7 @@ spaces['jerusalem'] = {
       neighbours: ["nablus", "amman", "beersheba", "arabia"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 
@@ -7200,6 +7708,7 @@ spaces['samawah'] = {
       neighbours: ["baghdad", "annasiriya"] ,
       terrain : "desert" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['qurna'] = {
@@ -7210,6 +7719,7 @@ spaces['qurna'] = {
       neighbours: ["kut", "ahwaz", "basra", "annasiriya"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['sinai'] = {
@@ -7220,6 +7730,7 @@ spaces['sinai'] = {
       neighbours: ["gaza", "beersheba", "portsaid", "cairo"] ,
       terrain : "desert" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['beersheba'] = {
@@ -7231,6 +7742,7 @@ spaces['beersheba'] = {
       neighbours: ["gaza", "jerusalem", "sinai", "aqaba"] ,
       terrain : "desert" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['aqaba'] = {
@@ -7242,6 +7754,7 @@ spaces['aqaba'] = {
       neighbours: ["medina", "beersheba", "arabia"] ,
       terrain : "desert" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 
@@ -7253,6 +7766,7 @@ spaces['arabia'] = {
       neighbours: ["medina", "aqaba", "jerusalem", "amman"] ,
       terrain : "desert" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['medina'] = {
@@ -7263,6 +7777,7 @@ spaces['medina'] = {
       neighbours: [ "aqaba", "arabia"] ,
       terrain : "desert" ,
       vp : true ,
+      country : "turkey" ,
 }
 
 spaces['annasiriya'] = {
@@ -7273,8 +7788,13 @@ spaces['annasiriya'] = {
       neighbours: [ "qurna", "samawah"] ,
       terrain : "desert" ,
       vp : true ,
+      country : "turkey" ,
 }
 
+
+//
+// EGYPT
+//
 spaces['libya'] = {
       name: "Libya" ,
     control: "neutral" ,
@@ -7283,6 +7803,7 @@ spaces['libya'] = {
       neighbours: [ "alexandria"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "egypt" ,
 }
 
 spaces['alexandria'] = {
@@ -7293,6 +7814,7 @@ spaces['alexandria'] = {
        neighbours: [ "libya", "cairo", "portsaid"] ,
       terrain : "normal" ,
       vp : true ,
+      country : "egypt" ,
 }
 
 spaces['portsaid'] = {
@@ -7303,6 +7825,7 @@ spaces['portsaid'] = {
       neighbours: [ "alexandria", "cairo", "sinai"] ,
       terrain : "normal" ,
       vp : true ,
+      country : "egypt" ,
 }
 
 spaces['cairo'] = {
@@ -7313,8 +7836,13 @@ spaces['cairo'] = {
       neighbours: [ "alexandria", "portsaid", "sinai"] ,
       terrain : "normal" ,
       vp : true ,
+      country : "egypt" ,
 }
 
+
+//
+//
+//
 spaces['cetinje'] = {
       name: "Cetinje" ,
     control: "neutral" ,
@@ -7696,9 +8224,9 @@ spaces['crbox'] = {
 }
 
     for (let key in spaces) {
-      spaces[key].besieged = [];
+      spaces[key].besieged = 0;
       spaces[key].units = [];
-      spaces[key].fort = 0;
+      if (!spaces[key].fort) { spaces[key].fort = 0; }
       spaces[key].trench = 0;
       if (!spaces[key].control) { spaces[key].control = ""; }
       spaces[key].activated_for_movement = 0;
@@ -7752,6 +8280,8 @@ spaces['crbox'] = {
     this.game.state.rp['allies']['ru'] = 0;
     this.game.state.rp['allies']['ap'] = 0;
 
+    this.game.state.events = {};
+
   }
 
 
@@ -7759,8 +8289,10 @@ spaces['crbox'] = {
 
     let vp = 0;
 
+    //
     // central VP spaces
-    for (let key in this.game.spaces) { if (this.game.spaces[key].vp && this.game.spaces[key].control == "central") { vp++; } }
+    //
+    for (let key in this.game.spaces) { if (this.game.spaces[key].vp > 0 && this.game.spaces[key].control == "central") { vp++; } }
 
     this.game.state.general_records_track.vp = vp;
    
@@ -7773,8 +8305,10 @@ spaces['crbox'] = {
     let state = {};
 
     state.events = {};
+
     state.players = [];
     state.removed = []; // removed cards
+    state.round = 0;
     state.turn = 0;
     state.skip_counter_or_acknowledge = 0; // don't skip
     state.cards_left = {};
@@ -7819,28 +8353,47 @@ spaces['crbox'] = {
     state.rp['central']['tu'] = 0;
     state.rp['central']['bu'] = 0;
     state.rp['central']['cp'] = 0;
-    state.rp['central']['a'] = 0;
-    state.rp['central']['br'] = 0;
-    state.rp['central']['fr'] = 0;
-    state.rp['central']['it'] = 0;
-    state.rp['central']['ru'] = 0;
-    state.rp['central']['ap'] = 0;
+    state.rp['allies']['a'] = 0;
+    state.rp['allies']['br'] = 0;
+    state.rp['allies']['fr'] = 0;
+    state.rp['allies']['it'] = 0;
+    state.rp['allies']['ru'] = 0;
+    state.rp['allies']['ap'] = 0;
 
     state.active_player = -1;
+
+    state.central_limited_war_cards_added = false;
+    state.allies_limited_war_cards_added = false;
+    state.central_total_war_cards_added = false;
+    state.allies_total_war_cards_added = false;
 
     return state;
 
   }
 
-  returnActivationCost(key) {
+
+  moveUnitToSpacekey(ukey, to="") {
+
+    let unit = this.game.units[ukey];
+
+    for (let key in this.game.spaces) {
+      for (let i = 0; i < this.game.spaces[key].units.length; i++) {
+        if (this.game.spaces[key].units[i].key == ukey) {
+	  unit = this.game.spaces[key].units[i];
+	  this.game.spaces[key].units.splice(i, 1);
+	  break;
+        }
+      }
+    }
+
+    unit.spacekey = to;
+    this.game.spaces[to].units.push(unit);
+
+    this.displayBoard();
+    
     return 1;
+
   }
-
-  returnMovementCost(key) {
-    return 1;
-  }
-
-
 
   //
   // Core Game Logic
@@ -7872,7 +8425,8 @@ console.log("MOVE: " + mv[0]);
         if (mv[0] === "turn") {
 
 	  this.game.state.turn++;
-	   
+	  this.game.state.round = 0;	   
+
 this.updateLog(`###############`);
 this.updateLog(`### Turn ${this.game.state.turn} ###`);
 this.updateLog(`###############`);
@@ -7900,8 +8454,10 @@ this.updateLog(`###############`);
             this.game.queue.push("guns_of_august");
 	  }
 
+	  return 1;
 
 	}
+
 
 	if (mv[0] === "guns_of_august") {
 
@@ -7924,9 +8480,122 @@ this.updateLog(`###############`);
 	}
 
  	if (mv[0] == "draw_strategy_card_phase") {
+
           this.game.queue.splice(qe, 1);
-	  return 1;
+
+	  let all_cards = this.returnDeck("all"); 
+
+          this.game.queue.push("deal_strategy_cards");
+
+	  //
+	  // LIMITED WAR CARDS - allied
+	  //
+  	  if (this.game.state.general_records_track.allies_war_status >= 4 && this.game.state.allies_limited_war_cards_added == false) {
+
+	    this.game.state.allies_limited_war_cards_added = true;
+	
+	    let discarded_cards = {};
+    	    for (let key in this.game.deck[1].discards) { discarded_cards[key] = all_cards[key]; }
+	    let new_cards = this.returnLimitedWarDeck("allies");
+	    for (let key in discarded_cards) { new_cards[key] = discarded_cards[key]; }
+
+            // shuffle in discarded cards
+            this.game.queue.push("SHUFFLE\t2");
+            this.game.queue.push("DECKRESTORE\t2");
+            this.game.queue.push("DECKENCRYPT\t2\t2");
+            this.game.queue.push("DECKENCRYPT\t2\t1");
+            this.game.queue.push("DECKXOR\t2\t2");
+            this.game.queue.push("DECKXOR\t2\t1");
+            this.game.queue.push("DECK\t2\t"+JSON.stringify(new_cards));
+            this.game.queue.push("DECKBACKUP\t2");
+            this.updateLog("Shuffling discarded cards back into the deck...");
+
+	  }
+
+  	  if (this.game.state.general_records_track.central_war_status >= 4 && this.game.state.central_limited_war_cards_added == false) {
+	    this.game.state.central_limited_war_cards_added = true;
+	
+	    let discarded_cards = {};
+    	    for (let key in this.game.deck[0].discards) { discarded_cards[key] = all_cards[key]; }
+	    let new_cards = this.returnLimitedWarDeck("central");
+	    for (let key in discarded_cards) { new_cards[key] = discarded_cards[key]; }
+
+            // shuffle in discarded cards
+            this.game.queue.push("SHUFFLE\t1");
+            this.game.queue.push("DECKRESTORE\t1");
+            this.game.queue.push("DECKENCRYPT\t1\t2");
+            this.game.queue.push("DECKENCRYPT\t1\t1");
+            this.game.queue.push("DECKXOR\t1\t2");
+            this.game.queue.push("DECKXOR\t1\t1");
+            this.game.queue.push("DECK\t1\t"+JSON.stringify(new_cards));
+            this.game.queue.push("DECKBACKUP\t1");
+            this.updateLog("Shuffling discarded cards back into the deck...");
+
+	  }
+  	  if (this.game.state.general_records_track.allies_war_status >= 11 && this.game.state.allies_total_war_cards_added == false) {
+	    this.game.state.allies_total_war_cards_added = true;
+	
+	    let discarded_cards = {};
+    	    for (let key in this.game.deck[1].discards) { discarded_cards[key] = all_cards[key]; }
+	    let new_cards = this.returnFullWarDeck("allies");
+	    for (let key in discarded_cards) { new_cards[key] = discarded_cards[key]; }
+
+            // shuffle in discarded cards
+            this.game.queue.push("SHUFFLE\t2");
+            this.game.queue.push("DECKRESTORE\t2");
+            this.game.queue.push("DECKENCRYPT\t2\t2");
+            this.game.queue.push("DECKENCRYPT\t2\t1");
+            this.game.queue.push("DECKXOR\t2\t2");
+            this.game.queue.push("DECKXOR\t2\t1");
+            this.game.queue.push("DECK\t2\t"+JSON.stringify(new_cards));
+            this.game.queue.push("DECKBACKUP\t2");
+            this.updateLog("Shuffling discarded cards back into the deck...");
+
+	  }
+  	  if (this.game.state.general_records_track.central_war_status >= 11 && this.game.state.central_total_war_cards_added == false) {
+	    this.game.state.central_total_war_cards_added = true;
+	
+	    let discarded_cards = {};
+    	    for (let key in this.game.deck[0].discards) { discarded_cards[key] = all_cards[key]; }
+	    let new_cards = this.returnFullWarDeck("central");
+	    for (let key in discarded_cards) { new_cards[key] = discarded_cards[key]; }
+
+            // shuffle in discarded cards
+            this.game.queue.push("SHUFFLE\t1");
+            this.game.queue.push("DECKRESTORE\t1");
+            this.game.queue.push("DECKENCRYPT\t1\t2");
+            this.game.queue.push("DECKENCRYPT\t1\t1");
+            this.game.queue.push("DECKXOR\t1\t2");
+            this.game.queue.push("DECKXOR\t1\t1");
+            this.game.queue.push("DECK\t1\t"+JSON.stringify(new_cards));
+            this.game.queue.push("DECKBACKUP\t1");
+            this.updateLog("Shuffling discarded cards back into the deck...");
+
+	  }
+
+          return 1;
+
 	}
+
+
+	if (mv[0] == "deal_strategy_cards") {
+
+	  this.game.queue.splice(qe, 1);
+
+          let allies_cards_needed = (this.game.state.round >= 4)? 6 : 7;
+          let central_cards_needed = (this.game.state.round >= 4)? 6 : 7;
+      
+          if (allies_cards_needed > this.game.deck[1].crypt.length) { allies_cards_needed = this.game.deck[1].crypt.length; }
+          if (central_cards_needed > this.game.deck[0].crypt.length) { central_cards_needed = this.game.deck[0].crypt.length; }
+          
+          this.game.queue.push("DEAL\t1\t1\t"+central_cards_needed);
+          this.game.queue.push("DEAL\t2\t2\t"+allies_cards_needed);
+
+	  return 1;
+
+	}
+
+
  	if (mv[0] == "replacement_phase") {
 
 	  console.log("###");
@@ -7944,6 +8613,29 @@ this.updateLog(`###############`);
 	  return 1;
 	}
  	if (mv[0] == "siege_phase") {
+
+	  for (let key in this.game.spaces) {
+	    let space = this.game.spaces[key];
+	    if (space.besieged == true) {
+	      if (space.fort > 0) {
+		if (space.units.length > 0) {
+		  if (this.returnPowerOfUnit(space.units[0]) != space.control) {
+
+		    let roll = this.rollDice(6);
+		    if (this.game.state.turn < 2) { roll -= 2; }
+		    if (roll > space.fort) {
+		      space.fort = -1;
+		      this.updateStatus(this.returnSpaceName(space.key) + " fort destroyed (roll: " + roll + ")");
+		    } else {
+		      this.updateStatus(this.returnSpaceName(space.key) + " fort resists siege (roll: " + roll + ")");
+		    }
+
+		  }
+		}
+	      }
+	    }
+	  }
+
           this.game.queue.splice(qe, 1);
 	  return 1;
 	}
@@ -7962,6 +8654,7 @@ this.updateLog(`###############`);
 
 	  return 1;
 	}
+
  	if (mv[0] == "mandated_offensive_phase") {
 
 	  let central = this.rollDice();
@@ -7997,6 +8690,8 @@ this.updateLog(`###############`);
 	  let name = this.returnPlayerName(faction);
 	  let hand = this.returnPlayerHand();
 
+	  if (faction == "central") { this.game.state.round++; }
+
 	  this.onNewTurn();
 
 	  if (this.game.player == player) {
@@ -8006,6 +8701,57 @@ this.updateLog(`###############`);
 	  }
 	  
 	  return 0;
+
+	}
+
+	if (mv[0] == "add_unit_to_space") {
+
+	  let unit = mv[1];
+	  let spacekey = mv[2];
+	  let player_to_ignore = 0;
+	  if (mv[3]) { player_to_ignore = parseInt(mv[3]); }
+
+	  if (this.game.player != player_to_ignore) {
+            this.addUnitToSpace(unit, spacekey);
+	  }
+
+          this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+	if (mv[0] == "discard") {
+
+	  let deck = this.returnDeck();
+	  let card = mv[1];
+
+	  this.removeCardFromHand(card);
+
+	  if (deck[card].removeFromDeckAfterPlay(this)) {
+	    this.removeCardFromGame(card);
+	  }
+
+          this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+
+	if (mv[0] == "event") {
+
+	  let deck = this.returnDeck();
+	  let card = mv[1];
+	  let faction = mv[2];
+
+          this.game.queue.splice(qe, 1);
+
+	  if (deck[card]) {
+	    if (deck[card].canEvent(this, faction)) {
+	      return deck[card].onEvent(this, faction);
+	    }
+	  }
+
+	  return 1;
 
 	}
 
@@ -8538,6 +9284,15 @@ console.log(JSON.stringify(this.game.state.combat));
 	  let units = this.returnAttackerUnits();
 	  let does_defender_retreat = false;
 
+	  //
+	  // remove all destroyed defender units
+	  //
+	  for (let z = this.game.spaces[this.game.state.combat.key].units.length-1; z >= 0; z--) {
+	    let u = this.game.spaces[this.game.state.combat.key].units[z];
+	    if (u.destroyed) { this.game.spaces[this.game.state.combat.key].units.splice(z, 1); }
+	  }
+
+
 	  if (this.game.state.combat.winner == "defender") {
 	    this.updateLog("Defender Wins, no retreat...");
 	    return 1;
@@ -8599,6 +9354,7 @@ console.log(JSON.stringify(this.game.state.combat));
 	  return 1;
 
 	}
+
 
 	if (mv[0] === "post_combat_cleanup") {
 
@@ -8778,6 +9534,9 @@ console.log("adding +1 to drm modifiers...");
 	  let faction = mv[1];
 	  let key = mv[2];
 
+	  for (let i = 0; i < this.game.spaces[key].units.length; i++) {
+	    this.game.spaces[key].units[i].spacekey = key;
+	  }
 	  this.activateSpaceForCombat(key);
 
 	  this.game.queue.splice(qe, 1);
@@ -8792,6 +9551,9 @@ console.log("adding +1 to drm modifiers...");
 	  let faction = mv[1];
 	  let key = mv[2];
 
+	  for (let i = 0; i < this.game.spaces[key].units.length; i++) {
+	    this.game.spaces[key].units[i].spacekey = key;
+	  }
 	  this.activateSpaceForMovement(key);
 
 	  this.game.queue.splice(qe, 1);
@@ -8860,10 +9622,29 @@ console.log("adding +1 to drm modifiers...");
 	    this.displaySpace(sourcekey);
 	  }
 
+	  //
+	  // the game logic should prevent units from moving in unless they have
+	  // enough strength to besiege a fort, so if this is a fort we want to
+	  // toggle the besieged variable if needed.
+	  //
+	  if (this.returnPowerOfUnit(this.game.spaces[destinationkey].units[0]) != this.game.spaces[destinationkey].control) {
+	    this.game.spaces[destinationkey].besieged = 1;
+	  }
+	  if (this.game.spaces[sourcekey].besieged == 1) {
+	    if (this.game.spaces[sourcekey].units.length > 0) {
+	      if (this.returnPowerOfUnit(this.game.spaces[sourcekey].units[0]) != this.game.spaces[destinationkey].control) {
+	        this.game.spaces[sourcekey].besieged = 0;
+	      }
+	    } else {
+	      this.game.spaces[sourcekey].besieged = 0;
+	    }
+	  }
+
 	  this.game.queue.splice(qe, 1);
 
 	  return 1;
 	}
+	
 
 
         if (mv[0] === "ops") {
@@ -8878,7 +9659,6 @@ console.log("adding +1 to drm modifiers...");
 
 	}
 
-
 	if (mv[0] === "counter_or_acknowledge") {
 
 	  this.game.queue.splice(qe, 1);
@@ -8886,7 +9666,6 @@ console.log("adding +1 to drm modifiers...");
 	  return 1;
 
 	}
-
 
 
 	//
@@ -8910,7 +9689,6 @@ console.log("adding +1 to drm modifiers...");
     return 1;
 
   }
-
 
 
 
@@ -9058,6 +9836,7 @@ console.log("adding +1 to drm modifiers...");
 	    } 
 	  }
 	  if (!u.damaged) {
+console.log(skey + " -- " + uidx + " -- " + key);
             paths_self.moveUnit(skey, uidx, key);
 	    paths_self.addMove(`move\t${faction}\t${skey}\t${uidx}\t${key}\t${paths_self.game.player}`);
 	  }
@@ -9308,6 +10087,15 @@ console.log("adding +1 to drm modifiers...");
 
   playerPlayCard(faction, card) {
 
+    //
+    // pass is pass!
+    //
+    if (card == "pass") {
+      this.endTurn();
+      return;
+    }
+
+
     let c = this.deck[card];
 
     //
@@ -9317,9 +10105,15 @@ console.log("adding +1 to drm modifiers...");
 
     let html = `<ul>`;
     html    += `<li class="card" id="ops">ops (movement / combat)</li>`;
-    html    += `<li class="card" id="sr">strategic redeployment</li>`;
-    html    += `<li class="card" id="rp">replacement points</li>`;
-    html    += `<li class="card" id="event">trigger event</li>`;
+    if (c.sr) {
+      html    += `<li class="card" id="sr">strategic redeployment</li>`;
+    }
+    if (c.rp) {
+      html    += `<li class="card" id="rp">replacement points</li>`;
+    }
+    if (c.canEvent(this, faction)) {
+      html    += `<li class="card" id="event">trigger event</li>`;
+    }
     html    += `</ul>`;
 
 
@@ -9330,7 +10124,13 @@ console.log("adding +1 to drm modifiers...");
 
     this.attachCardboxEvents((action) => {
 
+      this.updateStatus("selected...");
       this.menu_overlay.hide();
+
+      //
+      // discard the card
+      //
+      this.addMove("discard\t"+card);
 
       if (action === "ops") {
 	this.playerPlayOps(faction, card, c.ops);
@@ -9345,8 +10145,30 @@ console.log("adding +1 to drm modifiers...");
       }
 
       if (action === "event") {
-	alert("event");
+
+	//
+	// War Status
+	//
+	if (c.ws > 0) {
+	  if (card.substring(0, 2) == "ap") {
+	    this.game.state.general_records_track.allies_war_status += c.ws;
+	    this.game.state.general_records_track.combined_war_status += c.ws;
+	  } else {
+	    this.game.state.general_records_track.central_war_status += c.ws;
+	    this.game.state.general_records_track.combined_war_status += c.ws;
+	  }
+	  this.displayGeneralRecordsTrack();
+	}
+
+	//
+	// and trigger event
+	//
+	if (c.canEvent(this, faction)) {
+	  this.addMove("event\t"+card+"\t"+faction);
+	}
+
 	this.endTurn();
+	return 1;
       }
 
     });
@@ -9436,7 +10258,6 @@ console.log("adding +1 to drm modifiers...");
 	(key) => {
 
 	  if (key === "skip") {
-alert("skip attack target!");
 	    paths_self.addMove("resolve\tplayer_play_combat");
 	    paths_self.addMove("post_combat_cleanup");
 	    paths_self.removeSelectable();
@@ -9621,7 +10442,9 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
       let sourcekey = key;
       let html  = `<ul>`;
           html += `<li class="option" id="move">move</li>`;
+      if (paths_self.game.state.events.entrench == 1) {
           html += `<li class="option" id="entrench">entrench</li>`;
+      }
           html += `<li class="option" id="skip">stand down</li>`;
           html += `</ul>`;
       paths_self.updateStatusWithOptions(`Select Action for Unit`, html);
@@ -9834,7 +10657,7 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
     }
 
     let targets = this.returnNumberOfSpacesWithFilter((key) => {
-      if (cost < this.returnActivationCost(key)) { return 0; }
+      if (cost < this.returnActivationCost(faction, key)) { return 0; }
       let space = this.game.spaces[key];
       if (space.activated_for_combat == 1) { return 0; }
       if (space.activated_for_movement == 1) { return 0; }
@@ -9872,7 +10695,7 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
 	this.playerSelectSpaceWithFilter(
 	  `Select Space to Activate:`,
 	  (key) => {
-	    if (cost < this.returnActivationCost(key)) { return 0; }
+	    if (cost < this.returnActivationCost(faction, key)) { return 0; }
 	    let space = this.game.spaces[key];
 	    if (space.activated_for_combat == 1) { return 0; }
 	    if (space.activated_for_movement == 1) { return 0; }
@@ -9887,7 +10710,7 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
 	    this.updateStatus("activating...");
 	    this.activateSpaceForMovement(key);
             this.displaySpace(key);
-	    let cost_paid = this.returnActivationCost(key); 
+	    let cost_paid = this.returnActivationCost(faction, key); 
 	    cost -= cost_paid;
 	    this.addMove(`activate_for_movement\t${faction}\t${key}`);
 	    if (cost <= 0) {
@@ -9923,7 +10746,7 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
 	  (key) => {
 	    this.updateStatus("activating...");
 	    this.activateSpaceForCombat(key);
-	    let cost_paid = this.returnActivationCost(key); 
+	    let cost_paid = this.returnActivationCost(faction, key); 
 	    cost -= cost_paid;
 	    this.addMove(`activate_for_combat\t${faction}\t${key}`);
 	    if (cost <= 0) {
@@ -10280,12 +11103,124 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
     let name = this.returnPlayerName(faction);
     let hand = this.returnPlayerHand();
 
+    //
+    // you can pass once only 1 card left
+    //
+    if (hand.length == 1) { hand.push("pass"); }
+
     this.addMove("resolve\tplay");
 
     this.updateStatusAndListCards(`${name} - select card`, hand);
     this.attachCardboxEvents((card) => {
       this.playerPlayCard(faction, card);
     });
+
+  }
+
+  playerPlaceUnitOnBoard(country="", units=[], mycallback=null) {
+
+console.log("%");
+console.log("%");
+console.log("%");
+console.log("%");
+console.log("%");
+console.log("%");
+console.log("player place units by country: " + country);
+
+    let filter_func = () => {}
+    let unit_idx = 0;
+    let countries = [];
+
+    if (country == "russia") {
+      countries = this.returnSpacekeysByCountry("russia");
+      filter_func = (spacekey) => { 
+	if (countries.includes(spacekey)) {
+	  if (this.game.spaces[spacekey].control == "allies") { 
+	    if (this.checkSupplyStatus("russia", spacekey)) { return 1; }
+	  }
+	}
+	return 0;
+      }
+    }
+
+    if (country == "france") {
+      countries = this.returnSpacekeysByCountry("france");
+      filter_func = (spacekey) => { 
+	if (countries.includes(spacekey)) {
+	  if (this.game.spaces[spacekey].control == "allies") { 
+	    if (this.checkSupplyStatus("france", spacekey)) { return 1; }
+	  }
+	}
+	return 0;
+      }
+    }
+
+    if (country == "germany") {
+      countries = this.returnSpacekeysByCountry("germany");
+console.log("countries: " + JSON.stringify(countries));
+      filter_func = (spacekey) => { 
+console.log("examining: " + spacekey);
+	if (countries.includes(spacekey)) {
+console.log("exists... " + spacekey);
+	  if (this.game.spaces[spacekey].control == "central") { 
+console.log("controlled by central powers...");
+	    if (this.checkSupplyStatus("germany", spacekey)) { 
+console.log("in line of supply...");
+return 1; 
+	    }
+	  }
+	}
+	return 0;
+      }
+    }
+
+    if (country == "austria") {
+      countries = this.returnSpacekeysByCountry("austria");
+      filter_func = (spacekey) => { 
+	if (countries.includes(spacekey)) {
+	  if (this.game.spaces[spacekey].control == "central") { 
+	    if (this.checkSupplyStatus("austria", spacekey)) { return 1; }
+	  }
+	}
+	return 0;
+      }
+    }
+
+
+    let finish_fnct = (spacekey) => {
+      this.addUnitToSpace(units[unit_idx], spacekey);
+      this.displaySpace(spacekey);
+      unit_idx++;
+      if (unit_idx >= units.length) {
+	if (mycallback != null) { mycallback(); }
+	return 1;
+      } else {
+	place_unit_fnct();
+      }
+    }
+
+    let place_unit_fnct = () => {
+
+      let x = "1st";
+      if (unit_idx == 1) { x = "2nd"; }
+      if (unit_idx == 2) { x = "3rd"; }
+      if (unit_idx == 3) { x = "4th"; }
+      if (unit_idx == 4) { x = "5th"; }
+      if (unit_idx == 5) { x = "6th"; }
+      if (unit_idx == 6) { x = "7th"; }
+
+      this.playerSelectSpaceWithFilter(
+	`Select Space for ${this.game.units[units[unit_idx]].name} (${x} unit)`,
+        filter_func ,
+	finish_fnct ,
+	null ,
+	true
+      );
+    }
+
+    if (units.length == 0) { mycallback(); return; }
+    
+    place_unit_fnct();
 
   }
 
@@ -10346,6 +11281,7 @@ alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].acti
     this.game.spaces[sourcekey].units[sourceidx].moved = 1;
     this.game.spaces[sourcekey].units.splice(sourceidx, 1);
     if (!this.game.spaces[destinationkey].units) { this.game.spaces[destinationkey].units = []; }
+    unit.spacekey = destinationkey;
     this.game.spaces[destinationkey].units.push(unit);
     unit.spacekey = destinationkey;
     this.displaySpace(sourcekey);

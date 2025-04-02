@@ -141,6 +141,14 @@
   top: 80px;
   left: 80px;
 }
+.general-records-track img:nth-child(11) {
+  top: 90px;
+  left: 90px;
+}
+.general-records-track img:nth-child(12) {
+  top: 100px;
+  left: 100px;
+}
 .general-records-track-0 {
   top: 2707px;
   left: 125px;

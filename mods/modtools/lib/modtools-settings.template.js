@@ -2,8 +2,6 @@ module.exports = (app, mod) => {
 
 	let html = `
 			<div id="modtools-settings" class="saito-module-settings">
-			<fieldset class="saito-grid">
-			<legend class="settings-label">Moderation Controls</legend>
 	`;
 
 

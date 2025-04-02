@@ -16,7 +16,7 @@
            name              :       "Hugh Willoughby",
            personage         :       true,
            img               :       "/his/img/tiles/explorers/Willoughby.svg",
-           power	     :       1,
+           power	     :       0,
       });
 
       this.importExplorer('rut', {

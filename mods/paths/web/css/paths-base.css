@@ -4,6 +4,15 @@
 	position: absolute;
 }
 
+
+.fort-besieged {
+    top: +80px;
+    transform: scale(0.5);
+}
+.fort-destroyed {
+    top: +80px;
+    transform: scale(0.5);
+}
 .oos-highlight::before {
 	content: ' ';
 	box-shadow: 2rem 2rem 7rem 3rem #fc8c, -2rem -2rem 7rem 3rem #fc8c;
@@ -86,29 +95,35 @@
 .army-tile:hover {
 	z-index: 999;
 }
+
+.reserve-box .army-tile {
+  top: 0 !important;
+  left: 0 !important;
+}
+
 .space .army-tile:nth-child(1) {
 	top: 0;
 	left: 0;
 }
 .space .army-tile:nth-child(2) {
-	top: -30;
-	left: 30;
+	top: -30px;
+	left: 30px;
 }
 .space .army-tile:nth-child(3) {
-	top: -60;
-	left: 60;
+	top: -60px;
+	left: 60px;
 }
 .space .army-tile:nth-child(4) {
-	top: -90;
-	left: 90;
+	top: -90px;
+	left: 90px;
 }
 .space .army-tile:nth-child(5) {
-	top: -120;
-	left: 120;
+	top: -120px;
+	left: 120px;
 }
 .space .army-tile:nth-child(6) {
-	top: -150;
-	left: 150;
+	top: -150px;
+	left: 150px;
 }
 
 .hud-body .status .status-message {

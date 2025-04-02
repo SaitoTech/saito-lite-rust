@@ -32,8 +32,10 @@ console.log("\n\n\n\n");
       this.game.queue.push("READY");
       this.game.queue.push("init");
 
-      this.game.queue.push("DEAL\t2\t2\t7");
-      this.game.queue.push("DEAL\t1\t1\t6"); // player chooses Guns of August or extra card 
+      this.game.queue.push("DEAL\t2\t2\t2");
+      this.game.queue.push("DEAL\t1\t1\t1"); // player chooses Guns of August or extra card 
+//      this.game.queue.push("DEAL\t2\t2\t7");
+//      this.game.queue.push("DEAL\t1\t1\t6"); // player chooses Guns of August or extra card 
 
       this.game.queue.push("DECKENCRYPT\t2\t2");
       this.game.queue.push("DECKENCRYPT\t2\t1");

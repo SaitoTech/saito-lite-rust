@@ -1,5 +1,4 @@
 
-
   //
   // Core Game Logic
   //
@@ -30,7 +29,8 @@ console.log("MOVE: " + mv[0]);
         if (mv[0] === "turn") {
 
 	  this.game.state.turn++;
-	   
+	  this.game.state.round = 0;	   
+
 this.updateLog(`###############`);
 this.updateLog(`### Turn ${this.game.state.turn} ###`);
 this.updateLog(`###############`);
@@ -58,8 +58,10 @@ this.updateLog(`###############`);
             this.game.queue.push("guns_of_august");
 	  }
 
+	  return 1;
 
 	}
+
 
 	if (mv[0] === "guns_of_august") {
 
@@ -82,9 +84,122 @@ this.updateLog(`###############`);
 	}
 
  	if (mv[0] == "draw_strategy_card_phase") {
+
           this.game.queue.splice(qe, 1);
-	  return 1;
+
+	  let all_cards = this.returnDeck("all"); 
+
+          this.game.queue.push("deal_strategy_cards");
+
+	  //
+	  // LIMITED WAR CARDS - allied
+	  //
+  	  if (this.game.state.general_records_track.allies_war_status >= 4 && this.game.state.allies_limited_war_cards_added == false) {
+
+	    this.game.state.allies_limited_war_cards_added = true;
+	
+	    let discarded_cards = {};
+    	    for (let key in this.game.deck[1].discards) { discarded_cards[key] = all_cards[key]; }
+	    let new_cards = this.returnLimitedWarDeck("allies");
+	    for (let key in discarded_cards) { new_cards[key] = discarded_cards[key]; }
+
+            // shuffle in discarded cards
+            this.game.queue.push("SHUFFLE\t2");
+            this.game.queue.push("DECKRESTORE\t2");
+            this.game.queue.push("DECKENCRYPT\t2\t2");
+            this.game.queue.push("DECKENCRYPT\t2\t1");
+            this.game.queue.push("DECKXOR\t2\t2");
+            this.game.queue.push("DECKXOR\t2\t1");
+            this.game.queue.push("DECK\t2\t"+JSON.stringify(new_cards));
+            this.game.queue.push("DECKBACKUP\t2");
+            this.updateLog("Shuffling discarded cards back into the deck...");
+
+	  }
+
+  	  if (this.game.state.general_records_track.central_war_status >= 4 && this.game.state.central_limited_war_cards_added == false) {
+	    this.game.state.central_limited_war_cards_added = true;
+	
+	    let discarded_cards = {};
+    	    for (let key in this.game.deck[0].discards) { discarded_cards[key] = all_cards[key]; }
+	    let new_cards = this.returnLimitedWarDeck("central");
+	    for (let key in discarded_cards) { new_cards[key] = discarded_cards[key]; }
+
+            // shuffle in discarded cards
+            this.game.queue.push("SHUFFLE\t1");
+            this.game.queue.push("DECKRESTORE\t1");
+            this.game.queue.push("DECKENCRYPT\t1\t2");
+            this.game.queue.push("DECKENCRYPT\t1\t1");
+            this.game.queue.push("DECKXOR\t1\t2");
+            this.game.queue.push("DECKXOR\t1\t1");
+            this.game.queue.push("DECK\t1\t"+JSON.stringify(new_cards));
+            this.game.queue.push("DECKBACKUP\t1");
+            this.updateLog("Shuffling discarded cards back into the deck...");
+
+	  }
+  	  if (this.game.state.general_records_track.allies_war_status >= 11 && this.game.state.allies_total_war_cards_added == false) {
+	    this.game.state.allies_total_war_cards_added = true;
+	
+	    let discarded_cards = {};
+    	    for (let key in this.game.deck[1].discards) { discarded_cards[key] = all_cards[key]; }
+	    let new_cards = this.returnFullWarDeck("allies");
+	    for (let key in discarded_cards) { new_cards[key] = discarded_cards[key]; }
+
+            // shuffle in discarded cards
+            this.game.queue.push("SHUFFLE\t2");
+            this.game.queue.push("DECKRESTORE\t2");
+            this.game.queue.push("DECKENCRYPT\t2\t2");
+            this.game.queue.push("DECKENCRYPT\t2\t1");
+            this.game.queue.push("DECKXOR\t2\t2");
+            this.game.queue.push("DECKXOR\t2\t1");
+            this.game.queue.push("DECK\t2\t"+JSON.stringify(new_cards));
+            this.game.queue.push("DECKBACKUP\t2");
+            this.updateLog("Shuffling discarded cards back into the deck...");
+
+	  }
+  	  if (this.game.state.general_records_track.central_war_status >= 11 && this.game.state.central_total_war_cards_added == false) {
+	    this.game.state.central_total_war_cards_added = true;
+	
+	    let discarded_cards = {};
+    	    for (let key in this.game.deck[0].discards) { discarded_cards[key] = all_cards[key]; }
+	    let new_cards = this.returnFullWarDeck("central");
+	    for (let key in discarded_cards) { new_cards[key] = discarded_cards[key]; }
+
+            // shuffle in discarded cards
+            this.game.queue.push("SHUFFLE\t1");
+            this.game.queue.push("DECKRESTORE\t1");
+            this.game.queue.push("DECKENCRYPT\t1\t2");
+            this.game.queue.push("DECKENCRYPT\t1\t1");
+            this.game.queue.push("DECKXOR\t1\t2");
+            this.game.queue.push("DECKXOR\t1\t1");
+            this.game.queue.push("DECK\t1\t"+JSON.stringify(new_cards));
+            this.game.queue.push("DECKBACKUP\t1");
+            this.updateLog("Shuffling discarded cards back into the deck...");
+
+	  }
+
+          return 1;
+
 	}
+
+
+	if (mv[0] == "deal_strategy_cards") {
+
+	  this.game.queue.splice(qe, 1);
+
+          let allies_cards_needed = (this.game.state.round >= 4)? 6 : 7;
+          let central_cards_needed = (this.game.state.round >= 4)? 6 : 7;
+      
+          if (allies_cards_needed > this.game.deck[1].crypt.length) { allies_cards_needed = this.game.deck[1].crypt.length; }
+          if (central_cards_needed > this.game.deck[0].crypt.length) { central_cards_needed = this.game.deck[0].crypt.length; }
+          
+          this.game.queue.push("DEAL\t1\t1\t"+central_cards_needed);
+          this.game.queue.push("DEAL\t2\t2\t"+allies_cards_needed);
+
+	  return 1;
+
+	}
+
+
  	if (mv[0] == "replacement_phase") {
 
 	  console.log("###");
@@ -102,6 +217,29 @@ this.updateLog(`###############`);
 	  return 1;
 	}
  	if (mv[0] == "siege_phase") {
+
+	  for (let key in this.game.spaces) {
+	    let space = this.game.spaces[key];
+	    if (space.besieged == true) {
+	      if (space.fort > 0) {
+		if (space.units.length > 0) {
+		  if (this.returnPowerOfUnit(space.units[0]) != space.control) {
+
+		    let roll = this.rollDice(6);
+		    if (this.game.state.turn < 2) { roll -= 2; }
+		    if (roll > space.fort) {
+		      space.fort = -1;
+		      this.updateStatus(this.returnSpaceName(space.key) + " fort destroyed (roll: " + roll + ")");
+		    } else {
+		      this.updateStatus(this.returnSpaceName(space.key) + " fort resists siege (roll: " + roll + ")");
+		    }
+
+		  }
+		}
+	      }
+	    }
+	  }
+
           this.game.queue.splice(qe, 1);
 	  return 1;
 	}
@@ -120,6 +258,7 @@ this.updateLog(`###############`);
 
 	  return 1;
 	}
+
  	if (mv[0] == "mandated_offensive_phase") {
 
 	  let central = this.rollDice();
@@ -155,6 +294,8 @@ this.updateLog(`###############`);
 	  let name = this.returnPlayerName(faction);
 	  let hand = this.returnPlayerHand();
 
+	  if (faction == "central") { this.game.state.round++; }
+
 	  this.onNewTurn();
 
 	  if (this.game.player == player) {
@@ -164,6 +305,57 @@ this.updateLog(`###############`);
 	  }
 	  
 	  return 0;
+
+	}
+
+	if (mv[0] == "add_unit_to_space") {
+
+	  let unit = mv[1];
+	  let spacekey = mv[2];
+	  let player_to_ignore = 0;
+	  if (mv[3]) { player_to_ignore = parseInt(mv[3]); }
+
+	  if (this.game.player != player_to_ignore) {
+            this.addUnitToSpace(unit, spacekey);
+	  }
+
+          this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+	if (mv[0] == "discard") {
+
+	  let deck = this.returnDeck();
+	  let card = mv[1];
+
+	  this.removeCardFromHand(card);
+
+	  if (deck[card].removeFromDeckAfterPlay(this)) {
+	    this.removeCardFromGame(card);
+	  }
+
+          this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+
+	if (mv[0] == "event") {
+
+	  let deck = this.returnDeck();
+	  let card = mv[1];
+	  let faction = mv[2];
+
+          this.game.queue.splice(qe, 1);
+
+	  if (deck[card]) {
+	    if (deck[card].canEvent(this, faction)) {
+	      return deck[card].onEvent(this, faction);
+	    }
+	  }
+
+	  return 1;
 
 	}
 
@@ -696,6 +888,15 @@ console.log(JSON.stringify(this.game.state.combat));
 	  let units = this.returnAttackerUnits();
 	  let does_defender_retreat = false;
 
+	  //
+	  // remove all destroyed defender units
+	  //
+	  for (let z = this.game.spaces[this.game.state.combat.key].units.length-1; z >= 0; z--) {
+	    let u = this.game.spaces[this.game.state.combat.key].units[z];
+	    if (u.destroyed) { this.game.spaces[this.game.state.combat.key].units.splice(z, 1); }
+	  }
+
+
 	  if (this.game.state.combat.winner == "defender") {
 	    this.updateLog("Defender Wins, no retreat...");
 	    return 1;
@@ -757,6 +958,7 @@ console.log(JSON.stringify(this.game.state.combat));
 	  return 1;
 
 	}
+
 
 	if (mv[0] === "post_combat_cleanup") {
 
@@ -936,6 +1138,9 @@ console.log("adding +1 to drm modifiers...");
 	  let faction = mv[1];
 	  let key = mv[2];
 
+	  for (let i = 0; i < this.game.spaces[key].units.length; i++) {
+	    this.game.spaces[key].units[i].spacekey = key;
+	  }
 	  this.activateSpaceForCombat(key);
 
 	  this.game.queue.splice(qe, 1);
@@ -950,6 +1155,9 @@ console.log("adding +1 to drm modifiers...");
 	  let faction = mv[1];
 	  let key = mv[2];
 
+	  for (let i = 0; i < this.game.spaces[key].units.length; i++) {
+	    this.game.spaces[key].units[i].spacekey = key;
+	  }
 	  this.activateSpaceForMovement(key);
 
 	  this.game.queue.splice(qe, 1);
@@ -1018,10 +1226,29 @@ console.log("adding +1 to drm modifiers...");
 	    this.displaySpace(sourcekey);
 	  }
 
+	  //
+	  // the game logic should prevent units from moving in unless they have
+	  // enough strength to besiege a fort, so if this is a fort we want to
+	  // toggle the besieged variable if needed.
+	  //
+	  if (this.returnPowerOfUnit(this.game.spaces[destinationkey].units[0]) != this.game.spaces[destinationkey].control) {
+	    this.game.spaces[destinationkey].besieged = 1;
+	  }
+	  if (this.game.spaces[sourcekey].besieged == 1) {
+	    if (this.game.spaces[sourcekey].units.length > 0) {
+	      if (this.returnPowerOfUnit(this.game.spaces[sourcekey].units[0]) != this.game.spaces[destinationkey].control) {
+	        this.game.spaces[sourcekey].besieged = 0;
+	      }
+	    } else {
+	      this.game.spaces[sourcekey].besieged = 0;
+	    }
+	  }
+
 	  this.game.queue.splice(qe, 1);
 
 	  return 1;
 	}
+	
 
 
         if (mv[0] === "ops") {
@@ -1036,7 +1263,6 @@ console.log("adding +1 to drm modifiers...");
 
 	}
 
-
 	if (mv[0] === "counter_or_acknowledge") {
 
 	  this.game.queue.splice(qe, 1);
@@ -1044,7 +1270,6 @@ console.log("adding +1 to drm modifiers...");
 	  return 1;
 
 	}
-
 
 
 	//
@@ -1068,6 +1293,5 @@ console.log("adding +1 to drm modifiers...");
     return 1;
 
   }
-
 
 

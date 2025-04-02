@@ -38,6 +38,8 @@
     this.game.state.rp['allies']['ru'] = 0;
     this.game.state.rp['allies']['ap'] = 0;
 
+    this.game.state.events = {};
+
   }
 
 
@@ -45,8 +47,10 @@
 
     let vp = 0;
 
+    //
     // central VP spaces
-    for (let key in this.game.spaces) { if (this.game.spaces[key].vp && this.game.spaces[key].control == "central") { vp++; } }
+    //
+    for (let key in this.game.spaces) { if (this.game.spaces[key].vp > 0 && this.game.spaces[key].control == "central") { vp++; } }
 
     this.game.state.general_records_track.vp = vp;
    
@@ -59,8 +63,10 @@
     let state = {};
 
     state.events = {};
+
     state.players = [];
     state.removed = []; // removed cards
+    state.round = 0;
     state.turn = 0;
     state.skip_counter_or_acknowledge = 0; // don't skip
     state.cards_left = {};
@@ -105,24 +111,44 @@
     state.rp['central']['tu'] = 0;
     state.rp['central']['bu'] = 0;
     state.rp['central']['cp'] = 0;
-    state.rp['central']['a'] = 0;
-    state.rp['central']['br'] = 0;
-    state.rp['central']['fr'] = 0;
-    state.rp['central']['it'] = 0;
-    state.rp['central']['ru'] = 0;
-    state.rp['central']['ap'] = 0;
+    state.rp['allies']['a'] = 0;
+    state.rp['allies']['br'] = 0;
+    state.rp['allies']['fr'] = 0;
+    state.rp['allies']['it'] = 0;
+    state.rp['allies']['ru'] = 0;
+    state.rp['allies']['ap'] = 0;
 
     state.active_player = -1;
+
+    state.central_limited_war_cards_added = false;
+    state.allies_limited_war_cards_added = false;
+    state.central_total_war_cards_added = false;
+    state.allies_total_war_cards_added = false;
 
     return state;
 
   }
 
-  returnActivationCost(key) {
-    return 1;
-  }
 
-  returnMovementCost(key) {
-    return 1;
-  }
+  moveUnitToSpacekey(ukey, to="") {
 
+    let unit = this.game.units[ukey];
+
+    for (let key in this.game.spaces) {
+      for (let i = 0; i < this.game.spaces[key].units.length; i++) {
+        if (this.game.spaces[key].units[i].key == ukey) {
+	  unit = this.game.spaces[key].units[i];
+	  this.game.spaces[key].units.splice(i, 1);
+	  break;
+        }
+      }
+    }
+
+    unit.spacekey = to;
+    this.game.spaces[to].units.push(unit);
+
+    this.displayBoard();
+    
+    return 1;
+
+  }

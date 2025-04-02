@@ -500,7 +500,7 @@ class Limbo extends ModTemplate {
 							overlay.show(
 								`<div class="saito-join-space-overlay"><div id="join-btn" class="button saito-button-primary">${btn_prompt} Now</div></div>`,
 								() => {
-									window.history.pushState('', '', `/${this.returnSlug()}/`);
+									window.history.replaceState('', '', `/${this.returnSlug()}/`);
 									this.dreamer = null;
 								}
 							);
@@ -520,7 +520,7 @@ class Limbo extends ModTemplate {
 							if (this.dreamer !== this.publicKey) {
 								salert(`${prompt} no longer available`);
 							}
-							window.history.pushState('', '', `/${this.returnSlug()}/`);
+							window.history.replaceState('', '', `/${this.returnSlug()}/`);
 							this.exitSpace();
 						}
 					}
@@ -1682,7 +1682,7 @@ class Limbo extends ModTemplate {
 		}
 
 		if (this.browser_active) {
-			window.history.pushState('', '', `/${this.returnSlug()}/`);
+			window.history.replaceState('', '', `/${this.returnSlug()}/`);
 		}
 
 		this.app.connection.emit('limbo-dream-render');
