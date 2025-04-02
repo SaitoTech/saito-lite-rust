@@ -48,6 +48,11 @@
         }
       }
     }
+    if (ccs.includes("cp02")) {
+      for (let i = 0; i < ccs.length; i++) {
+	if (ccs[i] == "cp02") { ccs.splice(i, 1); }
+      }
+    }
     if (faction == "allies") {
       for (let i = 0; i < this.game.deck[1].hand.length; i++) {
 	if (cards[this.game.deck[1].hand[i]].cc) { 
@@ -257,6 +262,11 @@
       let s = this.game.spaces[roptions[z]];
       if (s.fort) { spliceout = true; }
       if (s.units.length > 0) { spliceout = true; }
+      if (faction == "central" && this.game.state.events.race_to_the_sea != 1) {
+	if (roptions[z] == "amiens") { spliceout = true; }
+	if (roptions[z] == "ostend") { spliceout = true; }
+	if (roptions[z] == "calais") { spliceout = true; }
+      }
       if (spliceout == true) {
 	roptions.splice(z, 1);
       }
@@ -414,6 +424,13 @@ console.log(JSON.stringify(space.units));
 	  spaces_within_hops.splice(i, 1);
 	}
       }
+      if (faction == "central" && paths_self.game.state.events.race_to_the_sea != 1) {
+	if (spaces_within_hops[i] == "amiens") { spaces_within_hops.splice(i, 1); } else {
+	  if (spaces_within_hops[i] == "ostend") { spaces_within_hops.splice(i, 1); } else {
+	    if (spaces_within_hops[i] == "calais") { spaces_within_hops.splice(i, 1); }
+	  }
+	}
+      }
     }
 
     //
@@ -506,6 +523,16 @@ console.log("unit idx: " + unit_idx);
     let html = `<ul>`;
     html    += `<li class="option" id="yes">flank attack</li>`;
     html    += `<li class="option" id="no">normal attack</li>`;
+    if (this.game.deck[0].hand.includes("cp02")) {
+      let attacker_units = this.returnAttackerUnits();
+      let defender_units = this.returnDefenderUnits();
+      let valid_option = false;
+      for (let i = 0; i < attacker_units.length; i++) { if (attacker_units[i].country == "germany") { valid_option = true; } }
+      for (let i = 0; i < defender_units.length; i++) { if (defender_units[i].country != "russia") { valid_option = false; } }
+      if (valid_option == true) {
+        html    += `<li class="option showcard" id="cp02">wireless intercepts</li>`;
+      }
+    }
     html    += `</ul>`;
 
     this.flank_overlay.render();
@@ -516,6 +543,11 @@ console.log("unit idx: " + unit_idx);
 
       if (action === "no") {
 	this.endTurn();
+      }
+
+      if (action === "cp02") {
+	this.addMove("event\tcp02\tcentral");
+        this.endTurn();
       }
 
       if (action === "yes") {
@@ -928,6 +960,11 @@ console.log("unit idx: " + unit_idx);
 	  paths_self.playerSelectSpaceWithFilter(
 	    `Select Destination for ${unit.name}`,
 	    (destination) => {
+	      if (faction == "central" && paths_self.game.state.events.race_to_the_sea != 1) {
+		if (destination == "amiens") { return 0; }
+		if (destination == "ostend") { return 0; }
+		if (destination == "calais") { return 0; }
+	      }
 	      if (spaces_within_hops.includes(destination)) {
 	        return 1;
 	      }

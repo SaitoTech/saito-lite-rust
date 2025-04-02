@@ -1,6 +1,7 @@
 
 
   onNewRound() {
+    this.game.state.events.wireless_intercepts = 0;
   }
 
   onNewTurn() {
@@ -45,7 +46,7 @@
     this.game.state.rp['allies']['ru'] = 0;
     this.game.state.rp['allies']['ap'] = 0;
 
-    this.game.state.events = {};
+    this.game.state.events.wireless_intercepts = 0;
 
   }
 
@@ -59,8 +60,17 @@
     //
     for (let key in this.game.spaces) { if (this.game.spaces[key].vp > 0 && this.game.spaces[key].control == "central") { vp++; } }
 
+    if (this.game.state.events.rape_of_belgium) { vp--; }
+    if (this.game.state.events.belgium) { 
+      if (this.game.state.turn >= 5) { vp--; }
+      if (this.game.state.turn >= 9) { vp--; }
+      if (this.game.state.turn >= 13) { vp--; }
+      if (this.game.state.turn >= 17) { vp--; }
+    }
+    if (this.game.state.events.reichstag_truce) { vp++; }
+
     this.game.state.general_records_track.vp = vp;
-   
+  
     return vp;
 
   }

@@ -626,13 +626,12 @@ try {
 	  let key = mv[1];
 	  let selected = JSON.parse(mv[2]);
 
-console.log("SELECTED: " + JSON.stringify(selected));
-console.log(JSON.stringify(selected[0]));
-console.log(selected[0].unit_sourcekey);
 	  this.game.state.combat = {};
 	  this.game.state.combat.key = key;
 	  this.game.state.combat.attacker = selected;
 	  this.game.state.combat.attacking_faction = this.returnPowerOfUnit(this.game.spaces[selected[0].unit_sourcekey].units[0]);
+	  this.game.state.combat.attacker_drm = 0;
+	  this.game.state.combat.defender_drm = 0;
 
 	  //
 	  // remove this from the queue
@@ -662,8 +661,6 @@ console.log(selected[0].unit_sourcekey);
 	  this.game.queue.push("combat_determine_outcome");
 	  this.game.queue.push("combat_play_combat_cards");
 	  this.game.queue.push("combat_evaluate_flank_attack");
-	  this.game.queue.push("counter_or_acknowledge\tcombat_cards_trenches");
-
 
 //3. Play trench-negating Combat Cards
 //4. Attempt Flank Attack
@@ -814,15 +811,6 @@ console.log(selected[0].unit_sourcekey);
           this.game.state.combat.attacker_strength = attacker_strength;
           this.game.state.combat.defender_strength = defender_strength;
 
-console.log("RECALCULATE");
-console.log("RECALCULATE");
-console.log("RECALCULATE");
-console.log("RECALCULATE");
-console.log("RECALCULATE");
-console.log("RECALCULATE");
-console.log("RECALCULATE");
-console.log(JSON.stringify(this.game.state.combat, null, 2));
-
 	  if (faction == "attacker") {
             this.game.state.combat.attacker_loss_factor = this.returnAttackerLossFactor();
           }
@@ -849,8 +837,8 @@ console.log(JSON.stringify(this.game.state.combat, null, 2));
 	  //
 	  // rolls are either handled synchronously or in sequence
 	  //
-	  let attacker_drm = 0;
-	  let defender_drm = 0;
+	  let attacker_drm = this.game.state.combat.attacker_drm;
+	  let defender_drm = this.game.state.combat.defender_drm;
 	  let attacker_roll = 0;
 	  let defender_roll = 0;
 	  let attacker_modified_roll = 0;
@@ -890,8 +878,8 @@ console.log(JSON.stringify(this.game.state.combat, null, 2));
 	  this.game.state.combat.defender_table = defender_table;
 	  this.game.state.combat.attacker_power = attacker_power;
 	  this.game.state.combat.defender_power = defender_power;
-	  this.game.state.combat.attacker_drm = attacker_drm;
-	  this.game.state.combat.defender_drm = defender_drm;
+	  //this.game.state.combat.attacker_drm = attacker_drm;
+	  //this.game.state.combat.defender_drm = defender_drm;
 	  this.game.state.combat.attacker_roll = attacker_roll;
 	  this.game.state.combat.defender_roll = defender_roll;
 	  this.game.state.combat.attacker_modified_roll = attacker_modified_roll;
@@ -906,12 +894,10 @@ console.log(JSON.stringify(this.game.state.combat, null, 2));
 	    this.game.state.combat.winner = "attacker";
 	  }
 
-console.log("#");
-console.log("#");
-console.log("# combat");
-console.log("#");
-console.log("#");
-console.log(JSON.stringify(this.game.state.combat));
+	  //
+	  // Wireless Intercepts
+	  //
+	  if (this.game.state.events.wireless_intercepts) { this.game.state.combat.flank_attack = "attacker"; }
 
 
 	  if (this.game.state.combat.flank_attack == "attacker") {
