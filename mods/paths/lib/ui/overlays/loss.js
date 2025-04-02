@@ -233,23 +233,31 @@ console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
 		this.moves = [];
 
 		this.overlay.show(LossTemplate());
-		this.updateLossesRequired(this.loss_factor);
+		//this.updateLossesRequired(this.loss_factor);
+
+console.log("AU: " + JSON.stringify(attacker_units));
+console.log("DU: " + JSON.stringify(defender_units));
 
 		for (let i = 0; i < attacker_units.length; i++) {
-			let html = `
-				<div class="loss-overlay-unit" id="${i}">${this.mod.returnUnitImageWithMouseoverOfStepwiseLoss(attacker_units[i])}</div>
-			`;
+			let html = "";
+			let akey = attacker_units[i].key;
+			let askey = attacker_units[i].spacekey;
+			let ad = 0; if (attacker_units[i].damaged) { ad = 1; }
+			if (!attacker_units[i].destroyed) {
+				html = `<div class="loss-overlay-unit" data-spacekey="${askey}" data-key="${akey}" data-damaged="${ad}" id="${i}">${this.mod.returnUnitImageWithMouseoverOfStepwiseLoss(attacker_units[i])}</div>`;
+			}
 			this.app.browser.addElementToSelector(html, qs_attacker);
 		}
 
 
 		for (let i = 0; i < defender_units.length; i++) {
-
-console.log("defender unit: " + JSON.stringify(defender_units[i]));
-
-			let html = `
-				<div class="loss-overlay-unit" id="${i}">${this.mod.returnUnitImageWithMouseoverOfStepwiseLoss(defender_units[i])}</div>
-			`;
+			let html = "";
+			let dkey = defender_units[i].key;
+			let dskey = defender_units[i].spacekey;
+			let dd = 0; if (defender_units[i].damaged) { dd = 1; }
+			if (!defender_units[i].destroyed) {
+				html = `<div class="loss-overlay-unit" data-spacekey="${dskey}" data-key="${dkey}" data-damaged="${dd}" id="${i}">${this.mod.returnUnitImageWithMouseoverOfStepwiseLoss(defender_units[i])}</div>`;
+			}
 			this.app.browser.addElementToSelector(html, qs_defender);
 		}
 
@@ -325,18 +333,16 @@ if (faction == "attacker") {
 
 
 		if (am_iii_the_attacker == 1 && faction == "attacker") {
-console.log(am_iii_the_attacker + " iam and faction is attacker");
 		  this.attachEvents(am_i_the_attacker, my_qs, faction);
 		}
 		if (am_iii_the_attacker == 0 && faction == "defender") {
-console.log(am_iii_the_attacker + " iamnot and faction is defender");
 		  this.attachEvents(am_i_the_attacker, my_qs, faction);
 		}
 
 	}
 
 	updateLossesRequired(num) {
-		document.querySelector('.loss-overlay .help').innerHTML = 'Losses Required: ' + num;
+		document.querySelector('.loss-overlay .help').innerHTML = num + ' More Losses Required';
 	}
 
 	attachEvents(am_i_the_attacker, my_qs ,faction) {
@@ -357,45 +363,26 @@ console.log(am_iii_the_attacker + " iamnot and faction is defender");
 			}
 		}
 
-console.log("^");
-console.log("^");
-console.log("^");
-console.log("^");
-console.log("^");
-console.log("^ attaching events!");
-console.log("^");
-console.log("^ - " + am_i_the_attacker + " - " + my_qs + " - " + faction);
-console.log("^");
-console.log("^");
-console.log("^");
-console.log(JSON.stringify(this.units));
 
 		document.querySelectorAll(my_qs + " .loss-overlay-unit").forEach((el) => {
 
 			el.onclick = (e) => {
 
-
 				let idx = e.currentTarget.id;
-
-alert("clicked on: " + e.currentTarget.id);
-
-				//
-				//
-				//
 				let unit = this.units[idx];
 				if (unit.destroyed) { alert("destroyed"); }
+				let unit_key = e.currentTarget.dataset.key;
+				let unit_spacekey = e.currentTarget.dataset.spacekey;
+				let unit_damaged = 0; if (parseInt(e.currentTarget.dataset.damaged)) { unit_damaged = 1; }
+
+alert(unit_key + " -- " + unit_spacekey + " - " + unit_damaged);
 
 				let didx = idx;
 
-				for (let z = 0; z < this.mod.game.spaces[unit.spacekey].units.length; z++) {
-					if (JSON.stringify(unit) === JSON.stringify(this.mod.game.spaces[unit.spacekey].units[z])) {
-						didx = z;
-					}
-				}
-
-				this.moves.push(`damage\t${unit.spacekey}\t${didx}`);
-
 				if (unit.damaged) {
+
+					this.moves.push(`damage\t${unit_spacekey}\t${unit_key}\t1\t${this.mod.game.player}`);
+
 					this.loss_factor -= unit.rloss;
 
 					unit.damaged = true;
@@ -408,25 +395,46 @@ alert("clicked on: " + e.currentTarget.id);
 					//
 					// replace with corps if destroyed
 					//
-					if (unit.key.indexOf('army')) {
+					if (unit.key.indexOf('army') > 0) {
+
 						let corpskey = unit.key.split('_')[0] + '_corps';
-						this.units.push(this.mod.cloneUnit(corpskey));
-						this.units[this.units.length - 1].spacekey =
-							unit.spacekey;
-						this.moves.push(`add\t${unit.spacekey}\t${corpskey}`);
-						let html = `<div class="loss-overlay-unit" id="${this.units.length - 1}">${this.mod.returnUnitImage(this.units[this.units.length - 1])}</div>`;
-console.log("appending item to: " + my_qs);
+						let corpsunit = this.mod.cloneUnit(corpskey);
+						corpsunit.spacekey = unit.spacekey;
+						this.units.push(corpsunit);
+						this.moves.push(`add\t${unit.spacekey}\t${corpskey}\t${this.mod.game.player}`);
+						let html = `<div class="loss-overlay-unit" data-spacekey="${corpsunit.spacekey}" data-key="${corpskey}" data-damaged="0" id="${this.units.length - 1}">${this.mod.returnUnitImageWithMouseoverOfStepwiseLoss(this.units[this.units.length - 1])}</div>`;
 						this.app.browser.addElementToSelector(html, my_qs);
 		  				this.attachEvents(am_i_the_attacker, my_qs, faction);
+
+					//
+					// damage to corps means removal
+					//
+					} else {
+
+						//this.render(this.faction);
+						//let html = `<div class="loss-overlay-unit" id="${this.units.length - 1}">${this.mod.returnUnitImageWithMouseoverOfStepwiseLoss(this.units[this.units.length - 1])}</div>`;
+						//this.app.browser.addElementToSelector(html, my_qs);
+
+					
 					}
 
 					this.updateLossesRequired(this.loss_factor);
+
 				} else {
+
+					this.moves.push(`damage\t${unit_spacekey}\t${unit_key}\t0\t${this.mod.game.player}`);
+
 					unit.damaged = true;
 					this.loss_factor -= unit.loss;
-					el.innerHTML = this.mod.returnUnitImage(unit);
+					el.innerHTML = this.mod.returnUnitImageWithMouseoverOfStepwiseLoss(unit);
 					this.updateLossesRequired(this.loss_factor);
+
 				}
+
+				//
+				// redisplay space
+				//
+				this.mod.displaySpace(this.mod.game.state.combat.key);
 
 				if (!this.canTakeMoreLosses()) {
 					document

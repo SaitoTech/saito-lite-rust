@@ -63,18 +63,32 @@
 
   returnUnitImage(unit, just_link=false) {
     let key = unit.key;
+
+    if (unit.destroyed) {
+     return this.returnDestroyedUnitImage(unit, just_link);
+    }
+
     if (unit.damaged) {
       if (just_link) { return `/paths/img/army/${key}_back.png`; }
-      return `<img src="/paths/img/army/${key}_back.png" class="army-tile" />`;
+      return `<img src="/paths/img/army/${key}_back.png" class="army-tile ${unit.key}" />`;
     } else {
       if (just_link) { return `/paths/img/army/${key}.png`; }
-      return `<img src="/paths/img/army/${key}.png" class="army-tile" />`;
+      return `<img src="/paths/img/army/${key}.png" class="army-tile ${unit.key}" />`;
     }
   }
-  returnUnitImageWithMouseoverOfStepwiseLoss(unit) {
+  returnUnitBackImage(unit, just_link=false) {
+    let key = unit.key;
+    if (just_link) { return `/paths/img/army/${key}_back.png`; }
+    return `<img src="/paths/img/army/${key}_back.png" class="army-tile ${unit.key}" />`;
+  }
+  returnUnitImageWithMouseoverOfStepwiseLoss(unit, just_link) {
     let key = unit.key;
     let face_img = "";
     let back_img = "";
+
+    if (unit.destroyed) {
+     return this.returnDestroyedUnitImage(unit, just_link);
+    }
 
     if (unit.damaged) {
       face_img = `/paths/img/army/${key}_back.png`;
@@ -84,40 +98,54 @@
       back_img = `/paths/img/army/${key}_back.png`;
     }
 
-    return `<img src="${face_img}" onmouseover="this.src='${back_img}'" onmouseout="this.src='${face_img}'" class="army-tile" />`;
+    return `<img src="${face_img}" onmouseover="this.src='${back_img}'" onmouseout="this.src='${face_img}'" class="army-tile ${unit.key}" />`;
 
   }
   returnUnitImageInSpaceWithIndex(spacekey, idx) {
     let unit = this.game.spaces[spacekey].units[idx];
     return this.returnUnitImage(unit);
   }
+  returnDestroyedUnitImage(unit, just_link=false) {
+    if (just_link) {
+      return `/paths/img/cancel_x.png`;
+    } else {
+      return `<img src="/paths/img/cancel_x.png" class="army-tile ${unit.key}" />`;
+    }
+
+  }
+
   returnUnitImageWithStepwiseLoss(unit, just_link=false) {
 
     let key = unit.key;
 
+    if (unit.destroyed) {
+     return this.returnDestroyedUnitImage(unit, just_link);
+    }
+
     if (!unit.damaged) {
 
       if (just_link) { return `/paths/img/army/${key}_back.png`; }
-      return `<img src="/paths/img/army/${key}_back.png" class="army-tile" />`;
+      return `<img src="/paths/img/army/${key}_back.png" class="army-tile ${unit.key}" />`;
 
     } else {
 
       //
       // replace with corps if destroyed
       //
-      if (unit.key.indexOf('army')) {
+      if (unit.key.indexOf('army') >= 0) {
+
         let corpskey = unit.key.split('_')[0] + '_corps';
         let new_unit = this.cloneUnit(corpskey);
         return this.returnUnitImage(new_unit, just_link);
+
       } else {
 
-	//
-	// damaged core? should show DESTROYED IMAGE
-	//
-
+	return this.returnDestroyedUnitImage(unit, just_link);
       }
 
     }
+
+    return "";
   }
 
   cloneUnit(unitkey) {

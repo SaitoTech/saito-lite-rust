@@ -23,6 +23,13 @@
       if (redisplay) { this.displaySpace(key); }
     }
 
+    state.ccs = {};
+    state.cc_central_selected = [];
+    state.cc_central_active = [];
+    state.cc_central_played_this_round = [];
+    state.cc_allies_selected = [];
+    state.cc_allies_played_this_round = [];
+
     this.game.state.rp = {};
     this.game.state.rp['central'] = {};
     this.game.state.rp['allies'] = {};
@@ -119,6 +126,14 @@
     state.rp['allies']['ap'] = 0;
 
     state.active_player = -1;
+
+    state.ccs = {};
+    state.cc_central_selected = [];
+    state.cc_central_active = [];
+    state.cc_central_played_this_round = [];
+    state.cc_allies_selected = [];
+    state.cc_allies_active = [];
+    state.cc_allies_played_this_round = [];
 
     state.central_limited_war_cards_added = false;
     state.allies_limited_war_cards_added = false;

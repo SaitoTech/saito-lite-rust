@@ -399,6 +399,8 @@ deck['ap14'] = {
 	  paths_self.game.spaces['koblenz'].activated_for_combat = 1;	    
 	  paths_self.game.queue.push("player_play_combat\tcentral");
 	  paths_self.displayBoard();
+	  paths_self.shakeSpacekey("liege");
+	  paths_self.shakeSpacekey("koblenz");
 
 	  return 1;
 
@@ -598,8 +600,11 @@ deck['cp11'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.game.state.events.oberost = 1;
+	  return 1;
+	} ,
       }
 
 deck['cp12'] = { 

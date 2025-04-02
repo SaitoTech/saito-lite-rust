@@ -25,6 +25,141 @@
     return 2;
   }
 
+  playerSelectAttackerCombatCards() {
+
+    let num = 0;
+    let ccs = [];
+    let cards = this.returnDeck("all");
+    let faction = this.returnFactionOfPlayer(this.game.player);
+    let name = this.returnPlayerName(faction);
+
+    if (faction == "central") {
+      for (let i = 0; i < this.game.deck[0].hand.length; i++) {
+	if (cards[this.game.deck[0].hand[i]].cc) { 
+	  num++;
+	  ccs.push(this.game.deck[0].hand[i]);
+	}
+      }
+      for (let i = 0; i < this.game.state.cc_central_active.length; i++) {
+	let c = this.game.state.cc_central_active[i];
+	if (!this.game.state.cc_central_played_this_round.includes(c)) {
+	  num++;
+	  ccs.push(c);
+        }
+      }
+    }
+    if (faction == "allies") {
+      for (let i = 0; i < this.game.deck[1].hand.length; i++) {
+	if (cards[this.game.deck[1].hand[i]].cc) { 
+	  num++;
+	  ccs.push(this.game.deck[1].hand[i]);
+	}
+      }
+      for (let i = 0; i < this.game.state.cc_allies_active.length; i++) {
+	let c = this.game.state.cc_allies_active[i];
+	if (!this.game.state.cc_allies_played_this_round.includes(c)) {
+	  num++;
+	  ccs.push(c);
+        }
+      }
+    }
+
+    if (num == 0) {
+      this.endTurn();
+      return 0;
+    }
+
+    ccs.push("pass");
+   
+    this.updateStatusAndListCards(`${name} - play combat card?`, ccs);
+    this.attachCardboxEvents((card) => {
+
+      this.updateStatus("submitting...");
+
+      if (card == "pass") {
+	this.endTurn();
+      }
+
+      if (ccs.length > 2) { // > 1+PASS
+        this.addMove("attacker_select_combat_cards");
+        this.addMove("combat_card\t"+faction+"\t"+card);
+	this.endTurn();
+      } else {
+        this.addMove("combat_card\t"+faction+"\t"+card);
+	this.endTurn();
+      }
+
+    }); 
+  }
+
+  playerSelectDefenderCombatCards() {
+
+    let num = 0;
+    let ccs = [];
+    let cards = this.returnDeck("all");
+    let faction = this.returnFactionOfPlayer(this.game.player);
+    let name = this.returnPlayerName(faction);
+
+    if (faction == "central") {
+      for (let i = 0; i < this.game.deck[0].hand.length; i++) {
+	if (cards[this.game.deck[0].hand[i]].cc) { 
+	  num++;
+	  ccs.push(this.game.deck[0].hand[i]);
+	}
+      }
+      for (let i = 0; i < this.game.state.cc_central_active.length; i++) {
+	let c = this.game.state.cc_central_active[i];
+	if (!this.game.state.cc_central_played_this_round.includes(c)) {
+	  num++;
+	  ccs.push(c);
+        }
+      }
+    }
+    if (faction == "allies") {
+      for (let i = 0; i < this.game.deck[1].hand.length; i++) {
+	if (cards[this.game.deck[1].hand[i]].cc) { 
+	  num++;
+	  ccs.push(this.game.deck[1].hand[i]);
+	}
+      }
+      for (let i = 0; i < this.game.state.cc_allies_active.length; i++) {
+	let c = this.game.state.cc_allies_active[i];
+	if (!this.game.state.cc_allies_played_this_round.includes(c)) {
+	  num++;
+	  ccs.push(c);
+        }
+      }
+    }
+
+    if (num == 0) {
+      this.endTurn();
+      return 0;
+    }
+
+    ccs.push("pass");
+   
+    this.updateStatusAndListCards(`${name} - play combat card?`, ccs);
+    this.attachCardboxEvents((card) => {
+
+      this.updateStatus("submitting...");
+
+      if (card == "pass") {
+	this.endTurn();
+      }
+
+      if (ccs.length > 2) { // > 1+PASS
+        this.addMove("defender_select_combat_cards");
+        this.addMove("combat_card\t"+faction+"\t"+card);
+	this.endTurn();
+      } else {
+        this.addMove("combat_card\t"+faction+"\t"+card);
+	this.endTurn();
+      }
+
+    }); 
+  }
+
+
   playerPlayAdvance() {
 
     let can_player_advance = false;
@@ -83,20 +218,33 @@
     let sourcekey = this.game.state.combat.retreat_sourcekey;
     let destinationkey = this.game.state.combat.retreat_destinationkey;
     let roptions = [];
-
     let attacker_units = this.returnAttackerUnits();
     let faction = this.returnFactionOfPlayer();
-    let source = this.game.spaces[sourcekey];
-    let destination = this.game.spaces[destinationkey];
 
-    roptions.push(sourcekey);
+    //
+    // no-one retreated, it was a massacre
+    //
+    if (!sourcekey) {
+
+      roptions.push(this.game.state.combat.key);
+
+    //
+    // 
+    //
+    } else {
+
+      let source = this.game.spaces[sourcekey];
+      let destination = this.game.spaces[destinationkey];
+
+      roptions.push(sourcekey);
    
-    if (spaces_to_retreat == 2) {
-      for (let i = 0; i < source.neighbours.length; i++) {
-        for (let z = 0; z < destination.neighbours.length; z++) {
-          if (source.neighbours[i] == destination.neighbours[z]) {
-	    if (!roptions.includes(source.neighbours[i])) { roptions.push(source.neighbours[i]); }
-	  }
+      if (spaces_to_retreat == 2) {
+        for (let i = 0; i < source.neighbours.length; i++) {
+          for (let z = 0; z < destination.neighbours.length; z++) {
+            if (source.neighbours[i] == destination.neighbours[z]) {
+	      if (!roptions.includes(source.neighbours[i])) { roptions.push(source.neighbours[i]); }
+	    }
+          }
         }
       }
     }
@@ -161,6 +309,8 @@ console.log(skey + " -- " + uidx + " -- " + key);
 
   playerPlayPostCombatRetreat() {
 
+console.log("HERE WE ARE in PPPCR!");
+
     let can_defender_cancel_retreat = false;
 
     //
@@ -169,6 +319,7 @@ console.log(skey + " -- " + uidx + " -- " + key);
     // step loss. 
     //
     let space = this.game.spaces[this.game.state.combat.key];
+console.log(JSON.stringify(space.units));
     if (space.terrain == "mountain") 	{ can_defender_cancel_retreat = true; }
     if (space.terrain == "swamp") 	{ can_defender_cancel_retreat = true; }
     if (space.terrain == "desert") 	{ can_defender_cancel_retreat = true; }
@@ -281,6 +432,8 @@ console.log(skey + " -- " + uidx + " -- " + key);
     // allow UI for moving unit...
     //
     let retreat_function = (unit_idx, retreat_function) => {
+console.log(JSON.stringify(source));
+console.log("unit idx: " + unit_idx);
       let unit = source.units[unit_idx];
       paths_self.playerSelectSpaceWithFilter(
           `Select Retreat Destination for ${unit.name}`,
@@ -291,6 +444,7 @@ console.log(skey + " -- " + uidx + " -- " + key);
 	    return 0;
 	  },
 	  (key) => {
+	    paths_self.updateStatus("retreating...");
             paths_self.moveUnit(sourcekey, unit_idx, key);
 	    paths_self.prependMove(`retreat\t${faction}\t${sourcekey}\t${unit_idx}\t${key}\t${paths_self.game.player}`);
             paths_self.displaySpace(key);
@@ -546,6 +700,11 @@ console.log(skey + " -- " + uidx + " -- " + key);
       paths_self.playerSelectSpaceWithFilter(
 	"Select Target for Attack: ",
 	(key) => {
+	  if (paths_self.game.state.events.oberost != 1) {
+	    if (faction == "central") {
+	      if (paths_self.game.spaces[key].country == "russia" && paths_self.game.spaces[key].fort > 0) { return 0; }
+	    }
+	  }
 	  if (paths_self.game.spaces[key].units.length > 0) {
 	    if (paths_self.returnPowerOfUnit(paths_self.game.spaces[key].units[0]) != faction) {
   	      for (let i = 0; i < paths_self.game.spaces[key].neighbours.length; i++) {
@@ -725,7 +884,6 @@ console.log(skey + " -- " + uidx + " -- " + key);
 	    if (everything_moved == true) {
 	      paths_self.game.spaces[key].activated_for_movement = 0;
 	      paths_self.displaySpace(key);
-alert("everthing moved in : " + key + " --- " + paths_self.game.spaces[key].activated_for_movement);
 	    }
 	    if (everything_moved == false) { return 1; }
 	  }
