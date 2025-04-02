@@ -249,9 +249,6 @@ export default class Wallet extends SaitoWallet {
     this.saitoCrypto = new SaitoCrypto(this.app, this.publicKey);
 
     if (this.app.options.wallet != null) {
-      if (this.app.options.archive) {
-        this.app.options.archive.wallet_version = this.app.options.wallet.version;
-      }
 
       /////////////
       // upgrade //

@@ -36,7 +36,6 @@ class Archive extends ModTemplate {
 		this.categories = 'Utilities Core';
 		this.class = 'utility';
 		this.localDB = null;
-		this.localDB_purge = false;
 
 		this.schema = [
 			'id',
@@ -93,15 +92,16 @@ class Archive extends ModTemplate {
 			//
 			// if version is below 5.555, then reset in-browser DB
 			//
-			if (app.options.archive) {
-				let wv = app.options.archive.wallet_version;
+			if (this.archive?.wallet_version) {
+				let wv = this.archive.wallet_version;
 				try {
-					wv = wv.toString();
-					wv = parseInt(wv.replace(/\./g, ''));
+					wv = parseFloat(wv);
 				} catch (err) {
+					console.error(err);
 					wv = 0;
 				}
-				if (wv <= 5555) {
+				if (wv <= 5.555) {
+					console.warn("PURGING LOCAL DB ", wv);
 					await this.localDB.dropDb();
 					await this.initInBrowserDatabase();
 				}
@@ -965,6 +965,7 @@ try {
 	}
 
 	save() {
+		this.archive.wallet_version = this.app.options.wallet.version;
 		this.app.options.archive = this.archive;
 		this.app.storage.saveOptions();
 	}
