@@ -12,8 +12,8 @@ class Spam extends ModTemplate {
 		this.categories = 'Core Utilities Messaging';
 		this.class = 'utility';
 		this.to = '';
-		this.payment = 3;
-		this.fee = 1;
+		this.payment = 0;
+		this.fee = 0;
 		this.nodeLoopDelay = 13000; // 13 seconds to guarantee block production
 		this.loop_start = 0;
 		this.frequency = 1; //no of tx per period
