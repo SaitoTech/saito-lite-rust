@@ -202,7 +202,6 @@ class Registry extends ModTemplate {
 		});
 
 		if (missing_keys.length == 0) {
-			console.log("No missing keys");
 			mycallback(found_keys);
 			return 1;
 		}

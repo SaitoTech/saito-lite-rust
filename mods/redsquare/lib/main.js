@@ -199,7 +199,9 @@ class RedSquareMain {
     });
 
     window.onpopstate = (event) => {
-      console.log("===================", 'RS navigation: ', event?.state, window.location, "========================");
+      if (this.mod.debug){
+        console.log("===================", 'RS navigation: ', event?.state, window.location, "========================");  
+      }
       this.render(event.state);
     };
     

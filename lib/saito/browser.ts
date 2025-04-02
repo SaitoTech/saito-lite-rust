@@ -514,7 +514,7 @@ class Browser {
 			const entries = this.urlParams.entries();
 			for (const pair of entries) {
 				if (pair[0] == name) {
-					return pair[1];
+					return pair[1] || pair[0];
 				}
 			}
 		} catch (err) { }

@@ -1,16 +1,16 @@
 const RedSquareNavigationTemplate = require('./navigation.template');
+const jsonTree = require('json-tree-viewer');
+const SaitoOverlay = require('./../../../lib/saito/ui/saito-overlay/saito-overlay');
 const Post = require('./post');
 
 class RedSquareNavigation {
-
   constructor(app, mod, container = '') {
-
     this.app = app;
     this.mod = mod;
+    this.overlay = new SaitoOverlay(app, mod);
     this.container = container;
 
     app.connection.on('redsquare-clear-menu-highlighting', (active_tab = '') => {
-
       document.querySelectorAll('.redsquare-page-active').forEach((el) => {
         el.classList.remove('redsquare-page-active');
       });
@@ -34,24 +34,27 @@ class RedSquareNavigation {
           document.querySelector('.redsquare-menu-profile').classList.add('redsquare-page-active');
         }
       }
-
     });
 
     app.connection.on('redsquare-update-notifications', (num) => {
       this.incrementNotifications(num);
     });
-
   }
 
   render() {
-
     //
     // render menu container
     //
     if (document.querySelector('.redsquare-menu')) {
-      this.app.browser.replaceElementBySelector(RedSquareNavigationTemplate(this.app, this.mod), '.redsquare-menu');
+      this.app.browser.replaceElementBySelector(
+        RedSquareNavigationTemplate(this.app, this.mod),
+        '.redsquare-menu'
+      );
     } else {
-      this.app.browser.addElementToSelector(RedSquareNavigationTemplate(this.app, this.mod), this.container);
+      this.app.browser.addElementToSelector(
+        RedSquareNavigationTemplate(this.app, this.mod),
+        this.container
+      );
     }
 
     //
@@ -68,7 +71,9 @@ class RedSquareNavigation {
         '.saito-menu-list'
       );
 
-      if (rs.event) { rs.event(id); }
+      if (rs.event) {
+        rs.event(id);
+      }
 
       if (document.getElementById(id)) {
         document.getElementById(id).onclick = () => {
@@ -114,7 +119,6 @@ class RedSquareNavigation {
         this.app.connection.emit('redsquare-home-render-request');
         this.app.connection.emit('redsquare-remove-loading-message', 'navigating...');
       } else {
-
         this.app.connection.emit('redsquare-home-render-request', true);
 
         let ct = this.mod.loadTweets('later', (tx_count) => {
@@ -129,8 +133,7 @@ class RedSquareNavigation {
         }
       }
 
-        this.app.connection.emit('saito-header-reset-logo');
-
+      this.app.connection.emit('saito-header-reset-logo');
     };
 
     //
@@ -158,19 +161,71 @@ class RedSquareNavigation {
         ms[0].loadSettings('.module-settings-overlay');
       }
     };
+
+    if (document.querySelector('.redsquare-menu-help')) {
+      document.querySelector('.redsquare-menu-help').onclick = (e) => {
+        this.overlay.show(`<div class="debug_overlay"></div>`);
+
+        let el = document.querySelector('.debug_overlay');
+
+        //debug info
+
+        if (!this.mod.styles.includes('/saito/lib/jsonTree/jsonTree.css')) {
+          this.mod.styles.push('/saito/lib/jsonTree/jsonTree.css');
+          this.mod.attachStyleSheets();
+        }
+
+/*
+    this.tweets = [];     // time sorted master list of tweets
+    this.cached_tweets = []; // serialized-for-web version of curated_tweets
+    this.tweets_sigs_hmap = {};
+    this.unknown_children = [];
+    this.orphan_edits = [];
+
+    this.peers = [];
+    this.keylist = {};
+
+    this.tweet_count = 0;
+    this.liked_tweets = [];
+    this.retweeted_tweets = [];
+    this.replied_tweets = [];
+    this.hidden_tweets = [];
+
+*/
+
+        try {
+
+          let optjson = JSON.parse(
+            JSON.stringify(
+              this.mod,
+              (key, value) => {
+                if (key == "app") return "app";
+                if (key == "mod") return "mod";
+                if (key == "parent_tweet") return "<-";
+                return (typeof value === 'bigint') ? value.toString() : value // return everything else unchanged
+              }
+            )
+          );
+          var tree = jsonTree.create(optjson, el);
+        } catch (err) {
+          console.error('error creating jsonTree: ' + err);
+        }
+
+        console.log(this.mod.tweets_sigs_hmap);
+      };
+    }
   }
 
   /*
     To capture clicking in navigation menu and through user menu...
   */
-  openProfile(publicKey){
-      this.app.connection.emit('redsquare-profile-render-request', publicKey);
-      this.app.connection.emit('redsquare-remove-loading-message', 'navigating...');
+  openProfile(publicKey) {
+    this.app.connection.emit('redsquare-profile-render-request', publicKey);
+    this.app.connection.emit('redsquare-remove-loading-message', 'navigating...');
   }
 
   incrementNotifications(notifications = -1) {
- 
-   let qs = `.redsquare-menu-notifications`;
+    let qs = `.redsquare-menu-notifications`;
 
     if (document.querySelector(qs)) {
       qs = `.redsquare-menu-notifications > .saito-notification-dot`;

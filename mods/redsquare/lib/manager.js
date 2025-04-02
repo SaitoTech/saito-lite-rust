@@ -32,11 +32,16 @@ class TweetManager {
 				entries.forEach((entry) => {
 					if (entry.isIntersecting) {
 
-						console.log('RS -- IntersectionObserver triggerd, disabling...');
+						if (this.mod.debug){
+							console.log('RS -- IntersectionObserver triggerd, disabling...');	
+						}
+						
 						this.intersectionObserver.disconnect();
 
 						if (this.mode === 'tweet' || this.mode == 'loading') {
-							console.log("in wrong mode for RS IO", this.mode);
+							if (this.mod.debug){
+								console.log("in wrong mode for RS IO", this.mode);	
+							}
 							return;
 						}
 
@@ -94,7 +99,10 @@ class TweetManager {
 		//
 		// Stop observering while we rebuild the page
 		//
-		console.log('REDSQUARE: Turn off IO before clearing feed...');
+		if (this.mod.debug){
+			console.log('REDSQUARE: Turn off IO before clearing feed...');	
+		}
+		
 		this.intersectionObserver.disconnect();
 		let holder = document.getElementById('tweet-thread-holder');
 		let managerElem = document.querySelector('.tweet-manager');
@@ -125,7 +133,10 @@ class TweetManager {
 		//
 		// Stop observering while we rebuild the page
 		//
-		console.log('REDSQUARE: Turn off IO before rendering manager...');
+		if (this.mod.debug){
+			console.log('REDSQUARE: Turn off IO before rendering manager...');	
+		}
+		
 		this.intersectionObserver.disconnect();
 
 
@@ -212,11 +223,13 @@ class TweetManager {
 		if (new_mode == 'notifications') {
 		    
 			if (this.mod.notifications.length > 0) {
-				console.log(
-					'Redsquare render notifications: already have ' +
-						this.mod.notifications.length +
-						' in memory'
-				);
+				if (this.mod.debug){
+					console.log(
+						'Redsquare render notifications: already have ' +
+							this.mod.notifications.length +
+							' in memory'
+					);
+				}
 
 				for (let i = 0; i < this.mod.notifications.length; i++) {
 					let notification = new Notification(this.app, this.mod, this.mod.notifications[i]);
@@ -252,7 +265,9 @@ class TweetManager {
 					'.tweet-manager'
 				);
 				if (document.querySelector('#intersection-observer-trigger')) {
-					console.log('REDSQUARE: Turn off IO before rendering no notifications msg...');
+					if (this.mod.debug){
+						console.log('REDSQUARE: Turn off IO before rendering no notifications msg...');	
+					}
 					this.intersectionObserver.disconnect();
 				}
 
@@ -266,7 +281,9 @@ class TweetManager {
 					this.hideLoader();
 				}, 50);
 			} else {
-				console.log('Redsquare turn on Intersection observer for notifications');
+				if (this.mod.debug){
+					console.log('Redsquare turn on Intersection observer for notifications');	
+				}
 				//Fire up the intersection observer after the callback completes...
 				this.attachEvents();
 			}
@@ -276,7 +293,9 @@ class TweetManager {
 	fetchTweets(){
 
 		if (this.just_fetched_tweets == true) { 
-			console.log("RS IO blocked because just_fetched_tweets");
+			if (this.mod.debug){
+				console.log("RS IO blocked because just_fetched_tweets");	
+			}
 			return; 
 		}
 		
@@ -301,7 +320,9 @@ class TweetManager {
 
 		this.numActivePeers--;
 		if (this.mode !== 'tweets') {
-			console.log('Not on main feed anymore, currently on: ' + this.mode);
+			if (this.mod.debug){
+				console.log('Not on main feed anymore, currently on: ' + this.mode);	
+			}
 			return;
 		}
 
@@ -330,12 +351,16 @@ class TweetManager {
 					'.tweet-manager'
 				);
 			}
-			console.log('REDSQUARE: Turn off IO before rendering end of feed message...');
+			if (this.mod.debug){
+				console.log('REDSQUARE: Turn off IO before rendering end of feed message...');	
+			}
 			this.intersectionObserver.disconnect();
 		} else {
 
 			this.just_fetched_tweets = false;
-			console.log("RS -- add IO for infinite scroll (1)");
+			if (this.mod.debug){
+				console.log("RS -- add IO for infinite scroll (1)");	
+			}
 			this.intersectionObserver.observe(document.getElementById('intersection-observer-trigger'));
 		}
 
@@ -445,7 +470,9 @@ class TweetManager {
       				}
 
       				if (txs.length == 100) {
-      					console.log("RS -- add IO for infinite scroll (2)");
+      					if (this.mod.debug){
+      						console.log("RS -- add IO for infinite scroll (2)");	
+      					}
       					this.intersectionObserver.observe(document.getElementById('intersection-observer-trigger'));
       				}
 

@@ -125,7 +125,6 @@ class RedSquare extends ModTemplate {
     });
 
     this.app.connection.on('redsquare-post-tweet', (data, keys) => {
-      console.log('Tweeting through event interface!');
       this.sendTweetTransaction(this.app, this, data, keys);
     });
 
@@ -436,7 +435,9 @@ class RedSquare extends ModTemplate {
     ///////////////////////
     // SERVERS EXIT HERE //
     ///////////////////////
-    if (!app.browser) { return; }
+    if (!app.BROWSER) { 
+      return; 
+    }
 
     //
     // add myself as peer...
@@ -673,7 +674,6 @@ class RedSquare extends ModTemplate {
       if (txmsg.request === 'follow') {
         if (this.app.BROWSER) {
           if (tx.isFrom(this.publicKey)) {
-            console.log('RS follow transaction received onchain -- success');
           } else if (tx.isTo(this.publicKey)) {
             if (!this.app.options.redsquare.followers) {
               this.app.options.redsquare.followers = [];
@@ -785,9 +785,11 @@ class RedSquare extends ModTemplate {
 
         if (created_at == 'earlier') {
           obj.updated_earlier_than = this.peers[i].tweets_earliest_ts;
-           console.log(
-            `REDSQUARE: fetch earlier tweets from ${this.peers[i].publicKey} / ${this.peers[i].tweets_earliest_ts}`
-          );
+           if (this.debug){
+             console.log(
+              `REDSQUARE: fetch earlier tweets from ${this.peers[i].publicKey} / ${this.peers[i].tweets_earliest_ts}`
+            );
+           }
         } else if (created_at == 'later') {
           obj.updated_later_than = this.peers[i].tweets_latest_ts;
         } else {
@@ -806,13 +808,15 @@ class RedSquare extends ModTemplate {
               }
             }
 
-            console.log(
-              `REDSQUARE-${i} (${this.peers[i].publicKey}): returned ${
-                txs.length
-              } ${created_at} tweets, ${count} are new to the feed. New earliest timestamp -- ${new Date(
-                this.peers[i].tweets_earliest_ts
-              )}`
-            );
+            if (this.debug){
+              console.log(
+                `REDSQUARE-${i} (${this.peers[i].publicKey}): returned ${
+                  txs.length
+                } ${created_at} tweets, ${count} are new to the feed. New earliest timestamp -- ${new Date(
+                  this.peers[i].tweets_earliest_ts
+                )}`
+              );
+            }
 
             if (created_at === 'later') {
               if (this.peers[i].peer !== 'localhost') {
@@ -934,9 +938,11 @@ class RedSquare extends ModTemplate {
     const middle_callback = () => {
       let new_notifications = [];
 
-      console.log(
-        `Redsquare: process ${notifications.length} combined tweet and like notifications`
-      );
+      if (this.debug){
+        console.log(
+          `Redsquare: process ${notifications.length} combined tweet and like notifications`
+        );
+      }
 
       if (notifications.length > 0) {
         for (let z = 0; z < notifications.length; z++) {
@@ -963,7 +969,10 @@ class RedSquare extends ModTemplate {
     };
 
     if (this.notifications_earliest_ts) {
-      console.log(`RS: query notifications before -- ${new Date(this.notifications_earliest_ts)}`);
+
+      if (this.debug){
+        console.log(`RS: query notifications before -- ${new Date(this.notifications_earliest_ts)}`);  
+      }
 
       this.app.storage.loadTransactions(
         {
@@ -976,7 +985,9 @@ class RedSquare extends ModTemplate {
             notifications.push(tx);
           }
 
-          console.log(`Found ${txs.length} tweet notifications`);
+          if (this.debug){
+            console.log(`Found ${txs.length} tweet notifications`);  
+          }
 
           return_count--;
           if (return_count == 0) {
@@ -1003,7 +1014,9 @@ class RedSquare extends ModTemplate {
             notifications.push(tx);
           }
 
-          console.log(`Found ${txs.length} like notifications`);
+          if (this.debug){
+            console.log(`Found ${txs.length} like notifications`);  
+          }
 
           return_count--;
           if (return_count == 0) {
@@ -1164,7 +1177,9 @@ class RedSquare extends ModTemplate {
       txmsg.request === 'flag tweet' ||
       txmsg.request === 'retweet'
     ) {
-      console.log("Don't process " + txmsg.request);
+      if (this.debug){
+        console.log("RS.addTweet -- Don't process " + txmsg.request);  
+      }
       return 0;
     }
 
@@ -1337,7 +1352,9 @@ class RedSquare extends ModTemplate {
         // only insert notification if doesn't already exist
         //
         if (this.notifications_sigs_hmap[tx.signature] != 1) {
-          //console.log('Add notification', tx.msg, tx.timestamp);
+          if (this.debug){
+            console.log('Add notification', tx.msg, tx.timestamp);  
+          }
 
           let insertion_index = 0;
 
@@ -2415,12 +2432,13 @@ class RedSquare extends ModTemplate {
       return;
     }
 
-    console.log('###');
-    console.log('###');
-    console.log('### Caching Tweets -- ' + this.tweets.length);
-    console.log('###');
-    console.log('###');
-    console.log('###');
+    if (this.debug){
+      console.log('###');
+      console.log('###');
+      console.log('### Caching Tweets -- ' + this.tweets.length);
+      console.log('###');
+      console.log('###');
+    }
 
     this.cached_tweets = [];
 
@@ -2460,13 +2478,18 @@ class RedSquare extends ModTemplate {
       this.cached_tweets.push(this.tweets[z].tx.serialize_to_web(this.app));
     }
 
-    console.log('###');
+    if (this.debug){
+      console.log('###');
+      console.log('###');
+    }
 
   }
 
   cacheRecentTweetsCurationFunction(tweet){
-console.log("server is examining: " + tweet.text);
-console.log("moderation result is: " + this.app.modules.moderate(tweet.tx, "RedSquare"));
+    if (this.debug){
+      console.log("server is examining: " + tweet.text);
+      console.log("moderation result is: " + this.app.modules.moderate(tweet.tx, "RedSquare"));
+    }
 
     return this.app.modules.moderate(tweet.tx, "RedSquare");
    
@@ -2592,7 +2615,7 @@ console.log("moderation result is: " + this.app.modules.moderate(tweet.tx, "RedS
           }
         }
       } catch (err) {
-        console.log('Loading OG data failed with error: ' + err);
+        console.warn('Loading OG data failed with error: ' + err);
       }
 
       if (!res.finished) {
