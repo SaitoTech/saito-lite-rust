@@ -671,36 +671,6 @@ class RedSquare extends ModTemplate {
         await this.receiveEditTransaction(blk, tx, conf, this.app);
         return;
       }
-      if (txmsg.request === 'follow') {
-        if (this.app.BROWSER) {
-          if (tx.isFrom(this.publicKey)) {
-          } else if (tx.isTo(this.publicKey)) {
-            if (!this.app.options.redsquare.followers) {
-              this.app.options.redsquare.followers = [];
-            }
-            this.app.options.redsquare.followers.push(tx.from[0].publicKey);
-            this.app.storage.saveOptions();
-          }
-        }
-        return;
-      }
-      if (txmsg.request === 'unfollow') {
-        if (this.app.BROWSER) {
-          if (tx.isTo(this.publicKey)) {
-            if (!this.app.options.redsquare.followers) {
-              this.app.options.redsquare.followers = [];
-            }
-            for (let i = 0; i < this.app.options.redsquare.followers.length; i++) {
-              if (this.app.options.redsquare.followers[i] == tx.from[0].publicKey) {
-                this.app.options.redsquare.followers.splice(i, 1);
-                break;
-              }
-            }
-            this.app.storage.saveOptions();
-          }
-        }
-        return;
-      }
       if (txmsg.request === 'create tweet') {
         await this.receiveTweetTransaction(blk, tx, conf, this.app);
         if (this.addTweet(tx, 'receiveTweet')){
@@ -2296,24 +2266,21 @@ class RedSquare extends ModTemplate {
     }
 
     if (this.app.options.redsquare) {
-      this.notifications_last_viewed_ts =
-        this.app.options.redsquare?.notifications_last_viewed_ts || 0;
-      this.notifications_number_unviewed =
-        this.app.options.redsquare?.notifications_number_unviewed || 0;
-      this.tweet_count = this.app.options.redsquare?.tweet_count || 0;
+      const rso = this.app.options.redsquare;
 
-      if (this.app.options.redsquare.liked_tweets) {
-        this.liked_tweets = this.app.options.redsquare.liked_tweets;
+      this.notifications_last_viewed_ts = rso?.notifications_last_viewed_ts || 0;
+      this.notifications_number_unviewed = rso?.notifications_number_unviewed || 0;
+      this.tweet_count = rso?.tweet_count || 0;
+
+      this.liked_tweets = rso?.liked_tweets || [];
+      this.retweeted_tweets = rso?.retweeted_tweets || [];
+      this.replied_tweets = rso?.replied_tweets || [];
+      this.hidden_tweets = rso?.hidden_tweets || [];
+
+      if (rso?.curated == 0) {
+        this.curated = 0;
       }
-      if (this.app.options.redsquare.retweeted_tweets) {
-        this.retweeted_tweets = this.app.options.redsquare.retweeted_tweets;
-      }
-      if (this.app.options.redsquare.replied_tweets) {
-        this.replied_tweets = this.app.options.redsquare.replied_tweets;
-      }
-      if (this.app.options.redsquare.hidden_tweets) {
-        this.hidden_tweets = this.app.options.redsquare.hidden_tweets;
-      }
+
     }
 
     this.saveOptions();
@@ -2324,28 +2291,20 @@ class RedSquare extends ModTemplate {
       return;
     }
 
-    if (!this.app.options?.redsquare) {
-      this.app.options.redsquare = {};
-    }
+    let rso = {};
 
-    this.app.options.redsquare.notifications_last_viewed_ts = this.notifications_last_viewed_ts;
-    this.app.options.redsquare.notifications_number_unviewed = this.notifications_number_unviewed;
-    this.app.options.redsquare.tweet_count = this.tweet_count;
+    rso.notifications_last_viewed_ts = this.notifications_last_viewed_ts;
+    rso.notifications_number_unviewed = this.notifications_number_unviewed;
+    rso.tweet_count = this.tweet_count;
 
-    while (this.liked_tweets.length > 100) {
-      this.liked_tweets.splice(0, 1);
-    }
-    while (this.retweeted_tweets.length > 100) {
-      this.retweeted_tweets.splice(0, 1);
-    }
-    while (this.replied_tweets.length > 100) {
-      this.replied_tweets.splice(0, 1);
-    }
+    rso.liked_tweets = this.liked_tweets.slice(-100);
+    rso.retweeted_tweets = this.retweeted_tweets.slice(-100);
+    rso.replied_tweets = this.replied_tweets.slice(-100);
+    rso.hidden_tweets = this.hidden_tweets;
 
-    this.app.options.redsquare.liked_tweets = this.liked_tweets;
-    this.app.options.redsquare.retweeted_tweets = this.retweeted_tweets;
-    this.app.options.redsquare.replied_tweets = this.replied_tweets;
-    this.app.options.redsquare.hidden_tweets = this.hidden_tweets;
+    rso.curated = this.curated;
+
+    this.app.options.redsquare = rso;
 
     this.app.storage.saveOptions();
   }
