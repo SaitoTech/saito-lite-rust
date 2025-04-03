@@ -173,6 +173,11 @@ class RedSquareMain {
     this.app.connection.on(
       'redsquare-insert-loading-message',
       (message = 'loading new tweets...') => {
+
+        // There is a tendency for these site messages to run on top of each other, 
+        // so log in the console too
+        console.log("RS loading-message: " + message);
+
         siteMessage(message, 1000);
         //        this.loader.render(message);
       }

@@ -35,14 +35,13 @@ const SaitoOverlay = require('./../../lib/saito/ui/saito-overlay/saito-overlay')
 // displaying itself as and when requested.
 //
 // On initial load the module fetches from localhost. Whenever peers that
-// support Archives are added, they are added to a list of peers from 
+// support Archives are added, they are added to a list of peers from
 // which tweets can be requested.
 //
 ///////////////////////////////////////////
 
 class RedSquare extends ModTemplate {
   constructor(app) {
-
     super(app);
 
     this.appname = 'Red Square';
@@ -54,7 +53,7 @@ class RedSquare extends ModTemplate {
 
     this.debug = false;
 
-    this.tweets = []; 		// time sorted master list of tweets
+    this.tweets = []; // time sorted master list of tweets
     this.cached_tweets = []; // serialized-for-web version of curated_tweets
     this.tweets_sigs_hmap = {};
     this.unknown_children = [];
@@ -173,9 +172,9 @@ class RedSquare extends ModTemplate {
         } RedSquare Profile`,
         icon: 'fa fa-user',
         callback: function (app, publicKey) {
-          if (this_mod?.menu){
+          if (this_mod?.menu) {
             this_mod.menu.openProfile(publicKey);
-          }else{
+          } else {
             navigateWindow(`/redsquare/?user_id=${publicKey}`);
           }
         }
@@ -199,9 +198,8 @@ class RedSquare extends ModTemplate {
             });
           }
         });
-      }else{
-
-        if ((this.app.browser.isMobileBrowser() || window.innerWidth < 600)) {
+      } else {
+        if (this.app.browser.isMobileBrowser() || window.innerWidth < 600) {
           x.push({
             text: 'RedSquare Home',
             icon: 'fa-solid fa-house',
@@ -233,7 +231,6 @@ class RedSquare extends ModTemplate {
             }
           });
         }
-
       }
 
       return x;
@@ -314,12 +311,10 @@ class RedSquare extends ModTemplate {
     //
     if (type === 'saito-moderation-app') {
       return {
-
-	//
-	// default curation logic...
-	//
+        //
+        // default curation logic...
+        //
         filter_func: (mod = null, tx = null) => {
-
           if (tx == null || mod == null || !tx?.from) {
             return 0;
           }
@@ -332,15 +327,14 @@ class RedSquare extends ModTemplate {
             return -1;
           }
 
-	  //
-	  // CURATION (browsers)
-	  //
-	  // we have two kinds of curation, browsers filter based on a restricted
-	  // set of criteria, looking for transactions/tweets from users/friends
-	  // stored on their keylist.
-	  //
+          //
+          // CURATION (browsers)
+          //
+          // we have two kinds of curation, browsers filter based on a restricted
+          // set of criteria, looking for transactions/tweets from users/friends
+          // stored on their keylist.
+          //
           if (this.app.BROWSER) {
-
             if (this.app.keychain.hasPublicKey(tx.from[0].publicKey)) {
               return 1;
             }
@@ -355,29 +349,32 @@ class RedSquare extends ModTemplate {
 
             return -1;
 
-	  //
-	  // CURATION (servers)
-	  //
-	  // servers filter based on whether users have registered usernames and
-	  // whether the tweets themselves seem to have a positive reception. 
-	  // these criteria are used to determine whether the tweets are passed
-	  // along to users.
-	  //
+            //
+            // CURATION (servers)
+            //
+            // servers filter based on whether users have registered usernames and
+            // whether the tweets themselves seem to have a positive reception.
+            // these criteria are used to determine whether the tweets are passed
+            // along to users.
+            //
           } else {
+            let is_anonymous_user = !this.app.keychain.returnIdentifierByPublicKey(
+              tx.from[0].publicKey,
+              false
+            );
+            if (is_anonymous_user) {
+              return 0;
+            }
 
-	    let is_anonymous_user = !(this.app.keychain.returnIdentifierByPublicKey(tx.from[0].publicKey, false));
-	    if (is_anonymous_user) { return 0; }
+            let tweet = new Tweet(this.app, this, tx, '.tweet-manager');
+            if (tweet.num_replies > 0) {
+              return 1;
+            }
 
-	    let tweet = new Tweet(this.app, this, tx, '.tweet-manager');
-    	    if (tweet.num_replies > 0) {
-      	      return 1;
-    	    }
-
-	    if (tweet.num_likes > 1) {
- 	      return 1;
-    	    }
-
-	  }
+            if (tweet.num_likes > 1) {
+              return 1;
+            }
+          }
 
           return 0;
         }
@@ -411,6 +408,7 @@ class RedSquare extends ModTemplate {
     //
     this.loadOptions();
 
+    if (!app.BROWSER) {
     //
     // everyone loads their initial set of tweets from localhost
     //
@@ -424,19 +422,19 @@ class RedSquare extends ModTemplate {
         updated_later_than: ts
       },
       (txs) => {
-        this.processTweetsFromPeer("localhost", txs, "redsquare.initialize");
-	if (!this.app.BROWSER) {
-	  this.cacheRecentTweets();
-	}
+        this.processTweetsFromPeer('localhost', txs, 'redsquare.initialize');
+        if (!this.app.BROWSER) {
+          this.cacheRecentTweets();
+        }
       },
       'localhost'
     );
-
+    }
     ///////////////////////
     // SERVERS EXIT HERE //
     ///////////////////////
-    if (!app.BROWSER) { 
-      return; 
+    if (!app.BROWSER) {
+      return;
     }
 
     //
@@ -466,13 +464,9 @@ class RedSquare extends ModTemplate {
       console.error('Error while checking pending txs: ');
       console.error(err);
     }
-
   }
 
   reset() {}
-
-
-
 
   ////////////
   // render //
@@ -487,7 +481,6 @@ class RedSquare extends ModTemplate {
   // to update the page if it is in a state where that is permitted.
   //
   async render() {
-
     //
     // browsers only!
     //
@@ -535,14 +528,12 @@ class RedSquare extends ModTemplate {
 
     await super.render();
     this.rendered = true;
-
   }
 
   /////////////////////
   // peer management //
   /////////////////////
   addPeer(peer) {
-
     let publicKey = peer?.publicKey || this.publicKey;
     let tweet_limit = peer?.publicKey ? 20 : 10;
 
@@ -566,12 +557,10 @@ class RedSquare extends ModTemplate {
     }
   }
 
-
   ////////////////////////
   // when peer connects //
   ////////////////////////
   async onPeerServiceUp(app, peer, service = {}) {
-
     //
     // avoid network overhead if in other apps
     //
@@ -584,9 +573,9 @@ class RedSquare extends ModTemplate {
     //
     // fetch list of unknown keys and perform name-lookup
     //
-    if (service.service === "registry" && !this.app.BROWSER) {
+    if (service.service === 'registry' && !this.app.BROWSER) {
       this.fetchMissingUsernames((answers) => {
-	this.cacheRecentTweets(true);
+        this.cacheRecentTweets(true);
       });
     }
 
@@ -594,40 +583,37 @@ class RedSquare extends ModTemplate {
     // redsquare -- load tweets
     //
     if (service.service === 'archive') {
-
       //
-      // add peer
+      // add service peer, query and set up interval to poll every 5 minutes
       //
       this.addPeer(peer, 'tweets');
-         this.loadTweets(
-	    'later',
-            (tx_count) => {
-              this.app.connection.emit('redsquare-home-postcache-render-request', tx_count);
-            },
-            peer
-	);
+      this.loadTweets(
+        'later',
+        (tx_count) => {
+          this.app.connection.emit('redsquare-home-postcache-render-request', tx_count);
+        },
+        peer
+      );
 
       //
       // auto-poll for new tweets, on 5 minute interval
       //
       setInterval(() => {
-          this.loadTweets(
-	    'later',
-            (tx_count) => {
-              this.app.connection.emit('redsquare-home-postcache-render-request', tx_count);
-            },
-            peer
-          );
+        this.loadTweets(
+          'later',
+          (tx_count) => {
+            this.app.connection.emit('redsquare-home-postcache-render-request', tx_count);
+          },
+          peer
+        );
       }, 300000);
 
-      if (this.browser_active){
-        siteMessage("Synching Redsquare...", 2000);
+      if (this.browser_active) {
+        siteMessage('Synching Redsquare...', 2000);
         // Rerender now that we should have content coming...
         this.main.render();
       }
-
     }
-
   }
 
   ///////////////////////
@@ -642,7 +628,6 @@ class RedSquare extends ModTemplate {
     return super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
-
   //
   // messages arrive on-chain over the network here
   //
@@ -650,7 +635,6 @@ class RedSquare extends ModTemplate {
     let txmsg = tx.returnMessage();
 
     if (conf == 0) {
-
       if (this.debug) {
         console.log('%%');
         console.log('NEW TRANSACTION RECEIVED!');
@@ -673,14 +657,14 @@ class RedSquare extends ModTemplate {
       }
       if (txmsg.request === 'create tweet') {
         await this.receiveTweetTransaction(blk, tx, conf, this.app);
-        if (this.addTweet(tx, 'receiveTweet')){
+        if (this.addTweet(tx, 'receiveTweet')) {
           this.cacheRecentTweets();
         }
       }
       if (txmsg.request === 'like tweet') {
         await this.receiveLikeTransaction(blk, tx, conf, this.app);
-        if (Math.random() < 0.15){
-          this.cacheRecentTweets();  
+        if (Math.random() < 0.15) {
+          this.cacheRecentTweets();
         }
       }
       if (txmsg.request === 'flag tweet') {
@@ -693,7 +677,7 @@ class RedSquare extends ModTemplate {
 
       if (this.app.BROWSER) {
         this.addNotification(tx);
-      } 
+      }
     }
   }
 
@@ -714,7 +698,6 @@ class RedSquare extends ModTemplate {
   // via the manager.
   //
   loadTweets(created_at = 'earlier', mycallback, peer = null) {
-
     //
     // Instead of just passing the txs to the callback, we count how many of these txs
     // are new to us so we can have a better UX
@@ -723,7 +706,6 @@ class RedSquare extends ModTemplate {
     let peers_returned = 0;
 
     for (let i = 0; i < this.peers.length; i++) {
-
       //
       // we have two stop conditions,
       //
@@ -755,11 +737,11 @@ class RedSquare extends ModTemplate {
 
         if (created_at == 'earlier') {
           obj.updated_earlier_than = this.peers[i].tweets_earliest_ts;
-           if (this.debug){
-             console.log(
+          if (this.debug) {
+            console.log(
               `REDSQUARE: fetch earlier tweets from ${this.peers[i].publicKey} / ${this.peers[i].tweets_earliest_ts}`
             );
-           }
+          }
         } else if (created_at == 'later') {
           obj.updated_later_than = this.peers[i].tweets_latest_ts;
         } else {
@@ -771,14 +753,14 @@ class RedSquare extends ModTemplate {
             let count = 0;
 
             if (txs.length > 0) {
-              count = this.processTweetsFromPeer(this.peers[i], txs, "redsquare.loadTweets");
+              count = this.processTweetsFromPeer(this.peers[i], txs, 'redsquare.loadTweets');
             } else {
               if (created_at === 'earlier') {
                 this.peers[i].tweets_earliest_ts = 0;
               }
             }
 
-            if (this.debug){
+            if (this.debug) {
               console.log(
                 `REDSQUARE-${i} (${this.peers[i].publicKey}): returned ${
                   txs.length
@@ -788,6 +770,11 @@ class RedSquare extends ModTemplate {
               );
             }
 
+            //
+            // We are only verbose about the fetching on the initial load
+            // and when users click to refresh... otherwise we want the infinite 
+            // scroll to invisibly add tweets to our feed
+            //
             if (created_at === 'later') {
               if (this.peers[i].peer !== 'localhost') {
                 this.app.connection.emit(
@@ -829,8 +816,12 @@ class RedSquare extends ModTemplate {
     return peer_count;
   }
 
-  processTweetsFromPeer(peer, txs, source="") {
+  processTweetsFromPeer(peer, txs, source = '') {
     let count = 0;
+
+    if (this.debug){
+      console.log("RS processing tweets from peer: ", peer, source);
+    }
 
     //
     // sanity-check in case blocked tweets have come through via
@@ -854,23 +845,24 @@ class RedSquare extends ModTemplate {
       }
       txs[z].optional.source.text = source;
       txs[z].optional.source.type = 'archive';
-      if (peer != "localhost") {
+      if (peer != 'localhost') {
         txs[z].optional.source.peer = peer.publicKey;
       } else {
-        txs[z].optional.source.peer = "localhost";
+        txs[z].optional.source.peer = 'localhost';
       }
 
       //
       // curation, we respect our own by default
       //
       let curated = 0;
-      if (peer == "localhost") { curated = 1; }
+      if (peer == 'localhost') {
+        curated = 1;
+      }
 
-      let added = this.addTweet(txs[z], "archive", curated);
+      let added = this.addTweet(txs[z], 'archive', curated);
       let tweet = this.returnTweet(txs[z].signature);
 
       if (tweet) {
-
         //
         // save w. metadata
         //
@@ -888,7 +880,6 @@ class RedSquare extends ModTemplate {
 
     return count;
   }
-
 
   //
   // We have two types of notifications that are slightly differently indexed, so
@@ -908,7 +899,7 @@ class RedSquare extends ModTemplate {
     const middle_callback = () => {
       let new_notifications = [];
 
-      if (this.debug){
+      if (this.debug) {
         console.log(
           `Redsquare: process ${notifications.length} combined tweet and like notifications`
         );
@@ -939,9 +930,10 @@ class RedSquare extends ModTemplate {
     };
 
     if (this.notifications_earliest_ts) {
-
-      if (this.debug){
-        console.log(`RS: query notifications before -- ${new Date(this.notifications_earliest_ts)}`);  
+      if (this.debug) {
+        console.log(
+          `RS: query notifications before -- ${new Date(this.notifications_earliest_ts)}`
+        );
       }
 
       this.app.storage.loadTransactions(
@@ -955,8 +947,8 @@ class RedSquare extends ModTemplate {
             notifications.push(tx);
           }
 
-          if (this.debug){
-            console.log(`Found ${txs.length} tweet notifications`);  
+          if (this.debug) {
+            console.log(`Found ${txs.length} tweet notifications`);
           }
 
           return_count--;
@@ -984,8 +976,8 @@ class RedSquare extends ModTemplate {
             notifications.push(tx);
           }
 
-          if (this.debug){
-            console.log(`Found ${txs.length} like notifications`);  
+          if (this.debug) {
+            console.log(`Found ${txs.length} like notifications`);
           }
 
           return_count--;
@@ -1136,8 +1128,7 @@ class RedSquare extends ModTemplate {
   //
   // returns 1 if this is a new tweet that can be displayed
   //
-  addTweet(tx, source="", curated=0) {
-
+  addTweet(tx, source = '', curated = 0) {
     //
     // if this is a like or flag tx, it isn't anything to add to the feed so stop here
     //
@@ -1147,18 +1138,25 @@ class RedSquare extends ModTemplate {
       txmsg.request === 'flag tweet' ||
       txmsg.request === 'retweet'
     ) {
-      if (this.debug){
-        console.log("RS.addTweet -- Don't process " + txmsg.request);  
+      if (this.debug) {
+        console.log("RS.addTweet -- Don't process " + txmsg.request);
       }
       return 0;
     }
 
     if (txmsg.request === 'delete tweet' && this.app.BROWSER) {
+      if (this.debug) {
+        console.log("RS.addTweet -- process " + txmsg.request);
+      }
       this.receiveDeleteTransaction(0, tx, 0, this.app);
       return 0;
     }
 
     if (txmsg.request === 'edit tweet') {
+    if (this.debug) {
+        console.log("RS.addTweet -- process " + txmsg.request);
+      }
+
       this.editTweet(txmsg.data.tweet_id, tx, source);
       return 0;
     }
@@ -1170,6 +1168,9 @@ class RedSquare extends ModTemplate {
     tweet.source.text = source;
 
     if (!tweet?.tx) {
+      if (this.debug) {
+        console.log("RS.addTweet -- Don't process null tweet");
+      }
       return 0;
     }
 
@@ -1186,9 +1187,12 @@ class RedSquare extends ModTemplate {
 
     if (tweet.tx?.optional?.source?.curated > 0) {
       for (let z = 0; z < this.peers.length; z++) {
-        if (tweet.tx.optional.source.peer === this.peers[z].publicKey || tweet.tx.optional.source.peer === "localhost") {
-    	  tweet.curated = tweet.tx.optional.source.curated;
-	}
+        if (
+          tweet.tx.optional.source.peer === this.peers[z].publicKey ||
+          tweet.tx.optional.source.peer === 'localhost'
+        ) {
+          tweet.curated = tweet.tx.optional.source.curated;
+        }
       }
     }
 
@@ -1196,26 +1200,34 @@ class RedSquare extends ModTemplate {
       tweet.curated = 1;
     }
 
-    if (tweet.curated == -1) { 
+    if (tweet.curated == -1) {
+      if (this.debug) {
+        console.log("RS.addTweet -- Don't process curated tweet");
+      }
       return 0;
     }
 
     //
-    // we may be attempting to add a tweet that we already have in our hashmap, in 
+    // we may be attempting to add a tweet that we already have in our hashmap, in
     // this case we want to load our existing tweet and update the stats for it that
     // already exist in our memory, such as updated an edited version of the text.
     // once we have updated the tweet information, we can optionally signal whether
     // we want to re-render it.
     //
     if (this.tweets_sigs_hmap[tweet.tx.signature]) {
-
       let t = this.returnTweet(tweet.tx.signature);
-      if (!t) { return 0; }
+
+      if (this.debug){
+        console.log(`RS add duplicate tweet (${source}, ${curated}) to feed (${this.tweets.length}) -- `, t?.text);
+      }
+
+      if (!t) {
+        return 0;
+      }
 
       t.source.text = source;
 
       if (tweet.tx.optional) {
-
         let should_rerender = false;
 
         if (tweet.tx.optional.num_replies > t.tx.optional.num_replies) {
@@ -1254,12 +1266,11 @@ class RedSquare extends ModTemplate {
     // this tweet is a post
     //
     // we go through our list of tweets and add it in the appropriate spot
-    // ordered by time of last update. after adding the parent post, we 
-    // check to see if there are any unknown/orphaned tweets that should 
+    // ordered by time of last update. after adding the parent post, we
+    // check to see if there are any unknown/orphaned tweets that should
     // slot themselves in under this tweet, and move them over if needed
     //
     if (!tweet.tx.optional.parent_id) {
-
       let insertion_index = 0;
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].updated_at > tweet.updated_at) {
@@ -1280,22 +1291,30 @@ class RedSquare extends ModTemplate {
         }
       }
 
+      if (this.debug){
+        console.log(`RS addTweet (${source}, ${curated}) to feed (${this.tweets.length}) -- `, tweet.text);
+      }
+
       return 1;
 
-    //
-    // this is a comment / reply
-    //
-    // we find the tweet that is the parent and push it into the array
-    // at that point. otherwise, we mark it as an unknown_child which 
-    // means we know it HAS a parent but we do not -- as of yet -- have
-    // a copy of that tweet.
-    //
+      //
+      // this is a comment / reply
+      //
+      // we find the tweet that is the parent and push it into the array
+      // at that point. otherwise, we mark it as an unknown_child which
+      // means we know it HAS a parent but we do not -- as of yet -- have
+      // a copy of that tweet.
+      //
     } else {
-
       for (let i = 0; i < this.tweets.length; i++) {
         if (this.tweets[i].tx.signature === tweet.tx.optional.thread_id) {
           this.tweets[i].addTweet(tweet);
           this.tweets_sigs_hmap[tweet.tx.signature] = 1;
+
+          if (this.debug){
+            console.log(`RS add child Tweet (${source}, ${curated}) to feed (${this.tweets.length}) -- `, tweet.text);
+          }
+
           return 0;
         }
       }
@@ -1303,11 +1322,13 @@ class RedSquare extends ModTemplate {
       this.unknown_children.push(tweet);
       this.tweets_sigs_hmap[tweet.tx.signature] = 1;
 
+      if (this.debug){
+        console.log(`RS add unknown child tweet (${source}, ${curated}) to feed (${this.tweets.length}) -- `, tweet.text);
+      }
+
       return 0;
     }
   }
-
-
 
   //
   // addTweets adds notifications, but we have a separate function here
@@ -1322,8 +1343,8 @@ class RedSquare extends ModTemplate {
         // only insert notification if doesn't already exist
         //
         if (this.notifications_sigs_hmap[tx.signature] != 1) {
-          if (this.debug){
-            console.log('Add notification', tx.msg, tx.timestamp);  
+          if (this.debug) {
+            console.log('Add notification', tx.msg, tx.timestamp);
           }
 
           let insertion_index = 0;
@@ -1426,10 +1447,10 @@ class RedSquare extends ModTemplate {
     let count = 0;
     if (this.tweets.length > 100) {
       for (let i = 0; count < 90 && i < this.tweets.length; i++) {
-        if (this.tweets[i].curated == 1) { 
-	  pruned.push(this.tweets[i]);
-	  count++;
-	}
+        if (this.tweets[i].curated == 1) {
+          pruned.push(this.tweets[i]);
+          count++;
+        }
       }
     }
     this.tweets = pruned;
@@ -1523,12 +1544,11 @@ class RedSquare extends ModTemplate {
     // save optional likes
     //
     if (liked_tweet?.tx) {
-
       //
       // set as curated if liked by moderator
       //
       if (this.app.modules.moderate(tx) == 1) {
-         liked_tweet.curated = 1;
+        liked_tweet.curated = 1;
       }
 
       if (!liked_tweet.tx.optional) {
@@ -1672,12 +1692,11 @@ class RedSquare extends ModTemplate {
     //
 
     if (retweeted_tweet?.tx) {
-
       //
       // set as curated if liked by moderator
       //
       if (this.app.modules.moderate(tx) == 1) {
-         retweeted_tweet.curated = 1;
+        retweeted_tweet.curated = 1;
       }
 
       //
@@ -2058,7 +2077,6 @@ class RedSquare extends ModTemplate {
       // Is a reply
       //
       if (tweet.parent_id && tweet.parent_id !== tweet.tx.signature) {
-
         //
         // if we have the parent tweet in memory...
         //
@@ -2117,8 +2135,9 @@ class RedSquare extends ModTemplate {
       //
       // prune if too many tweets
       //
-      if (this.tweets.length > 100) { this.pruneTweets(); }
-
+      if (this.tweets.length > 100) {
+        this.pruneTweets();
+      }
     } catch (err) {
       console.log('ERROR in receiveTweetsTransaction() in RedSquare: ' + err);
     }
@@ -2223,14 +2242,12 @@ class RedSquare extends ModTemplate {
           siteMessage('One of your tweets was flagged for review', 10000);
         }
       }
-    } 
+    }
 
     return;
   }
 
-
   saveTweet(sig, preserve = 1) {
-
     let tweet = this.returnTweet(sig);
 
     if (!tweet) {
@@ -2280,7 +2297,6 @@ class RedSquare extends ModTemplate {
       if (rso?.curated == 0) {
         this.curated = 0;
       }
-
     }
 
     this.saveOptions();
@@ -2385,13 +2401,12 @@ class RedSquare extends ModTemplate {
     this.saveOptions();
   }
 
-  cacheRecentTweets(skip_username_fetch=false) {
-
+  cacheRecentTweets(skip_username_fetch = false) {
     if (this.app.BROWSER) {
       return;
     }
 
-    if (this.debug){
+    if (this.debug) {
       console.log('###');
       console.log('###');
       console.log('### Caching Tweets -- ' + this.tweets.length);
@@ -2402,12 +2417,10 @@ class RedSquare extends ModTemplate {
     this.cached_tweets = [];
 
     for (let tweet of this.tweets) {
-
       if (this.tweets.curated == 1) {
         this.cached_tweets.push(tweet.tx.serialize_to_web(this.app));
       } else {
         if (this.cacheRecentTweetsCurationFunction(tweet)) {
-
           //
           // update tweet source
           //
@@ -2421,11 +2434,10 @@ class RedSquare extends ModTemplate {
       }
     }
 
-
-    if (this.cached_tweets.length < 10 && skip_username_fetch == false){
+    if (this.cached_tweets.length < 10 && skip_username_fetch == false) {
       setTimeout(() => {
         this.fetchMissingUsernames((answers) => {
-  	  this.cacheRecentTweets(true);
+          this.cacheRecentTweets(true);
         });
       }, 250);
     }
@@ -2437,29 +2449,26 @@ class RedSquare extends ModTemplate {
       this.cached_tweets.push(this.tweets[z].tx.serialize_to_web(this.app));
     }
 
-    if (this.debug){
+    if (this.debug) {
       console.log('###');
       console.log('###');
     }
-
   }
 
-  cacheRecentTweetsCurationFunction(tweet){
-    if (this.debug){
-      console.log("server is examining: " + tweet.text);
-      console.log("moderation result is: " + this.app.modules.moderate(tweet.tx, "RedSquare"));
+  cacheRecentTweetsCurationFunction(tweet) {
+    if (this.debug) {
+      console.log('server is examining: ' + tweet.text);
+      console.log('moderation result is: ' + this.app.modules.moderate(tweet.tx, 'RedSquare'));
     }
 
-    return this.app.modules.moderate(tweet.tx, "RedSquare");
-   
+    return this.app.modules.moderate(tweet.tx, 'RedSquare');
   }
 
-  fetchMissingUsernames(mycallback=null) {
-    
+  fetchMissingUsernames(mycallback = null) {
     let keylist = [];
 
     for (let i = 0; i < this.tweets.length; i++) {
-      if (!keylist.includes(this.tweets[i].tx.from[0].publicKey)){
+      if (!keylist.includes(this.tweets[i].tx.from[0].publicKey)) {
         keylist.push(this.tweets[i].tx.from[0].publicKey);
       }
     }
@@ -2467,13 +2476,12 @@ class RedSquare extends ModTemplate {
     let rMod = this.app.modules.returnModule('Registry');
     if (rMod) {
       rMod.fetchManyIdentifiers(keylist, (answer) => {
-	if (mycallback != null) { mycallback(answer); }
+        if (mycallback != null) {
+          mycallback(answer);
+        }
       });
     }
-          
   }
-
-
 
   ///////////////
   // webserver //

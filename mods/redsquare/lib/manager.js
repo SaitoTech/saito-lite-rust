@@ -134,7 +134,7 @@ class TweetManager {
 		// Stop observering while we rebuild the page
 		//
 		if (this.mod.debug){
-			console.log('REDSQUARE: Turn off IO before rendering manager...');	
+			console.log(`REDSQUARE: Turn off IO before rendering manager...(${new_mode})`);	
 		}
 		
 		this.intersectionObserver.disconnect();
