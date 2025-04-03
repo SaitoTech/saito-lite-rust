@@ -261,10 +261,13 @@ this.updateLog(`###############`);
 
           this.game.queue.splice(qe, 1);
 
-	  for (let i = 0; i < 6; i++) {
-	    this.game.queue.push("play\tallies");
-	    this.game.queue.push("play\tcentral");
-	  }
+	  //
+	  // these will clear when:
+	  //  - 1 card left + pass, or 
+	  //  - no cards left
+	  //
+	  this.game.queue.push("play\tallies");
+	  this.game.queue.push("play\tcentral");
 
 	  return 1;
 	}
@@ -305,6 +308,8 @@ this.updateLog(`###############`);
 	  let hand = this.returnPlayerHand();
 
 	  if (faction == "central") { this.game.state.round++; }
+	  if (faction == "central" && this.game.state.central_passed != 0) { return 1; }
+	  if (faction == "allies" && this.game.state.allies_passed != 0) { return 1; }
 
 	  this.onNewTurn();
 
@@ -713,7 +718,7 @@ try {
 
 	  this.game.queue.splice(qe, 1);
 
-	  let deck = this.returnCards("all");
+	  let deck = this.returnDeck("all");
 
 	  for (let i = 0; i < this.game.state.cc_central_selected.length; i++) {
 	    let card = this.game.state.cc_central_selected[i];

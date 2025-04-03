@@ -8376,12 +8376,15 @@ spaces['crbox'] = {
       if (redisplay) { this.displaySpace(key); }
     }
 
-    state.ccs = {};
-    state.cc_central_selected = [];
-    state.cc_central_active = [];
-    state.cc_central_played_this_round = [];
-    state.cc_allies_selected = [];
-    state.cc_allies_played_this_round = [];
+    this.game.state.allies_passed = 0;
+    this.game.state.central_passed = 0;
+
+    this.game.state.ccs = {};
+    this.game.state.cc_central_selected = [];
+    this.game.state.cc_central_active = [];
+    this.game.state.cc_central_played_this_round = [];
+    this.game.state.cc_allies_selected = [];
+    this.game.state.cc_allies_played_this_round = [];
 
     this.game.state.rp = {};
     this.game.state.rp['central'] = {};
@@ -8467,6 +8470,9 @@ spaces['crbox'] = {
     //state.reserves['allies'] = ["it_corps","it_corps","it_corps","it_corps","fr_corps","fr_corps","fr_corps","fr_corps","fr_corps","fr_corps","fr_corps","br_corps","bef_corps","ru_corps","ru_corps","ru_corps","ru_corps","ru_corps","be_corps","sb_corps","sb_corps"];
     state.reserves['central'] = ["ge_army04", "ge_army06", "ge_army08"];
     state.reserves['allies'] = ["fr_army01", "br_corps", "ru_army09", "ru_army10"];
+
+    this.game.state.allies_passed = 0;
+    this.game.state.central_passed = 0;
 
     state.eliminated = {};
     state.eliminated['central'] = [];
@@ -8792,10 +8798,13 @@ this.updateLog(`###############`);
 
           this.game.queue.splice(qe, 1);
 
-	  for (let i = 0; i < 6; i++) {
-	    this.game.queue.push("play\tallies");
-	    this.game.queue.push("play\tcentral");
-	  }
+	  //
+	  // these will clear when:
+	  //  - 1 card left + pass, or 
+	  //  - no cards left
+	  //
+	  this.game.queue.push("play\tallies");
+	  this.game.queue.push("play\tcentral");
 
 	  return 1;
 	}
@@ -8836,6 +8845,8 @@ this.updateLog(`###############`);
 	  let hand = this.returnPlayerHand();
 
 	  if (faction == "central") { this.game.state.round++; }
+	  if (faction == "central" && this.game.state.central_passed != 0) { return 1; }
+	  if (faction == "allies" && this.game.state.allies_passed != 0) { return 1; }
 
 	  this.onNewTurn();
 
@@ -9244,7 +9255,7 @@ try {
 
 	  this.game.queue.splice(qe, 1);
 
-	  let deck = this.returnCards("all");
+	  let deck = this.returnDeck("all");
 
 	  for (let i = 0; i < this.game.state.cc_central_selected.length; i++) {
 	    let card = this.game.state.cc_central_selected[i];
@@ -11587,8 +11598,8 @@ console.log("unit idx: " + unit_idx);
     // you can pass once only 1 card left
     //
     if (hand.length == 1) { hand.push("pass"); }
-
     this.addMove("resolve\tplay");
+    this.addMove("SETVAR\tstate\t"+faction+"_passed\t1");
 
     this.updateStatusAndListCards(`${name} - select card`, hand);
     this.attachCardboxEvents((card) => {
@@ -11598,14 +11609,6 @@ console.log("unit idx: " + unit_idx);
   }
 
   playerPlaceUnitOnBoard(country="", units=[], mycallback=null) {
-
-console.log("%");
-console.log("%");
-console.log("%");
-console.log("%");
-console.log("%");
-console.log("%");
-console.log("player place units by country: " + country);
 
     let filter_func = () => {}
     let unit_idx = 0;

@@ -24,12 +24,15 @@
       if (redisplay) { this.displaySpace(key); }
     }
 
-    state.ccs = {};
-    state.cc_central_selected = [];
-    state.cc_central_active = [];
-    state.cc_central_played_this_round = [];
-    state.cc_allies_selected = [];
-    state.cc_allies_played_this_round = [];
+    this.game.state.allies_passed = 0;
+    this.game.state.central_passed = 0;
+
+    this.game.state.ccs = {};
+    this.game.state.cc_central_selected = [];
+    this.game.state.cc_central_active = [];
+    this.game.state.cc_central_played_this_round = [];
+    this.game.state.cc_allies_selected = [];
+    this.game.state.cc_allies_played_this_round = [];
 
     this.game.state.rp = {};
     this.game.state.rp['central'] = {};
@@ -115,6 +118,9 @@
     //state.reserves['allies'] = ["it_corps","it_corps","it_corps","it_corps","fr_corps","fr_corps","fr_corps","fr_corps","fr_corps","fr_corps","fr_corps","br_corps","bef_corps","ru_corps","ru_corps","ru_corps","ru_corps","ru_corps","be_corps","sb_corps","sb_corps"];
     state.reserves['central'] = ["ge_army04", "ge_army06", "ge_army08"];
     state.reserves['allies'] = ["fr_army01", "br_corps", "ru_army09", "ru_army10"];
+
+    this.game.state.allies_passed = 0;
+    this.game.state.central_passed = 0;
 
     state.eliminated = {};
     state.eliminated['central'] = [];

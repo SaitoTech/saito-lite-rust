@@ -1609,8 +1609,8 @@ console.log("unit idx: " + unit_idx);
     // you can pass once only 1 card left
     //
     if (hand.length == 1) { hand.push("pass"); }
-
     this.addMove("resolve\tplay");
+    this.addMove("SETVAR\tstate\t"+faction+"_passed\t1");
 
     this.updateStatusAndListCards(`${name} - select card`, hand);
     this.attachCardboxEvents((card) => {
@@ -1620,14 +1620,6 @@ console.log("unit idx: " + unit_idx);
   }
 
   playerPlaceUnitOnBoard(country="", units=[], mycallback=null) {
-
-console.log("%");
-console.log("%");
-console.log("%");
-console.log("%");
-console.log("%");
-console.log("%");
-console.log("player place units by country: " + country);
 
     let filter_func = () => {}
     let unit_idx = 0;
