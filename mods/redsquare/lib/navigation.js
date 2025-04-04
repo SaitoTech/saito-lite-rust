@@ -168,6 +168,17 @@ class RedSquareNavigation {
 
         let el = document.querySelector('.debug_overlay');
 
+        if (document.querySelector(".tweet-html-markers.show")){
+          Array.from(document.querySelectorAll(".tweet-html-markers.show")).forEach(el => {
+            el.classList.remove('show');
+          });
+        }else{
+          Array.from(document.querySelectorAll(".tweet-html-markers")).forEach(el => {
+            el.classList.add('show');
+          });
+        }
+
+
         //debug info
 
         if (!this.mod.styles.includes('/saito/lib/jsonTree/jsonTree.css')) {

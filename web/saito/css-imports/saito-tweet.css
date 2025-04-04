@@ -157,6 +157,10 @@
   display: none;
 }
 
+.tweet-html-markers.show{
+  display: flex;
+}
+
 .tweet-notice .saito-address {
   display: inline;
   margin-right: 0.3rem;

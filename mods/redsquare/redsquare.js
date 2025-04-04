@@ -1200,13 +1200,6 @@ class RedSquare extends ModTemplate {
       tweet.curated = 1;
     }
 
-    if (tweet.curated == -1) {
-      if (this.debug) {
-        console.log("RS.addTweet -- Don't process curated tweet");
-      }
-      return 0;
-    }
-
     //
     // we may be attempting to add a tweet that we already have in our hashmap, in
     // this case we want to load our existing tweet and update the stats for it that
