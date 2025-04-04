@@ -1,77 +1,70 @@
 import React, { useEffect, useState } from 'react';
 
-const NodeInfo = ({ app, mod }) => {
-  const [publicKey, setPublicKey] = useState('Loading...');
-  const [balance, setBalance] = useState('Loading...');
-  const [mempoolCount, setMempoolCount] = useState('Loading...');
+// Assuming a utility function for formatting balance exists or will be created
+// import { formatBalance } from '../web/js/utils'; // Example import
+const formatBalance = (balance) => {
+    // Basic placeholder formatter - replace with actual Saito formatting logic
+    try {
+        const num = Number(balance);
+        return isNaN(num) ? 'N/A' : num.toLocaleString(); // Simple formatting
+    } catch {
+        return 'N/A';
+    }
+};
+
+
+const NodeInfo = ({ mod }) => { // Only need mod prop for fetching
+  const [nodeInfo, setNodeInfo] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    let isMounted = true;
-    setError(null);
-
-    const fetchData = async () => {
+    const loadNodeInfo = async () => {
+      if (!mod) {
+        setError("Module prop not available");
+        setIsLoading(false);
+        return;
+      }
+      setIsLoading(true);
       try {
-        // Get Public Key
-        const pk = mod?.publicKey || await app.wallet.getPublicKey();
-        if (isMounted) setPublicKey(pk);
-
-        // Get Balance (assuming client wallet balance for now)
-        // This might need adjustment depending on whether you want client or node balance
-        const balNolan = await app.wallet.getBalance(); 
-        const balSaito = parseFloat(BigInt(balNolan) / BigInt(100000000)).toFixed(4);
-        if (isMounted) setBalance(balSaito);
-
-        // Get Mempool Count (Requires API endpoint implementation)
-        try {
-          const response = await fetch(`/${mod.name}/api/mempool`);
-          if (!response.ok) {
-              throw new Error(`API Error: ${response.status} ${response.statusText}`);
-          }
-          const data = await response.json();
-          // Assuming the API returns { transactions: [...] } or similar
-          const count = data?.transactions?.length ?? data?.count ?? 'N/A'; 
-          if (isMounted) setMempoolCount(count);
-        } catch (apiError) {
-            console.error("Error fetching mempool count:", apiError);
-            if (isMounted) setMempoolCount('Error');
-            // Optionally set a specific error state for this part
-        }
-
+        const data = await mod.fetchNodeInfo();
+        setNodeInfo(data);
+        setError(null);
       } catch (err) {
         console.error("Error fetching node info:", err);
-        if (isMounted) setError('Failed to load node information.');
+        setError(err.message || "Failed to load node information");
+        setNodeInfo(null); // Clear any stale data
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchData();
+    loadNodeInfo();
+  }, [mod]); // Re-fetch if mod instance changes (though unlikely)
 
-    return () => {
-      isMounted = false; // Cleanup function to prevent state updates on unmounted component
-    };
-  }, [app, mod]); // Dependencies for useEffect
+  if (isLoading) {
+    return <div className="node-info-card node-info-loading">Loading Node Info...</div>;
+  }
 
+  if (error) {
+    return <div className="node-info-card node-info-error">Error: {error}</div>;
+  }
+
+  if (!nodeInfo) {
+    return <div className="node-info-card node-info-empty">No Node Info available.</div>;
+  }
+
+  // Display fetched data
   return (
-    <div className="node-info-box">
-      <h3>Node Info</h3>
-      {error ? (
-        <div className="error-message">{error}</div>
-      ) : (
-        <ul>
-          <li>
-            <span>Address:</span>
-            <code className="mono-data node-info-key">{publicKey}</code>
-          </li>
-          <li>
-            <span>Balance:</span>
-            <span className="mono-data">{balance}</span> SAITO
-          </li>
-          <li>
-            <span>Mempool Txs:</span>
-            <span className="mono-data">{mempoolCount}</span>
-          </li>
-        </ul>
-      )}
+    <div className="node-info-card">
+      <div className="node-info-header">Node Information</div>
+      <div className="node-info-body">
+         <p><span className="node-info-label">Public Key:</span> <code className="mono-data">{nodeInfo.publicKey || 'N/A'}</code></p>
+         <p><span className="node-info-label">Balance:</span> <code className="mono-data">{formatBalance(nodeInfo.balance)} SAITO</code></p>
+         <p><span className="node-info-label">Endpoint:</span> <code className="mono-data">{nodeInfo.serverEndpoint || 'N/A'}</code></p>
+         <p><span className="node-info-label">Mempool Txs:</span> <code className="mono-data">{nodeInfo.mempoolTxCount ?? 'N/A'}</code></p>
+         <p><span className="node-info-label">Latest Block:</span> <code className="mono-data">{nodeInfo.latestBlockId || 'N/A'}</code></p>
+      </div>
     </div>
   );
 };

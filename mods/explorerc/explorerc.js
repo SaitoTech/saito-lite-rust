@@ -107,22 +107,75 @@ class Explorerc extends ModTemplate {
     // Block Information
     expressapp.get(`/${explorerc_self.name}/api/block`, async (req, res) => {
       const hash = req.query.hash;
-      // TODO: Implement logic to fetch block data from app.blockchain
-      // Example: const blockData = await app.blockchain.getBlock(hash);
-      res.json({ status: "success", message: "API: Block endpoint not yet implemented", hash: hash /*, data: blockData */ });
+      if (!hash) {
+        return res.status(400).json({ status: "error", message: "Missing block hash parameter" });
+      }
+      try {
+        const block = await app.blockchain.getBlock(hash);
+        if (block && typeof block.toJson === 'function') {
+          const blockJsonString = block.toJson();
+          try {
+             const blockData = JSON.parse(blockJsonString); // Use json-bigint parser
+             res.json({ status: "success", hash: hash, blockData: blockData });
+          } catch (jsonError) {
+            console.error(`Error parsing block JSON for hash ${hash}:`, jsonError);
+            // Optionally return the raw string if parsing fails but block was found
+            res.status(500).json({ status: "error", message: "Error parsing block JSON", hash: hash }); 
+          }
+        } else {
+          res.status(404).json({ status: "error", message: "Block not found", hash: hash });
+        }
+      } catch (error) {
+        console.error(`Error fetching block ${hash}:`, error);
+        res.status(500).json({ status: "error", message: "Internal server error fetching block", hash: hash });
+      }
     });
 
     expressapp.get(`/${explorerc_self.name}/api/blocksource`, async (req, res) => {
         const hash = req.query.hash;
-        // TODO: Implement logic to fetch raw block data
-        res.json({ status: "success", message: "API: Block source endpoint not yet implemented", hash: hash });
+        if (!hash) {
+            return res.status(400).json({ status: "error", message: "Missing block hash parameter" });
+        }
+        try {
+            const block = await app.blockchain.getBlock(hash);
+            if (block && typeof block.toJson === 'function') {
+                const blockSource = block.toJson(); // Get raw JSON string
+                res.json({ status: "success", hash: hash, blockSource: blockSource });
+            } else {
+                res.status(404).json({ status: "error", message: "Block not found", hash: hash });
+            }
+        } catch (error) {
+            console.error(`Error fetching block source for ${hash}:`, error);
+            res.status(500).json({ status: "error", message: "Internal server error fetching block source", hash: hash });
+        }
     });
 
     expressapp.get(`/${explorerc_self.name}/api/json-block/:bhash`, async (req, res) => {
       const bhash = req.params.bhash;
-       // TODO: Implement logic to fetch block data from app.blockchain
-       // Example: const blockData = await app.blockchain.getBlock(bhash);
-      res.json({ status: "success", message: "API: JSON Block endpoint not yet implemented", bhash: bhash /*, data: blockData */ });
+      if (!bhash) {
+        return res.status(400).json({ status: "error", message: "Missing block hash parameter" });
+      }
+       try {
+        const block = await app.blockchain.getBlock(bhash);
+        if (block && typeof block.toJson === 'function') {
+          const blockJsonString = block.toJson();
+          try {
+             const blockData = JSON.parse(blockJsonString); // Use json-bigint parser
+             // Send the parsed JSON object directly
+             res.setHeader('Content-Type', 'application/json');
+             res.charset = 'UTF-8';
+             res.send(JSON.stringify(blockData, null, 2)); // Pretty print might be nice
+          } catch (jsonError) {
+            console.error(`Error parsing block JSON for hash ${bhash}:`, jsonError);
+            res.status(500).json({ status: "error", message: "Error parsing block JSON", bhash: bhash });
+          }
+        } else {
+          res.status(404).json({ status: "error", message: "Block not found", bhash: bhash });
+        }
+      } catch (error) {
+        console.error(`Error fetching block ${bhash}:`, error);
+        res.status(500).json({ status: "error", message: "Internal server error fetching block", bhash: bhash });
+      }
     });
 
     // Balance Information
@@ -185,7 +238,7 @@ class Explorerc extends ModTemplate {
                     const block = await app.blockchain.getBlock(longest_chain_hash);
 
                     // Log the raw block object (optional, can be removed later)
-                    // console.log(`API Endpoint: Raw block data for ID ${current_id}, Hash ${longest_chain_hash}:`, block);
+                    console.log(`API Endpoint: Raw block data for ID ${current_id}, Hash ${longest_chain_hash}:`, block);
 
                     if (block && typeof block.toJson === 'function') {
                         // Parse the JSON representation to get creator and timestamp
@@ -198,17 +251,31 @@ class Explorerc extends ModTemplate {
                             continue; 
                         }
 
-                        // Log specific fields after parsing JSON
-                        console.log(`API Endpoint: Parsed - ID=${block.id}, Creator=${blockJson.creator}, Timestamp=${blockJson.timestamp}`);
+                        // Extract additional block properties (access as properties, not functions)
+                        const goldenTicket = !!block.hasGoldenTicket; // Check truthiness of property
+                        const longestChain = !!block.inLongestChain; // Check truthiness of property
+                        let burnFee = 0;
+                        let difficulty = 0;
+                        // Assuming burnFee and difficulty are still functions returning BigInt based on previous context
+                        try { burnFee = block.burnFee ? Number(block.burnFee()) : 0; } catch (e) { console.error(`Error getting burnFee for block ${block.id}:`, e); }
+                        try { difficulty = block.difficulty ? Number(block.difficulty()) : 0; } catch (e) { console.error(`Error getting difficulty for block ${block.id}:`, e); }
+
+                        // Log specific fields after parsing JSON and getting extra props
+                        console.log(`API Endpoint: Parsed - ID=${block.id}, Creator=${blockJson.creator}, Timestamp=${blockJson.timestamp}, GT=${goldenTicket}, LC=${longestChain}, BF=${burnFee}, Diff=${difficulty}`);
 
                         // Construct the response object using parsed data
                         blocksData.push({
-                            id: block.id, // Use the direct block.id (already BigInt)
+                            id: block.id,
                             hash: block.hash,
                             previousBlockHash: block.previousBlockHash,
-                            creator: blockJson.creator, // Get from parsed JSON
-                            timestamp: blockJson.timestamp, // Get from parsed JSON
-                            transactionCount: block.transactions.length 
+                            creator: blockJson.creator, 
+                            timestamp: blockJson.timestamp, 
+                            transactionCount: block.transactions.length,
+                            // Add new properties
+                            goldenTicket: goldenTicket,
+                            longestChain: longestChain,
+                            burnFee: burnFee, // Send as number
+                            difficulty: difficulty // Send as number
                         });
                     } else {
                          console.warn(`Block not found or block.toJson is not a function for hash ${longest_chain_hash} at ID ${current_id}`);
@@ -228,6 +295,51 @@ class Explorerc extends ModTemplate {
       } catch (error) {
         console.error("Error in /api/blocks/:start_id/:end_id endpoint:", error);
         res.status(500).json({ error: "Internal server error while fetching blocks." });
+      }
+    });
+
+    // NEW: Get Node Information
+    expressapp.get(`/${explorerc_self.name}/api/node-info`, async (req, res) => {
+      try {
+        const publicKey = app.wallet?.publicKey || 'N/A';
+        let balance = 'N/A';
+        let serverEndpoint = 'N/A';
+        let mempoolTxCount = 0;
+        let latestBlockId = 'N/A';
+
+        try {
+            balance = await app.wallet?.getBalance() || '0'; 
+        } catch (e) { console.error("Error getting balance:", e); balance = 'Error'; }
+        
+        try {
+             if (app.options?.server) {
+                serverEndpoint = `${app.options.server.protocol}://${app.options.server.host}:${app.options.server.port}`;
+            }
+        } catch (e) { console.error("Error getting server endpoint:", e); }
+
+        try {
+            mempoolTxCount = app.mempool?.returnTransactions()?.length || 0;
+        } catch (e) { console.error("Error getting mempool count:", e); }
+        
+        try {
+            const latestIdBigInt = await app.blockchain?.getLatestBlockId();
+            latestBlockId = latestIdBigInt !== undefined ? latestIdBigInt.toString() : 'N/A';
+        } catch (e) { console.error("Error getting latest block ID:", e); }
+
+        res.json({
+          status: "success",
+          nodeInfo: {
+            publicKey: publicKey,
+            balance: balance, // Saito balance (string)
+            serverEndpoint: serverEndpoint,
+            mempoolTxCount: mempoolTxCount,
+            latestBlockId: latestBlockId // Latest block ID (string)
+          }
+        });
+
+      } catch (error) {
+        console.error("Error in /api/node-info endpoint:", error);
+        res.status(500).json({ error: "Internal server error while fetching node information." });
       }
     });
 
@@ -287,13 +399,39 @@ class Explorerc extends ModTemplate {
       // Convert IDs and timestamps
       return data.blocks.map(block => ({ 
         ...block,
-        id: BigInt(block.id), // API sends string/number, ensure BigInt
-        timestamp: Number(block.timestamp), // Ensure timestamp is number
-        transactionCount: Number(block.transactionCount || 0) // Ensure count is number
+        id: BigInt(block.id),
+        timestamp: Number(block.timestamp),
+        transactionCount: Number(block.transactionCount || 0),
+        // Ensure new fields have correct types (mostly boolean/number)
+        goldenTicket: Boolean(block.goldenTicket),
+        longestChain: Boolean(block.longestChain),
+        burnFee: Number(block.burnFee || 0),
+        difficulty: Number(block.difficulty || 0)
       })); 
     } catch (error) {
       console.error(`Error fetching blocks from ${start_id_str} to ${end_id_str} via mod method:`, error);
       throw error; // Re-throw
+    }
+  }
+
+  // Client-side method to fetch node info from the module's API
+  async fetchNodeInfo() {
+    const API_BASE_PATH = `/${this.name}/api`;
+    try {
+        const response = await fetch(`${API_BASE_PATH}/node-info`);
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(`HTTP error! status: ${response.status} - ${errorData.error || 'Failed to fetch node info'}`);
+        }
+        const data = await response.json();
+        if (data.status !== 'success' || !data.nodeInfo) {
+            throw new Error('Failed to fetch node info: ' + (data.error || 'Malformed response'));
+        }
+        // Return the nested nodeInfo object
+        return data.nodeInfo; 
+    } catch (error) {
+        console.error("Error fetching node info via mod method:", error);
+        throw error; // Re-throw
     }
   }
 

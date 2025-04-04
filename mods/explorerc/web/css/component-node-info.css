@@ -1,11 +1,61 @@
 /* Styles for the NodeInfo Component */
 
-.node-info-box {
-  border: 1px solid var(--saito-border-color, #ccc);
-  border-radius: var(--saito-border-radius, 4px);
-  padding: 1rem;
+.node-info-card,
+.node-info-loading,
+.node-info-error,
+.node-info-empty {
+  background-color: var(--saito-background-color, #ffffff);
+  border: 1px solid var(--saito-border-color, #e0e0e0);
+  border-radius: var(--saito-border-radius, 8px);
   margin-bottom: 1.5rem;
-  background-color: var(--saito-background-very-light, #f9f9f9);
+  padding: 1rem;
+  box-shadow: var(--saito-box-shadow-small, 0 2px 5px rgba(0,0,0,0.05));
+  overflow: hidden;
+}
+
+.node-info-loading,
+.node-info-error,
+.node-info-empty {
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--saito-text-color-muted, #888);
+  font-style: italic;
+}
+
+.node-info-error {
+    color: var(--saito-warning, red);
+    border-color: var(--saito-warning, red);
+}
+
+.node-info-header {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: var(--saito-text-color, #333);
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid var(--saito-border-color-light, #eee);
+}
+
+.node-info-body p {
+  margin-bottom: 0.6rem;
+  line-height: 1.5;
+  color: var(--saito-text-color-secondary, #555);
+  display: flex;
+  align-items: flex-start;
+}
+
+.node-info-label {
+  display: inline-block;
+  width: 120px;
+  min-width: 120px;
+  margin-right: 0.8em;
+  font-weight: 600;
+  color: var(--saito-text-color, #333);
+  flex-shrink: 0;
+}
+
+.node-info-body .mono-data {
+  word-break: break-all;
 }
 
 .node-info-box h3 {
@@ -23,24 +73,24 @@
 
 .node-info-box li {
   margin-bottom: 0.5rem;
-  display: flex; 
-  align-items: center; /* Align items vertically */
-  flex-wrap: wrap; /* Allow wrapping for long keys */
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .node-info-box li span:first-child {
   font-weight: bold;
   margin-right: 0.5rem;
-  min-width: 120px; /* Increased width to ensure alignment */
-  display: inline-block; /* Ensures min-width is respected */
+  min-width: 120px;
+  display: inline-block;
 }
 
 .node-info-box li .mono-data {
-  margin-right: 0.25rem; /* Space before SAITO unit */
+  margin-right: 0.25rem;
 }
 
 .node-info-box li .node-info-key {
-  word-break: break-all; /* Break long public keys */
+  word-break: break-all;
 }
 
 .node-info-box .error-message {

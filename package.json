@@ -33,6 +33,7 @@
     "@giphy/js-fetch-api": "^5.6.0",
     "@mixin.dev/mixin-node-sdk": "^7.2.1",
     "@multiversx/sdk-core": "^13.16.0",
+    "@textea/json-viewer": "^4.0.1",
     "@types/uuid": "^9.0.8",
     "archiver": "^3.1.1",
     "axios": "^0.27.2",

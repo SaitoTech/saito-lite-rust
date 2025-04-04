@@ -2,7 +2,7 @@
 const txTypes = {
   0: { name: 'Normal' },
   1: { name: 'Fee Payment' },
-  2: { name: 'Golden Ticket', badge: 'golden-ticket' },
+  2: { name: 'Golden Ticket'},
   3: { name: 'ATR' },
   4: { name: 'VIP (deprecated)' },
   5: { name: 'SPV' },
