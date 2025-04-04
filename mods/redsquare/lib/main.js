@@ -60,24 +60,22 @@ class RedSquareMain {
         // to show, which we
         //
         let are_there_new_tweets_to_show = false;
+
         for (let i = 0; i < this.mod.tweets.length && i < 10; i++) {
           if (!this.mod.tweets[i].isRendered()) {
-            if (this.mod.curated) {
+            if (!this.mod.curated || this.mod.tweets[i].curated) {
               if (this.mod.tweets[i].curated) {
                 are_there_new_tweets_to_show = true;
               }
-            } else {
-              are_there_new_tweets_to_show = true;
-            }
-          } else {
-            i = this.mod.tweets.length;
-          }
+            } 
+          } 
         }
 
         //
         // Don't insert new tweets or button if looking at a tweet or profile
         //
-        if (this.manager.mode == 'tweets') {
+        if (this.manager.mode == 'tweets' && are_there_new_tweets_to_show) {
+
           this.scroll_depth = 0;
           this.idleTime = 10;
           this.scroll_behavior = 'smooth';
@@ -86,7 +84,6 @@ class RedSquareMain {
             //this.manager.clearFeed();
             this.renderHome();
           } else {
-            if (are_there_new_tweets_to_show) {
               setTimeout(() => {
                 if (!document.getElementById('saito-new-tweets')) {
                   this.app.browser.prependElementToSelector(
@@ -101,7 +98,6 @@ class RedSquareMain {
                   this.renderHome();
                 };
               }, 1000);
-            }
           }
         }
       }
@@ -173,6 +169,11 @@ class RedSquareMain {
     this.app.connection.on(
       'redsquare-insert-loading-message',
       (message = 'loading new tweets...') => {
+
+        // There is a tendency for these site messages to run on top of each other, 
+        // so log in the console too
+        console.log("RS loading-message: " + message);
+
         siteMessage(message, 1000);
         //        this.loader.render(message);
       }
