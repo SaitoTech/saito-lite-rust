@@ -1,0 +1,26 @@
+/* Styles for the Header Component */
+
+.saito-header {
+  background: var(--dreamscape); /* Updated variable */
+  display: flex; 
+  align-items: center; 
+  padding: 0 1rem; 
+  min-height: var(--saito-header-height, 4rem); /* Use saito variable or default */
+  color: var(--saito-white);
+}
+
+.saito-header img {
+  height: calc(var(--saito-header-height, 4rem) * 0.6); /* Scale logo with header height */
+  margin-right: 1rem; /* Add space between logo and title */
+}
+
+.saito-header .saito-header-title {
+  margin: 0; /* Remove default h1 margin */
+  font-size: 1.5rem; /* Example size */
+  /* Inherits font-family from body, no specific override needed unless desired */
+  font-weight: normal; /* Assuming Visuelt Lite provides the desired weight */
+}
+
+.saito-header .saito-header-nav {
+  margin-left: auto; /* Push navigation to the right */
+} 

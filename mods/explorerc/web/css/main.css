@@ -1,0 +1,27 @@
+/* explorerc main.css */
+
+/* Add global styles or resets here */
+
+body {
+  /* Set default font for general text */
+  font-family: "Visuelt Lite", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  /* Reset default margin */
+  margin: 0;
+}
+
+/* Define monospace font stack for data elements */
+.mono-data,
+code,
+pre {
+  font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.9em; /* Slightly smaller for mono */
+}
+
+.saito-container {
+  /* Styles for the main App container if needed */
+}
+
+.saito-main {
+  /* Styles for the main content area */
+  padding: 1rem;
+} 

@@ -1,0 +1,119 @@
+/* Styles for the BlockCard component */
+
+.block-list {
+  margin-top: 1.5rem; /* Space above the list */
+}
+
+.block-card {
+  background-color: var(--saito-background-color, #ffffff);
+  border: 1px solid var(--saito-border-color, #e0e0e0);
+  border-radius: var(--saito-border-radius, 8px);
+  margin-bottom: 1rem; /* Space between cards */
+  padding: 1rem; /* Inner spacing */
+  box-shadow: var(--saito-box-shadow-small, 0 2px 5px rgba(0,0,0,0.05));
+  transition: box-shadow 0.3s ease;
+  overflow: hidden; /* Ensure child margins don't collapse outside */
+}
+
+.block-card:hover {
+  box-shadow: var(--saito-box-shadow-medium, 0 4px 10px rgba(0,0,0,0.08));
+}
+
+.block-card-header {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: var(--saito-text-color, #333);
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid var(--saito-border-color-light, #eee);
+}
+
+.block-card-body p {
+  margin-bottom: 0.6rem; /* Space between paragraphs */
+  line-height: 1.5;
+  color: var(--saito-text-color-secondary, #555);
+  display: flex;
+  align-items: flex-start; /* Align items to the top */
+}
+
+.block-card-body p strong {
+  color: var(--saito-text-color, #333);
+  margin-right: 0.5em;
+}
+
+.block-card-footer {
+  font-size: 0.9em;
+  color: var(--saito-text-color-muted, #777);
+  padding-top: 0.75rem;
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--saito-border-color-light, #eee);
+}
+
+.mono-data {
+  font-family: var(--saito-font-monospace, monospace);
+  background-color: var(--saito-background-secondary, #f5f5f5);
+  padding: 0.2em 0.5em;
+  border-radius: 4px;
+  font-size: 0.95em;
+  word-break: break-all; /* Prevent long strings from breaking layout */
+  line-height: 1.4; /* Adjust for better readability within lines */
+  display: inline-block; /* Allows padding/background */
+  margin-left: 0.3em;
+}
+
+.block-card-empty {
+  padding: 2rem;
+  text-align: center;
+  color: var(--saito-text-color-muted, #999);
+  border: 1px dashed var(--saito-border-color, #ccc);
+  border-radius: var(--saito-border-radius, 8px);
+  background-color: var(--saito-background-secondary, #f9f9f9);
+}
+
+.load-more-button {
+  display: block;
+  width: 100%;
+  padding: 0.8rem 1rem;
+  margin-top: 1rem;
+  font-size: 1em;
+  font-weight: 500;
+  text-align: center;
+  color: var(--saito-button-primary-color, #ffffff);
+  background-color: var(--saito-button-primary-background, #007bff);
+  border: 1px solid var(--saito-button-primary-border-color, #007bff);
+  border-radius: var(--saito-border-radius, 5px);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.load-more-button:hover {
+  background-color: var(--saito-button-primary-background-hover, #0056b3);
+  border-color: var(--saito-button-primary-border-color-hover, #0056b3);
+}
+
+.load-more-button:active {
+  background-color: var(--saito-button-primary-background-active, #004085);
+  border-color: var(--saito-button-primary-border-color-active, #004085);
+}
+
+/* Styles for Loading and End Indicators */
+.block-list-loading,
+.block-list-end {
+  text-align: center;
+  padding: 1.5rem;
+  margin-top: 1rem;
+  color: var(--saito-text-color-muted, #888);
+  font-style: italic;
+  border-top: 1px dashed var(--saito-border-color-light, #eee);
+}
+
+/* Style for the new label span */
+.block-card-label {
+  display: inline-block; /* Allows width and margin */
+  width: 120px; /* Adjust width as needed for longest label */
+  min-width: 120px; /* Ensure minimum width */
+  margin-right: 0.8em; /* Space between label and value */
+  font-weight: 600; /* Make labels bold */
+  color: var(--saito-text-color, #333);
+  flex-shrink: 0; /* Prevent label from shrinking */
+} 
