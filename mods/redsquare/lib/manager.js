@@ -134,7 +134,7 @@ class TweetManager {
 		// Stop observering while we rebuild the page
 		//
 		if (this.mod.debug){
-			console.log('REDSQUARE: Turn off IO before rendering manager...');	
+			console.log(`REDSQUARE: Turn off IO before rendering manager...(${new_mode})`);	
 		}
 		
 		this.intersectionObserver.disconnect();
@@ -196,17 +196,14 @@ class TweetManager {
 
 			for (let tweet of this.mod.tweets) {
 				if (!tweet.isRendered()) {
-					if (!this.mod.curated || tweet.curated) {
-
-						//
-						// remove DOM element telling us nothing more exists...
-						//
-						if (document.querySelector(".saito-end-of-redsquare")) {
-							document.querySelector(".saito-end-of-redsquare").remove();
-						}
-						
-						tweet.renderWithCriticalChild();
+					//
+					// remove DOM element telling us nothing more exists...
+					//
+					if (document.querySelector(".saito-end-of-redsquare")) {
+						document.querySelector(".saito-end-of-redsquare").remove();
 					}
+					
+					tweet.renderWithCriticalChild();
 				} 
 			}
 
@@ -330,17 +327,14 @@ class TweetManager {
 
 		for (let tweet of this.mod.tweets) {
 			if (!tweet.isRendered()) {
-				if (!this.mod.curated || tweet.curated) {
-
-					//
-					// remove DOM element telling us nothing more exists...
-					//
-					if (document.querySelector(".saito-end-of-redsquare")) {
-						document.querySelector(".saito-end-of-redsquare").remove();
-					}
-					
-					tweet.renderWithCriticalChild();
+				//
+				// remove DOM element telling us nothing more exists...
+				//
+				if (document.querySelector(".saito-end-of-redsquare")) {
+					document.querySelector(".saito-end-of-redsquare").remove();
 				}
+				
+				tweet.renderWithCriticalChild();
 			} 
 		}
 

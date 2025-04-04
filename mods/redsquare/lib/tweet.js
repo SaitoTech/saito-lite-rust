@@ -272,6 +272,17 @@ class Tweet {
 	render(prepend = false) {
 
 		//
+		// Apply curation Here !!!!
+		//
+		if (this.mod.curated && this?.curated == -1) {
+			if (this.mod.debug){
+				console.log("Filter tweet: ", this.text);
+			}
+			return -1;
+		}
+
+
+		//
 		// create link preview if link
 		//
 		if (this.link && !this.link_preview) {
@@ -345,7 +356,7 @@ class Tweet {
 				this.retweet.user.render();
 				this.retweet.attachEvents();
 			}
-			return;
+			return 0;
 		}
 
 		//
@@ -456,6 +467,8 @@ class Tweet {
 		}
 
 		this.attachEvents();
+
+		return 1;
 	}
 
 	rerenderControls(complete_rerender = false) {
@@ -477,71 +490,84 @@ class Tweet {
 	}
 
 	forceRenderWithCriticalChild() {
-		this.render();
+		let rtn_value = this.render();
 
-		if (this.critical_child) {
+		if (rtn_value !== -1 && this.critical_child) {
 			this.critical_child.render_after_selector = '.tweet-' + this.tx.signature;
-			this.critical_child.render();
-
-			let myqs = this.container + ` .tweet-${this.tx.signature}`;
-			let obj = document.querySelector(myqs);
-			if (obj) {
-				if (this.critical_child.parent_id == this.tx.signature) {
-					obj.classList.add('has-reply');
-				} else {
-					obj.classList.add('has-reply-disconnected');
+			if (this.critical_child.render() !== -1){
+				let myqs = this.container + ` .tweet-${this.tx.signature}`;
+				let obj = document.querySelector(myqs);
+				if (obj) {
+					if (this.critical_child.parent_id == this.tx.signature) {
+						obj.classList.add('has-reply');
+					} else {
+						obj.classList.add('has-reply-disconnected');
+					}
 				}
 			}
 		}
 
 		this.attachEvents();
 	}
-	renderWithCriticalChild() {
 
+	//
+	// for rendering the tweet on the main page
+	//
+	renderWithCriticalChild() {
 
 		let does_tweet_already_exist_on_page = false;
 		if (document.querySelector(`.tweet-${this.tx.signature}`)) {
 			does_tweet_already_exist_on_page = true;
 		}
 
+		let rtn_value = -1;
+		// render tweet
 		if (!does_tweet_already_exist_on_page) {
-			this.render();
+			rtn_value = this.render();
 		}
 
-		if (this.critical_child && does_tweet_already_exist_on_page == false) {
+		// render critical child (to show one reply and prompt discussion)
+		if (this.critical_child && does_tweet_already_exist_on_page == false && rtn_value !== -1) {
 			//
 			// does child already exist on page
 			//
 			if (document.querySelector(`.tweet-${this.critical_child.tx.signature}`)) {
+				if (this.mod.debug){
+					console.log("already rendered critical child for tweet: ", this.text);
+				}
 				return;
 			}
 
 			this.critical_child.render_after_selector = '.tweet-' + this.tx.signature;
-			this.critical_child.render();
-
-			let myqs = this.container + ` .tweet-${this.tx.signature}`;
-			let obj = document.querySelector(myqs);
-			if (obj) {
-				if (this.critical_child.parent_id == this.tx.signature) {
-					obj.classList.add('has-reply');
-				} else {
-					obj.classList.add('has-reply-disconnected');
+			if (this.critical_child.render() > 0) {
+				let myqs = this.container + ` .tweet-${this.tx.signature}`;
+				let obj = document.querySelector(myqs);
+				if (obj) {
+					if (this.critical_child.parent_id == this.tx.signature) {
+						obj.classList.add('has-reply');
+					} else {
+						obj.classList.add('has-reply-disconnected');
+					}
 				}
+
+				//
+				// if no replies are listed, but we are showing a reply... show least one to avoid confusion
+				//
+				if (this.tx.optional.num_replies == 0) {
+					let obj = document.querySelector(
+						`.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`
+					);
+					try {
+						obj.innerHTML++;
+					} catch (err) {
+						console.log('err: ' + err);
+					}
+				}
+
+			}else{
+
 			}
 
-			//
-			// if no replies are listed, but we are showing a reply... show least one to avoid confusion
-			//
-			if (this.tx.optional.num_replies == 0) {
-				let obj = document.querySelector(
-					`.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`
-				);
-				try {
-					obj.innerHTML++;
-				} catch (err) {
-					console.log('err: ' + err);
-				}
-			}
 		}
 
 		this.attachEvents();
@@ -565,6 +591,9 @@ class Tweet {
 				obj.classList.add('has-reply');
 			}
 
+			//
+			// Breadth -- Show all replies at one level
+			//
 			if (this.children.length > 1) {
 				if (obj) {
 					obj.classList.remove('has-reply');
@@ -576,6 +605,9 @@ class Tweet {
 					this.children[i].renderChild();
 				}
 			} else {
+				//
+				// Depth -- Recurse down through tweet thread
+				//
 				this.children[0].container = this.container;
 				this.children[0].render_after_selector = `.tweet-${this.tx.signature}`;
 				this.children[0].renderWithChildren();
@@ -585,8 +617,26 @@ class Tweet {
 		this.attachEvents();
 	}
 
+	renderNullTweet(){
+		let html = `<div class="tweet tweet-${this.tx.signature} is-reply null-tweet">
+          <div class="tweet-body">
+            <div class="tweet-sidebar"></div>
+            <div class="tweet-main">
+              <div class="tweet-text">filtered tweet not shown</div>
+            </div>
+          </div>
+        </div>`;
+
+		this.app.browser.addElementAfterSelector(
+				html,
+				this.render_after_selector
+			);
+	}
+
 	renderChild() {
-		this.render();
+		if (this.render() == -1){
+			this.renderNullTweet();
+		}
 		let myqs = this.container + ` .tweet-${this.tx.signature}`;
 		let obj = document.querySelector(myqs);
 		if (obj) {
