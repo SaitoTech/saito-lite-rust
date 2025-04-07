@@ -101,6 +101,13 @@ class Poker extends GameTableTemplate {
 		this.settleNow = false;
 		this.settle_every_hand = false;
 
+
+		if (this.game.player == 0){
+			if (!this.game.pool[0]){
+				this.addPool();
+			}
+		}
+
 		//
 		// initialize game state
 		//
