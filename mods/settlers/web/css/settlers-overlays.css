@@ -83,6 +83,7 @@ stats overlay
 .settlers-stats-overlay {
 	padding: min(2rem, 1.5vw, 2.5vh);
 	min-height: min(650px, 90vh);
+	width: 700px;
 }
 
 .settlers-dice-histogram {

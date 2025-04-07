@@ -716,10 +716,12 @@ class SettlersGameloop {
         }
         for (let i = 0; i < outCount; i++) {
           this.game.queue.push("spend_resource\t" + player + "\t" + outResource);
+          this.game.stats.banked[outResource][player - 1]++;
         }
         for (let j = 0; j < inCount; j++) {
           //Should always be 1
           this.game.state.players[player - 1].resources.push(inResource);
+          this.game.stats.traded[inResource][player - 1]++;
         }
         this.updateLog(`${this.formatPlayer(player)} traded ${outCount}x${this.formatResource(outResource)}<span> with the bank for </span>${this.formatResource(inResource)}.`);
 
