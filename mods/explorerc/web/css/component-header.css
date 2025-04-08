@@ -15,12 +15,65 @@
 }
 
 .saito-header .saito-header-title {
-  margin: 0; /* Remove default h1 margin */
-  font-size: 1.5rem; /* Example size */
-  /* Inherits font-family from body, no specific override needed unless desired */
-  font-weight: normal; /* Assuming Visuelt Lite provides the desired weight */
+  margin: 0;
+  font-size: calc(var(--saito-header-height, 4rem)* 0.3);
+  font-weight: 100;
+  padding-top: 11px;
 }
 
 .saito-header .saito-header-nav {
-  margin-left: auto; /* Push navigation to the right */
+  /* margin-left: auto; /* Alignment handled by header-controls now */
+}
+
+/* Container for right-aligned controls */
+.header-controls {
+    margin-left: auto; /* Push this container to the right */
+    display: flex; /* Align items like nav and search horizontally */
+    align-items: center;
+    gap: 1rem; /* Space between nav and search if both exist */
+}
+
+/* Search container styling */
+.header-search {
+  position: relative; /* For positioning the icon */
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  padding: 0.4rem 2rem 0.4rem 0.8rem; /* Top/bottom, Right (for icon), Left */
+  border-radius: var(--saito-border-radius, 5px);
+  border: 1px solid var(--saito-border-color-medium, #ccc);
+  background-color: var(--saito-background-color, #fff);
+  color: var(--saito-text-color, #333);
+  min-width: 375px; /* Increased width by 50% */
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease; /* Add transition for focus */
+}
+
+/* Remove default focus outline */
+.search-input:focus {
+  outline: none;
+  border-color: var(--saito-primary, #1890ff); /* Optional: change border color on focus */
+  /* box-shadow: none; /* Uncomment if you also want to remove any potential default box-shadow */
+}
+
+.search-input::placeholder {
+  color: var(--saito-text-color-muted, #999);
+}
+
+.search-icon {
+  position: absolute;
+  right: 0.6rem; /* Position icon inside the input padding area */
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none; /* Icon doesn't block input clicks */
+  display: inline-flex; /* Align SVG within span */
+  align-items: center;
+  color: var(--saito-text-color-muted, #777); /* Icon color */
+}
+
+.search-icon svg {
+  width: 1.1em;
+  height: 1.1em;
 } 

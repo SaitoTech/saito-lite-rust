@@ -406,4 +406,30 @@
 .json-viewer {
     font-size: 0.9em !important; /* Override default if needed */
     line-height: 1.4 !important;
+}
+
+/* Style for clickable addresses */
+.clickable-address {
+  text-decoration: underline;
+  text-decoration-color: var(--saito-primary-light, #a0cfff); /* Lighter underline */
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.clickable-address:hover {
+  text-decoration-color: var(--saito-primary, #007bff); /* Darker underline on hover */
+  color: var(--saito-primary, #007bff); /* Optional: change text color on hover */
+}
+
+/* Style for clickable hashes (similar to address) */
+.clickable-hash {
+  text-decoration: underline;
+  text-decoration-color: var(--saito-primary-light, #a0cfff);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.clickable-hash:hover {
+  text-decoration-color: var(--saito-primary, #007bff); 
+  color: var(--saito-primary, #007bff);
 } 

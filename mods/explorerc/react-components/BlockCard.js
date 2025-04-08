@@ -26,7 +26,7 @@ const formatTimestamp = (timestamp) => {
   }
 };
 
-const BlockCard = ({ block }) => {
+const BlockCard = ({ block, mod, onAddressClick, onBlockHashClick }) => {
   const [copySuccess, setCopySuccess] = useState('');
   const [isTxListVisible, setIsTxListVisible] = useState(false);
   const [transactions, setTransactions] = useState([]);
@@ -113,6 +113,36 @@ const BlockCard = ({ block }) => {
   const hash = block.hash ?? 'N/A';
   const prevHash = block.previousBlockHash ?? 'N/A';
   const creator = block.creator ?? 'N/A';
+  const isCreatorClickable = onAddressClick && creator && creator !== 'N/A';
+  const isHashClickable = onBlockHashClick && hash && hash !== 'N/A';
+  const isPrevHashClickable = onBlockHashClick && prevHash && prevHash !== 'N/A'; // Check if prevHash is clickable
+
+  // Function to handle creator click
+  const handleCreatorClick = (e) => {
+    e.preventDefault(); // Prevent default if it were a link
+    e.stopPropagation(); // Prevent triggering other clicks if nested
+    if (isCreatorClickable) {
+      onAddressClick(creator);
+    }
+  };
+
+  // Function to handle hash click
+  const handleHashClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isHashClickable) {
+      onBlockHashClick(hash);
+    }
+  };
+
+  // Function to handle previous hash click
+  const handlePrevHashClick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (isPrevHashClickable) {
+          onBlockHashClick(prevHash);
+      }
+  };
 
   return (
     <div className={`block-card ${block.longestChain ? 'on-longest-chain' : ''}`}>
@@ -147,9 +177,17 @@ const BlockCard = ({ block }) => {
         <p className="block-data-row">
           <span className="block-card-label">Hash:</span> 
           <span className="data-copy-container">
-            <code className="mono-data truncate">{hash}</code>
+            {/* Make hash clickable */}
+            <code 
+              className={`mono-data truncate ${isHashClickable ? 'clickable-hash' : ''}`}
+              onClick={isHashClickable ? handleHashClick : undefined}
+              style={isHashClickable ? { cursor: 'pointer' } : {}}
+              title={isHashClickable ? `View details for block ${hash}` : hash}
+            >
+              {hash}
+            </code>
             {hash !== 'N/A' && 
-              <span className="copy-icon" title="Copy Hash" onClick={() => handleCopy(hash, 'Hash')}>
+              <span className="copy-icon" title="Copy Hash" onClick={(e) => {e.stopPropagation(); handleCopy(hash, 'Hash');}}>
                 {/* Heroicon - clipboard (outline) */}
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="heroicon">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" />
@@ -160,9 +198,17 @@ const BlockCard = ({ block }) => {
         <p className="block-data-row">
           <span className="block-card-label">Previous Hash:</span> 
            <span className="data-copy-container">
-             <code className="mono-data truncate">{prevHash}</code>
+             {/* Make prevHash clickable */}
+             <code 
+               className={`mono-data truncate ${isPrevHashClickable ? 'clickable-hash' : ''}`} // Reuse clickable-hash style
+               onClick={isPrevHashClickable ? handlePrevHashClick : undefined}
+               style={isPrevHashClickable ? { cursor: 'pointer' } : {}}
+               title={isPrevHashClickable ? `View details for block ${prevHash}` : prevHash}
+              >
+                 {prevHash}
+             </code>
             {prevHash !== 'N/A' && 
-              <span className="copy-icon" title="Copy Previous Hash" onClick={() => handleCopy(prevHash, 'Previous Hash')}>
+              <span className="copy-icon" title="Copy Previous Hash" onClick={(e) => { e.stopPropagation(); handleCopy(prevHash, 'Previous Hash'); }}> {/* Add stopPropagation */} 
                 {/* Heroicon - clipboard (outline) */}
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="heroicon">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" />
@@ -173,9 +219,16 @@ const BlockCard = ({ block }) => {
         <p className="block-data-row">
           <span className="block-card-label">Creator:</span> 
            <span className="data-copy-container">
-            <code className="mono-data truncate">{creator}</code>
+            <code 
+              className={`mono-data truncate ${isCreatorClickable ? 'clickable-address' : ''}`}
+              onClick={isCreatorClickable ? handleCreatorClick : undefined}
+              style={isCreatorClickable ? { cursor: 'pointer' } : {}}
+              title={isCreatorClickable ? `View details for ${creator}` : creator}
+            >
+              {creator}
+            </code>
             {creator !== 'N/A' && 
-              <span className="copy-icon" title="Copy Creator" onClick={() => handleCopy(creator, 'Creator')}>
+              <span className="copy-icon" title="Copy Creator" onClick={(e) => {e.stopPropagation(); handleCopy(creator, 'Creator');}}>
                 {/* Heroicon - clipboard (outline) */}
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="heroicon">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" />
@@ -207,7 +260,12 @@ const BlockCard = ({ block }) => {
           {txListStatus === 'success' && (
             transactions.length > 0 ? (
               transactions.map((tx, index) => (
-                <TransactionCard key={tx.signature || index} tx={tx} index={index} />
+                <TransactionCard 
+                  key={tx.signature || index} 
+                  tx={tx} 
+                  index={index} 
+                  onAddressClick={onAddressClick} 
+                />
               ))
             ) : (
               <p>No transactions in this block.</p>

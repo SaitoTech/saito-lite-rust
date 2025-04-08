@@ -24,4 +24,25 @@ pre {
 .saito-main {
   /* Styles for the main content area */
   padding: 1rem;
+}
+
+/* --- Basic Component Styles --- */
+
+/* Back Button */
+.back-button {
+  margin-bottom: 1rem; /* Space below the button */
+  /* Inherits general .saito-button-secondary styles */
+}
+
+/* General Card/Component Styling (if not already defined elsewhere) */
+.saito-component {
+  /* Example base styles if needed 
+  background-color: var(--saito-background-color, #ffffff);
+  border: 1px solid var(--saito-border-color, #e0e0e0);
+  border-radius: var(--saito-border-radius, 8px);
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  box-shadow: var(--saito-box-shadow-small, 0 2px 5px rgba(0,0,0,0.05));
+  overflow: hidden; 
+  */
 } 

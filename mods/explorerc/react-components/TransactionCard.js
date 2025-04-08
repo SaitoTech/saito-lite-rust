@@ -14,7 +14,7 @@ const txTypes = {
   8: { name: 'Bound' }
 };
 
-const TransactionCard = ({ tx, index }) => {
+const TransactionCard = ({ tx, index, onAddressClick }) => {
   const [isJsonVisible, setIsJsonVisible] = useState(false);
 
   if (!tx) {
@@ -38,10 +38,20 @@ const TransactionCard = ({ tx, index }) => {
   // Get sender (first address in 'from' array, if exists)
   const sender = tx.from && tx.from.length > 0 ? tx.from[0].publicKey || tx.from[0].address : 'N/A';
   const type = getTransactionType(tx);
+  const isSenderClickable = onAddressClick && sender && sender !== 'N/A';
 
   // Function to toggle JSON visibility
   const toggleJsonVisibility = () => {
     setIsJsonVisible(!isJsonVisible);
+  };
+
+  // Function to handle sender click
+  const handleSenderClick = (e) => {
+    e.preventDefault(); 
+    e.stopPropagation(); // Prevent triggering JSON toggle
+    if (isSenderClickable) {
+      onAddressClick(sender);
+    }
   };
 
   return (
@@ -60,7 +70,13 @@ const TransactionCard = ({ tx, index }) => {
         </div>
         <div className="tx-detail-item tx-detail-sender">
             <span className="tx-card-label">Sender:</span> 
-            <code className="mono-data tx-data truncate">{sender}</code>
+            <code 
+              className={`mono-data tx-data truncate ${isSenderClickable ? 'clickable-address' : ''}`}
+              onClick={isSenderClickable ? handleSenderClick : undefined}
+              title={isSenderClickable ? `View details for ${sender}` : sender}
+            >
+              {sender}
+            </code>
         </div>
         {/* Add Chevron at the end of the row */}
         <div className={`tx-detail-item tx-detail-chevron ${isJsonVisible ? 'expanded' : ''}`}>

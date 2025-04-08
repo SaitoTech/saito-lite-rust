@@ -181,9 +181,70 @@ class Explorerc extends ModTemplate {
     // Balance Information
     expressapp.get(`/${explorerc_self.name}/api/balance`, async (req, res) => {
       const pubkey = req.query.pubkey;
-      // TODO: Implement logic to fetch balance data from app.wallet or blockchain
-      // Example: const balance = await app.wallet.getBalance(pubkey);
-      res.json({ status: "success", message: "API: Balance endpoint not yet implemented", pubkey: pubkey /*, balance: balance */ });
+      if (!pubkey) {
+        return res.status(400).json({ status: "error", message: "Missing public key parameter" });
+      }
+      try {
+        let balance = '0';
+        let slips = [];
+
+        // Fetch balance (using app.wallet or app.blockchain - adjust as needed)
+        try {
+          // Example: Use wallet getBalance if available
+          if (app.wallet && typeof app.wallet.getBalance === 'function') { 
+              balance = await app.wallet.getBalance(pubkey) || '0';
+          } else if (app.blockchain && typeof app.blockchain.getBalance === 'function') {
+             // Fallback: Use blockchain getBalance (may need async)
+             balance = await app.blockchain.getBalance(pubkey) || '0';
+          } else {
+              console.warn("Could not find a method to fetch balance.");
+          }
+        } catch (balanceError) {
+           console.error(`Error fetching balance for ${pubkey}:`, balanceError);
+           // Continue to fetch slips even if balance fails?
+        }
+
+        // Fetch slips (UTXOs) - THIS IS A PLACEHOLDER
+        // You'll need a real method in Saito core to get slips for a pubkey
+        try {
+            if (app.blockchain && typeof app.blockchain.getSlipsForPublicKey === 'function') {
+                const rawSlips = await app.blockchain.getSlipsForPublicKey(pubkey);
+                // Format slips based on expected table structure: Block, TX, Slip, Nolan
+                // Assuming rawSlips is an array of objects like { bhash, tx_ordinal, slip_ordinal, amount, ... }
+                // and we need block ID instead of hash for the table.
+                slips = rawSlips.map(slip => {
+                    // Fetch block ID from hash (may require another async call or cached data)
+                    // const blockId = await app.blockchain.getBlockIdFromHash(slip.bhash); // Example
+                    const blockId = slip.block_id || 'N/A'; // Use block_id if available
+                    return [
+                        // Hidden first column data (e.g., internal ID or address? not needed for table)
+                        `${slip.bhash}-${slip.tx_ordinal}-${slip.slip_ordinal}`,
+                        blockId, 
+                        slip.tx_ordinal, // TX Ordinal/Index
+                        slip.slip_ordinal, // Slip Ordinal/Index
+                        slip.amount // Nolan value as string
+                    ];
+                });
+            } else {
+                 console.warn("Could not find a method to fetch slips (getSlipsForPublicKey).");
+            }
+        } catch (slipError) {
+            console.error(`Error fetching slips for ${pubkey}:`, slipError);
+            // Set slips to empty array on error
+            slips = []; 
+        }
+
+        res.json({ 
+            status: "success", 
+            pubkey: pubkey, 
+            balance: balance.toString(), // Ensure balance is string
+            slips: slips 
+        });
+
+      } catch (error) {
+        console.error(`Error in /api/balance for ${pubkey}:`, error);
+        res.status(500).json({ status: "error", message: "Internal server error fetching balance data", pubkey: pubkey });
+      }
     });
 
     expressapp.get(`/${explorerc_self.name}/api/balance/all`, async (req, res) => {
