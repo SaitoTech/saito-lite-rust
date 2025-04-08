@@ -303,7 +303,6 @@ class PokerQueue {
 					}
 
 					this.animateWin(total_pot, winners);
-					this.halted = 1; // because not inside the function for now
 					this.playerAcknowledgeNotice(msg, async () => {
 						this.animating = false;
 						this.cardfan.hide();
@@ -646,7 +645,6 @@ class PokerQueue {
 					}
 				}
 
-				this.halted = 1; // because not inside the function for now
 				this.animateWin(pot_total, winObj);
 				this.playerAcknowledgeNotice(winnerStr, async () => {
 					this.animating = false;

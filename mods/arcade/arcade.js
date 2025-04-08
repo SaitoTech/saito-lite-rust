@@ -285,18 +285,6 @@ class Arcade extends ModTemplate {
 		return game_tx;
 	}
 
-	//
-	// runs when we connect to a network client
-	// The key thing that happens is we want to query the service node for current state of the arcade
-	// Since no open transactions are addressed to us, we can't just read them off the blockchain
-	//
-	async onPeerHandshakeComplete(app, peer) {
-		if (!app.BROWSER) {
-			return;
-		}
-		this.initial_connect = true;
-	}
-
 	async onPeerServiceUp(app, peer, service = {}) {
 		if (!app.BROWSER) {
 
