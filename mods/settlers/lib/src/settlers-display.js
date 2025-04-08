@@ -530,34 +530,14 @@ class SettlersDisplay {
             complex_str += s;
           }
 
-          console.log(complex_str);
+          //console.log(complex_str);
 
           status_obj.innerHTML = complex_str;
           $('.status').disableSelection();
         }
       }
-      if (this.hud.user_dragged == 0) {
-        this.setHudHeight();
-      }
     } catch (err) {
       console.error("ERR: " + err);
-    }
-  }
-
-  //
-  // this affixes HUD to bottom of screen...
-  //
-  setHudHeight() {
-    try {
-      console.log('Adjusting hud');
-      let hud = document.querySelector('.hud');
-      if (hud) {
-        //hud.style.bottom = "24px";
-        //hud.style.height = "auto";
-        //hud.style.top = "unset";
-      }
-    } catch (err) {
-      console.erorr(err);
     }
   }
 
