@@ -227,6 +227,7 @@ class RedSquareMain {
 
       switch (window.location.hash) {
         case '#notifications':
+          console.log("Render Notifications");
           this.renderNotifications();
           render_tweets = false;
           break;
@@ -243,6 +244,7 @@ class RedSquareMain {
       // render user profile
       //
       if (user_id) {
+        console.log("Render Profile");
         render_tweets = false;
         this.renderProfile(user_id);
       }
@@ -252,7 +254,9 @@ class RedSquareMain {
       //
       let tweet_id = this.app.browser.returnURLParameter('tweet_id');
       if (tweet_id) {
+        console.log("Render Thread");
         this.mod.loadTweetWithSig(tweet_id, (txs) => {
+          console.log(`Tweet thread load returned ${txs.length} tweets`);
           for (let z = 0; z < txs.length; z++) {
             this.mod.addTweet(txs[z], 'url_sig');
           }
@@ -264,6 +268,7 @@ class RedSquareMain {
       }
 
       if (render_tweets){
+        console.log("Render Feed");
         this.renderHome();
       }
 
