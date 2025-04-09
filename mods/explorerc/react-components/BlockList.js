@@ -1,12 +1,13 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import BlockCard from './BlockCard';
 
-const BlockList = ({ mod, latestBlockId, onAddressClick, onBlockHashClick }) => {
+const BlockList = forwardRef(({ mod, latestBlockId, onAddressClick, onBlockHashClick }, ref) => {
   const [blocks, setBlocks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [hasMore, setHasMore] = useState(true);
   const [oldestFetchedId, setOldestFetchedId] = useState(null);
+  const [highestFetchedId, setHighestFetchedId] = useState(null);
   const BLOCKS_PER_PAGE = 20; // Or get from config/props
 
   const observer = useRef();
@@ -30,7 +31,7 @@ const BlockList = ({ mod, latestBlockId, onAddressClick, onBlockHashClick }) => 
   }, [isLoading, hasMore, loadMoreBlocks]); // Dependencies for the callback
 
   // Function to load blocks (modified to fetch initial set)
-  const loadBlocks = useCallback(async (startId) => {
+  const loadBlocks = useCallback(async (startId, prepend = false) => {
     if (isLoading) return; // Prevent concurrent fetches
 
     setIsLoading(true);
@@ -40,8 +41,18 @@ const BlockList = ({ mod, latestBlockId, onAddressClick, onBlockHashClick }) => 
     let newBlocks = [];
 
     try {
-      const endId = startId - BigInt(count - 1);
-      const fetchEndId = endId < BigInt(1) ? BigInt(1) : endId;
+      let fetchEndId;
+      if (prepend && highestFetchedId) {
+        fetchEndId = highestFetchedId + BigInt(1);
+        if (startId < fetchEndId) {
+          console.log("BlockList: No new blocks to prepend.");
+          setIsLoading(false);
+          return;
+        }
+      } else {
+        const endId = startId - BigInt(count - 1);
+        fetchEndId = endId < BigInt(1) ? BigInt(1) : endId;
+      }
 
       if (startId < fetchEndId) {
         console.log("BlockList: No more blocks to fetch in this range.");
@@ -50,37 +61,48 @@ const BlockList = ({ mod, latestBlockId, onAddressClick, onBlockHashClick }) => 
         return;
       }
 
-      console.log(`BlockList: Fetching blocks from ${startId} down to ${fetchEndId}...`);
+      console.log(`BlockList: Fetching blocks from ${startId} down to ${fetchEndId}... Prepend: ${prepend}`);
       newBlocks = await mod.fetchBlocksByIdRange(startId, fetchEndId);
-      console.log('BlockList: Fetched blocks data via mod:', newBlocks);
+      console.log('BlockList: Fetched blocks data:', newBlocks);
 
       if (newBlocks.length > 0) {
+        const newestInBatch = newBlocks[0].id;
+        const oldestInBatch = newBlocks[newBlocks.length - 1].id;
+
         setBlocks(prevBlocks => {
           const existingIds = new Set(prevBlocks.map(b => b.id.toString()));
           const uniqueNewBlocks = newBlocks.filter(b => !existingIds.has(b.id.toString()));
-          // Keep sorted by timestamp descending (newest first)
-          const combined = [...prevBlocks, ...uniqueNewBlocks];
+          const combined = prepend ? [...uniqueNewBlocks, ...prevBlocks] : [...prevBlocks, ...uniqueNewBlocks];
           combined.sort((a, b) => {
-             // Handle potential BigInts for IDs
             const idA = typeof a.id === 'bigint' ? a.id : BigInt(a.id || 0);
             const idB = typeof b.id === 'bigint' ? b.id : BigInt(b.id || 0);
-            if (idB > idA) return 1;
-            if (idB < idA) return -1;
-            return 0;
+            return idB > idA ? 1 : (idB < idA ? -1 : 0);
           });
           return combined;
         });
 
-        const oldestInBatch = newBlocks[newBlocks.length - 1].id;
-        setOldestFetchedId(oldestInBatch);
-
-        if (newBlocks.length < count || oldestInBatch <= BigInt(1)) {
-          setHasMore(false);
-          console.log("BlockList: Reached the end of available blocks.");
+        if (prepend) {
+          if (highestFetchedId === null || newestInBatch > highestFetchedId) {
+            setHighestFetchedId(newestInBatch);
+          }
+          if (oldestFetchedId === null) {
+            setOldestFetchedId(oldestInBatch);
+          }
+        } else {
+          setOldestFetchedId(oldestInBatch);
+          if (highestFetchedId === null) {
+            setHighestFetchedId(newestInBatch);
+          }
+          if (newBlocks.length < count || oldestInBatch <= BigInt(1)) {
+            setHasMore(false);
+            console.log("BlockList: Reached the end of available blocks.");
+          }
         }
       } else {
-        setHasMore(false);
-        console.log("BlockList: No blocks found in the requested range.");
+        if (!prepend) {
+          setHasMore(false);
+          console.log("BlockList: No more older blocks found.");
+        }
       }
     } catch (err) {
       console.error("BlockList: Error loading blocks:", err);
@@ -88,16 +110,7 @@ const BlockList = ({ mod, latestBlockId, onAddressClick, onBlockHashClick }) => 
     } finally {
       setIsLoading(false);
     }
-  }, [mod, isLoading, hasMore]); // Dependencies: mod, isLoading, hasMore
-
-  // Initial load effect
-  useEffect(() => {
-    if (latestBlockId !== null && blocks.length === 0) {
-      console.log("BlockList: Initial load triggered with latestBlockId:", latestBlockId);
-      setOldestFetchedId(latestBlockId); // Start fetching from the latest
-      loadBlocks(latestBlockId); 
-    }
-  }, [latestBlockId, blocks.length, loadBlocks]);
+  }, [mod, isLoading, hasMore, oldestFetchedId, highestFetchedId]); // Dependencies: mod, isLoading, hasMore, oldestFetchedId, highestFetchedId
 
   // Function to load more blocks
   const loadMoreBlocks = () => {
@@ -113,6 +126,44 @@ const BlockList = ({ mod, latestBlockId, onAddressClick, onBlockHashClick }) => 
        }
     }
   };
+
+  // Function to fetch newer blocks
+  const refreshBlocks = useCallback(async () => {
+    console.log("BlockList: Refresh requested.");
+    if (isLoading || !highestFetchedId) return; // Don't refresh if loading or no baseline
+    
+    // Fetch the absolute latest ID first to know the upper bound
+    let latestIdOnChain;
+    try {
+      latestIdOnChain = await mod.fetchLatestBlockId();
+      if (latestIdOnChain > highestFetchedId) {
+        console.log(`BlockList: New blocks detected (up to ${latestIdOnChain}). Fetching...`);
+        // Call loadBlocks to prepend new blocks
+        await loadBlocks(latestIdOnChain, true); 
+      } else {
+        console.log("BlockList: No new blocks detected on refresh.");
+        // Optionally provide user feedback e.g., using siteMessage
+      }
+    } catch (err) {
+      console.error("BlockList: Error fetching latest ID during refresh:", err);
+      setError(err.message || "Failed to check for new blocks");
+    }
+  }, [mod, isLoading, highestFetchedId, loadBlocks]);
+
+  // Expose the refresh function via ref
+  useImperativeHandle(ref, () => ({
+    refreshBlocks
+  }));
+
+  // Initial load effect
+  useEffect(() => {
+    if (latestBlockId !== null && blocks.length === 0 && highestFetchedId === null) {
+      console.log("BlockList: Initial load triggered:", latestBlockId);
+      setOldestFetchedId(latestBlockId); // Temporarily set oldest for first fetch
+      setHighestFetchedId(latestBlockId); // Set highest for first fetch
+      loadBlocks(latestBlockId, false); // Initial load is like appending to empty list
+    }
+  }, [latestBlockId, blocks.length, highestFetchedId, loadBlocks]);
 
   if (!blocks || blocks.length === 0) {
     if (isLoading) {
@@ -150,6 +201,6 @@ const BlockList = ({ mod, latestBlockId, onAddressClick, onBlockHashClick }) => 
       )}
     </div>
   );
-};
+});
 
 export default BlockList; 

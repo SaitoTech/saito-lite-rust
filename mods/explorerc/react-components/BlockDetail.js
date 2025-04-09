@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import BlockCard from './BlockCard'; // Reuse BlockCard for display
 
 const BlockDetail = ({ hash, mod }) => {
-  const [blockDataForCard, setBlockDataForCard] = useState(null); // Renamed state
+  const [blockDataForCard, setBlockDataForCard] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -13,39 +13,27 @@ const BlockDetail = ({ hash, mod }) => {
         setIsLoading(false);
         return;
       }
-      console.log(`BlockDetail: Fetching block via /api/block?hash=${hash}`);
+      console.log(`BlockDetail: Fetching block via UNIFIED /api/block/${hash}`);
       setIsLoading(true);
       setError(null);
-      setBlockDataForCard(null); // Clear previous data
+      setBlockDataForCard(null);
 
       try {
-        const response = await fetch(`/${mod.name}/api/block?hash=${hash}`);
+        const response = await fetch(`/${mod.name}/api/block/${hash}`);
         if (!response.ok) {
             let errorText = `HTTP error! Status: ${response.status}`;
-            try { errorText = await response.text() || errorText; } catch (e) {} 
+            try { 
+                const errorData = await response.json();
+                errorText = `${errorText} - ${errorData.message || 'Unknown server error'}`; 
+            } catch (e) { 
+                errorText = `${errorText} - ${await response.text() || 'Could not retrieve error details'}`;
+            } 
             throw new Error(errorText);
         }
-        const data = await response.json();
+        const blockData = await response.json();
         
-        if (data.status === 'success' && data.blockData) {
-             // Construct the object BlockCard expects
-             const reconstructedBlock = {
-                ...data.blockData, // Spread the main JSON data (id, creator, timestamp, etc.)
-                hash: hash, // Ensure hash is top-level
-                previousBlockHash: data.blockData.previous_block_hash || data.blockData.previousBlockHash || 'N/A', // Handle potential naming variations
-                transactions: data.blockData.transactions || [], // Ensure transactions array exists
-                transactionCount: (data.blockData.transactions || []).length, // Calculate count
-                // Properties typically NOT in toJson() - BlockCard needs defaults or API enhancement
-                longestChain: null, 
-                goldenTicket: null, 
-                difficulty: null, 
-                burnFee: null, 
-             };
-            console.log("BlockDetail: Reconstructed block for BlockCard:", reconstructedBlock);
-            setBlockDataForCard(reconstructedBlock);
-        } else {
-            throw new Error(data.message || 'Failed to fetch block data for display');
-        }
+        console.log("BlockDetail: Received combined block data:", blockData);
+        setBlockDataForCard(blockData);
 
       } catch (err) {
         console.error("Error fetching block detail:", err);
@@ -57,7 +45,25 @@ const BlockDetail = ({ hash, mod }) => {
     };
 
     fetchBlock();
-  }, [hash, mod]); // Re-fetch if hash or mod changes
+  }, [hash, mod]);
+
+  // Handler for clicking a block hash (navigates to that block's detail view using hash routing)
+  const handleBlockHashClick = (clickedHash) => {
+    console.log(`BlockDetail: Navigating to block ${clickedHash} via hash`);
+    // Update hash part of the URL
+    window.location.hash = `/block/${clickedHash}`;
+    // Optionally, force a reload if the router doesn't pick it up automatically
+    // window.location.reload(); 
+  };
+
+  // Handler for clicking an address (navigates to wallet detail view using hash routing)
+  const handleAddressClick = (clickedAddress) => {
+    console.log(`BlockDetail: Navigating to wallet ${clickedAddress} via hash`);
+    // Update hash part of the URL
+    window.location.hash = `/address/${clickedAddress}`;
+    // Optionally, force a reload
+    // window.location.reload(); 
+  };
 
   if (isLoading) {
     return <div className="block-detail-loading">Loading Block Details...</div>;
@@ -67,14 +73,21 @@ const BlockDetail = ({ hash, mod }) => {
     return <div className="error-message">Error loading block: {error}</div>;
   }
 
-  if (!blockDataForCard) { // Check renamed state
+  if (!blockDataForCard) {
     return <div className="block-detail-empty">Block not found or data unavailable.</div>;
   }
 
   return (
     <div className="block-detail-container">
-      {/* Pass the correctly structured data and null handlers */}
-      <BlockCard block={blockDataForCard} mod={mod} onAddressClick={null} onBlockHashClick={null} />
+      {/* Pass the fetched block data directly AND the click handlers */}
+      {blockDataForCard && (
+         <BlockCard 
+           block={blockDataForCard} 
+           mod={mod} 
+           onAddressClick={handleAddressClick} 
+           onBlockHashClick={handleBlockHashClick} 
+         />
+      )}
     </div>
   );
 };

@@ -101,36 +101,11 @@ class Explorerc extends ModTemplate {
       res.send(ExplorerHomePage(app, explorerc_self, app.build_number)); 
     });
 
-    // --- API Endpoints (Placeholders - return JSON) ---
-    // It's good practice to prefix API routes, e.g., with /api/
+    // --- API Endpoints --- 
 
-    // Block Information
-    expressapp.get(`/${explorerc_self.name}/api/block`, async (req, res) => {
-      const hash = req.query.hash;
-      if (!hash) {
-        return res.status(400).json({ status: "error", message: "Missing block hash parameter" });
-      }
-      try {
-        const block = await app.blockchain.getBlock(hash);
-        if (block && typeof block.toJson === 'function') {
-          const blockJsonString = block.toJson();
-          try {
-             const blockData = JSON.parse(blockJsonString); // Use json-bigint parser
-             res.json({ status: "success", hash: hash, blockData: blockData });
-          } catch (jsonError) {
-            console.error(`Error parsing block JSON for hash ${hash}:`, jsonError);
-            // Optionally return the raw string if parsing fails but block was found
-            res.status(500).json({ status: "error", message: "Error parsing block JSON", hash: hash }); 
-          }
-        } else {
-          res.status(404).json({ status: "error", message: "Block not found", hash: hash });
-        }
-      } catch (error) {
-        console.error(`Error fetching block ${hash}:`, error);
-        res.status(500).json({ status: "error", message: "Internal server error fetching block", hash: hash });
-      }
-    });
-
+    // REMOVED Old /api/block?hash=<hash> endpoint
+    // expressapp.get(`/${explorerc_self.name}/api/block`, async (req, res) => { ... });
+/*
     expressapp.get(`/${explorerc_self.name}/api/blocksource`, async (req, res) => {
         const hash = req.query.hash;
         if (!hash) {
@@ -175,6 +150,36 @@ class Explorerc extends ModTemplate {
       } catch (error) {
         console.error(`Error fetching block ${bhash}:`, error);
         res.status(500).json({ status: "error", message: "Internal server error fetching block", bhash: bhash });
+      }
+    });
+*/
+    // UNIFIED Endpoint: Get Full Block Data + Calculated Properties by Hash
+    expressapp.get(`/${explorerc_self.name}/api/block/:bhash`, async (req, res) => { 
+      const bhash = req.params.bhash; // Get hash from URL parameter
+      
+      // Validate hash format
+      if (!bhash || !/^[a-f0-9]{64}$/i.test(bhash)) { 
+        return res.status(400).json({ status: "error", message: "Invalid block hash format provided." });
+      }
+
+      try {
+        console.log(`Explorerc API: Unified /api/block/${bhash} - Calling getProcessedBlockData...`);
+        const processedBlockData = await explorerc_self.getProcessedBlockData(app, bhash, true);
+
+        if (processedBlockData) {
+          console.log(`Explorerc API: Unified /api/block/${bhash} - Sending processed data.`);
+          res.setHeader('Content-Type', 'application/json');
+          res.charset = 'UTF-8';
+          res.json(processedBlockData); // Send the combined data from the helper function
+        } else {
+          // getProcessedBlockData handles internal errors and returns null
+          console.warn(`Explorerc API: Unified /api/block/${bhash} - getProcessedBlockData returned null. Block not found or processing failed.`);
+          res.status(404).json({ status: "error", message: "Block not found or failed to process.", bhash: bhash }); 
+        }
+      } catch (error) {
+        // Catch unexpected errors in the endpoint handler itself
+        console.error(`Explorerc API: Unexpected error in unified /api/block/${bhash} handler:`, error);
+        res.status(500).json({ status: "error", message: "Internal server error processing block request.", bhash: bhash });
       }
     });
 
@@ -296,57 +301,22 @@ class Explorerc extends ModTemplate {
                 const longest_chain_hash = await app.blockchain.getLongestChainHashAtId(current_id);
 
                 if (longest_chain_hash) {
-                    const block = await app.blockchain.getBlock(longest_chain_hash);
+                    // Call the abstracted function to get processed data
+                    const processedBlock = await explorerc_self.getProcessedBlockData(app, longest_chain_hash);
 
-                    // Log the raw block object (optional, can be removed later)
-                    console.log(`API Endpoint: Raw block data for ID ${current_id}, Hash ${longest_chain_hash}:`, block);
-
-                    if (block && typeof block.toJson === 'function') {
-                        // Parse the JSON representation to get creator and timestamp
-                        let blockJson = {};
-                        try {
-                             blockJson = JSON.parse(block.toJson());
-                        } catch (jsonError) {
-                            console.error(`Error parsing block JSON for ID ${current_id}:`, jsonError);
-                            // Skip this block or handle error appropriately
-                            continue; 
-                        }
-
-                        // Extract additional block properties (access as properties, not functions)
-                        const goldenTicket = !!block.hasGoldenTicket; // Check truthiness of property
-                        const longestChain = !!block.inLongestChain; // Check truthiness of property
-                        let burnFee = 0;
-                        let difficulty = 0;
-                        // Assuming burnFee and difficulty are still functions returning BigInt based on previous context
-                        try { burnFee = block.burnFee ? Number(block.burnFee()) : 0; } catch (e) { console.error(`Error getting burnFee for block ${block.id}:`, e); }
-                        try { difficulty = block.difficulty ? Number(block.difficulty()) : 0; } catch (e) { console.error(`Error getting difficulty for block ${block.id}:`, e); }
-
-                        // Log specific fields after parsing JSON and getting extra props
-                        console.log(`API Endpoint: Parsed - ID=${block.id}, Creator=${blockJson.creator}, Timestamp=${blockJson.timestamp}, GT=${goldenTicket}, LC=${longestChain}, BF=${burnFee}, Diff=${difficulty}`);
-
-                        // Construct the response object using parsed data
-                        blocksData.push({
-                            id: block.id,
-                            hash: block.hash,
-                            previousBlockHash: block.previousBlockHash,
-                            creator: blockJson.creator, 
-                            timestamp: blockJson.timestamp, 
-                            transactionCount: block.transactions.length,
-                            // Add new properties
-                            goldenTicket: goldenTicket,
-                            longestChain: longestChain,
-                            burnFee: burnFee, // Send as number
-                            difficulty: difficulty // Send as number
-                        });
+                    if (processedBlock) {
+                        // Add the successfully processed block data to the results
+                        blocksData.push(processedBlock);
                     } else {
-                         console.warn(`Block not found or block.toJson is not a function for hash ${longest_chain_hash} at ID ${current_id}`);
+                        // Log that processing failed for this hash/ID but continue loop
+                        console.warn(`API Blocks: Failed to process block data for hash ${longest_chain_hash} at ID ${current_id}. Skipping.`);
                     }
                 } else {
-                     console.warn(`No longest chain hash found for block ID ${current_id}`);
+                     console.warn(`API Blocks: No longest chain hash found for block ID ${current_id}`);
                 }
             } catch (err) {
-                console.error(`Error fetching block data for ID ${current_id}:`, err);
-                // Decide how to handle errors for individual blocks (e.g., skip, add error entry)
+                // Catch errors specific to the loop or getLongestChainHashAtId
+                console.error(`API Blocks: Error in loop for ID ${current_id}:`, err);
             }
         }
 
@@ -415,6 +385,80 @@ class Explorerc extends ModTemplate {
       }
     });
 
+  }
+
+  // Helper function to get processed block data, including fallback for transactions
+  async getProcessedBlockData(app, hash,loadTransactionsIfMissing=false) {
+    try {
+      // --- Step 1: Fetch block ---
+      const block = await app.blockchain.getBlock(hash);
+
+      console.log(`getProcessedBlockData: Inspecting block for hash ${hash}: ID=${block?.id}, Timestamp=${block?.timestamp}, Type=${typeof block?.timestamp}`);
+
+      if (block && typeof block.toJson === 'function') {
+          // --- Step 2: Parse base JSON and get calculated properties ---
+          let blockJson = {};
+          try {
+               blockJson = JSON.parse(block.toJson());
+          } catch (jsonError) {
+              console.error(`Error parsing block JSON for hash ${hash}:`, jsonError);
+              return null; // Cannot proceed without basic JSON
+          }
+
+          const goldenTicket = !!block.hasGoldenTicket; 
+          const longestChain = !!block.inLongestChain; 
+          let burnFee = 0;
+          let difficulty = 0;
+          try { burnFee = block.burnFee ? Number(block.burnFee) : 0; } catch (e) { console.error(`Error getting burnFee for block ${block.id}:`, e); }
+          try { difficulty = block.difficulty ? Number(block.difficulty) : 0; } catch (e) { console.error(`Error getting difficulty for block ${block.id}:`, e); }
+          
+          // Initial transaction count (might be 0 if txs aren't loaded yet)
+          let initialTxnCount = blockJson.transactions?.length || block.transactions?.length || 0;
+
+          // --- Step 3: Construct initial response data ---
+          let responseData = {
+              id: block.id,
+              hash: block.hash,
+              previousBlockHash: block.previousBlockHash,
+              creator: blockJson.creator, 
+              // Prioritize timestamp from parsed JSON
+              timestamp: Number(blockJson.timestamp ?? block.timestamp), 
+              transactions: blockJson.transactions || [], 
+              transactionCount: initialTxnCount, 
+              goldenTicket: goldenTicket,
+              longestChain: longestChain,
+              burnFee: burnFee, 
+              difficulty: difficulty 
+          };
+
+          // --- Step 4: Check if transactions need to be loaded from disk ---
+          if (responseData.transactions.length === 0 && loadTransactionsIfMissing) { 
+             console.log(`getProcessedBlockData: Tx array empty for block ${hash}, attempting loadBlockByHash...`);
+             try {
+                const blockFromStorage = await app.storage.loadBlockByHash(hash);
+                if (blockFromStorage && Array.isArray(blockFromStorage.transactions) && blockFromStorage.transactions.length > 0) {
+                   console.log(`getProcessedBlockData: Found ${blockFromStorage.transactions.length} transactions via loadBlockByHash for block ${hash}`);
+                   blockJson = JSON.parse(blockFromStorage.toJson());
+                   responseData.transactions = blockJson.transactions;
+                   responseData.transactionCount = blockJson.transactions.length; // Update count
+                } else {
+                    console.log(`getProcessedBlockData: loadBlockByHash for ${hash} did not return transactions.`);
+                }
+             } catch (storageError) {
+                console.error(`getProcessedBlockData: Error calling loadBlockByHash for ${hash}:`, storageError);
+             }
+          } 
+          
+          return responseData; // Return the potentially updated data
+
+      } else {
+           console.warn(`getProcessedBlockData: Block not found or block.toJson is not a function for hash ${hash}`);
+           return null;
+      }
+    } catch (err) {
+        console.error(`getProcessedBlockData: Error processing block hash ${hash}:`, err);
+        return null;
+    }
   }
 
   // Client-side method to fetch the latest block ID from the module's API
@@ -493,6 +537,29 @@ class Explorerc extends ModTemplate {
     } catch (error) {
         console.error("Error fetching node info via mod method:", error);
         throw error; // Re-throw
+    }
+  }
+
+  //
+  // ON NEW BLOCK (Client-Side during Sync/Processing)
+  //
+  // This callback is run by the Saito core (even in browser) 
+  // when a new block is added to the blockchain object.
+  // We can use it to emit a custom event for UI updates.
+  //
+  onNewBlock(blk, lc) {
+    // It's good practice to call super if ModTemplate might have base logic
+    super.onNewBlock(blk, lc);
+
+    if (blk && blk.id) {
+      try {
+        const blockId = blk.id; // blk.id should be BigInt
+        console.log(`Explorerc: onNewBlock triggered, ID: ${blockId.toString()}. Emitting custom event.`);
+        // Emit a custom event specifically for this module's UI
+        this.app.connection.emit('explorerc-new-block-id', blockId.toString());
+      } catch (err) {
+         console.error("Error in Explorerc onNewBlock:", err);
+      }
     }
   }
 

@@ -432,4 +432,19 @@
 .clickable-hash:hover {
   text-decoration-color: var(--saito-primary, #007bff); 
   color: var(--saito-primary, #007bff);
+}
+
+/* Styles for TX Refresh Container (when txnCount is 0 initially) */
+.tx-refresh-container {
+  display: inline-flex; 
+  align-items: center;
+  cursor: pointer; 
+  user-select: none; 
+  gap: 0.4em; 
+  /* Reuse indicator styles for the icon within */
+}
+
+.tx-refresh-container .indicator-refresh {
+  /* Ensure proper alignment and spacing if needed */
+  margin-left: 0; /* Override default indicator margin if it exists */
 } 

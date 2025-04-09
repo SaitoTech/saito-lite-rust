@@ -51,6 +51,7 @@
 
 .slips-table {
   width: 100%;
+  table-layout: fixed; /* Use fixed layout for predictable columns */
 }
 
 .slips-table th {
@@ -59,6 +60,8 @@
   position: sticky; 
   top: 0;
   border-bottom-width: 2px;
+  border-top: 1px solid var(--saito-border-color-light, #eee); /* Add top border for visual separation */
+  padding: 0.5rem 0.75rem; /* Ensure consistent padding with td */
 }
 
 .slips-table td,
@@ -66,31 +69,35 @@
   padding: 0.5rem 0.75rem;
   border-bottom: 1px solid var(--saito-border-color-light, #eee);
   font-size: 0.9em;
-  white-space: nowrap;
+  overflow: hidden; /* Hide overflow within fixed cells */
+  text-overflow: ellipsis; /* Add ellipsis to overflowing cells */
 }
 
-/* Assign widths to fixed columns */
+/* Assign widths - Let Block take remaining space */
 .slips-table th:nth-child(1),
-.slips-table td:nth-child(1) {
-  width: 15%; 
+.slips-table td:nth-child(1) { /* Block */
+  width: auto; /* Let this column be flexible */
+  white-space: nowrap; /* Keep block ID from wrapping */
 }
 .slips-table th:nth-child(2),
-.slips-table td:nth-child(2) {
-  width: 10%;
+.slips-table td:nth-child(2) { /* TX */
+  width: 5em; /* Fixed width */
+  text-align: center; /* Center TX/Slip numbers */
 }
 .slips-table th:nth-child(3),
-.slips-table td:nth-child(3) {
-  width: 10%;
+.slips-table td:nth-child(3) { /* Slip */
+  width: 5em; /* Fixed width */
+  text-align: center; /* Center TX/Slip numbers */
 }
 
-/* Right-align and distribute remaining width for Nolan and Saito */
+/* Right-align and set equal fixed width for Nolan and Saito */
 .slips-table th:nth-child(4),
-.slips-table td:nth-child(4),
+.slips-table td:nth-child(4), /* Nolan */
 .slips-table th:nth-child(5),
-.slips-table td:nth-child(5) {
+.slips-table td:nth-child(5) { /* Saito */
   text-align: right;
-  width: 32.5%;
-  white-space: normal;
+  width: 12em; /* Updated width */
+  white-space: nowrap; /* Prevent wrapping in number columns */
 }
 
 .slips-table tr:last-child td {

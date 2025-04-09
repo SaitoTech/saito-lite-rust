@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 // Accept props for search handlers
-const Header = ({ onAddressSearch, onBlockHashSearch }) => {
+const Header = ({ onAddressSearch, onBlockHashSearch, onShowBalances }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
 
   // Handle input changes
   const handleChange = (event) => {
@@ -60,14 +62,46 @@ const Header = ({ onAddressSearch, onBlockHashSearch }) => {
     }
   };
 
+  // Toggle menu visibility
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  // Handle clicking the Balances link
+  const handleBalancesClick = () => {
+    if (onShowBalances) {
+      onShowBalances(); // Call the handler passed from App.js
+    }
+    setIsMenuOpen(false); // Close menu after click
+  };
+
+  // Effect to close menu if clicked outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
   // Styles are defined in web/css/component-header.css
   return (
     <header className="saito-header">
       {/* Uncomment the Saito logo */}
       <img src="/saito/img/logo.svg" alt="Saito Logo" /> 
-      <h1 className="saito-header-title">Block Explorer</h1>
+      <h1 className="saito-header-title">Explorer</h1>
       {/* Container for right-aligned items */}
-      <div className="header-controls">
+      <div className="header-controls" ref={menuRef}>
         {/* Placeholder for navigation, search bar */}
         {/* <nav className="saito-header-nav">
           {/* Navigation links go here */}
@@ -88,6 +122,20 @@ const Header = ({ onAddressSearch, onBlockHashSearch }) => {
               <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
             </svg>
           </span>
+        </div>
+
+        {/* Hamburger Menu */}
+        <div className="header-menu-container"> 
+            <button className="hamburger-button" onClick={toggleMenu} aria-label="Toggle menu" aria-expanded={isMenuOpen}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </button>
+            {isMenuOpen && (
+                <ul className="header-dropdown-menu">
+                    <li><a href="#" onClick={(e) => { e.preventDefault(); handleBalancesClick(); }}>Balances</a></li>
+                </ul>
+            )}
         </div>
       </div>
     </header>

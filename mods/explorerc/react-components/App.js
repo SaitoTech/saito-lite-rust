@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import BalanceList from './BalanceList'; // Import the new component
 import BlockDetail from './BlockDetail'; // Import BlockDetail
 import BlockList from './BlockList'; // Import the BlockList component
 import Header from './Header'; // Import the Header component
@@ -24,9 +25,12 @@ const App = ({ app, mod }) => { // Receive app and mod as props if needed
   const [nodeInfoError, setNodeInfoError] = useState(null);
   
   // Keep View Management State
-  const [currentView, setCurrentView] = useState('blockList'); // 'blockList', 'walletDetail', 'blockDetail'
+  const [currentView, setCurrentView] = useState('blockList'); // 'blockList', 'walletDetail', 'blockDetail', 'balanceList'
   const [walletAddress, setWalletAddress] = useState(null); 
   const [blockHash, setBlockHash] = useState(null); // State for BlockDetail view
+  
+  // Ref for BlockList
+  const blockListRef = useRef();
   
   // --- Routing Logic --- 
 
@@ -60,16 +64,26 @@ const App = ({ app, mod }) => { // Receive app and mod as props if needed
           setBlockHash(null);
           window.location.hash = '#/';
       }
+    } else if (hash === '#/balances') { // Add route for balances
+        setCurrentView('balanceList');
+        setWalletAddress(null);
+        setBlockHash(null);
+        console.log("Routing to Balance List View");
     } else {
       // Default to block list view 
-      if (currentView !== 'blockList') {
+      // Ensure we only switch IF NOT already on blockList to avoid loops
+      if (!['blockList'].includes(currentView) || hash !== '#/') {
           setCurrentView('blockList');
           setWalletAddress(null);
           setBlockHash(null);
-          console.log("Routing to Block List View");
-      }
+          console.log("Routing to Block List View (Default)");
+          // Only reset hash if it wasn't explicitly cleared or set elsewhere
+          if (window.location.hash !== '#/' && !hash.startsWith('#/address/') && !hash.startsWith('#/block/') && hash !== '#/balances') {
+             window.location.hash = '#/';
+          }
+      } 
     }
-  }, []); // Remove currentView dependency, logic now handles state setting directly
+  }, [currentView]);
 
   // Effect for Initial Load Routing & Hash Change Listener
   useEffect(() => {
@@ -83,7 +97,7 @@ const App = ({ app, mod }) => { // Receive app and mod as props if needed
     return () => {
       window.removeEventListener('hashchange', handleHashChange);
     };
-  }, [handleHashChange]); // Run when handleHashChange updates
+  }, [handleHashChange]); // Run when handleHashChange updates (which now happens when currentView changes)
 
   // Function to fetch blocks using mod methods
   // const loadBlocks = useCallback(async (startId, count) => {
@@ -247,11 +261,26 @@ const App = ({ app, mod }) => { // Receive app and mod as props if needed
     window.location.hash = '#/';
   };
 
+  // Placeholder function to handle showing the Balances view
+  const showBalancesView = () => {
+    console.log("Switching to Balances View");
+    window.location.hash = '#/balances'; 
+  };
+
+  // Handler for NodeInfo refresh request
+  const handleRefreshBlocksRequest = () => {
+    console.log("App: Refresh blocks request received");
+    if (blockListRef.current) {
+      blockListRef.current.refreshBlocks();
+    }
+  };
+
   return (
     <div className="saito-container">
       <Header 
         onAddressSearch={showWalletView} 
         onBlockHashSearch={showBlockView} // Pass the updated handler
+        onShowBalances={showBalancesView} // Pass the new handler
       />
       <main className="saito-main">
         {/* Conditionally render different views */} 
@@ -260,19 +289,21 @@ const App = ({ app, mod }) => { // Receive app and mod as props if needed
             {nodeInfoError ? (
               <div className="error-message">{nodeInfoError}</div>
             ) : (
-              <NodeInfo info={nodeInfo} mod={mod} />
+              <NodeInfo 
+                 info={nodeInfo} 
+                 mod={mod} 
+                 app={app} // Pass app for event listener
+                 onRefreshBlocksRequest={handleRefreshBlocksRequest} // Pass handler
+              /> 
             )}
             
             {latestBlockId !== null ? (
               <BlockList
-                // blocks={blocks}
-                // isLoading={isLoading}
-                // hasMore={hasMore}
-                // onLoadMore={loadMoreBlocks}
+                ref={blockListRef} // Assign ref
                 mod={mod}
-                latestBlockId={latestBlockId}
+                latestBlockId={latestBlockId} 
                 onAddressClick={showWalletView}
-                onBlockHashClick={showBlockView} // Pass block click handler
+                onBlockHashClick={showBlockView}
               />
             ) : (
               !nodeInfoError && <div>Loading blocks...</div> // Show loading only if no error
@@ -282,7 +313,12 @@ const App = ({ app, mod }) => { // Receive app and mod as props if needed
         
         {currentView === 'walletDetail' && walletAddress && (
           <>
-            <button onClick={showBlockListView} className="saito-button-secondary back-button"> &lt; Back to Blocks</button>
+            <button onClick={showBlockListView} className="saito-button-secondary back-button">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="heroicon">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+              </svg>
+              Back to Blocks
+            </button>
             <WalletCard address={walletAddress} mod={mod} />
           </>
         )}
@@ -290,10 +326,30 @@ const App = ({ app, mod }) => { // Receive app and mod as props if needed
         {/* Render Block Detail View */}
         {currentView === 'blockDetail' && blockHash && (
           <>
-             <button onClick={showBlockListView} className="saito-button-secondary back-button"> &lt; Back to Blocks</button>
+             <button onClick={showBlockListView} className="saito-button-secondary back-button">
+               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="heroicon">
+                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+               </svg>
+               Back to Blocks
+             </button>
              <BlockDetail hash={blockHash} mod={mod} /> 
           </>
         )}
+
+        {/* Add rendering for the new balance list view */} 
+        {currentView === 'balanceList' && (
+           <>
+             <button onClick={showBlockListView} className="saito-button-secondary back-button">
+               {/* SVG Icon */}
+               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="heroicon">
+                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+               </svg>
+               Back to Blocks
+             </button>
+            <BalanceList mod={mod} />
+          </>
+        )}
+
       </main>
       {/* Placeholder for a Footer component */}
     </div>

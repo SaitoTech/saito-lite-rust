@@ -95,4 +95,44 @@
 
 .node-info-box .error-message {
     color: var(--saito-warning, red);
+}
+
+/* Styles for two-column layout */
+.node-info-body.two-column {
+  display: flex;
+  flex-wrap: wrap; /* Allow columns to wrap on very small screens if needed */
+  gap: 0 1.5rem; /* Gap between columns, no gap between rows within columns */
+}
+
+.node-info-column {
+  flex: 1; /* Allow columns to share space equally */
+  min-width: 200px; /* Minimum width before potentially wrapping */
+}
+
+/* Style for the new indicator refresh icon */
+.indicator.indicator-refresh {
+  margin-left: 0.6em; /* Keep spacing */
+  background-color: transparent; /* Override default indicator background */
+  border: none; /* Override default indicator border */
+  padding: 0; /* Override default indicator padding */
+  cursor: pointer;
+}
+
+.indicator.indicator-refresh .heroicon {
+    stroke: var(--saito-red, #d9534f); /* Red color */
+    /* Explicitly set size to match other indicators */
+    width: 18px; 
+    height: 18px;
+}
+
+/* Row styling might still be needed if NodeInfo <p> isn't flex by default */
+.latest-block-row {
+    display: flex;
+    align-items: center; /* Align vertically better */
+}
+
+/* Style for the block ID when updates are available */
+.latest-block-row .mono-data.has-updates {
+  color: var(--saito-red, #d9534f); /* Saito red */
+  font-weight: 600; /* Optional: make it bold too */
 } 

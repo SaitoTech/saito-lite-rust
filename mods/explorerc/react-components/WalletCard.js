@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import SlipTable from './SlipTable'; // Import the new component
 
 // Helper to format BigInt balance (optional, basic)
 const formatSaitoBalance = (nolanString) => {
@@ -125,32 +126,7 @@ const WalletCard = ({ address, mod }) => {
               </span>
               <span>Slips ({slips.length})</span>
             </div>
-            {slipsVisible && (
-              <div className="slips-table-container">
-                <table className="saito-table slips-table">
-                  <thead>
-                    <tr>
-                      <th>Block</th>
-                      <th>TX</th>
-                      <th>Slip</th>
-                      <th>Nolan</th>
-                      <th>Saito</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {slips.map((slip, index) => (
-                      <tr key={slip[0] || index}> 
-                        <td>{slip[1]}</td> 
-                        <td>{slip[2]}</td> 
-                        <td>{slip[3]}</td> 
-                        <td className="mono-data nolan-column">{slip[4]}</td> 
-                        <td className="saito-column">{formatSaitoBalance(slip[4])}</td> 
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+            {slipsVisible && <SlipTable slips={slips} />}
           </div>
         )}
       </div>

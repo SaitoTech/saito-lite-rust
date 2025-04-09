@@ -31,6 +31,7 @@ const BlockCard = ({ block, mod, onAddressClick, onBlockHashClick }) => {
   const [isTxListVisible, setIsTxListVisible] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [txListStatus, setTxListStatus] = useState('idle');
+  const [error, setError] = useState('');
 
   const handleCopy = async (textToCopy, fieldName) => {
     if (!navigator.clipboard) {
@@ -52,52 +53,79 @@ const BlockCard = ({ block, mod, onAddressClick, onBlockHashClick }) => {
     }
   };
 
-  // Function to fetch block data (including transactions)
+  // Function to fetch block data (including transactions) from the unified endpoint
   const fetchBlockData = async () => {
-    if (!block || !block.hash) {
-        console.error("Cannot fetch block data: block hash is missing.");
+    // Check only for hash
+    if (!block || !block.hash) { 
+        console.error("Cannot fetch block data: block hash is missing.", block);
+        setError("Block data incomplete, cannot load transactions.");
         setTxListStatus('error');
         return;
     }
-    console.log(`Fetching full block data for hash: ${block.hash}`);
+    
+    // Use hash for the API call
+    const hash = block.hash;
+    console.log(`BlockCard: Fetching full block data via UNIFIED /api/block/${hash}`); 
     setTxListStatus('loading');
+    setError(''); // Clear previous errors
     try {
-      // Construct API path using module name (assuming mod is passed as prop or available via context)
-      // For now, hardcoding but should ideally get from props/context
-      const modName = "explorerc"; // Replace with dynamic source if possible
-      const response = await fetch(`/${modName}/api/json-block/${block.hash}`);
+      const modName = "explorerc"; 
+      // Use the UNIFIED endpoint with the hash
+      const response = await fetch(`/${modName}/api/block/${hash}`); 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        let errorText = `HTTP error! status: ${response.status}`;
+        try { 
+            const errorData = await response.json(); 
+            errorText = `${errorText} - ${errorData.message || 'Unknown server error'}`;
+        } catch (e) { 
+             errorText = `${errorText} - ${await response.text() || 'Could not retrieve error details'}`;
+        } 
+        throw new Error(errorText);
       }
-      const blockData = await response.json(); // API returns the parsed block object directly
+      // The response body is the full block JSON data (already combined by the server)
+      const fullBlockData = await response.json(); 
       
-      console.log("Fetched Block Data:", blockData);
+      console.log("BlockCard: Fetched Combined Block Data:", fullBlockData);
 
-      // Assuming transactions are in blockData.transactions
-      if (blockData && Array.isArray(blockData.transactions)) {
-          setTransactions(blockData.transactions);
+      // Check if transactions array exists directly in the fetched data
+      if (fullBlockData && Array.isArray(fullBlockData.transactions)) {
+          setTransactions(fullBlockData.transactions);
           setTxListStatus('success');
       } else {
           console.warn("Transactions array not found or not an array in fetched block data.");
-          setTransactions([]); // Set to empty array if data is malformed
-          setTxListStatus('success'); // Still success, but with empty data
+          setTransactions([]); 
+          setTxListStatus('success'); // Treat as success with no transactions found
       }
 
     } catch (error) {
-      console.error("Error fetching block data:", error);
+      console.error("Error fetching combined block data:", error);
+      setError(error.message || "Failed to load transaction details.");
       setTxListStatus('error');
-      setTransactions([]); // Clear transactions on error
+      setTransactions([]);
     }
   };
 
-  // Function to toggle transaction list visibility and fetch data if needed
+  // Function to toggle transaction list visibility
   const toggleTxListVisibility = () => {
     const becomingVisible = !isTxListVisible;
     setIsTxListVisible(becomingVisible);
 
-    // Fetch data only when expanding for the first time
-    if (becomingVisible && txListStatus === 'idle') {
+    // Fetch data only when expanding for the first time AND there are transactions expected
+    // OR if data has already been loaded/attempted (txListStatus !== 'idle')
+    if (becomingVisible && (block.transactionCount > 0 || txListStatus !== 'idle') && txListStatus === 'idle') {
       fetchBlockData();
+    }
+  };
+
+  // Function to handle clicking the refresh icon when txnCount is 0 initially
+  const handleRefreshTransactions = () => {
+    console.log("BlockCard: Refresh transactions clicked (txnCount was 0)");
+    if (txListStatus === 'idle') {
+        fetchBlockData(); // Start fetching data
+        setIsTxListVisible(true); // Expand the list area immediately
+    } else {
+        // If already loaded/error, just toggle visibility
+        toggleTxListVisibility();
     }
   };
 
@@ -143,6 +171,11 @@ const BlockCard = ({ block, mod, onAddressClick, onBlockHashClick }) => {
           onBlockHashClick(prevHash);
       }
   };
+
+  // Determine which footer UI to show. Show refresh only if initial count is 0 AND we haven't tried loading yet.
+  const showRefreshForTx = txnCount === 0 && txListStatus === 'idle';
+  // Determine the count to display when the expander is shown
+  const displayTxnCount = txListStatus === 'success' ? transactions.length : txnCount;
 
   return (
     <div className={`block-card ${block.longestChain ? 'on-longest-chain' : ''}`}>
@@ -242,14 +275,33 @@ const BlockCard = ({ block, mod, onAddressClick, onBlockHashClick }) => {
         </p>
       </div>
       <div className="block-card-footer">
-        <div className="tx-toggle-container" onClick={toggleTxListVisibility} style={{ cursor: 'pointer' }}>
-          <span className={`tx-toggle-icon ${isTxListVisible ? 'expanded' : ''}`}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
-          </span>
-          <span>Transactions: {txnCount}</span>
-        </div>
+        {/* Choose footer content based on state */} 
+        {showRefreshForTx ? (
+          // Show Refresh icon if txnCount is 0 and data not loaded
+          <div className="tx-refresh-container" onClick={handleRefreshTransactions} style={{ cursor: 'pointer' }}>
+             <span>transactions</span> 
+             <span 
+                className="indicator indicator-refresh" // Use same classes as NodeInfo refresh
+                title="Load Transaction Data"
+             >
+                {/* Heroicon - ArrowPathIcon */}
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="heroicon">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                </svg>
+             </span>
+          </div>
+        ) : (
+          // Show Expander icon and count otherwise
+          <div className="tx-toggle-container" onClick={toggleTxListVisibility} style={{ cursor: 'pointer' }}>
+            <span className={`tx-toggle-icon ${isTxListVisible ? 'expanded' : ''}`}>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </span>
+            <span>Transactions: {displayTxnCount}</span>
+          </div>
+        )}
+        
         {copySuccess && <span className="copy-feedback">{copySuccess}</span>}
       </div>
       {/* Conditionally rendered transaction list */}
