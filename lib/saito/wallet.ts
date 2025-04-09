@@ -82,7 +82,7 @@ export default class Wallet extends SaitoWallet {
   }
 
 
-  public async createBoundUtxoTransaction(
+  public async createBoundTransaction(
     amt,
     bid,
     tid,
@@ -108,7 +108,7 @@ export default class Wallet extends SaitoWallet {
       console.log(fee);
       console.log(receipient_publicKey);
 
-      return S.getInstance().createBoundUtxoTransaction(
+      return S.getInstance().createBoundTransaction(
         amt,
         bid,
         tid,
@@ -119,6 +119,28 @@ export default class Wallet extends SaitoWallet {
         data,
         fee,
         receipient_publicKey
+      );
+  }
+
+  public async createSendBoundTransaction(
+    amt,
+    nft_id,
+    data,
+    receipient_publicKey,
+  ){
+
+
+      console.log("values going to saito.ts:");
+      console.log(amt);
+      console.log(nft_id);
+      console.log(data);
+      console.log(receipient_publicKey);
+
+      return S.getInstance().createSendBoundTransaction(
+        amt,
+        nft_id,
+        data,
+        receipient_publicKey,
       );
   }
 
