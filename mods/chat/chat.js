@@ -748,6 +748,10 @@ class Chat extends ModTemplate {
 
   createFreshGroup(name, id) {
     
+    if (this.returnGroup(id)){
+      return;
+    }
+
     let chat_group = {
       id,
       members: this.communityGroup.members, //general chat services host key
