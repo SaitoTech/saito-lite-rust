@@ -303,6 +303,7 @@ class PokerQueue {
 					}
 
 					this.animateWin(total_pot, winners);
+					this.halted = 1;
 					this.playerAcknowledgeNotice(msg, async () => {
 						this.animating = false;
 						this.cardfan.hide();
@@ -312,6 +313,7 @@ class PokerQueue {
 						await this.timeout(1000);
 						this.restartQueue();
 					});
+					this.saveGame(this.game.id);
 					this.setShotClock('.acknowledge');
 
 					return 0;
@@ -646,6 +648,7 @@ class PokerQueue {
 				}
 
 				this.animateWin(pot_total, winObj);
+				this.halted = 1;
 				this.playerAcknowledgeNotice(winnerStr, async () => {
 					console.log("Continuing poker...");
 					this.animating = false;
@@ -656,6 +659,7 @@ class PokerQueue {
 					await this.timeout(1000);
 					this.restartQueue();
 				});
+				this.saveGame(this.game.id);
 				this.setShotClock('.acknowledge');
 
 
