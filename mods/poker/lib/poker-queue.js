@@ -629,7 +629,7 @@ class PokerQueue {
 				//
 				// non-winners send wagers to winner
 				//
-				if (this.game.crypto) {
+				if (this.game.crypto !== "CHIPS") {
 					for (let ii = 0; ii < this.game.players.length; ii++) {
 						for (let i = 0; i < winners.length; i++) {
 							if (!winners.includes(ii) && this.game.state.player_pot[ii] > 0) {
@@ -647,6 +647,7 @@ class PokerQueue {
 
 				this.animateWin(pot_total, winObj);
 				this.playerAcknowledgeNotice(winnerStr, async () => {
+					console.log("Continuing poker...");
 					this.animating = false;
 					this.cardfan.hide();
 					this.pot.clearPot();
