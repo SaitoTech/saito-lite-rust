@@ -323,53 +323,56 @@
     let do_upgradeable_units_remain = false;
 
     //
+    // players can spend their replacement points to:
+    //
     // 1. flip damaged units on the board
     // 2. flip damaged units in the RB
     // 3. return eliminated units to RB 
     //
 
-    let find_upgradeable_units = () => {
-      for (let key in paths_self.game.spaces) {
-	if (key == "ceubox") { if (faction == "central") { return 1; } return 0; }
-	if (key == "aeubox") { if (faction == "allies") { return 1; } return 0; }
-	if (paths_self.game.spaces[key].units.length > 0 && paths_self.game.spaces[key].control == faction) {
-	  for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
-	    if (paths_self.game.spaces[key].units[z].damaged && !paths_self.game.spaces[key].units[z].destroyed) { return 1; }
-	  }
-	}
-        return 0;
+    let filter_fnct = (spacekey, unit) => { 
+      if (spacekey == "aeubox") { 
+        if (faction == "central") { return 0; }
+	if (unit.destroyed) { return 1; }
       }
+      if (spacekey == "ceubox") { 
+        if (faction == "allies") { return 0; }
+        if (unit.destroyed) { return 1; }
+      }
+      if (spacekey == "arbox") { 
+        if (faction == "central") { return 0; }
+        if (unit.damaged) { return 1; }
+      }
+      if (spacekey == "crbox") { 
+        if (faction == "allies") { return 0; }
+        if (unit.damaged) { return 1; }
+      }
+      if (paths_self.game.spaces[spacekey].control == faction && unit.damaged) { return 1; }
+      return 0;
+    };
+
+    let continue_fnct = () => {
+      for (let key in paths_self.game.state.rp[faction]) {
+	if (paths_self.game.state.rp[faction][key] > 0) { return 1; }
+      }
+      return 0;
     }
+
+
+    while (continue_fnct) {
+
+alert("looping to spend replacement points...");
+
+    }
+
 
 /***
 
 		paths_self.playerSelectUnitWithFilter(
 
 		  "Select Unit to Repair" ,
-		  (spacekey, unit) => {
 
-
-		   
-
-		    if (spacekey == "aeubox") { 
-		      if (faction == "central") { return 0; }
-		      if (unit.destroyed) { return 1; }
-		    }
-		    if (spacekey == "ceubox") { 
-		      if (faction == "allies") { return 0; }
-		      if (unit.destroyed) { return 1; }
-		    }
-		    if (spacekey == "arbox") { 
-		      if (faction == "central") { return 0; }
-		      if (unit.damaged) { return 1; }
-		    }
-		    if (spacekey == "crbox") { 
-		      if (faction == "allies") { return 0; }
-		      if (unit.damaged) { return 1; }
-		    }
-		    if (paths_self.game.spaces[spacekey].control == faction && unit.damaged) { return 1; }
-		    return 0;
-		  } ,
+		  filter_funct ,
 
 		  (bspacekey, bunit_idx) => {
 
