@@ -119,8 +119,8 @@
     state.reserves['central'] = ["ge_army04", "ge_army06", "ge_army08"];
     state.reserves['allies'] = ["fr_army01", "br_corps", "ru_army09", "ru_army10"];
 
-    this.game.state.allies_passed = 0;
-    this.game.state.central_passed = 0;
+    state.allies_passed = 0;
+    state.central_passed = 0;
 
     state.eliminated = {};
     state.eliminated['central'] = [];

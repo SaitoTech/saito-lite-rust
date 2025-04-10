@@ -160,6 +160,11 @@
     }
   }
 
+  returnReformerName(ref) {
+    if (this.reformers[ref]) { return this.reformers[ref].name; }
+    return "Unknown";
+  }
+
   importDebater(name, obj) {
     if (obj.type == null)               { obj.type = "unit"; }
     if (obj.name == null)               { obj.name = "Unit"; }

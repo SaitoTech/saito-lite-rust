@@ -301,7 +301,6 @@
 	    } 
 	  }
 	  if (!u.damaged) {
-console.log(skey + " -- " + uidx + " -- " + key);
             paths_self.moveUnit(skey, uidx, key);
 	    paths_self.addMove(`move\t${faction}\t${skey}\t${uidx}\t${key}\t${paths_self.game.player}`);
 	  }
@@ -317,9 +316,94 @@ console.log(skey + " -- " + uidx + " -- " + key);
 
 
 
-  playerPlayPostCombatRetreat() {
+  playerSpendReplacementPoints(faction="central") {
 
-console.log("HERE WE ARE in PPPCR!");
+    let paths_self = this;
+    let rp = this.game.state.rp[faction];
+    let do_upgradeable_units_remain = false;
+
+    //
+    // 1. flip damaged units on the board
+    // 2. flip damaged units in the RB
+    // 3. return eliminated units to RB 
+    //
+
+    let find_upgradeable_units = () => {
+      for (let key in paths_self.game.spaces) {
+	if (key == "ceubox") { if (faction == "central") { return 1; } return 0; }
+	if (key == "aeubox") { if (faction == "allies") { return 1; } return 0; }
+	if (paths_self.game.spaces[key].units.length > 0 && paths_self.game.spaces[key].control == faction) {
+	  for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
+	    if (paths_self.game.spaces[key].units[z].damaged && !paths_self.game.spaces[key].units[z].destroyed) { return 1; }
+	  }
+	}
+        return 0;
+      }
+    }
+
+/***
+
+		paths_self.playerSelectUnitWithFilter(
+
+		  "Select Unit to Repair" ,
+		  (spacekey, unit) => {
+
+
+		   
+
+		    if (spacekey == "aeubox") { 
+		      if (faction == "central") { return 0; }
+		      if (unit.destroyed) { return 1; }
+		    }
+		    if (spacekey == "ceubox") { 
+		      if (faction == "allies") { return 0; }
+		      if (unit.destroyed) { return 1; }
+		    }
+		    if (spacekey == "arbox") { 
+		      if (faction == "central") { return 0; }
+		      if (unit.damaged) { return 1; }
+		    }
+		    if (spacekey == "crbox") { 
+		      if (faction == "allies") { return 0; }
+		      if (unit.damaged) { return 1; }
+		    }
+		    if (paths_self.game.spaces[spacekey].control == faction && unit.damaged) { return 1; }
+		    return 0;
+		  } ,
+
+		  (bspacekey, bunit_idx) => {
+
+		    let unit = paths_self.game.spaces[bspacekey].units[bunit_idx];
+
+		    if (bspacekey == "aeubox") {
+		    }
+
+              	    //paths_self.moveUnit(bspacekey, bunit_idx, key);
+	      	    //paths_self.addMove(`move\t${faction}\t${bspacekey}\t${bunit_idx}\t${key}\t${paths_self.game.player}`);
+              	    //paths_self.displaySpace(key);
+              	    //paths_self.displaySpace(bspacekey);
+
+		  } ,
+
+		  null , 
+
+		  true ,
+
+		  [{ key : "pass" , value : "pass-pass" }]
+
+		);
+
+****/
+
+    alert("player play replacement points...");
+
+    this.endTurn();
+
+    return 1;
+  }
+
+
+  playerPlayPostCombatRetreat() {
 
     let can_defender_cancel_retreat = false;
 
@@ -329,7 +413,7 @@ console.log("HERE WE ARE in PPPCR!");
     // step loss. 
     //
     let space = this.game.spaces[this.game.state.combat.key];
-console.log(JSON.stringify(space.units));
+
     if (space.terrain == "mountain") 	{ can_defender_cancel_retreat = true; }
     if (space.terrain == "swamp") 	{ can_defender_cancel_retreat = true; }
     if (space.terrain == "desert") 	{ can_defender_cancel_retreat = true; }
@@ -374,7 +458,6 @@ console.log(JSON.stringify(space.units));
     if ((attacker_loss_factor-defender_loss_factor) == 1) { spaces_to_retreat = 2; } // 1 + source
     let faction = this.returnFactionOfPlayer(this.game.player);
     let sourcekey = this.game.state.combat.key;
-
 
     //
     // 
@@ -539,10 +622,12 @@ console.log("unit idx: " + unit_idx);
     this.updateStatusWithOptions(`Flank Attack?`, html);
     this.attachCardboxEvents((action) => {
 
+      this.updateStatus("submitting...");
       this.flank_overlay.hide();
 
       if (action === "no") {
 	this.endTurn();
+	return;
       }
 
       if (action === "cp02") {
@@ -1487,6 +1572,8 @@ console.log("unit idx: " + unit_idx);
     let paths_self = this;
 
     let spaces = this.returnSpacesWithFilter((key) => {
+      if (key == "aeubox") { return 0; }
+      if (key == "ceubox") { return 0; }
       if (key == "arbox") { if (this.game.player == this.returnPlayerOfFaction("allies")) { return 1; } else { return 0; } }
       if (key == "crbox") { if (this.game.player == this.returnPlayerOfFaction("central")) { return 1; } else { return 0; } }
       for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
@@ -1580,7 +1667,7 @@ console.log("unit idx: " + unit_idx);
     this.playerSelectSpaceWithFilter(
       "Select Space with Unit to Strategically Redeploy",
       (key) => {
-        if (key == "arbox" || key == "crbox") { return 1; }
+        if (key == "aeubox" || key == "ceubox" || key == "arbox" || key == "crbox") { return 1; }
 	if (destinations.includes(key)) { return 1; }
         return 0;
       },
@@ -1651,16 +1738,11 @@ console.log("unit idx: " + unit_idx);
 
     if (country == "germany") {
       countries = this.returnSpacekeysByCountry("germany");
-console.log("countries: " + JSON.stringify(countries));
       filter_func = (spacekey) => { 
-console.log("examining: " + spacekey);
 	if (countries.includes(spacekey)) {
-console.log("exists... " + spacekey);
 	  if (this.game.spaces[spacekey].control == "central") { 
-console.log("controlled by central powers...");
 	    if (this.checkSupplyStatus("germany", spacekey)) { 
-console.log("in line of supply...");
-return 1; 
+	      return 1; 
 	    }
 	  }
 	}

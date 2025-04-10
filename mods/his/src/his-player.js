@@ -3536,8 +3536,6 @@ return;
   //
   playerReturnWinterUnits(faction) {
 
-console.log("into player return winter units...");
-
     let his_self = this;
 
     his_self.game.state.returning_winter_units = true;
@@ -3554,7 +3552,9 @@ console.log("into player return winter units...");
     for (let i = 0; i < capitals.length; i++) {
       let c = capitals[i];
       if (this.isSpaceControlled(c, faction)) {
-        viable_capitals.push(capitals[i]);
+        if (!this.isSpaceInUnrest(c)) {
+          viable_capitals.push(capitals[i]);
+        }
       }
     }
 
@@ -3862,7 +3862,9 @@ console.log("just attached options.... should be selectable..");
     let source_spacekey;
     let does_faction_have_spring_preparations = false;
 
+    //
     // Spring Preparations 102
+    //
     let fhand_idx = his_self.returnFactionHandIdx(his_self.game.player, faction);
     for (let z = 0; z < his_self.game.deck[0].fhand[fhand_idx].length; z++) {
       if (his_self.game.deck[0].fhand[fhand_idx][z] === "102") {
@@ -3880,8 +3882,10 @@ console.log("just attached options.... should be selectable..");
     for (let i = 0; i < capitals.length; i++) {
       let c = capitals[i];
       if (this.game.spaces[c].units[faction].length > 0) {
-        can_deploy = 1;
-        viable_capitals.push(capitals[i]);
+        if (this.game.spaces[c].unrest == 0) {
+          can_deploy = 1;
+          viable_capitals.push(capitals[i]);
+        }
       }
     }
 
@@ -3946,6 +3950,7 @@ console.log("just attached options.... should be selectable..");
             if (his_self.isSpaceFriendly(space, faction)) {
 	      // 1 = transit seas
 	      // source_spacekey => connect to this capital
+	      if (space.unrest) { return 0; }
               if (his_self.isSpaceConnectedToCapitalSpringDeployment(space, faction, 1, source_spacekey)) {
                 if (!his_self.isSpaceFactionCapital(space, faction)) {
 		  if (his_self.game.state.events.schmalkaldic_league == 0) {
@@ -4780,6 +4785,20 @@ does_units_to_move_have_unit = true; }
 	let num_moveable = 0;
 	if (space.key == "persia" || space.key == "egypt" || space.key == "ireland") { return 0; }
 	if (space.besieged == 2) { return 0; } // you cannot move from a town just placed under siege
+
+        //
+        // no moving if you are besieged
+        //
+	if (space.besieged == 1) { 
+	  for (let z in space.units) {
+	    if (his_self.returnPlayerCommandingFaction(z) == his_self.game.player) {
+	      for (let i = 0; i < space.units[z].length; i++) {
+	        let u = space.units[z][i];
+	        if (u.besieged == 1) { return 0; }
+	      }
+	    }
+	  }
+	}
 
 	for (let z in space.units) {
 	  if (space.units[z].length > 0 && his_self.returnPlayerCommandingFaction(z) == his_self.game.player && (z == faction || his_self.returnControllingPower(z) == faction)) {

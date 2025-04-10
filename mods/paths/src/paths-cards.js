@@ -385,6 +385,7 @@
         canEvent : function(paths_self, faction) { if (paths_self.game.state.events.guns_of_august == 1 && paths_self.game.state.general_records_track.central_war_status < 4) { return 1; } return 0; } ,
         onEvent : function(paths_self, faction) {
 	  paths_self.game.state.events.rape_of_belgium = 1;
+	  paths_self.displayGeneralRecordsTrack();
 	  return 1;
         } ,
       }
@@ -644,6 +645,7 @@ deck['ap14'] = {
         canEvent : function(paths_self, faction) { if (paths_self.game.state.general_records_track.central_war_status > 10) { return 0; } return 1; } ,
         onEvent : function(paths_self, faction) {
           paths_self.game.state.events.reichstag_truce = 1;
+	  paths_self.displayGeneralRecordsTrack();
           return 1;
         } ,
       }

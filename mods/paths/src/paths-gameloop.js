@@ -202,8 +202,8 @@ this.updateLog(`###############`);
           if (allies_cards_needed > this.game.deck[1].crypt.length) { allies_cards_needed = this.game.deck[1].crypt.length; }
           if (central_cards_needed > this.game.deck[0].crypt.length) { central_cards_needed = this.game.deck[0].crypt.length; }
           
-          this.game.queue.push("DEAL\t1\t1\t"+central_cards_needed);
-          this.game.queue.push("DEAL\t2\t2\t"+allies_cards_needed);
+          this.game.queue.push("DEAL\t1\t6\t"+central_cards_needed);
+          this.game.queue.push("DEAL\t2\t7\t"+allies_cards_needed);
 
 	  return 1;
 
@@ -212,16 +212,42 @@ this.updateLog(`###############`);
 
  	if (mv[0] == "replacement_phase") {
 
+          this.game.queue.splice(qe, 1);
+
+	  this.game.queue.push("player_play_replacements\tallies");
+	  this.game.queue.push("player_play_replacements\tcentral");
+
 	  console.log("###");
 	  console.log("### Replacement Phase");
 	  console.log("###");
 
+	  return 1;
+	}
+
+	if (mv[0] == "player_play_replacements") {
+
+	  let faction = mv[1];
+          this.game.queue.splice(qe, 1);
+
+	  if (this.returnPlayerOfFaction(faction) == this.game.player) {
+	    this.playerSpendReplacementPoints(faction);
+	  } else {
+	    this.updateStatus(this.returnFactionName(faction) + " assigning replacement points...");
+	  }
+
+	  return 0;
+
+	}
+
+	if (mv[0] == "finish_replacement_phase") {
+
 	  this.game.state.rp['central'] = {};
 	  this.game.state.rp['allies'] = {};
-
+	  
           this.game.queue.splice(qe, 1);
 	  return 1;
 	}
+
  	if (mv[0] == "war_status_phase") {
           this.game.queue.splice(qe, 1);
 	  return 1;
@@ -266,8 +292,11 @@ this.updateLog(`###############`);
 	  //  - 1 card left + pass, or 
 	  //  - no cards left
 	  //
-	  this.game.queue.push("play\tallies");
-	  this.game.queue.push("play\tcentral");
+          let cards_needed = (this.game.state.round >= 4)? 6 : 7;
+	  for (let z = 0; z < cards_needed+1; z++) {
+	    this.game.queue.push("play\tallies");
+	    this.game.queue.push("play\tcentral");
+	  }
 
 	  return 1;
 	}
@@ -773,6 +802,8 @@ try {
 	  let faction = mv[1];
 	  let card = mv[2];
 
+	  this.updateLog(this.returnFactionName(faction) + " plays " + this.popup(card));
+
 	  if (faction == "central") {
 	    this.game.state.cc_central_active.push("card");
 	    this.game.queue.push("discard\t"+card);
@@ -873,7 +904,18 @@ try {
 
 	  attacker_modified_roll = attacker_roll + attacker_drm;
 	  defender_modified_roll = defender_roll + defender_drm;
-	  
+
+	  if (attacker_drm > 0) {
+	    this.updateLog(`Attacker rolls: ${attacker_roll} [+${attacker_drm}]`);
+	  } else {
+	    this.updateLog(`Attacker rolls: ${attacker_roll}`);
+	  }	  
+	  if (defender_drm > 0) {
+	    this.updateLog(`Defender rolls: ${defender_roll} [+${defender_drm}]`);
+	  } else {
+	    this.updateLog(`Defender rolls: ${defender_roll}`);
+	  }	  
+
 	  if (attacker_modified_roll > 6) { attacker_modified_roll = 6; }
 	  if (defender_modified_roll > 6) { defender_modified_roll = 6; }
 	  if (attacker_modified_roll < 1) { attacker_modified_roll = 1; }

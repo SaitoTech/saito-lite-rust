@@ -235,9 +235,6 @@ console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
 		this.overlay.show(LossTemplate());
 		//this.updateLossesRequired(this.loss_factor);
 
-console.log("AU: " + JSON.stringify(attacker_units));
-console.log("DU: " + JSON.stringify(defender_units));
-
 		for (let i = 0; i < attacker_units.length; i++) {
 			let html = "";
 			let akey = attacker_units[i].key;
@@ -281,9 +278,12 @@ console.log("DU: " + JSON.stringify(defender_units));
 		}
 
 
+//
 // HACK - bad var name, but debugging
+//
 let am_iii_the_attacker = false;
 if (this.mod.game.player == this.mod.returnPlayerOfFaction(this.mod.game.state.combat.attacker_power)) { am_iii_the_attacker = true; }
+
 
 if (faction == "attacker") {
 	        if (this.mod.game.state.combat.flank_attack == "attacker") {
@@ -300,7 +300,7 @@ if (faction == "attacker") {
 		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.defender_power)} - opponent assigning hits`);
 		  }
 		}
-		if (this.mod.game.state.combat.flank_attack == "") {
+		if (!this.mod.game.state.combat.flank_attack) {
 		  if (am_iii_the_attacker) {
 		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.attacker_power)} - assign hits`);
 		  } else {
@@ -322,7 +322,7 @@ if (faction == "attacker") {
 		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.defender_power)} - assign hits`);
 		  }
 		}
-		if (this.mod.game.state.combat.flank_attack == "") {
+		if (!this.mod.game.state.combat.flank_attack) {
 		  if (am_iii_the_attacker) {
 		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.attacker_power)} - opponent assigning hits`);
 		  } else {

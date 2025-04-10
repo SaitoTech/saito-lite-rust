@@ -3532,6 +3532,7 @@ console.log("selected: " + spacekey);
 		  }
 		}
 
+    		his_self.addMove("remove_cards_left");
     		his_self.addMove("cards_left\tprotestant\t"+(parseInt(his_self.game.state.cards_left["protestant"])+1));
 		his_self.addMove("discard\tprotestant\t007");
 		his_self.addMove("NOTIFY\tProtestants retrieve "+his_self.popup(card));

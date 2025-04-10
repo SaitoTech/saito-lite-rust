@@ -846,13 +846,13 @@
     let html = '<ul>';
     for (let i = 0; i < io.length; i++) {
       if (faction != io[i] && !(io[i] == "protestant" && his_self.game.state.events.schmalkaldic_league == 0)) {
-	if (target_faction != io[i]) { auto_select_target = false; }
-        html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
+        if (his_self.returnPlayerCommandingFaction(faction) != his_self.returnPlayerCommandingFaction(io[i])) {
+	  if (target_faction != io[i]) { auto_select_target = false; }
+          html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
+        }
       }
     }
     html += '</ul>';
-
-
 
     if (auto_select_target == false) {
 

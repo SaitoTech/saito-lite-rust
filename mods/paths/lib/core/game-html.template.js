@@ -801,11 +801,11 @@ export default (app, mod) => {
                                 id="central-reserve-box"
                         ></div>
                         <div
-                                class="allies-eliminated-units-box eliminated-units-box"
+                                class="space aeubox allies-eliminated-units-box eliminated-units-box"
                                 id="allies-eliminated-units-box"
                         ></div>
                         <div
-                                class="central-eliminated-units-box eliminated-units-box"
+                                class="space ceubox central-eliminated-units-box eliminated-units-box"
                                 id="central-eliminated-units-box"
                         ></div>
                 </div>

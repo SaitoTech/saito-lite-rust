@@ -182,7 +182,7 @@ console.log("!");
 
   displaySpace(key) {
 
-    if (key == "arbox" || key == "crbox") { return; }
+    if (key == "arbox" || key == "crbox" || key == "aeubox" || key == "ceubox") { return; }
 
     try {
 
