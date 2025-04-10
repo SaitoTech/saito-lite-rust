@@ -124,8 +124,6 @@ class League extends ModTemplate {
 	async initialize(app) {
 		await super.initialize(app);
 
-		//Trial -- So that we can display league results in game page
-		this.overlay = new LeagueOverlay(app, this);
 
 		if (!this.app.options.leagues) {
 			this.app.options.leagues = [];
@@ -150,6 +148,13 @@ class League extends ModTemplate {
 		await this.loadLeagues();
 
 		//this.pruneOldPlayers();
+
+		if (!app.BROWSER){
+			return;
+		}
+
+		//Trial -- So that we can display league results in game page
+		this.overlay = new LeagueOverlay(app, this);
 
 		if (app.browser.returnURLParameter('view_game')) {
 			let game = app.browser.returnURLParameter('view_game').toLowerCase();

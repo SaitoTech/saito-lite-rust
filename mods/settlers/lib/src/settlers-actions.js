@@ -25,6 +25,9 @@ class SettlersActions {
       console.error("Error with ACKWNOLEDGE notice!: " + err);
     }
 
+    this.halted = 1;
+    this.saveGame(this.game.id);
+
     return 0;
   }
 

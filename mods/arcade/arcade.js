@@ -285,18 +285,6 @@ class Arcade extends ModTemplate {
 		return game_tx;
 	}
 
-	//
-	// runs when we connect to a network client
-	// The key thing that happens is we want to query the service node for current state of the arcade
-	// Since no open transactions are addressed to us, we can't just read them off the blockchain
-	//
-	async onPeerHandshakeComplete(app, peer) {
-		if (!app.BROWSER) {
-			return;
-		}
-		this.initial_connect = true;
-	}
-
 	async onPeerServiceUp(app, peer, service = {}) {
 		if (!app.BROWSER) {
 
@@ -359,7 +347,8 @@ class Arcade extends ModTemplate {
 					let invite = new Invite(app, this, null, null, game, this.publicKey);
 					let join_overlay = new JoinGameOverlay(app, this, invite.invite_data);
 					join_overlay.render();
-					window.history.pushState('', '', `/arcade/`);
+					// Overwrite link-url with baseline url
+					window.history.replaceState('', '', `/arcade/`);
 				}
 
 				app.connection.emit('arcade-invite-manager-render-request');

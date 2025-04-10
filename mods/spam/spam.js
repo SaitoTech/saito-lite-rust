@@ -13,12 +13,13 @@ class Spam extends ModTemplate {
 		this.class = 'utility';
 		this.to = '';
 		this.payment = 0;
+		this.fee = 0;
+		this.nodeLoopDelay = 13000; // 13 seconds to guarantee block production
 		this.loop_start = 0;
 		this.frequency = 1; //no of tx per period
 		this.period = 1000;
 		this.interval = null;
 		this.loop_count = 0;
-		this.fee = 0;
 
 		this.styles = ['/spam/style.css', '/saito/saito.css'];
 
@@ -33,7 +34,7 @@ class Spam extends ModTemplate {
 		if (this.app.BROWSER == 0) {
 			setInterval(() => {
 				this.nodeSpamLoop(app, this);
-			}, 13000);
+			}, this.nodeLoopDelay);
 		}
 	}
 

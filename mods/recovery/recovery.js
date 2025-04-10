@@ -44,7 +44,7 @@ class Recovery extends ModTemplate {
 						this.app.options.wallet.backup_required = false;
 						await this.app.wallet.saveWallet();
 
-						app.connection.emit('recovery-backup-loader-overlay-render-request', {});
+						app.connection.emit('recovery-backup-loader-overlay-render-request', '');
 						let newtx = await this.createBackupTransaction(
 							key.wallet_decryption_secret,
 							key.wallet_retrieval_hash

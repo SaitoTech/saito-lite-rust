@@ -16,8 +16,8 @@ module.exports = (app, mod, tweet) => {
 	if (tweet.source.node) {
 		html_markers += ` data-source-node="${tweet.source.node}"`;
 	}
-	if (tweet?.updated_at){
-		html_markers += ` data-timestamp="${tweet.updated_at}"`;	
+	if (tweet?.curated){
+		html_markers += ` data-curated="${tweet?.curated}"`;	
 	}
 
 	if (!text && !notice && tweet.retweet_tx) {

@@ -28,7 +28,6 @@ class DevTools extends ModTemplate {
 		this.styles = ['/saito/saito.css'];
 
 		this.addAppOverlay = null;
-		this.localDb = null;
 		this.zip_file = null;
 		this.title = null;
 		this.description = null;

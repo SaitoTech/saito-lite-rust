@@ -65,7 +65,7 @@ class Mods {
   }
 
   affixCallbacks(tx, txindex, message, callbackArray, callbackIndexArray) {
-    console.log('IN MODULE.TS AFFIX CALLBACKS: ');
+    //console.log('IN MODULE.TS AFFIX CALLBACKS: ');
 
     let core_accepts = 0;
 

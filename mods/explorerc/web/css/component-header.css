@@ -1,0 +1,157 @@
+/* Styles for the Header Component */
+
+.saito-header {
+  background: var(--dreamscape); /* Updated variable */
+  display: flex; 
+  align-items: center; 
+  padding: 0 1rem; 
+  min-height: var(--saito-header-height, 4rem); /* Use saito variable or default */
+  color: var(--saito-white);
+}
+
+.saito-header img {
+  height: calc(var(--saito-header-height, 4rem) * 0.6); /* Scale logo with header height */
+  margin-right: 1rem; /* Add space between logo and title */
+}
+
+.saito-header .saito-header-title {
+  margin: 0;
+  font-size: calc(var(--saito-header-height, 4rem)* 0.3);
+  font-weight: 100;
+  padding-top: 11px;
+}
+
+.saito-header .saito-header-nav {
+  /* margin-left: auto; /* Alignment handled by header-controls now */
+}
+
+/* Container for right-aligned controls */
+.header-controls {
+    margin-left: auto; /* Push this container to the right */
+    display: flex; /* Align items like nav and search horizontally */
+    align-items: center;
+    gap: 1rem; /* Space between nav and search if both exist */
+}
+
+/* Search container styling */
+.header-search {
+  position: relative; /* For positioning the icon */
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  padding: 0.4rem 2rem 0.4rem 0.8rem; /* Top/bottom, Right (for icon), Left */
+  border-radius: var(--saito-border-radius, 5px);
+  border: 1px solid var(--saito-border-color-medium, #ccc);
+  background-color: var(--saito-background-color, #fff);
+  color: var(--saito-text-color, #333);
+  min-width: 375px; /* Increased width by 50% */
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease; /* Add transition for focus */
+}
+
+/* Remove default focus outline */
+.search-input:focus {
+  outline: none;
+  border-color: var(--saito-primary, #1890ff); /* Optional: change border color on focus */
+  /* box-shadow: none; /* Uncomment if you also want to remove any potential default box-shadow */
+}
+
+.search-input::placeholder {
+  color: var(--saito-text-color-muted, #999);
+}
+
+.search-icon {
+  position: absolute;
+  right: 0.6rem; /* Position icon inside the input padding area */
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none; /* Icon doesn't block input clicks */
+  display: inline-flex; /* Align SVG within span */
+  align-items: center;
+  color: var(--saito-text-color-muted, #777); /* Icon color */
+}
+
+.search-icon svg {
+  width: 1.1em;
+  height: 1.1em;
+} 
+
+/* Hamburger Menu Styles */
+.header-menu-container {
+  position: relative; /* For dropdown positioning */
+}
+
+.hamburger-button {
+  background: none;
+  border: none;
+  color: var(--saito-white, white);
+  cursor: pointer;
+  padding: 0.5rem; /* Add some padding */
+  display: inline-flex; /* Ensure SVG is aligned */
+  align-items: center;
+  justify-content: center;
+}
+
+.hamburger-button svg {
+  width: 1.5em; /* Adjust size as needed */
+  height: 1.5em;
+}
+
+.header-dropdown-menu {
+  position: absolute;
+  top: 100%; /* Position below the button */
+  right: 0; 
+  background-color: var(--saito-background-overlay, white);
+  border: 1px solid var(--saito-border-color, #ccc);
+  border-radius: var(--saito-border-radius, 4px);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  list-style: none;
+  padding: 0.5rem 0;
+  margin: 0.25rem 0 0 0;
+  min-width: 150px; /* Ensure minimum width */
+  z-index: 100; /* Ensure it appears above other content */
+  display: block; /* Will be controlled by React state */
+}
+
+.header-dropdown-menu li a {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: var(--saito-text-color, #333);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.header-dropdown-menu li a:hover {
+  background-color: var(--saito-background-highlight, #f0f0f0);
+}
+
+/* Hide menu initially (handled by React state, CSS only for fallback) */
+/* .header-dropdown-menu { display: none; } */ 
+
+@media (max-width: 900px) { 
+  .saito-header {
+    flex-wrap: wrap;
+    row-gap: 1rem;
+    padding: 1rem 5rem;
+    justify-content: center;
+  }
+
+  .header-controls {
+    margin: unset; /* Or margin: 0; if you prefer */
+  }
+
+  /* Add other responsive adjustments here if needed */
+}
+
+@media (max-width: 500px) { 
+  .saito-header img {
+    transform: scale(0.8);
+    transform-origin: right;
+}
+.saito-header .saito-header-title {
+  transform: scale(0.8);
+  transform-origin: left;
+}
+}

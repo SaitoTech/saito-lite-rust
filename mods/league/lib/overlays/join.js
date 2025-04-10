@@ -67,7 +67,7 @@ class JoinLeague {
 
 		if (league_join_btn) {
 			league_join_btn.onclick = async (e) => {
-				window.history.pushState('', '', window.location.pathname);
+				window.history.replaceState('', '', window.location.pathname);
 				e.preventDefault();
 
 				let league_id = e.target.getAttribute('data-id');

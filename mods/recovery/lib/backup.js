@@ -17,13 +17,10 @@ class Backup {
 		);
 
 		app.connection.on('recovery-backup-loader-overlay-render-request',
-			async (obj) => {
-				let msg = null;
-				if (typeof obj.msg != 'undefined') {
-					msg = obj.msg;
-					app.options.wallet.backup_required = msg;
-					app.wallet.saveWallet();
-				}
+			async (msg) => {
+
+				app.options.wallet.backup_required = msg;
+				app.wallet.saveWallet();
 
 				this.render();
 				await this.showLoaderOverlay(msg);
