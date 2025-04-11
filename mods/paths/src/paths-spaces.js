@@ -119,6 +119,12 @@
   }
 
 
+
+  checkReverseSupplyStatus(faction, spacekey) {
+    return this.checkSupplyStatus(faction, spacekey);
+  }
+
+
   checkSupplyStatus(faction, spacekey) {
 
     this.game.spaces[spacekey].supply = {};
@@ -381,7 +387,6 @@
   returnSpaces() {
 
     let spaces = {};
-
 
 //
 // ENGLAND

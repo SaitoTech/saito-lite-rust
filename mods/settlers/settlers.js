@@ -699,6 +699,8 @@ class Settlers extends GameTemplate {
 		stats.discarded = {};
 		stats.robbed = {};
 		stats.blocked = {};
+		stats.banked = {}; // out
+		stats.traded = {}; // in
 		stats.move_bandit = new Array(this.game.players.length);
 		stats.move_bandit.fill(0);
 
@@ -721,6 +723,8 @@ class Settlers extends GameTemplate {
 			stats.discarded[r] = array.slice();
 			stats.robbed[r] = array.slice();
 			stats.blocked[r] = array.slice();
+			stats.banked[r] = array.slice();
+			stats.traded[r] = array.slice();
 		}
 
 		stats.history = [];

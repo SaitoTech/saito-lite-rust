@@ -214,13 +214,13 @@ class ChatPopup {
 		//
 		// calculate some values to determine position on screen...
 		//
-		let x_offset = 1000000;
+		let x_offset = 0;
 		let popups_on_page = 0;
 
 		document.querySelectorAll('.chat-container').forEach((el) => {
 			popups_on_page++;
 			var rect = el.getBoundingClientRect();
-			if (rect.left < x_offset) {
+			if (rect.left > x_offset) {
 				x_offset = rect.left;
 			}
 		});
@@ -273,8 +273,8 @@ class ChatPopup {
 			//
 			if (!this.container && popups_on_page > 0) {
 				let obj = document.querySelector(popup_qs);
-				let x_pos = x_offset - obj.getBoundingClientRect().width - 10;
-				x_pos = Math.max(0, x_pos);
+				let x_pos = x_offset + 100;
+				x_pos = Math.min(window.innerWidth - 200, x_pos);
 				obj.style.left = x_pos + 'px';
 			}
 

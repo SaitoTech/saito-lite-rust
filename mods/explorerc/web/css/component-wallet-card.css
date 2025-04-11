@@ -1,0 +1,115 @@
+/* Styles for WalletCard Component - Now relies on NodeInfo styles */
+
+/* Remove styles that are now handled by node-info.css */
+/* .wallet-card { ... } */ 
+/* .wallet-info-value { ... } */
+
+/* Keep only styles specific to the Slips section */
+
+/* Slips Section within node-info-body */
+.slips-section {
+  margin-top: 1rem; 
+  border-top: 1px solid var(--saito-border-color-light, #eee);
+  padding-top: 1rem; 
+}
+
+.slips-toggle {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  gap: 0.4em;
+  font-weight: 500; /* Keep slightly bold for emphasis? */
+  margin-bottom: 0.5rem;
+  color: var(--saito-text-color-secondary, #555);
+}
+
+.slips-toggle-icon {
+  display: inline-flex;
+  align-items: center;
+  transition: transform 0.2s ease-in-out;
+}
+
+.slips-toggle-icon svg {
+  width: 1.2em;
+  height: 1.2em;
+  fill: var(--saito-text-color-muted, #777);
+}
+
+.slips-toggle-icon.expanded {
+  transform: rotate(180deg);
+}
+
+/* Slip Table Container */
+.slips-table-container {
+  margin-top: 0.5rem;
+  max-height: 400px; 
+  overflow-y: auto;
+  border: 1px solid var(--saito-border-color-light, #eee);
+  border-radius: var(--saito-border-radius-small, 4px);
+}
+
+.slips-table {
+  width: 100%;
+  table-layout: fixed; /* Use fixed layout for predictable columns */
+}
+
+.slips-table th {
+  text-align: left;
+  background-color: transparent;
+  position: sticky; 
+  top: 0;
+  border-bottom-width: 2px;
+  border-top: 1px solid var(--saito-border-color-light, #eee); /* Add top border for visual separation */
+  padding: 0.5rem 0.75rem; /* Ensure consistent padding with td */
+}
+
+.slips-table td,
+.slips-table th {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--saito-border-color-light, #eee);
+  font-size: 0.9em;
+  overflow: hidden; /* Hide overflow within fixed cells */
+  text-overflow: ellipsis; /* Add ellipsis to overflowing cells */
+}
+
+/* Assign widths - Let Block take remaining space */
+.slips-table th:nth-child(1),
+.slips-table td:nth-child(1) { /* Block */
+  width: auto; /* Let this column be flexible */
+  white-space: nowrap; /* Keep block ID from wrapping */
+}
+.slips-table th:nth-child(2),
+.slips-table td:nth-child(2) { /* TX */
+  width: 5em; /* Fixed width */
+  text-align: center; /* Center TX/Slip numbers */
+}
+.slips-table th:nth-child(3),
+.slips-table td:nth-child(3) { /* Slip */
+  width: 5em; /* Fixed width */
+  text-align: center; /* Center TX/Slip numbers */
+}
+
+/* Right-align and set equal fixed width for Nolan and Saito */
+.slips-table th:nth-child(4),
+.slips-table td:nth-child(4), /* Nolan */
+.slips-table th:nth-child(5),
+.slips-table td:nth-child(5) { /* Saito */
+  text-align: right;
+  width: 12em; /* Updated width */
+  white-space: nowrap; /* Prevent wrapping in number columns */
+}
+
+.slips-table tr:last-child td {
+  border-bottom: none;
+}
+
+.slips-table td.mono-data {
+  word-break: break-all;
+}
+
+/* Styles for the loading/error messages within the card */
+.node-info-body .error-message {
+    color: var(--saito-warning, red);
+    font-style: italic;
+} 

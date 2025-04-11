@@ -3,6 +3,35 @@
     this.zoom_overlay.hide();
   }
 
+  shakeSpacekey(spacekey) {
+    let qs = `.space.${spacekey}`;
+    let element = document.querySelector(qs);
+
+    if (!element) { return; }
+
+    if (element.classList.contains("shake")) return;
+
+    element.classList.add("shake");
+
+    setTimeout(() => { 
+      element.classList.remove("shake");
+    }, 1500);
+  }
+
+  shakeUnit(skey, ukey) {
+
+    let qs = `.${ukey}`;
+    document.querySelectorAll(qs).forEach((element) => {
+
+      if (element.classList.contains("shake")) return;
+      element.classList.add("shake");
+
+      setTimeout(() => { 
+        element.classList.remove("shake");
+      }, 1500);
+    });
+
+  }
 
   displayCustomOverlay(c="", msg="") {
 
@@ -153,7 +182,7 @@ console.log("!");
 
   displaySpace(key) {
 
-    if (key == "arbox" || key == "crbox") { return; }
+    if (key == "arbox" || key == "crbox" || key == "aeubox" || key == "ceubox") { return; }
 
     try {
 
@@ -172,8 +201,7 @@ console.log("!");
       // activated for movement
       //
       if (space.activated_for_movement) {
-console.log("space is activated for movement: " + key);  
-      html += `<img src="/paths/img/tiles/activate_move.png" class="activation-tile" />`;
+        html += `<img src="/paths/img/tiles/activate_move.png" class="activation-tile" />`;
       }
       if (space.activated_for_combat) {
         html += `<img src="/paths/img/tiles/activate_attack.png" class="activation-tile" />`;
@@ -440,6 +468,7 @@ console.log("err: " + err);
   }
 
   displayMandatedOffensiveTracks() {
+/****
           if (central == 2) { this.game.state.mandated_offensives.central = "AH IT"; }
           if (central == 3) { this.game.state.mandated_offensives.central = "TU"; }
           if (central == 4) { this.game.state.mandated_offensives.central = "GE"; }
@@ -451,6 +480,7 @@ console.log("err: " + err);
           if (allies == 4)  { this.game.state.mandated_offensives.allies = "IT"; }
           if (allies == 5)  { this.game.state.mandated_offensives.allies = "IT"; }
           if (allies == 6)  { this.game.state.mandated_offensives.allies = "RU"; }
+****/
   }
 
   displayUSCommitmentTrack() {
@@ -528,16 +558,16 @@ console.log("err: " + err);
 
       for (let z = 0; z < this.game.spaces["arbox"].units.length; z++) {
 	if (this.game.spaces["arbox"].units[z].damaged) {
-          arb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.spaces["arbox"].units[z].back}" />`;
+          arb.innerHTML += `<img class="army-tile ${this.game.spaces["arbox"].units[z].key}" src="/paths/img/army/${this.game.spaces["arbox"].units[z].back}" />`;
         } else {
-          arb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.spaces["arbox"].units[z].front}" />`;
+          arb.innerHTML += `<img class="army-tile ${this.game.spaces["arbox"].units[z].key}" src="/paths/img/army/${this.game.spaces["arbox"].units[z].front}" />`;
 	}
       }
       for (let z = 0; z < this.game.spaces["crbox"].units.length; z++) {
-	if (this.game.spaces["arbox"].units[z].damaged) {
-          crb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.spaces["crbox"].units[z].back}" />`;
+	if (this.game.spaces["crbox"].units[z].damaged) {
+          crb.innerHTML += `<img class="army-tile ${this.game.spaces["crbox"].units[z].key}" src="/paths/img/army/${this.game.spaces["crbox"].units[z].back}" />`;
         } else {
-          crb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.spaces["crbox"].units[z].front}" />`;
+          crb.innerHTML += `<img class="army-tile ${this.game.spaces["crbox"].units[z].key}" src="/paths/img/army/${this.game.spaces["crbox"].units[z].front}" />`;
 	}
       }
 
@@ -558,10 +588,10 @@ console.log("err: " + err);
       crb.innerHTML = "";
 
       for (let z = 0; z < this.game.state.eliminated['allies'].length; z++) {
-        arb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.state.eliminated['allies'][z]}.png" />`;
+        arb.innerHTML += `<img class="army-tile ${this.game.state.eliminated["allies"][z].key}" src="/paths/img/army/${this.game.state.eliminated['allies'][z]}.png" />`;
       }
       for (let z = 0; z < this.game.state.eliminated['central'].length; z++) {
-        crb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.state.eliminated['central'][z]}.png" />`;
+        crb.innerHTML += `<img class="army-tile ${this.game.state.eliminated["central"][z].key}" src="/paths/img/army/${this.game.state.eliminated['central'][z]}.png" />`;
       }
 
     } catch (err) {

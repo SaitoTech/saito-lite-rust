@@ -112,6 +112,8 @@ try {
 			let was_this_guy_besieged = false;
 			let can_i_kill_this_guy = false;
 
+console.log("HERE: " + was_this_guy_besieged + " --- " + factionspace + " -- " + original_factionspace);
+
 			if (factionspace !== original_factionspace) {
 				was_this_guy_besieged = true;
 			}

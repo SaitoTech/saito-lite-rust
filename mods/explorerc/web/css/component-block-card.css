@@ -1,0 +1,450 @@
+/* Styles for the BlockCard component */
+
+.block-list {
+  margin-top: 1.5rem; /* Space above the list */
+}
+
+.block-card {
+  background-color: var(--saito-background-color, #ffffff);
+  border: 1px solid var(--saito-border-color, #e0e0e0);
+  border-radius: var(--saito-border-radius, 6px); /* Slightly smaller radius */
+  margin-bottom: 0.8rem; /* Reduced space between cards */
+  padding: 0.8rem; /* Reduced inner padding */
+  box-shadow: var(--saito-box-shadow-small, 0 2px 5px rgba(0,0,0,0.05));
+  transition: box-shadow 0.3s ease;
+  overflow: hidden; /* Ensure child margins don't collapse outside */
+}
+
+.block-card:hover {
+  box-shadow: var(--saito-box-shadow-medium, 0 4px 10px rgba(0,0,0,0.08));
+}
+
+.block-card-header {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: var(--saito-text-color, #333);
+  padding-bottom: 0.5rem; /* Reduced padding */
+  margin-bottom: 0.5rem; /* Reduced margin */
+  border-bottom: 1px solid var(--saito-border-color-light, #eee);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem; /* Reduced gap */
+}
+
+.block-header-id {
+  flex-grow: 1;
+}
+
+.block-header-indicators {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Reduced gap */
+  flex-shrink: 0;
+}
+
+.indicator {
+  font-size: 0.8em; /* Slightly smaller font */
+  padding: 0.15em 0.4em; /* Reduced padding */
+  border-radius: 4px;
+  background-color: var(--saito-background-secondary, #f0f0f0);
+  border: 1px solid var(--saito-border-color, #e0e0e0);
+  cursor: default;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+}
+
+.indicator-chain {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}
+
+.indicator-gt {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}
+
+.indicator .heroicon {
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+}
+
+.indicator-chain .heroicon {
+    stroke: var(--saito-red, #d9534f);
+}
+
+.indicator-gt .heroicon {
+    stroke: var(--saito-orange, #f0ad4e);
+}
+
+.block-card.on-longest-chain {
+  border-left: 4px solid var(--saito-primary, #1890ff);
+}
+
+.block-card-body p {
+  margin-bottom: 0.4rem; /* Reduced space between paragraphs */
+  line-height: 1.5;
+  color: var(--saito-text-color-secondary, #555);
+  display: flex;
+  align-items: flex-start; /* Align items to the top */
+}
+
+.block-card-body p strong {
+  color: var(--saito-text-color, #333);
+  margin-right: 0.5em;
+}
+
+.block-card-footer {
+  font-size: 0.9em;
+  color: var(--saito-text-color-muted, #777);
+  padding-top: 0.5rem; /* Reduced padding */
+  margin-top: 0.5rem; /* Reduced margin */
+  border-top: 1px solid var(--saito-border-color-light, #eee);
+}
+
+.mono-data {
+  font-family: var(--saito-font-monospace, monospace);
+  background-color: var(--saito-background-secondary, #f5f5f5);
+  padding: 0.2em 0.5em;
+  border-radius: 4px;
+  font-size: 0.95em;
+  word-break: break-all; /* Prevent long strings from breaking layout */
+  line-height: 1.4; /* Adjust for better readability within lines */
+  display: inline-block; /* Allows padding/background */
+  margin-left: 0.3em;
+}
+
+.block-card-empty {
+  padding: 2rem;
+  text-align: center;
+  color: var(--saito-text-color-muted, #999);
+  border: 1px dashed var(--saito-border-color, #ccc);
+  border-radius: var(--saito-border-radius, 8px);
+  background-color: var(--saito-background-secondary, #f9f9f9);
+}
+
+.load-more-button {
+  display: block;
+  width: 100%;
+  padding: 0.8rem 1rem;
+  margin-top: 1rem;
+  font-size: 1em;
+  font-weight: 500;
+  text-align: center;
+  color: var(--saito-button-primary-color, #ffffff);
+  background-color: var(--saito-button-primary-background, #007bff);
+  border: 1px solid var(--saito-button-primary-border-color, #007bff);
+  border-radius: var(--saito-border-radius, 5px);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.load-more-button:hover {
+  background-color: var(--saito-button-primary-background-hover, #0056b3);
+  border-color: var(--saito-button-primary-border-color-hover, #0056b3);
+}
+
+.load-more-button:active {
+  background-color: var(--saito-button-primary-background-active, #004085);
+  border-color: var(--saito-button-primary-border-color-active, #004085);
+}
+
+/* Styles for Loading and End Indicators */
+.block-list-loading,
+.block-list-end {
+  text-align: center;
+  padding: 1.5rem;
+  margin-top: 1rem;
+  color: var(--saito-text-color-muted, #888);
+  font-style: italic;
+  border-top: 1px dashed var(--saito-border-color-light, #eee);
+}
+
+/* Style for the new label span */
+.block-card-label {
+  display: inline-block; /* Allows width and margin */
+  flex: 0 0 100px; /* Slightly reduced label width */
+  margin-right: 0.6em; /* Reduced space */
+  font-weight: normal; /* Remove bolding */
+  color: var(--saito-text-color, #333);
+  white-space: nowrap; /* Prevent label text from wrapping */
+}
+
+/* Container for data + copy icon */
+.data-copy-container {
+    display: flex; /* Align data and icon */
+    align-items: center; /* Center items vertically */
+    flex: 1 1 auto; /* Allow container to grow and shrink */
+    min-width: 0; /* Important for allowing truncation within flex item */
+}
+
+/* Ensure mono-data within block card aligns and truncates */
+.block-card-body .mono-data {
+  /* Inherit general mono-data styles */
+  word-break: break-all; /* Allow breaking for non-truncated values like timestamp initially */
+}
+
+/* Truncation class - Applied to code tags within data-copy-container or directly */
+.mono-data.truncate {
+    white-space: nowrap;      /* Prevent wrapping */
+    overflow: hidden;         /* Hide overflowing content */
+    text-overflow: ellipsis;  /* Display ellipsis (...) */
+    display: block;           /* Necessary for overflow */
+    min-width: 0;             /* Important for truncation within flex */
+    flex: 1 1 auto;           /* Allow truncated element to take space in flex container */
+    width: 0;                 /* Ensure the element takes space */
+    /* vertical-align: bottom; /* Adjust alignment if needed */
+}
+
+/* Specific handling for timestamp which isn't in data-copy-container */
+.block-data-row > .mono-data.truncate {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    min-width: 0;
+}
+
+/* Copy Icon styles */
+.copy-icon {
+    cursor: pointer;
+    margin-left: 0.4em; /* Reduced space */
+    /* font-size: 0.9em; /* Remove if using fixed SVG size */
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+    display: inline-flex; /* Aligns SVG nicely */
+    align-items: center; /* Center SVG vertically if needed */
+}
+
+.copy-icon svg {
+    /* width: 1em; /* Control size relative to parent font-size */
+    /* height: 1em; */
+    width: 16px; /* Use fixed pixel size */
+    height: 16px;
+    /* stroke: currentColor; /* Inherit color */ /* Already set in SVG */
+}
+
+.copy-icon:hover {
+    opacity: 1.0;
+}
+
+/* Copy feedback style */
+.copy-feedback {
+    margin-left: 1em;
+    font-size: 0.85em;
+    color: var(--saito-success, green);
+    font-style: italic;
+}
+
+/* Two-column layout for block card body on wider screens */
+@media (min-width: 751px) {
+  .block-card-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two equal columns */
+    gap: 0.3rem 1rem; /* Reduced row gap */
+  }
+
+  .block-card-body .data-copy-container {
+      overflow: hidden; /* Ensure the container respects grid boundaries for truncation */
+  }
+
+  /* Optional: Adjust paragraph margin within grid if needed */
+  .block-card-body p {
+     margin-bottom: 0; /* Remove bottom margin as gap handles spacing */
+  }
+}
+
+/* Styles for Transaction Toggle */
+.tx-toggle-container {
+  display: inline-flex; /* Align icon and text */
+  align-items: center;
+  cursor: pointer; /* Indicate clickable */
+  user-select: none; /* Prevent text selection on click */
+  gap: 0.3em; /* Reduced gap */
+}
+
+.tx-toggle-icon {
+  display: inline-flex; /* Use flex to center SVG if needed */
+  align-items: center;
+  /* Size will be controlled by SVG width/height */
+  transition: transform 0.2s ease-in-out; /* Smooth rotation */
+}
+
+/* Style the SVG inside the icon span */
+.tx-toggle-icon svg {
+  width: 1.6em; /* Increased size */
+  height: 1.6em;
+  fill: var(--saito-red, #d9534f); /* Red color */
+}
+
+/* Rotate the icon when expanded */
+.tx-toggle-icon.expanded {
+  transform: rotate(180deg);
+}
+
+/* Styles for Transaction List Area */
+.block-card-tx-list {
+  margin-top: 0.75rem; /* Reduced space */
+  padding-top: 0.75rem; /* Reduced space */
+  border-top: 1px solid var(--saito-border-color-light, #eee);
+  /* Add more styling for tx items later */
+}
+
+/* Styles for Individual Transaction Cards */
+.transaction-card {
+  background-color: var(--saito-background-light, #f9f9f9);
+  border: 1px solid var(--saito-border-color-lighter, #e9e9e9);
+  border-radius: var(--saito-border-radius-small, 3px); /* Smaller radius */
+  padding: 0.6rem; /* Reduced padding */
+  margin-bottom: 0.4rem; /* Reduced space */
+  font-size: 0.85em; /* Slightly smaller */
+}
+
+.transaction-card:last-child {
+  margin-bottom: 0;
+}
+
+.tx-card-header {
+  font-weight: 600;
+  color: var(--saito-text-color-secondary, #555);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  /* border-bottom: 1px solid var(--saito-border-color-lighter, #e9e9e9); */ /* Removed as header is commented out */
+}
+
+/* Style for the flex row container */
+.tx-body-row {
+  display: flex;
+  flex-wrap: wrap; /* Allow items to wrap */
+  gap: 0.3rem 0.8rem; /* Reduced gaps */
+  align-items: baseline; /* Align items based on their text baseline */
+}
+
+/* Style for each item in the row */
+.tx-detail-item {
+  display: flex;
+  align-items: baseline; /* Align label and data */
+  /* padding-right: 1rem; Spacing now handled by gap in .tx-body-row */
+}
+
+/* Assign fixed widths/basis to each column type */
+.tx-detail-index {
+  flex: 0 0 60px; /* Reduced basis */
+}
+
+.tx-detail-type {
+  flex: 0 0 130px; /* Reduced basis */
+}
+
+.tx-detail-sender {
+  flex: 1 1 180px; /* Reduced basis */
+  min-width: 0; /* Allow shrinking below basis if needed for wrapping */
+}
+
+/* Label within the detail item - ensure consistent width */
+.tx-detail-item .tx-card-label {
+  flex: 0 0 40px; /* Reduced label width */
+  margin-right: 0.3em; /* Reduced space */
+  white-space: nowrap; /* Prevent label itself from wrapping */
+  font-weight: normal; /* Remove bolding */
+  color: var(--saito-text-color-secondary, #666); /* Ensure color is set */
+}
+
+/* Data within the detail item */
+.tx-detail-item .tx-data {
+  flex: 1 1 auto; /* Allow data to fill remaining space in the fixed-width item */
+  min-width: 0; /* Crucial for truncation inside flex item */
+}
+
+/* Ensure mono-data still truncates correctly within the new structure */
+.tx-detail-item .mono-data.truncate {
+  display: block; /* Or inline-block */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* width: 100%; */ /* Take full width of its container */
+}
+
+.transaction-card-empty {
+  text-align: center;
+  color: var(--saito-text-color-muted, #999);
+  padding: 1rem;
+}
+
+/* Chevron specific positioning */
+.tx-detail-chevron {
+  margin-left: auto; /* Push chevron to the right */
+  padding-left: 0.4rem; /* Reduced space */
+  flex-shrink: 0; /* Prevent chevron from shrinking */
+  transition: transform 0.2s ease-in-out;
+}
+
+.tx-detail-chevron svg {
+  width: 1em;
+  height: 1em;
+  fill: var(--saito-text-color-muted, #777); /* Subdued color for this chevron */
+}
+
+.tx-detail-chevron.expanded {
+  transform: rotate(180deg);
+}
+
+/* Container for the JSON viewer */
+.tx-json-viewer {
+  margin-top: 0.6rem; /* Reduced space */
+  padding: 0.6rem; /* Reduced padding */
+  border-top: 1px solid var(--saito-border-color-lighter, #e9e9e9);
+  background-color: var(--saito-background-very-light, #fafafa); /* Slightly different background */
+  border-radius: 0 0 var(--saito-border-radius-small, 4px) var(--saito-border-radius-small, 4px); /* Round bottom corners */
+}
+
+/* Basic styling for the json-viewer component itself (adjust as needed) */
+.json-viewer {
+    font-size: 0.9em !important; /* Override default if needed */
+    line-height: 1.4 !important;
+}
+
+/* Style for clickable addresses */
+.clickable-address {
+  text-decoration: underline;
+  text-decoration-color: var(--saito-primary-light, #a0cfff); /* Lighter underline */
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.clickable-address:hover {
+  text-decoration-color: var(--saito-primary, #007bff); /* Darker underline on hover */
+  color: var(--saito-primary, #007bff); /* Optional: change text color on hover */
+}
+
+/* Style for clickable hashes (similar to address) */
+.clickable-hash {
+  text-decoration: underline;
+  text-decoration-color: var(--saito-primary-light, #a0cfff);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.clickable-hash:hover {
+  text-decoration-color: var(--saito-primary, #007bff); 
+  color: var(--saito-primary, #007bff);
+}
+
+/* Styles for TX Refresh Container (when txnCount is 0 initially) */
+.tx-refresh-container {
+  display: inline-flex; 
+  align-items: center;
+  cursor: pointer; 
+  user-select: none; 
+  gap: 0.4em; 
+  /* Reuse indicator styles for the icon within */
+}
+
+.tx-refresh-container .indicator-refresh {
+  /* Ensure proper alignment and spacing if needed */
+  margin-left: 0; /* Override default indicator margin if it exists */
+} 

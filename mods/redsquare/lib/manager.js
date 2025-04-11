@@ -364,9 +364,9 @@ class TweetManager {
 
 	renderProfile(publicKey) {
 
-		if (this.mode == "profile" && publicKey == this.profile?.publicKey){
-			return;
-		}
+		//if (this.mode == "profile" && publicKey == this.profile?.publicKey){
+		//	return;
+		//}
 
 		this.render('profile');
 
@@ -588,6 +588,9 @@ class TweetManager {
 	renderTweet(tweet) {
 		
 		this.render('tweet');
+
+		// If searching for a tweet by sig, make sure it will be shown
+		tweet.curated = 1;
 
 		// query the whole thread
 		let thread_id = tweet.thread_id || tweet.parent_id || tweet.tx.signature;

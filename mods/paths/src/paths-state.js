@@ -1,6 +1,7 @@
 
 
   onNewRound() {
+    this.game.state.events.wireless_intercepts = 0;
   }
 
   onNewTurn() {
@@ -23,6 +24,16 @@
       if (redisplay) { this.displaySpace(key); }
     }
 
+    this.game.state.allies_passed = 0;
+    this.game.state.central_passed = 0;
+
+    this.game.state.ccs = {};
+    this.game.state.cc_central_selected = [];
+    this.game.state.cc_central_active = [];
+    this.game.state.cc_central_played_this_round = [];
+    this.game.state.cc_allies_selected = [];
+    this.game.state.cc_allies_played_this_round = [];
+
     this.game.state.rp = {};
     this.game.state.rp['central'] = {};
     this.game.state.rp['allies'] = {};
@@ -38,7 +49,7 @@
     this.game.state.rp['allies']['ru'] = 0;
     this.game.state.rp['allies']['ap'] = 0;
 
-    this.game.state.events = {};
+    this.game.state.events.wireless_intercepts = 0;
 
   }
 
@@ -52,8 +63,17 @@
     //
     for (let key in this.game.spaces) { if (this.game.spaces[key].vp > 0 && this.game.spaces[key].control == "central") { vp++; } }
 
+    if (this.game.state.events.rape_of_belgium) { vp--; }
+    if (this.game.state.events.belgium) { 
+      if (this.game.state.turn >= 5) { vp--; }
+      if (this.game.state.turn >= 9) { vp--; }
+      if (this.game.state.turn >= 13) { vp--; }
+      if (this.game.state.turn >= 17) { vp--; }
+    }
+    if (this.game.state.events.reichstag_truce) { vp++; }
+
     this.game.state.general_records_track.vp = vp;
-   
+  
     return vp;
 
   }
@@ -99,6 +119,9 @@
     state.reserves['central'] = ["ge_army04", "ge_army06", "ge_army08"];
     state.reserves['allies'] = ["fr_army01", "br_corps", "ru_army09", "ru_army10"];
 
+    state.allies_passed = 0;
+    state.central_passed = 0;
+
     state.eliminated = {};
     state.eliminated['central'] = [];
     state.eliminated['allies'] = [];
@@ -119,6 +142,14 @@
     state.rp['allies']['ap'] = 0;
 
     state.active_player = -1;
+
+    state.ccs = {};
+    state.cc_central_selected = [];
+    state.cc_central_active = [];
+    state.cc_central_played_this_round = [];
+    state.cc_allies_selected = [];
+    state.cc_allies_active = [];
+    state.cc_allies_played_this_round = [];
 
     state.central_limited_war_cards_added = false;
     state.allies_limited_war_cards_added = false;

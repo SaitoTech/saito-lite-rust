@@ -77,12 +77,13 @@
 
   }
 
+
   returnMobilizationDeck(type="all") {
     let deck = {};
 
     if (type == "allies" || type == "all") {
 
-   deck['ap01'] = { 
+      deck['ap01'] = { 
         key : 'britishreinforcements',
         img : "cards/card_ap01.svg" ,
         name : "British Reinforcements" ,
@@ -100,9 +101,9 @@
 	  paths_self.displayBoard();
 	  return 1;
 	} ,
-    }
+      }
 	    
-deck['ap02'] = { 
+      deck['ap02'] = { 
         key : 'blockade',
         img : "cards/card_ap02.svg" ,
         name : "Blockade" ,
@@ -119,7 +120,7 @@ deck['ap02'] = {
         } ,
       }
 
-deck['ap03'] = { 
+      deck['ap03'] = { 
         key : 'russianreinforcements',
         img : "cards/card_ap03.svg" ,
         name : "Russian Reinforcements" ,
@@ -140,7 +141,7 @@ deck['ap03'] = {
 	} ,
       }
 
-deck['ap04'] = { 
+      deck['ap04'] = { 
         key : 'pleve',
         img : "cards/card_ap04.svg" ,
         name : "Pleve" ,
@@ -150,12 +151,21 @@ deck['ap04'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  let attacker_units = paths_self.returnAttackerUnits();
+	  let defeder_units = paths_self.returnDefenderUnits();
+	  for (let i = 0; i < attacker_units.length; i++) {
+	    if (attacker_units[i].country === "russia") { paths_self.game.state.combat.attacker_drm++; return 1; }
+	  }
+	  for (let i = 0; i < defender_units.length; i++) {
+	    if (defender_units[i].country === "russia") { paths_self.game.state.combat.defender_drm++; return 1; }
+	  }
+	  return 1; 
+	} ,
       }
 
-
-deck['ap05'] = { 
+      deck['ap05'] = { 
         key : 'putnik',
         img : "cards/card_ap05.svg" ,
         name : "Putnik" ,
@@ -165,11 +175,21 @@ deck['ap05'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  let attacker_units = paths_self.returnAttackerUnits();
+	  let defeder_units = paths_self.returnDefenderUnits();
+	  for (let i = 0; i < attacker_units.length; i++) {
+	    if (attacker_units[i].country === "serbia") { paths_self.game.state.combat.attacker_drm++; return 1; }
+	  }
+	  for (let i = 0; i < defender_units.length; i++) {
+	    if (defender_units[i].country === "serbia") { paths_self.game.state.combat.defender_drm++; return 1; }
+	  }
+	  return 1; 
+	} ,
       }
 
-deck['ap06'] = { 
+      deck['ap06'] = { 
         key : 'withdrawal',
         img : "cards/card_ap06.svg" ,
         name : "Withdrawal" ,
@@ -179,12 +199,14 @@ deck['ap06'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.game.state.combat.withdrawal = 1; 
+	  return 1;
+	} ,
       }
 
-
-deck['ap07'] = { 
+      deck['ap07'] = { 
         key : 'severeweather',
         img : "cards/card_ap07.svg" ,
         name : "Severe Weather" ,
@@ -194,11 +216,23 @@ deck['ap07'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; }
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  let space = paths_self.game.spaces[paths_self.game.state.combat.key];
+	  if (space.terrain == "mountain") {
+	    if ([3,4,7,8,11,12,15,16,19,20].includes(paths_self.game.state.turn)) { 
+	      paths_self.game.state.combat.defender_drm += 2;
+	    }
+	  }
+	  if (space.terrain == "swamp") {
+	    if ([3,5,7,9,11,13,15,17,19].includes(paths_self.game.state.turn)) { 
+	      paths_self.game.state.combat.defender_drm += 2;
+	    }
+	  }
+	} ,
       }
 
-deck['ap08'] = { 
+      deck['ap08'] = { 
         key : 'russianreinforcements',
         img : "cards/card_ap08.svg" ,
         name : "Russian Reinforcements" ,
@@ -219,7 +253,7 @@ deck['ap08'] = {
 	} ,
       }
 
-deck['ap09'] = { 
+      deck['ap09'] = { 
         key : 'moltke',
         img : "cards/card_ap09.svg" ,
         name : "Moltke" ,
@@ -236,7 +270,7 @@ deck['ap09'] = {
 	} ,
       }
 
-deck['ap10'] = { 
+      deck['ap10'] = { 
         key : 'frenchreinforcements',
         img : "cards/card_ap10.svg" ,
         name : "French Reinforcements" ,
@@ -257,7 +291,7 @@ deck['ap10'] = {
 	} ,
       }
 
-deck['ap11'] = { 
+      deck['ap11'] = { 
         key : 'russianreinforcements',
         img : "cards/card_ap11.svg" ,
         name : "Russian Reinforcements" ,
@@ -278,7 +312,7 @@ deck['ap11'] = {
 	} ,
       }
 
-deck['ap12'] = { 
+      deck['ap12'] = { 
         key : 'entrench',
         img : "cards/card_ap12.svg" ,
         name : "Entrench" ,
@@ -337,7 +371,7 @@ deck['ap12'] = {
 	} ,
       }
 
-deck['ap13'] = { 
+      deck['ap13'] = { 
         key : 'rapeofbelgium',
         img : "cards/card_ap13.svg" ,
         name : "Rape Of Belgium" ,
@@ -348,8 +382,12 @@ deck['ap13'] = {
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.events.guns_of_august == 1 && paths_self.game.state.general_records_track.central_war_status < 4) { return 1; } return 0; } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.game.state.events.rape_of_belgium = 1;
+	  paths_self.displayGeneralRecordsTrack();
+	  return 1;
+        } ,
       }
 
 deck['ap14'] = { 
@@ -391,6 +429,7 @@ deck['ap14'] = {
         canEvent : function(paths_self, faction) { if (paths_self.game.state.turn == 1 && paths_self.game.state.round == 1) { return 1; } return 0; } ,
         onEvent : function(paths_self, faction) {
 
+	  paths_self.game.state.events.guns_of_august = 1;
 	  paths_self.game.spaces['liege'].fort = -1;
 	  paths_self.game.spaces['liege'].control = "central";
 	  paths_self.moveUnitToSpacekey("ge_army01", "liege");
@@ -399,6 +438,8 @@ deck['ap14'] = {
 	  paths_self.game.spaces['koblenz'].activated_for_combat = 1;	    
 	  paths_self.game.queue.push("player_play_combat\tcentral");
 	  paths_self.displayBoard();
+	  paths_self.shakeSpacekey("liege");
+	  paths_self.shakeSpacekey("koblenz");
 
 	  return 1;
 
@@ -415,8 +456,12 @@ deck['ap14'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) { 
+	  paths_self.game.state.events.wireless_intercepts = 1;
+	  paths_self.game.queue.push("combat_card\tcentral\tcp02");
+	  return 1;
+	} ,
       }
 
       deck['cp03'] = { 
@@ -429,11 +474,20 @@ deck['ap14'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+          let attacker_units = this.returnAttackerUnits();
+          let defender_units = this.returnDefenderUnits();
+          let valid_option = false;
+          for (let i = 0; i < attacker_units.length; i++) { if (attacker_units[i].country == "germany") { valid_option = true; } }
+          for (let i = 0; i < defender_units.length; i++) { if (defender_units[i].country != "russia") { valid_option = false; } }
+          if (valid_option == true) {
+            paths_self.game.state.combat.attacker_drm += 1;
+	  }
+	} ,
       }
 
- deck['cp04'] = { 
+      deck['cp04'] = { 
         key : 'severeweather',
         img : "cards/card_cp04.svg" ,
         name : "Severe Weather" ,
@@ -443,11 +497,24 @@ deck['ap14'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) { 
+	  let space = paths_self.game.spaces[paths_self.game.state.combat.key];
+	  if (space.terrain == "mountain") {
+	    if ([3,4,7,8,11,12,15,16,19,20].includes(paths_self.game.state.turn)) { 
+	      paths_self.game.state.combat.defender_drm += 2;
+	    }
+	  }
+	  if (space.terrain == "swamp") {
+	    if ([3,5,7,9,11,13,15,17,19].includes(paths_self.game.state.turn)) { 
+	      paths_self.game.state.combat.defender_drm += 2;
+	    }
+	  }
+	  return 1;
+	} ,
       }
 
-   deck['cp05'] = { 
+      deck['cp05'] = { 
         key : 'landwehr',
         img : "cards/card_cp05.svg" ,
         name : "Landwehr" ,
@@ -457,11 +524,15 @@ deck['ap14'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) { 
+	  this.game.queue.push(`rp\tcentral\tcp05`);
+	  alert("TODO - +2 Landwehr bonus");
+	  return 1;
+	} ,
       }
 
-   deck['cp06'] = { 
+      deck['cp06'] = { 
         key : 'entrench',
         img : "cards/card_cp06.svg" ,
         name : "Entrench" ,
@@ -522,7 +593,7 @@ deck['ap14'] = {
 	} ,
       }
 
-deck['cp07'] = { 
+      deck['cp07'] = { 
         key : 'germanreinforcements',
         img : "cards/card_cp07.svg" ,
         name : "German Reinforcements" ,
@@ -543,7 +614,7 @@ deck['cp07'] = {
 	} ,
       }
 
-   deck['cp08'] = { 
+      deck['cp08'] = { 
         key : 'racetothesea',
         img : "cards/card_cp08.svg" ,
         name : "Race to the Sea" ,
@@ -553,11 +624,14 @@ deck['cp07'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) { 
+	  paths_self.game.state.events.race_to_the_sea = 1; 
+	  return 1;
+	} ,
       }
 
-   deck['cp09'] = { 
+      deck['cp09'] = { 
         key : 'reichstagtruce',
         img : "cards/card_cp09.svg" ,
         name : "Reichstag Truce" ,
@@ -568,10 +642,15 @@ deck['cp07'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.general_records_track.central_war_status > 10) { return 0; } return 1; } ,
+        onEvent : function(paths_self, faction) {
+          paths_self.game.state.events.reichstag_truce = 1;
+	  paths_self.displayGeneralRecordsTrack();
+          return 1;
+        } ,
       }
-deck['cp10'] = { 
+
+      deck['cp10'] = { 
         key : 'sudarmy',
         img : "cards/card_cp10.svg" ,
         name : "Sud Army" ,
@@ -587,7 +666,8 @@ deck['cp10'] = {
 	  return 1;
 	} ,
       }
-deck['cp11'] = { 
+
+      deck['cp11'] = { 
         key : 'oberost',
         img : "cards/card_cp11.svg" ,
         name : "Oberost" ,
@@ -598,11 +678,14 @@ deck['cp11'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.game.state.events.oberost = 1;
+	  return 1;
+	} ,
       }
 
-deck['cp12'] = { 
+      deck['cp12'] = { 
         key : 'germanreinforcements',
         img : "cards/card_cp12.svg" ,
         name : "German Reinforcements" ,
@@ -624,7 +707,8 @@ deck['cp12'] = {
 	  return 0;
 	} ,
       }
-    deck['cp13'] = { 
+
+      deck['cp13'] = { 
         key : 'falkenhayn',
         img : "cards/card_cp13.svg" ,
         name : "Falkenhayn" ,
@@ -646,8 +730,7 @@ deck['cp12'] = {
 	} ,
       }
 
-
- deck['cp14'] = { 
+      deck['cp14'] = { 
         key : 'austria-hungaryreinforcements',
         img : "cards/card_cp14.svg" ,
         name : "Austria-Hungary Reinforcements" ,
@@ -664,7 +747,6 @@ deck['cp12'] = {
 	  paths_self.addUnitToSpace("ah_corps", "crbox");
 	  paths_self.displayBoard();
 	  return 1;
-
 
 	} ,
       }
