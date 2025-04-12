@@ -176,7 +176,7 @@
   the child (slidein menu) inherits it */
   position: fixed;
   bottom: 0px;
-  right: 1.5rem;
+  left: 0.5rem;
   border: var(--border-thickness-chat-popup) solid var(--border-color-chat-popup);
   background: var(--background-color-chat-popup-header);
   color: var(--font-color-chat-popup);
