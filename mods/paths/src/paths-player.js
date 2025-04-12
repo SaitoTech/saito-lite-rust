@@ -321,6 +321,7 @@
     let paths_self = this;
     let rp = this.game.state.rp[faction];
     let do_upgradeable_units_remain = false;
+    let just_stop = 0;
 
     //
     // players can spend their replacement points to:
@@ -329,6 +330,18 @@
     // 2. flip damaged units in the RB
     // 3. return eliminated units to RB 
     //
+    let loop_fnct = () => {
+      if (continue_fnct()) {
+        paths_self.playerSelectUnitWithFilter(
+ 	  "Select Unit to Repair / Deploy" ,
+	  filter_fnct ,
+	  execute_fnct ,
+	  null , 
+	  true ,
+	  [{ key : "pass" , value : "pass" }]
+        );
+      }
+    }    
 
     let filter_fnct = (spacekey, unit) => { 
       if (spacekey == "aeubox") { 
@@ -341,69 +354,107 @@
       }
       if (spacekey == "arbox") { 
         if (faction == "central") { return 0; }
-        if (unit.damaged) { return 1; }
+        return 1;
       }
       if (spacekey == "crbox") { 
         if (faction == "allies") { return 0; }
-        if (unit.damaged) { return 1; }
+        return 1;
       }
       if (paths_self.game.spaces[spacekey].control == faction && unit.damaged) { return 1; }
       return 0;
     };
 
+    let execute_fnct = (spacekey, unit_idx) => {
+
+      paths_self.updateStatus("processing...");
+
+      if (spacekey === "pass") {
+	paths_self.removeSelectable();
+	paths_self.endTurn();
+        just_stop = 1;
+	return 1;
+      }
+
+      let unit = paths_self.game.spaces[spacekey].units[unit_idx];
+      let processed = false;
+
+      if (spacekey === "aeubox") {
+        paths_self.game.spaces[spacekey].units[unit_idx].destroyed = 0;
+        paths_self.game.spaces[spacekey].units[unit_idx].damaged = 1;
+        paths_self.moveUnit(spacekey, unit_idx, "arbox");
+ 	paths_self.prependMove(`repair\t${faction}\t${spacekey}\t${unit_idx}`);
+ 	paths_self.prependMove(`move\t${faction}\t${spacekey}\t${unit_idx}\tarbox\t${paths_self.game.player}`);
+	paths_self.displaySpace(spacekey);
+        processed = true;
+	loop_fnct();
+      }
+
+      if (spacekey === "ceubox") {
+        paths_self.game.spaces[spacekey].units[unit_idx].destroyed = 0;
+        paths_self.game.spaces[spacekey].units[unit_idx].damaged = 1;
+        paths_self.moveUnit(spacekey, unit_idx, "crbox");
+ 	paths_self.prependMove(`repair\t${faction}\t${spacekey}\t${unit_idx}`);
+ 	paths_self.prependMove(`move\t${faction}\t${spacekey}\t${unit_idx}\tcrbox\t${paths_self.game.player}`);
+	paths_self.displaySpace(spacekey);
+        processed = true;
+	loop_fnct();
+      }
+
+      if (spacekey === "arbox" || spacekey === "crbox") {
+	if (paths_self.game.spaces[spacekey].units[unit_idx].damaged) {
+          paths_self.game.spaces[spacekey].units[unit_idx].damaged = 0;
+ 	  paths_self.prependMove(`repair\t${faction}\t${spacekey}\t${unit_idx}`);
+	  paths_self.displaySpace(spacekey);
+	  loop_fnct();
+        } else {
+      	  paths_self.playerSelectSpaceWithFilter(
+            `Deploy Unit Where?`,
+	    (destination) => {
+	      if (paths_self.game.spaces[destination].control == faction) { return 1; }
+	      return 0;
+	    },
+	    (key) => {
+              paths_self.moveUnit(spacekey, unit_idx, key);
+ 	      paths_self.prependMove(`move\t${faction}\t${spacekey}\t${unit_idx}\t${key}\t${paths_self.game.player}`);
+              paths_self.displaySpace(spacekey);
+              paths_self.displaySpace(key);
+	      loop_fnct();
+	    },
+	    null,
+    	    true
+	  );
+        }
+	processed = true;
+      }
+
+     
+      if (processed != true) {
+        paths_self.game.spaces[spacekey].units[unit_idx].destroyed = 0;
+        paths_self.game.spaces[spacekey].units[unit_idx].damaged = 0;
+ 	paths_self.prependMove(`repair\t${faction}\t${spacekey}\t${unit_idx}`);
+	paths_self.displaySpace(spacekey);
+        processed = true;
+	loop_fnct();
+      }
+
+    };
+ 
+
     let continue_fnct = () => {
+      if (just_stop == 1) { return 0; }
+      let count = paths_self.countUnitsWithFilter(filter_fnct);
+      if (count == 0) { return 0; }
       for (let key in paths_self.game.state.rp[faction]) {
-	if (paths_self.game.state.rp[faction][key] > 0) { return 1; }
+	if (parseInt(paths_self.game.state.rp[faction][key]) > 0) { return 1; }
       }
       return 0;
     }
 
-
-    while (continue_fnct) {
-
-alert("looping to spend replacement points...");
-
-    }
-
-
-/***
-
-		paths_self.playerSelectUnitWithFilter(
-
-		  "Select Unit to Repair" ,
-
-		  filter_funct ,
-
-		  (bspacekey, bunit_idx) => {
-
-		    let unit = paths_self.game.spaces[bspacekey].units[bunit_idx];
-
-		    if (bspacekey == "aeubox") {
-		    }
-
-              	    //paths_self.moveUnit(bspacekey, bunit_idx, key);
-	      	    //paths_self.addMove(`move\t${faction}\t${bspacekey}\t${bunit_idx}\t${key}\t${paths_self.game.player}`);
-              	    //paths_self.displaySpace(key);
-              	    //paths_self.displaySpace(bspacekey);
-
-		  } ,
-
-		  null , 
-
-		  true ,
-
-		  [{ key : "pass" , value : "pass-pass" }]
-
-		);
-
-****/
-
-    alert("player play replacement points...");
-
-    this.endTurn();
+    loop_fnct();
 
     return 1;
   }
+
 
 
   playerPlayPostCombatRetreat() {
@@ -747,6 +798,8 @@ console.log("unit idx: " + unit_idx);
 	if (c.canEvent(this, faction)) {
 	  this.addMove("event\t"+card+"\t"+faction);
 	}
+
+        this.addMove(`record\t${faction}\t${this.game.state.round}\tevent`);
 
 	this.endTurn();
 	return 1;
@@ -1241,6 +1294,8 @@ console.log("unit idx: " + unit_idx);
 
   playerPlayOps(faction, card, cost, skipend=0) {
 
+    this.addMove(`record\t${faction}\t${this.game.state.round}\tops`);
+
     if (!skipend) {
       this.addMove("player_play_combat\t"+faction);
       this.addMove("player_play_movement\t"+faction);
@@ -1388,7 +1443,8 @@ console.log("unit idx: " + unit_idx);
     //
     //
     this.updateStatus("adding replacement points...");
-    this.addMove(`rp\tfaction\t${card}`);
+    this.addMove(`rp\t${faction}\t${card}`);
+    this.addMove(`record\t${faction}\t${this.game.state.round}\trp`);
     this.endTurn();
 
   }
@@ -1412,7 +1468,7 @@ console.log("unit idx: " + unit_idx);
 
   }
 
-  countUnitsWithFilter(msg, filter_func) {
+  countUnitsWithFilter(filter_func) {
 
     let paths_self = this;
     let count = 0;
@@ -1430,7 +1486,7 @@ console.log("unit idx: " + unit_idx);
   }
 
 
-  playerSelectUnitWithFilter(msg, filter_func, mycallback = null, cancel_func = null, extra_options=[]) {
+  playerSelectUnitWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable=false, extra_options=[]) {
 
     let paths_self = this;
     let callback_run = false;
@@ -1438,14 +1494,75 @@ console.log("unit idx: " + unit_idx);
     let html = '';
     html += '<ul class="hide-scrollbar">';
 
+    $('.trench-tile').off();
+    $('.army-tile').off();
+    $('.space').off();
+
+    this.zoom_overlay.spaces_onclick_callback = mycallback;
+
     for (let key in this.game.spaces) {
+      let at_least_one_eligible_unit_in_spacekey = false;
       for (let z = 0; z < this.game.spaces[key].units.length; z++) {
         if (filter_func(key, this.game.spaces[key].units[z]) == 1) {
+	  at_least_one_eligible_unit_in_spacekey = true;
           at_least_one_option = true;
           html += '<li class="option .'+key+'-'+z+'" id="' + key + '-'+z+'">' + key + ' - ' + this.game.spaces[key].units[z].name + '</li>';
 	}
       }
+      if (at_least_one_eligible_unit_in_spacekey) {
+
+        //
+        // the spaces that are selectable are clickable on the main board (whatever board shows)
+        //
+        if (board_clickable) {
+          let t = "."+key;
+          document.querySelectorAll(t).forEach((el) => {
+            paths_self.addSelectable(el);
+            el.onclick = (e) => {
+
+	      let clicked_key = e.currentTarget.id;
+
+alert("ck: " + clicked_key);
+
+              e.stopPropagation();
+              e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
+              el.onclick = () => {};
+
+              $('.space').off();
+              $('.army-tile').off();
+              $('.trench-tile').off();
+
+              paths_self.zoom_overlay.spaces_onclick_callback = null;
+              paths_self.removeSelectable();
+
+	      if (paths_self.game.spaces[clicked_key].units.length == 1) {
+                if (callback_run == false) {
+                  callback_run = true;
+                  mycallback(clicked_key, 0);
+                }
+	      } else {
+	        let h =  '<ul>';
+		for (let z = 0; z < paths_self.game.spaces[clicked_key].units.length; z++) {
+                  h += '<li class="option .'+clicked_key+'-'+z+'" id="' + clicked_key + '-'+z+'">' + clicked_key + ' - ' + this.game.spaces[clicked_key].units[z].name + '</li>';
+		}
+		h += '</ul>';
+
+    		this.updateStatusWithOptions("Select Unit", h);
+
+    		$('.option').off();
+  		$('.option').on('click', function () {
+  		  let action = $(this).attr("id");
+  		  let tmpx = action.split("-");
+  		  mycallback(tmpx[0], tmpx[1]);
+  		});
+
+	      }
+            }
+          });
+        }
+      }
     }
+
 
     if (cancel_func != null) {
       html += '<li class="option" id="cancel">cancel</li>';
@@ -1598,6 +1715,8 @@ console.log("unit idx: " + unit_idx);
     //
     this.cardbox.hide();
 
+    this.addMove(`record\t${faction}\t${this.game.state.round}\tsd`);
+
     //
     // select box with unit
     //
@@ -1685,11 +1804,6 @@ console.log("unit idx: " + unit_idx);
 
   }
 
-
-  playerPlayEvent(faction, card) {
-
-  }
-
   playerTurn(faction) {
 
     let name = this.returnPlayerName(faction);
@@ -1709,11 +1823,58 @@ console.log("unit idx: " + unit_idx);
 
   }
 
+  playerPlaceUnitInSpacekey(spacekey=[], units=[], mycallback=null) {
+
+    let filter_fnct = (key) => { if (spacekeys.includes(key)) { return 1; } return 0; };
+    let unit_idx = 0;
+
+    let finish_fnct = (spacekey) => {
+      this.addUnitToSpace(units[unit_idx], spacekey);
+      this.displaySpace(spacekey);
+      unit_idx++;
+      if (unit_idx >= units.length) {
+	if (mycallback != null) { mycallback(); }
+	return 1;
+      } else {
+	place_unit_fnct();
+      }
+    }
+
+    let place_unit_fnct = () => {
+
+      let x = "1st";
+      if (unit_idx == 1) { x = "2nd"; }
+      if (unit_idx == 2) { x = "3rd"; }
+      if (unit_idx == 3) { x = "4th"; }
+      if (unit_idx == 4) { x = "5th"; }
+      if (unit_idx == 5) { x = "6th"; }
+      if (unit_idx == 6) { x = "7th"; }
+
+      this.playerSelectSpaceWithFilter(
+	`Select Space for ${this.game.units[units[unit_idx]].name} (${x} unit)`,
+        filter_func ,
+	finish_fnct ,
+	null ,
+	true
+      );
+    }
+
+    if (units.length == 0) { mycallback(); return; }
+    
+    place_unit_fnct();
+
+  }
+
   playerPlaceUnitOnBoard(country="", units=[], mycallback=null) {
 
     let filter_func = () => {}
     let unit_idx = 0;
     let countries = [];
+
+console.log("####");
+console.log("####");
+console.log("####");
+console.log("####");
 
     if (country == "russia") {
       countries = this.returnSpacekeysByCountry("russia");
@@ -1741,10 +1902,13 @@ console.log("unit idx: " + unit_idx);
 
     if (country == "germany") {
       countries = this.returnSpacekeysByCountry("germany");
+console.log("countries: " + JSON.stringify(countries));
       filter_func = (spacekey) => { 
 	if (countries.includes(spacekey)) {
 	  if (this.game.spaces[spacekey].control == "central") { 
+console.log("checking for supply status: " + spacekey);
 	    if (this.checkSupplyStatus("germany", spacekey)) { 
+console.log("yes!");
 	      return 1; 
 	    }
 	  }

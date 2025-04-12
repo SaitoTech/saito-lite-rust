@@ -31,19 +31,34 @@ console.log("MOVE: " + mv[0]);
 	  this.game.state.turn++;
 	  this.game.state.round = 0;	   
 
+
+console.log("##################");
+console.log("##################");
+console.log("##################");
+console.log("##################");
+console.log("##################");
+console.log("##################");
+console.log("##################");
+console.log("##################");
+console.log("====HANDS====");
+console.log(JSON.stringify(this.game.deck[0].hand));
+console.log(JSON.stringify(this.game.deck[1].hand));
 	  //
 	  // remove any "pass" option
 	  //
 	  for (let z = this.game.deck[0].hand.length-1; z >= 0; z--) {
-	    if (this.game.deck[0].hand[z] == "pass") { this.game.deck[0].hand.splice(z, 1); }
+	    if (this.game.deck[0].hand[z] === "pass") { this.game.deck[0].hand.splice(z, 1); }
 	  }
 	  for (let z = this.game.deck[1].hand.length-1; z >= 0; z--) {
-	    if (this.game.deck[1].hand[z] == "pass") { this.game.deck[1].hand.splice(z, 1); }
+	    if (this.game.deck[1].hand[z] === "pass") { this.game.deck[1].hand.splice(z, 1); }
 	  }
 
 this.updateLog(`###############`);
 this.updateLog(`### Turn ${this.game.state.turn} ###`);
 this.updateLog(`###############`);
+console.log(JSON.stringify(this.game.deck[0].hand));
+console.log(JSON.stringify(this.game.deck[1].hand));
+
 
 	  this.onNewTurn();
 
@@ -202,8 +217,8 @@ this.updateLog(`###############`);
           if (allies_cards_needed > this.game.deck[1].crypt.length) { allies_cards_needed = this.game.deck[1].crypt.length; }
           if (central_cards_needed > this.game.deck[0].crypt.length) { central_cards_needed = this.game.deck[0].crypt.length; }
           
-          this.game.queue.push("DEAL\t1\t6\t"+central_cards_needed);
-          this.game.queue.push("DEAL\t2\t7\t"+allies_cards_needed);
+          this.game.queue.push("DEAL\t1\t1\t"+central_cards_needed);
+          this.game.queue.push("DEAL\t2\t2\t"+allies_cards_needed);
 
 	  return 1;
 
@@ -228,6 +243,13 @@ this.updateLog(`###############`);
 
 	  let faction = mv[1];
           this.game.queue.splice(qe, 1);
+
+	  //	
+	  // skip if no replacement points	
+	  //	
+	  let count = 0;
+	  for (let key in this.game.state.rp[faction]) { count += parseInt(this.game.state.rp[faction][key]); }
+	  if (count == 0) { return 1; }
 
 	  if (this.returnPlayerOfFaction(faction) == this.game.player) {
 	    this.playerSpendReplacementPoints(faction);
@@ -287,6 +309,11 @@ this.updateLog(`###############`);
 
           this.game.queue.splice(qe, 1);
 
+this.game.queue.push("play\tallies");
+this.game.queue.push("play\tcentral");
+return 1;
+
+
 	  //
 	  // these will clear when:
 	  //  - 1 card left + pass, or 
@@ -340,7 +367,7 @@ this.updateLog(`###############`);
 	  if (faction == "central" && this.game.state.central_passed != 0) { return 1; }
 	  if (faction == "allies" && this.game.state.allies_passed != 0) { return 1; }
 
-	  this.onNewTurn();
+	  this.onNewRound();
 
 	  if (this.game.player == player) {
 	    this.playerTurn(faction);
@@ -349,6 +376,24 @@ this.updateLog(`###############`);
 	  }
 	  
 	  return 0;
+
+	}
+
+	if (mv[0] == "record") {
+
+	  let faction = mv[1];
+	  let round = parseInt(mv[2]);
+	  let action = mv[3];
+
+	  if (faction == "central") {
+	    this.game.state.central_rounds.push(action);
+	  }
+	  if (faction == "allies") {
+	    this.game.state.allies_rounds.push(action);
+	  }
+
+          this.game.queue.splice(qe, 1);
+	  return 1;
 
 	}
 
@@ -491,6 +536,12 @@ try {
     	  this.addUnitToSpace("ru_army10", "arbox");
     	  this.addUnitToSpace("br_corps", "arbox");
 
+//
+//
+//
+this.game.spaces['strasbourg'].units[0].damaged = true;
+this.game.spaces['paris'].units[0].damaged = true;
+
 } catch(err) {console.log("error initing:" + JSON.stringify(err));}
 
           this.displayBoard();
@@ -568,17 +619,25 @@ try {
 	  let card = mv[2];
 
     	  let c = this.deck[card];
-    
-    	  for (let key in c.sr) {
+
+console.log("CARD RP: " + JSON.stringify(c));
+console.log("RP pre: " + JSON.stringify(this.game.state.rp));
+   
+    	  for (let key in c.rp) {
             if (faction == "central") {
               if (!this.game.state.rp["central"][key]) { this.game.state.rp["central"][key] = 0; }
-              this.game.state.rp["central"][key] += c.sr[key];
+console.log("adding RP C");
+              this.game.state.rp["central"][key] += parseInt(c.rp[key]);
             }
             if (faction == "allies") {
               if (!this.game.state.rp["allies"][key]) { this.game.state.rp["allies"][key] = 0; }
-              this.game.state.rp["allies"][key] += c.sr[key];
+console.log("adding RP A");
+              this.game.state.rp["allies"][key] += parseInt(c.rp[key]);
             }
           } 
+
+console.log("RP pst: " + JSON.stringify(this.game.state.rp));
+
 
 	  this.updateLog(this.returnFactionName(faction) + " plays " + this.popup(card) + " for Replacement Points");
           this.game.queue.splice(qe, 1);
@@ -1175,7 +1234,30 @@ try {
 	  return 1;
 
         }
+
+	if (mv[0] === "repair") {
+
+	  let faction = mv[1];
+	  let spacekey = mv[2];
+	  let unit_idx = parseInt(mv[3]);
+
+	  if (this.game.spaces[spacekey].units[unit_idx].destroyed) {
+	    this.game.spaces[spacekey].units[unit_idx].destroyed = 0;
+	    this.game.spaces[spacekey].units[unit_idx].damaged = 1;
+	  } else {
+	    this.game.spaces[spacekey].units[unit_idx].destroyed = 0;
+	    this.game.spaces[spacekey].units[unit_idx].damaged = 0;
+	  }
+
+	  this.displaySpace(spacekey);
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
 	if (mv[0] === "damage") {
+
+	  this.game.queue.splice(qe, 1);
 
 	  let spacekey = mv[1];
 	  let key = mv[2];
@@ -1185,26 +1267,39 @@ try {
 
 	  if (player_to_ignore != this.game.player) {
 	    let unit = null;
+	    let unit_idx = 0;
 	    for (let z = 0; z < this.game.spaces[spacekey].units.length; z++) {
 	      if (!this.game.spaces[spacekey].units[z].destroyed) {
 	        if (damaged == 1) {
 	          if (this.game.spaces[spacekey].units[z].damaged == true && key === this.game.spaces[spacekey].units[z].key) {
 		    unit = this.game.spaces[spacekey].units[z];
+		    unit_idx = z;
 	          }
 	        } else {
 	          if (this.game.spaces[spacekey].units[z].damaged == false && key === this.game.spaces[spacekey].units[z].key) {
 		    unit = this.game.spaces[spacekey].units[z];
+		    unit_idx = z;
 	          }
 	        }
 	      }
 	    }
 	    if (unit) {
-	      if (unit.damaged == false) { unit.damaged = true; } else { unit.destroyed = true; }
+	      if (unit.damaged == false) { unit.damaged = true; } else { 
+		unit.destroyed = true; HACK
+		let f = this.returnPowerOfUnit(unit);
+		if (f === "central") {
+	          this.moveUnit(spacekey, unit_idx, "ceubox");
+		  this.displaySpace("ceubox");
+		} else {
+	          this.moveUnit(spacekey, unit_idx, "aeubox");
+		  this.displaySpace("aeubox");
+		}
+		this.displaySpace(spacekey);
+	      }
 	    }
 	  }
 
 	  this.displaySpace(spacekey);
-	  this.game.queue.splice(qe, 1);
 	  return 1;
 
 	}

@@ -119,12 +119,6 @@
   }
 
 
-
-  checkReverseSupplyStatus(faction, spacekey) {
-    return this.checkSupplyStatus(faction, spacekey);
-  }
-
-
   checkSupplyStatus(faction, spacekey) {
 
     this.game.spaces[spacekey].supply = {};
@@ -132,9 +126,10 @@
     let pending = [spacekey];
     let examined = {};
     let sources = [];
+    let faction_control = "allies";
 
-    if (faction == "cp") { sources = ["essen","breslau","sofia","constantinople"]; }
-    if (faction == "ap") { sources = ["london"]; }
+    if (faction == "cp" || faction == "germany") { faction_control = "central"; sources = ["essen","breslau","sofia","constantinople"]; }
+    if (faction == "ap" || faction == "england") { sources = ["london"]; }
     if (faction == "ru" || faction == "russia") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
     if (faction == "ro") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
     if (faction == "sb") { 
@@ -162,7 +157,7 @@
       for (let n in this.game.spaces[current].neighbours) {
         let s = this.game.spaces[current].neighbours[n];
         if (!examined[s]) {
-	  if (this.returnControlOfSpace(s) == faction) {
+	  if (this.returnControlOfSpace(s) == faction_control) {
 	    pending.push(s); 
 	  }
 
@@ -181,54 +176,21 @@
     return "";
   }
 
-  returnActivationCost(faction, key) {
+  returnActivationCost(key) {
 
     let space = this.game.spaces[key];
     let units = [];
-    let countries = {};
-    let total_nationalities = 0;
-
     for (let i = 0; i < space.units.length; i++) {
       if (!units.includes(space.units[i].ckey)) {
-	let u = space.units[i];
-	let ckey = space.units[i].ckey;
-	if (key == "antwerp" || key == "ostend" || key == "calais" || key == "amiens") { if (ckey == "BE") { ckey = "BR"; } }
-	if (ckey == "ANA" || ckey == "BR" || ckey == "AUS" || ckey == "CND" || ckey == "PT") { ckey = "BR"; }
-	if (ckey == "US" || ckey == "FR") { if (space.country == "france") { ckey = "FR"; } }
-	if (ckey == "SN") { ckey = "TU"; }
-	if (ckey == "MN") { ckey = "SB"; }
-	if (!countries[ckey]) { countries[ckey] = 0; } 
-	countries[ckey] += 1;
 	units.push(space.units[i].ckey);
       }
     }
 
-    for (let key in countries) { total_nationalities++; }
-    
-    if (faction == "central") {
-      if (this.game.state.events.falkenhayn != 1 && this.game.state.events.moltke == 1 && (space.country == "france" || space.country == "belgium")) {
-        if (units.length == 1) { return 1; }
-        if (units.length == 2) { return 2; }
-        if (units.length == 3) { return 3; }
-      }
-      if (this.game.state.events.sudarmy == 1) {
-	if (countries["GE"] >= 1 && countries["AH"] == 1) {
-	  let sud_army_eligible = false;
-	  let sud_army_excess_cost = 0;
-	  for (let z = 0; z < space.units.length; z++) {
-	    if (space.units[z].ckey == "AH" && space.units[z].army) { sud_army_eligible = true; }
-	    if (space.units[z].ckey == "AH" && space.units[z].corps) { sud_army_excess_cost++; }
-	    if (space.units[z].ckey == "GE" && space.units[z].army) { sud_army_excess_cost++; }
-	    if (space.units[z].ckey != "GE" && space.units[z].ckey != "AH") { sud_army_excess_cost++; }
-	  }
-	  if (sud_army_eligible == true) {
-	    return (1 + sud_army_excess_cost);
-	  }
-	}
-      }
-    }
+    if (units.length == 1) { return 1; }
+    if (units.length == 2) { return 2; }
+    if (units.length == 3) { return 3; }
 
-    return total_nationalities;
+    return 100;
 
   }
 
@@ -379,14 +341,19 @@
 
 
   returnSpacekeysByCountry(country="") {
-    if (country == "russia") { return ["petrograd", "reval", "pskov", "riga", "libau", "szawli", "kovno", "vilna", "dvinsk", "moldechno", "opochka", "velikiyeluki", "moscow", "smolensk", "roslavi", "mogilev", "orsha", "vitebsk", "gomel", "slutsk", "minsk", "baranovichi", "grodno", "lomza", "bialystok", "bresklitovsk", "warsaw", "kovel", "sarny", "plock", "lodz", "czestochowa", "ivangorod", "lublin", "lutsk", "rovno", "mozyr", "chernigov", "kiev", "kharkov", "zhitomir", "dubno", "vinnitsa", "kamenetspodolski", "zhmerinka", "kishinev", "caucasus", "ishmail", "odessa", "poti", "grozny", "petrovsk", "batum", "tbilisi", "kars", "erivan", "elizabethpol", "baku"]; }
-    return [];
+    let s = this.returnSpaces();
+    let keys = [];
+    for (let k in s) {
+      if (s[k].country == country) { keys.push(k); }
+    }
+    return keys;
   }
 
 
   returnSpaces() {
 
     let spaces = {};
+
 
 //
 // ENGLAND
