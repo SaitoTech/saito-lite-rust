@@ -441,7 +441,7 @@ console.log("err: " + err);
       // Victory Points //
       ////////////////////
       this.calculateVictoryPoints();
-      document.querySelector(`.general-records-track-${this.game.state.general_records_track.vp}`).innerHTML += `<img src="/paths/img/vp_button.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.general_records_track.vp}`).innerHTML += `<img src="/paths/img/vp.png" />`;
 
 
       ////////////////

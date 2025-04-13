@@ -5060,7 +5060,7 @@ console.log("err: " + err);
       // Victory Points //
       ////////////////////
       this.calculateVictoryPoints();
-      document.querySelector(`.general-records-track-${this.game.state.general_records_track.vp}`).innerHTML += `<img src="/paths/img/vp_button.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.general_records_track.vp}`).innerHTML += `<img src="/paths/img/vp.png" />`;
 
 
       ////////////////
@@ -5437,8 +5437,10 @@ console.log("err: " + err);
     let pending = [spacekey];
     let examined = {};
     let sources = [];
+    let controlling_faction = "allies";
 
-    if (faction == "cp") { sources = ["essen","breslau","sofia","constantinople"]; }
+    if (faction == "cp") { sources = ["essen","breslau","sofia","constantinople"]; controlling_faction = "central"; }
+    if (faction == "france") { sources = ["london"]; }
     if (faction == "ap") { sources = ["london"]; }
     if (faction == "ru" || faction == "russia") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
     if (faction == "ro") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
@@ -5467,7 +5469,7 @@ console.log("err: " + err);
       for (let n in this.game.spaces[current].neighbours) {
         let s = this.game.spaces[current].neighbours[n];
         if (!examined[s]) {
-	  if (this.returnControlOfSpace(s) == faction) {
+	  if (this.returnControlOfSpace(s) == controlling_faction) {
 	    pending.push(s); 
 	  }
 
@@ -8543,23 +8545,6 @@ spaces['athens'] = {
       vp : false ,
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 spaces['valjevo'] = {
       name: "Valjevo" ,
     control: "neutral" ,
@@ -8995,11 +8980,27 @@ spaces['crbox'] = {
   calculateVictoryPoints() {
 
     let vp = 0;
+    let central_controlled_vp_spaces = 0;
 
     //
     // central VP spaces
     //
-    for (let key in this.game.spaces) { if (this.game.spaces[key].vp > 0 && this.game.spaces[key].control == "central") { vp++; } }
+    for (let key in this.game.spaces) { if (this.game.spaces[key].vp > 0 && this.game.spaces[key].control == "central") { central_controlled_vp_spaces++; } }
+
+    //
+    //
+    //
+    let expected_central_vp_spaces = this.countSpacesWithFilter((spacekey) => {
+      if (this.game.spaces[spacekey].country == "germany" && this.game.spaces[spacekey].vp > 0) { return 1; }
+      if (this.game.spaces[spacekey].country == "austria" && this.game.spaces[spacekey].vp > 0) { return 1; }
+      if (this.game.state.events.bulgaria) { 
+        if (this.game.spaces[spacekey].country == "bulgaria" && this.game.spaces[spacekey].vp > 0) { return 1; }
+      }
+    });
+
+    vp = central_controlled_vp_spaces - expected_central_vp_spaces + 10;
+
+console.log("STARTING VP: " + vp);
 
     if (this.game.state.events.rape_of_belgium) { vp--; }
     if (this.game.state.events.belgium) { 
@@ -10680,7 +10681,13 @@ console.log("RP pst: " + JSON.stringify(this.game.state.rp));
 	    if (this.game.spaces[destinationkey].fort > 0) {
 	      this.game.spaces[destinationkey].besieged = 1;
 	    }
+	  } else {
+	    this.game.spaces[destinationkey].control = this.returnPowerOfUnit(this.game.spaces[destinationkey].units[0]);
 	  }
+
+	  //
+	  // check if no longer besieged?
+	  //
 	  if (this.game.spaces[sourcekey].besieged == 1) {
 	    if (this.game.spaces[sourcekey].units.length > 0) {
 	      if (this.returnPowerOfUnit(this.game.spaces[sourcekey].units[0]) != this.game.spaces[destinationkey].control) {
@@ -12268,6 +12275,20 @@ console.log("unit idx: " + unit_idx);
 
   }
 
+  countSpacesWithFilter(filter_func) {
+
+    let paths_self = this;
+    let count = 0;
+
+    for (let key in this.game.spaces) {
+      if (filter_func(key) == 1) { 
+	count++;
+      }
+    }
+
+    return count;
+  }
+
   countUnitsWithFilter(filter_func) {
 
     let paths_self = this;
@@ -12698,17 +12719,15 @@ console.log("####");
 	}
 	return 0;
       }
+console.log("countries: " + JSON.stringify(countries));
     }
 
     if (country == "germany") {
       countries = this.returnSpacekeysByCountry("germany");
-console.log("countries: " + JSON.stringify(countries));
       filter_func = (spacekey) => { 
 	if (countries.includes(spacekey)) {
 	  if (this.game.spaces[spacekey].control == "central") { 
-console.log("checking for supply status: " + spacekey);
 	    if (this.checkSupplyStatus("germany", spacekey)) { 
-console.log("yes!");
 	      return 1; 
 	    }
 	  }
@@ -12731,6 +12750,7 @@ console.log("yes!");
 
 
     let finish_fnct = (spacekey) => {
+      this.updateStatus("placing unit...");
       this.addUnitToSpace(units[unit_idx], spacekey);
       this.displaySpace(spacekey);
       unit_idx++;

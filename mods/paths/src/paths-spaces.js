@@ -133,8 +133,10 @@
     let pending = [spacekey];
     let examined = {};
     let sources = [];
+    let controlling_faction = "allies";
 
-    if (faction == "cp") { sources = ["essen","breslau","sofia","constantinople"]; }
+    if (faction == "cp") { sources = ["essen","breslau","sofia","constantinople"]; controlling_faction = "central"; }
+    if (faction == "france") { sources = ["london"]; }
     if (faction == "ap") { sources = ["london"]; }
     if (faction == "ru" || faction == "russia") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
     if (faction == "ro") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
@@ -163,7 +165,7 @@
       for (let n in this.game.spaces[current].neighbours) {
         let s = this.game.spaces[current].neighbours[n];
         if (!examined[s]) {
-	  if (this.returnControlOfSpace(s) == faction) {
+	  if (this.returnControlOfSpace(s) == controlling_faction) {
 	    pending.push(s); 
 	  }
 
@@ -3238,23 +3240,6 @@ spaces['athens'] = {
       terrain : "normal" ,
       vp : false ,
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 spaces['valjevo'] = {
       name: "Valjevo" ,

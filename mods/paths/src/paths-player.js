@@ -1517,6 +1517,20 @@ console.log("unit idx: " + unit_idx);
 
   }
 
+  countSpacesWithFilter(filter_func) {
+
+    let paths_self = this;
+    let count = 0;
+
+    for (let key in this.game.spaces) {
+      if (filter_func(key) == 1) { 
+	count++;
+      }
+    }
+
+    return count;
+  }
+
   countUnitsWithFilter(filter_func) {
 
     let paths_self = this;
@@ -1947,17 +1961,15 @@ console.log("####");
 	}
 	return 0;
       }
+console.log("countries: " + JSON.stringify(countries));
     }
 
     if (country == "germany") {
       countries = this.returnSpacekeysByCountry("germany");
-console.log("countries: " + JSON.stringify(countries));
       filter_func = (spacekey) => { 
 	if (countries.includes(spacekey)) {
 	  if (this.game.spaces[spacekey].control == "central") { 
-console.log("checking for supply status: " + spacekey);
 	    if (this.checkSupplyStatus("germany", spacekey)) { 
-console.log("yes!");
 	      return 1; 
 	    }
 	  }
@@ -1980,6 +1992,7 @@ console.log("yes!");
 
 
     let finish_fnct = (spacekey) => {
+      this.updateStatus("placing unit...");
       this.addUnitToSpace(units[unit_idx], spacekey);
       this.displaySpace(spacekey);
       unit_idx++;
