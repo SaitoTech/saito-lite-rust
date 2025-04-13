@@ -1,16 +1,13 @@
 
 
+  // turns have several rounds
   onNewRound() {
+
     this.calculateRussianCapitulationTrack();
+    this.displayActionRoundTracks();
+
     this.game.state.events.wireless_intercepts = 0;
     if (this.game.state.events.high_seas_fleet > 1) { this.game.state.events.high_seas_fleet--; }
-  }
-
-  onNewTurn() {
-
-    this.game.state.mandated_offensives = {};
-    this.game.state.mandated_offensives.central = "";
-    this.game.state.mandated_offensives.allies = "";
 
     for (let key in this.game.spaces) {
       let redisplay = false;
@@ -26,6 +23,15 @@
       if (redisplay) { this.displaySpace(key); }
     }
 
+  }
+
+  // the turn is the "round" (rounds have turns)
+  onNewTurn() {
+
+    this.game.state.mandated_offensives = {};
+    this.game.state.mandated_offensives.central = "";
+    this.game.state.mandated_offensives.allies = "";
+
     this.game.state.allies_passed = 0;
     this.game.state.central_passed = 0;
 
@@ -36,6 +42,15 @@
     this.game.state.cc_allies_selected = [];
     this.game.state.cc_allies_played_this_round = [];
 
+    this.game.state.neutral_entry = 0;
+    this.game.state.central_reinforcements_ge = 0;
+    this.game.state.central_reinforcements_ah = 0;
+    this.game.state.central_reinforcements_tu = 0;
+    this.game.state.allies_reinforcements_fr = 0;
+    this.game.state.allies_reinforcements_br = 0;
+    this.game.state.allies_reinforcements_ru = 0;
+    this.game.state.allies_reinforcements_it = 0;
+    this.game.state.allies_reinforcements_us = 0;
     this.game.state.allies_rounds = [];
     this.game.state.central_rounds = [];
 
@@ -114,6 +129,7 @@
     }
     if (this.game.state.events.reichstag_truce) { vp++; }
     if (this.game.state.events.lusitania) { vp--; }
+    if (this.game.state.events.war_in_africa_vp) { vp++; }
 
     this.game.state.general_records_track.vp = vp;
   
@@ -133,6 +149,9 @@
     state.turn = 0;
     state.skip_counter_or_acknowledge = 0; // don't skip
     state.cards_left = {};
+
+    state.neutral_entry = 0;
+
 
     state.mandated_offensives = {};
     state.mandated_offensives.central = "";
@@ -201,6 +220,8 @@
     state.allies_limited_war_cards_added = false;
     state.central_total_war_cards_added = false;
     state.allies_total_war_cards_added = false;
+
+    state.events.war_in_africa_vp = 0;
 
     return state;
 

@@ -43,6 +43,7 @@ console.log("##################");
 console.log("====HANDS====");
 console.log(JSON.stringify(this.game.deck[0].hand));
 console.log(JSON.stringify(this.game.deck[1].hand));
+
 	  //
 	  // remove any "pass" option
 	  //
@@ -58,7 +59,6 @@ this.updateLog(`### Turn ${this.game.state.turn} ###`);
 this.updateLog(`###############`);
 console.log(JSON.stringify(this.game.deck[0].hand));
 console.log(JSON.stringify(this.game.deck[1].hand));
-
 
 	  this.onNewTurn();
 
@@ -229,6 +229,15 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 
           this.game.queue.splice(qe, 1);
 
+	  //
+	  // Walter Rathenau
+	  //
+	  if (this.game.state.events.walter_rathenau == 1) {
+	    if (!this.game.state.rp["central"]["GE"]) { this.game.state.rp["central"]["GE"] = 0; }
+	    this.updateLog("Germany gets Walter Rathenau bonus...");
+	    this.game.state.rp["central"]["GE"]++;
+	  }
+
 	  this.game.queue.push("player_play_replacements\tallies");
 	  this.game.queue.push("player_play_replacements\tcentral");
 
@@ -309,11 +318,6 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 
           this.game.queue.splice(qe, 1);
 
-this.game.queue.push("play\tallies");
-this.game.queue.push("play\tcentral");
-return 1;
-
-
 	  //
 	  // these will clear when:
 	  //  - 1 card left + pass, or 
@@ -376,6 +380,20 @@ return 1;
 	  }
 	  
 	  return 0;
+
+	}
+
+	if (mv[0] == "pass") {
+
+	  let faction = mv[1];
+	  if (faction == "central") {
+	    this.game.state.central_passed = 1;
+	  } else {
+	    this.game.state.allies_passed = 1;
+	  }
+
+          this.game.queue.splice(qe, 1);
+	  return 1;
 
 	}
 
@@ -766,8 +784,8 @@ console.log("RP pst: " + JSON.stringify(this.game.state.rp));
 //11. Defender Retreat
 //12. Attacker Advance
 
-	  this.combat_overlay.render();
-	  this.combat_overlay.pullHudOverOverlay();
+	  //this.combat_overlay.render();
+	  //this.combat_overlay.pullHudOverOverlay();
 
 	  return 1;
 
@@ -833,7 +851,7 @@ console.log("RP pst: " + JSON.stringify(this.game.state.rp));
 
 	  this.game.queue.splice(qe, 1);
 
-	  if (this.game.player == this.returnPlayerOfFaction(this.game.state.combat.defender_power)) {
+	  if (this.game.player != this.returnPlayerOfFaction(this.game.state.combat.attacking_faction)) {
 	    this.playerSelectDefenderCombatCards();
 	  }
 
@@ -846,7 +864,7 @@ console.log("RP pst: " + JSON.stringify(this.game.state.rp));
 
 	  this.game.queue.splice(qe, 1);
 
-	  if (this.game.player == this.returnPlayerOfFaction(this.game.state.combat.attacker_power)) {
+	  if (this.game.player == this.returnPlayerOfFaction(this.game.state.combat.attacking_faction)) {
 	    this.playerSelectAttackerCombatCards();
 	  }
 
@@ -1031,7 +1049,6 @@ console.log("RP pst: " + JSON.stringify(this.game.state.rp));
 //
 //this.game.state.combat.attacker_loss_factor = 8;
 //this.game.state.combat.defender_loss_factor = 10;
-
 
 	  this.game.queue.splice(qe, 1);
 
@@ -1265,6 +1282,10 @@ console.log("RP pst: " + JSON.stringify(this.game.state.rp));
 	  let player_to_ignore = 0;
 	  if (mv[4]) { player_to_ignore = parseInt(mv[4]); }
 
+	  let is_last_unit = 0;
+	  let tmpx = this.game.queue[this.game.queue.length-1].split("\t");
+	  if (tmpx[0] !== "damage" && tmpx[0] !== "add") { is_last_unit = 1; }
+
 	  if (player_to_ignore != this.game.player) {
 	    let unit = null;
 	    let unit_idx = 0;
@@ -1284,22 +1305,34 @@ console.log("RP pst: " + JSON.stringify(this.game.state.rp));
 	      }
 	    }
 	    if (unit) {
-	      if (unit.damaged == false) { unit.damaged = true; } else { 
-		unit.destroyed = true; HACK
-		let f = this.returnPowerOfUnit(unit);
-		if (f === "central") {
-	          this.moveUnit(spacekey, unit_idx, "ceubox");
-		  this.displaySpace("ceubox");
-		} else {
-	          this.moveUnit(spacekey, unit_idx, "aeubox");
-		  this.displaySpace("aeubox");
-		}
-		this.displaySpace(spacekey);
+	      if (unit.damaged == false) {
+		unit.damaged = true;
+	      } else { 
+		unit.destroyed = true;
 	      }
 	    }
 	  }
 
+	  if (is_last_unit) {
+            for (let z = this.game.spaces[spacekey].units.length-1; z >= 0; z--) {
+              let u = this.game.spaces[spacekey].units[z];
+	      let f = this.returnPowerOfUnit(u);
+              if (u.destroyed == true) {
+		if (f === "central") {
+	          this.moveUnit(spacekey, z, "ceubox");
+		  this.displaySpace("ceubox");
+		} else {
+	          this.moveUnit(spacekey, z, "aeubox");
+		  this.displaySpace("aeubox");
+		}
+	      }
+            } 
+	  }
+            
+	  this.displaySpace("ceubox");
+	  this.displaySpace("aeubox");
 	  this.displaySpace(spacekey);
+
 	  return 1;
 
 	}
@@ -1330,8 +1363,6 @@ console.log("RP pst: " + JSON.stringify(this.game.state.rp));
 	  let action = mv[1];
 	  let eligible_spaces = JSON.parse(mv[2]);
 
-console.log("ES: " + eligible_spaces[0]);
-
 	  let drm_modifiers = 0;
           //
           // +1 for every unit without another army adjacent to it
@@ -1340,13 +1371,9 @@ console.log("ES: " + eligible_spaces[0]);
 
           for (let i = 0; i < eligible_spaces.length; i++) {
             if (i != action) {
-console.log("valid: " + eligible_spaces[i]);
               if (!flanking_spaces.includes(eligible_spaces[i])) {
-console.log("it is not a previously-examined flanking space...");
                 flanking_spaces.push(eligible_spaces[i]);
-console.log("can: " + eligible_spaces[i] + " flank?: " + this.canSpaceFlank(eligible_spaces[i]));
                 if (this.canSpaceFlank(eligible_spaces[i])) {
-console.log("adding +1 to drm modifiers...");
                   drm_modifiers++;
                 }
               }
@@ -1356,7 +1383,7 @@ console.log("adding +1 to drm modifiers...");
 	  let roll = this.rollDice(6);
 	  this.updateLog("roll: " + roll + " (+"+drm_modifiers+")"); 
 
-	  if (roll > (3+drm_modifiers)) {
+	  if ((roll+drm_modifiers) > 3) {
 	    this.game.state.combat.flank_attack = "attacker"; 
 	  } else {
 	    this.game.state.combat.flank_attack = "defender"; 
@@ -1517,7 +1544,9 @@ console.log("adding +1 to drm modifiers...");
 	  // toggle the besieged variable if needed.
 	  //
 	  if (this.returnPowerOfUnit(this.game.spaces[destinationkey].units[0]) != this.game.spaces[destinationkey].control) {
-	    this.game.spaces[destinationkey].besieged = 1;
+	    if (this.game.spaces[destinationkey].fort > 0) {
+	      this.game.spaces[destinationkey].besieged = 1;
+	    }
 	  }
 	  if (this.game.spaces[sourcekey].besieged == 1) {
 	    if (this.game.spaces[sourcekey].units.length > 0) {

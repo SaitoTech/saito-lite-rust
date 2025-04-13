@@ -1,4 +1,5 @@
 
+
   returnSpaceName(spacekey) {
     return this.game.spaces[spacekey].name;
   }
@@ -119,6 +120,12 @@
   }
 
 
+
+  checkReverseSupplyStatus(faction, spacekey) {
+    return this.checkSupplyStatus(faction, spacekey);
+  }
+
+
   checkSupplyStatus(faction, spacekey) {
 
     this.game.spaces[spacekey].supply = {};
@@ -126,10 +133,9 @@
     let pending = [spacekey];
     let examined = {};
     let sources = [];
-    let faction_control = "allies";
 
-    if (faction == "cp" || faction == "germany") { faction_control = "central"; sources = ["essen","breslau","sofia","constantinople"]; }
-    if (faction == "ap" || faction == "england") { sources = ["london"]; }
+    if (faction == "cp") { sources = ["essen","breslau","sofia","constantinople"]; }
+    if (faction == "ap") { sources = ["london"]; }
     if (faction == "ru" || faction == "russia") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
     if (faction == "ro") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
     if (faction == "sb") { 
@@ -157,7 +163,7 @@
       for (let n in this.game.spaces[current].neighbours) {
         let s = this.game.spaces[current].neighbours[n];
         if (!examined[s]) {
-	  if (this.returnControlOfSpace(s) == faction_control) {
+	  if (this.returnControlOfSpace(s) == faction) {
 	    pending.push(s); 
 	  }
 
@@ -176,21 +182,66 @@
     return "";
   }
 
-  returnActivationCost(key) {
+  returnActivationCost(faction, key) {
 
     let space = this.game.spaces[key];
     let units = [];
+    let countries = {};
+    let total_nationalities = 0;
+
     for (let i = 0; i < space.units.length; i++) {
       if (!units.includes(space.units[i].ckey)) {
+	let u = space.units[i];
+	let ckey = space.units[i].ckey;
+	if (key == "antwerp" || key == "ostend" || key == "calais" || key == "amiens") { if (ckey == "BE") { ckey = "BR"; } }
+	if (ckey == "ANA" || ckey == "BR" || ckey == "AUS" || ckey == "CND" || ckey == "PT") { ckey = "BR"; }
+	if (ckey == "US" || ckey == "FR") { if (space.country == "france") { ckey = "FR"; } }
+	if (ckey == "SN") { ckey = "TU"; }
+	if (ckey == "MN") { ckey = "SB"; }
+	if (!countries[ckey]) { countries[ckey] = 0; } 
+	countries[ckey] += 1;
 	units.push(space.units[i].ckey);
       }
     }
 
-    if (units.length == 1) { return 1; }
-    if (units.length == 2) { return 2; }
-    if (units.length == 3) { return 3; }
+    for (let key in countries) { total_nationalities++; }
+    
+    if (faction == "central") {
+      if (this.game.state.events.eleventh_army == 1) {
+	let has_eleventh_army = false;
+	let has_other_army = false;
+	let number_cp_corps = 0;
+	for (let z = 0; z < space.units.length; z++) {
+	  if (space.units[z].corps) { number_cp_corps++; }
+	  if (space.units[z].key == "ge_army11") { has_eleventh_army = true; }
+	  if (space.units[z].key != "ge_army11" && space.units[z].army) { has_other_army = true; }
+        }
+        if (has_eleventh_army) { return this.game.spaces[key].units.length - number_cp_corps; }
+        if (has_other_army) { return this.game.spaces[key].units.length - number_cp_corps + 1; }
+      }
+      if (this.game.state.events.falkenhayn != 1 && this.game.state.events.moltke == 1 && (space.country == "france" || space.country == "belgium")) {
+        if (units.length == 1) { return 1; }
+        if (units.length == 2) { return 2; }
+        if (units.length == 3) { return 3; }
+      }
+      if (this.game.state.events.sudarmy == 1) {
+	if (countries["GE"] >= 1 && countries["AH"] == 1) {
+	  let sud_army_eligible = false;
+	  let sud_army_excess_cost = 0;
+	  for (let z = 0; z < space.units.length; z++) {
+	    if (space.units[z].ckey == "AH" && space.units[z].army) { sud_army_eligible = true; }
+	    if (space.units[z].ckey == "AH" && space.units[z].corps) { sud_army_excess_cost++; }
+	    if (space.units[z].ckey == "GE" && space.units[z].army) { sud_army_excess_cost++; }
+	    if (space.units[z].ckey != "GE" && space.units[z].ckey != "AH") { sud_army_excess_cost++; }
+	  }
+	  if (sud_army_eligible == true) {
+	    return (1 + sud_army_excess_cost);
+	  }
+	}
+      }
+    }
 
-    return 100;
+    return total_nationalities;
 
   }
 
@@ -338,6 +389,7 @@
     return addHop(space.neighbours, 0);   
 
   }
+
 
 
   returnSpacekeysByCountry(country="") {
@@ -3462,6 +3514,26 @@ spaces['izmir'] = {
       top:  2945,
       left: 3265,
       neighbours: ["balikesir"] ,
+      terrain : "normal" ,
+      vp : false ,
+}
+
+spaces['aeubox'] = {
+      name: "Allied Eliminated Units" ,
+      control: "allies" ,
+      top:  0,
+      left: 0,
+      neighbours: [],
+      terrain : "normal" ,
+      vp : false ,
+}
+
+spaces['ceubox'] = {
+      name: "Central Eliminated Units" ,
+      control: "central",
+      top:  0,
+      left: 0,
+      neighbours: [],
       terrain : "normal" ,
       vp : false ,
 }

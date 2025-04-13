@@ -77,7 +77,6 @@
 
   }
 
-
   returnMobilizationDeck(type="all") {
     let deck = {};
 
@@ -698,6 +697,7 @@ deck['ap14'] = {
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
+	  paths_self.game.state.events.central_reinforcements_ge = 1;
 	  paths_self.addUnitToSpace("ge_corps", "arbox");
 	  paths_self.addUnitToSpace("ge_corps", "arbox");
 console.log("faction: " + faction);
@@ -800,13 +800,14 @@ deck['ap16'] = {
         rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'IT' : 2 , 'RU' : 4 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.neutral_entry != 0) { return 1; } return 0; } ,
         onEvent : function(paths_self, faction) {
 	  paths_self.game.state.events.romania = true;
 	  paths_self.addUnitToSpace("ro_corps", "bucharest");
 	  paths_self.addUnitToSpace("ro_corps", "bucharest");
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.playerPlaceUnitOnBoard("romania", ["ro_corps", "ro_corps", "ro_corps", "ro_corps"], () => {
+	      paths_self.addMove("SETVAR\tstate\tneutral_entry\t1");
 	      paths_self.endTurn();
 	    });
 	  } else {
@@ -828,10 +829,11 @@ deck['ap17'] = {
         rp : { 'A' : 1 , 'BR' : 3 , 'FR' : 3 , 'RU' : 4 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.neutral_entry != 0) { return 1; } return 0; } ,
         onEvent : function(paths_self, faction) {
 
 	  paths_self.game.state.events.italy = true;
+	  paths_self.game.state.neutral_entry = 1;
 
 	  paths_self.addUnitToSpace("it_corps", "arbox");
 	  paths_self.addUnitToSpace("it_corps", "arbox");
@@ -1636,7 +1638,7 @@ deck['cp26'] = {
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
-	  paths_self.game.state.events.11th_army = 1;
+	  paths_self.game.state.events.eleventh_army = 1;
           return 1;
         } ,
       }
@@ -1651,8 +1653,15 @@ deck['cp30'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  let attacker_units = paths_self.returnAttackerUnits();
+	  let defender_units = paths_self.returnDefenderUnits();
+	  for (let i = 0; i < attacker_units.length; i++) {
+	    if (attacker_units[i].ckey == "GE" && (paths_self.game.spaces[attacker_units[i].spacekey].terrain === "mountain" || paths_self.game.spaces[paths_self.game.state.combat.key].terrain === "mountain")) { paths_self.game.state.combat.attacker_drm++; return 1; }
+	  }
+	  return 1; 
+	} ,
       }
 
 deck['cp31'] = { 
@@ -1680,8 +1689,81 @@ deck['cp32'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) { 
+
+	  if (paths_self.returnPlayerOfFaction("allies") == paths_self.game.player) {
+
+    	    let filter_fnct = (spacekey, unit) => {
+	      if (spacekey == "aeubox") { return 0; }
+	      if (unit.army && unit.damaged == 0 && unit.ckey == "BR") { return 1; }
+	    }
+    	    let filter_fnct2 = (spacekey, unit) => {
+	      if (spacekey == "aeubox") { return 0; }
+	      if (unit.army && unit.damaged == 0 && unit.ckey == "BR") { return 0; }
+	    }
+
+	    let execute_fnct = (spacekey, unit_idx) => {
+	      paths_self.updateStatus("processing...");
+	      if (spacekey === "pass") {
+	        paths_self.removeSelectable();
+	        paths_self.endTurn();
+	        return 1;
+	      }
+	      paths_self.addMove(`eliminate\t${spacekey}\t${unit_idx}`);
+	      paths_self.endTurn();
+	      return 1;
+	    }
+
+	    //
+	    //
+	    //
+	    let count = paths_self.countUnitsWithFilter(filter_fnct);
+	    if (count == 0) {
+	      filter_fnct = filter_fnct2;
+	      count = paths_self.countUnitsWithFilter(filter_fnct);
+	    }
+	    if (count == 0) {
+	      return 0;
+	    }
+
+	    //
+	    // should they remove 
+	    //
+    	    let html = `<ul>`;
+    	    html    += `<li class="card" id="remove">remove BR corps</li>`;
+    	    html    += `<li class="card" id="vp">cede +1 VP</li>`;
+    	    html    += `</ul>`; 
+
+    	    this.updateStatusWithOptions(`War in Africa!`, html);
+    	    this.attachCardboxEvents((action) => {
+    
+      	      if (action === "remove") {
+                paths_self.playerSelectUnitWithFilter(
+          	  "Select BR Army to Remove" ,
+        	  filter_fnct2 ,
+        	  execute_fnct ,
+        	  null ,
+        	  true ,
+        	  [{ key : "pass" , value : "pass" }]
+                );
+
+    	        return;
+    	      }
+
+    	      if (action === "vp") {
+	        paths_self.addMove("SETVAR\tstate\tevents\twar_in_africa_vp\t1");
+	        paths_self.endTurn();
+    	      }
+ 
+    	    });
+
+	  } else {
+	    paths_self.updateStatus("Allies playing War in Africa");
+	  }
+
+	  return 0;
+	} ,
       }
 
 deck['cp33'] = { 
@@ -1695,8 +1777,10 @@ deck['cp33'] = {
         rp : { 'AH' : 3 , 'BU' : 1 , 'GE' : 4 , 'TU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { return 1; } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.game.state.events.walter_rathenau = 1;
+	}
       }
    deck['cp34'] = { 
         key : 'bulgaria',
@@ -1709,8 +1793,21 @@ deck['cp33'] = {
         rp : { 'AH' : 3 , 'GE' : 4 , 'TU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 0; } ,
-        onEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.neutral_entry != 0) { return 1; } return 0; } ,
+        onEvent : function(paths_self, faction) {
+	  paths_self.game.state.events.romania = true;
+	  paths_self.addUnitToSpace("bu_corps", "sofia");
+	  paths_self.addUnitToSpace("bu_corps", "sofia");
+	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
+	    paths_self.playerPlaceUnitOnBoard("romania", ["bu_corps", "bu_corps", "bu_corps", "bu_corps"], () => {
+	      paths_self.addMove("SETVAR\tstate\tneutral_entry\t1");
+	      paths_self.endTurn();
+	    });
+	  } else {
+	    paths_self.updateStatus("Bulgaria entering war...");
+	  }
+	  return 0;
+	} ,
       }
 
 

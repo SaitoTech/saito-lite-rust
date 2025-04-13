@@ -82,6 +82,7 @@
       this.updateStatus("submitting...");
 
       if (card == "pass") {
+	this.addMove("pass\t"+faction);
 	this.endTurn();
       }
 
@@ -300,7 +301,7 @@
 	      uidx = z;
 	    } 
 	  }
-	  if (!u.damaged) {
+	  if (!attacker_units[i].damaged) {
             paths_self.moveUnit(skey, uidx, key);
 	    paths_self.addMove(`move\t${faction}\t${skey}\t${uidx}\t${key}\t${paths_self.game.player}`);
 	  }
@@ -691,6 +692,11 @@ console.log("unit idx: " + unit_idx);
 
       if (action === "yes") {
 
+	//
+	// computer-aided simulation, so we will-auto pin
+	// in the most advantageous possible... HACK
+	//
+
         //
         // select pinning unit
         //
@@ -700,18 +706,61 @@ console.log("unit idx: " + unit_idx);
 	  let unit = this.game.state.combat.attacker[i];
 	  if (!eligible_spaces.includes(unit.unit_sourcekey)) { eligible_spaces.push(unit.unit_sourcekey); }
 	}
-	for (let i = 0; i < eligible_spaces.length; i++) {
-          html    += `<li class="option" id="${i}">${eligible_spaces[i]}</li>`;
+
+	let current_option_spacekey = "";
+	let current_option_drmboost = 0;
+	let best_option_spacekey = "";
+	let best_option_drmboost = 0;
+        let flanking_spaces = [];
+	let action = 0;
+
+	//
+	//
+	//
+	for (let z = 0; z < eligible_spaces.length; z++) {
+
+	  current_option_spacekey = eligible_spaces[z];
+	  current_option_drmboost = 0;
+	  flanking_spaces = [];
+
+          for (let i = 0; i < eligible_spaces.length; i++) {
+            if (eligible_spaces[i] !== current_option_spacekey) {
+              if (!flanking_spaces.includes(eligible_spaces[i])) {
+                flanking_spaces.push(eligible_spaces[i]);
+                if (this.canSpaceFlank(eligible_spaces[i])) {
+                  current_option_drmboost++;
+                }
+              }
+            }
+          }
+
+	  if (best_option_drmboost < current_option_drmboost) {
+	    best_option_drmboost = current_option_drmboost;
+	    best_option_spacekey = current_option_spacekey;
+	  }
+
 	}
-        html    += `</ul>`;
-	
-        this.flank_overlay.render();
-        this.updateStatusWithOptions(`Which Space Pins Defender:`, html, true);
-        this.attachCardboxEvents((action) => {
-          this.flank_overlay.hide();
-	  this.addMove(`flank_attack_attempt\t${action}\t${JSON.stringify(eligible_spaces)}`);
-	  this.endTurn();
-	});
+
+	for (let i = 0; i < eligible_spaces.length; i++) {
+	  if (eligible_spaces[i] === best_option_spacekey) { action = i; }
+	}
+
+	this.addMove(`flank_attack_attempt\t${action}\t${JSON.stringify(eligible_spaces)}`);
+	this.addMove(`NOTIFY\tFlank Attack launched from: ${eligible_spaces[action]}`);
+	this.endTurn();
+
+//	for (let i = 0; i < eligible_spaces.length; i++) {
+//          html    += `<li class="option" id="${i}">${eligible_spaces[i]}</li>`;
+//	}
+//        html    += `</ul>`;
+//	
+//        this.flank_overlay.render();
+//        this.updateStatusWithOptions(`Which Space Pins Defender:`, html, true);
+//        this.attachCardboxEvents((action) => {
+//          this.flank_overlay.hide();
+//	  this.addMove(`flank_attack_attempt\t${action}\t${JSON.stringify(eligible_spaces)}`);
+//	  this.endTurn();
+//	});
 
       }
     });

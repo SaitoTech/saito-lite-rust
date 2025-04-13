@@ -409,13 +409,17 @@ alert(unit_key + " -- " + unit_spacekey + " - " + unit_damaged);
 					//
 					// damage to corps means removal
 					//
+					} else {					
+					}
+
+					//
+					// move to eliminated box
+					//
+                			let f = this.returnPowerOfUnit(unit);
+					if (f === "central") {
+					  this.moveUnit(spacekey, unit_idx, "ceubox");
 					} else {
-
-						//this.render(this.faction);
-						//let html = `<div class="loss-overlay-unit" id="${this.units.length - 1}">${this.mod.returnUnitImageWithMouseoverOfStepwiseLoss(this.units[this.units.length - 1])}</div>`;
-						//this.app.browser.addElementToSelector(html, my_qs);
-
-					
+					  this.moveUnit(spacekey, unit_idx, "aeubox");
 					}
 
 					this.updateLossesRequired(this.loss_factor);

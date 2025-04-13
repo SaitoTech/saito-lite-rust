@@ -465,6 +465,35 @@ console.log("err: " + err);
 
   displayActionRoundTracks() {
 
+    let central_token = `<img src="/paths/img/control_cp.png" />`;
+    let allies_token = `<img src="/paths/img/allies_cp.png" />`;
+    let current_round = this.game.state.round;
+    let current_turn = this.game.state.turn;
+
+    let last_allies_move = "";
+    let last_central_move = "";
+
+    document.querySelectorAll(`.central-action-round-track`).forEach((el) => { el.innerHTML = ""; });
+    document.querySelectorAll(`.allies-action-round-track`).forEach((el) => { el.innerHTML = ""; });
+
+
+    if (this.game.state.allies_rounds.length > 0) {
+      last_allies_move = this.game.state.allies_rounds[this.game.state.allies_rounds.length-1];
+    }
+    if (this.game.state.central_rounds.length > 0) {
+      last_central_move = this.game.state.central_rounds[this.game.state.central_rounds.length-1];
+    }
+
+    if (last_central_move === "rp") {
+
+    }
+ 
+
+    if (this.game.state.neutral_entry != 0) {
+      document.querySelector(`.central-action-round-track-1`).innerHTML = central_token;;
+      document.querySelector(`.allies-action-round-track-1`).innerHTML = allies_token;;
+    }
+
   }
 
   displayMandatedOffensiveTracks() {
