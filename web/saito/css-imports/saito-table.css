@@ -39,6 +39,10 @@ Saito Table
 .saito-table-rank {
   font-family: courier, monospace;
   font-size: 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  justify-content: space-around;
 }
 
 .saito-table-header {

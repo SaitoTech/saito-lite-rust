@@ -217,11 +217,34 @@ class ChatPopup {
 		let x_offset = 0;
 		let popups_on_page = 0;
 
+		// Use the chat manager to locate the first popup
+		let cm = document.querySelector(".chat-manager");
+		if (document.getElementById("chat-manager-overlay")){
+			cm = null;
+		}
+		let l2r = false;
+		if (cm) {
+			let cm_stats = cm.getBoundingClientRect();
+			x_offset = cm_stats.right - 360;
+			if (cm_stats.left * 2 < window.innerWidth){
+				l2r = true;
+			}
+		} else {
+			x_offset = window.innerWidth - 375;
+		}
+
+		// We want to stack multiple chat popups next to each other
 		document.querySelectorAll('.chat-container').forEach((el) => {
 			popups_on_page++;
 			var rect = el.getBoundingClientRect();
-			if (rect.left > x_offset) {
-				x_offset = rect.left;
+			if (l2r){
+				if (rect.left > x_offset) {
+					x_offset = rect.left;
+				}
+			}else{
+				if (rect.left < x_offset) {
+					x_offset = rect.left;
+				}
 			}
 		});
 
@@ -268,14 +291,25 @@ class ChatPopup {
 				);
 			}
 
+
+			if (popups_on_page){
+				if (l2r) {
+					x_offset += 90;						
+				} else {
+					x_offset -= 90;	
+				}
+			}
+			
+			// Keep popup on screen
+			x_offset = Math.min(window.innerWidth - 360, x_offset);
+			x_offset = Math.max(0, x_offset);
+			
 			//
 			// now set left-position of popup
 			//
-			if (!this.container && popups_on_page > 0) {
+			if (!this.container /*&& popups_on_page > 0*/) {
 				let obj = document.querySelector(popup_qs);
-				let x_pos = x_offset + 100;
-				x_pos = Math.min(window.innerWidth - 200, x_pos);
-				obj.style.left = x_pos + 'px';
+				obj.style.left = x_offset + 'px';
 			}
 
 			// add call icon, ignore if community chat
@@ -600,7 +634,6 @@ class ChatPopup {
 		let myBody = document.querySelector(popup_qs + ' .chat-body');
 		if (myBody && myBody?.lastElementChild) {
 			const pollScrollHeight = () => {
-				console.log("scrolling...");
 				let lastChild = myBody.lastElementChild;
 				if (lastChild.querySelector('.saito-user .saito-userline')) {
 					lastChild =
@@ -700,7 +733,7 @@ class ChatPopup {
 			this.app.browser.makeResizeable(popup_qs, header_qs, group_id);
 		}
 
-		chatPopup.onclick = (e) => {
+		chatPopup.onmousedown = (e) => {
 			document.querySelectorAll('.chat-container').forEach((el) => {
 				el.classList.remove('active');
 			});

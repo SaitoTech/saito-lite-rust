@@ -1,4 +1,5 @@
 
+
   returnSpaceName(spacekey) {
     return this.game.spaces[spacekey].name;
   }
@@ -206,6 +207,18 @@
     for (let key in countries) { total_nationalities++; }
     
     if (faction == "central") {
+      if (this.game.state.events.eleventh_army == 1) {
+	let has_eleventh_army = false;
+	let has_other_army = false;
+	let number_cp_corps = 0;
+	for (let z = 0; z < space.units.length; z++) {
+	  if (space.units[z].corps) { number_cp_corps++; }
+	  if (space.units[z].key == "ge_army11") { has_eleventh_army = true; }
+	  if (space.units[z].key != "ge_army11" && space.units[z].army) { has_other_army = true; }
+        }
+        if (has_eleventh_army) { return this.game.spaces[key].units.length - number_cp_corps; }
+        if (has_other_army) { return this.game.spaces[key].units.length - number_cp_corps + 1; }
+      }
       if (this.game.state.events.falkenhayn != 1 && this.game.state.events.moltke == 1 && (space.country == "france" || space.country == "belgium")) {
         if (units.length == 1) { return 1; }
         if (units.length == 2) { return 2; }
@@ -378,15 +391,21 @@
   }
 
 
+
   returnSpacekeysByCountry(country="") {
-    if (country == "russia") { return ["petrograd", "reval", "pskov", "riga", "libau", "szawli", "kovno", "vilna", "dvinsk", "moldechno", "opochka", "velikiyeluki", "moscow", "smolensk", "roslavi", "mogilev", "orsha", "vitebsk", "gomel", "slutsk", "minsk", "baranovichi", "grodno", "lomza", "bialystok", "bresklitovsk", "warsaw", "kovel", "sarny", "plock", "lodz", "czestochowa", "ivangorod", "lublin", "lutsk", "rovno", "mozyr", "chernigov", "kiev", "kharkov", "zhitomir", "dubno", "vinnitsa", "kamenetspodolski", "zhmerinka", "kishinev", "caucasus", "ishmail", "odessa", "poti", "grozny", "petrovsk", "batum", "tbilisi", "kars", "erivan", "elizabethpol", "baku"]; }
-    return [];
+    let s = this.returnSpaces();
+    let keys = [];
+    for (let k in s) {
+      if (s[k].country == country) { keys.push(k); }
+    }
+    return keys;
   }
 
 
   returnSpaces() {
 
     let spaces = {};
+
 
 //
 // ENGLAND
@@ -3495,6 +3514,26 @@ spaces['izmir'] = {
       top:  2945,
       left: 3265,
       neighbours: ["balikesir"] ,
+      terrain : "normal" ,
+      vp : false ,
+}
+
+spaces['aeubox'] = {
+      name: "Allied Eliminated Units" ,
+      control: "allies" ,
+      top:  0,
+      left: 0,
+      neighbours: [],
+      terrain : "normal" ,
+      vp : false ,
+}
+
+spaces['ceubox'] = {
+      name: "Central Eliminated Units" ,
+      control: "central",
+      top:  0,
+      left: 0,
+      neighbours: [],
       terrain : "normal" ,
       vp : false ,
 }
