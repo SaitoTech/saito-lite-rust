@@ -233,8 +233,6 @@ class ChatPopup {
 			x_offset = window.innerWidth - 375;
 		}
 
-		console.log("CHAT reference x_offset from chat manager: ", x_offset, l2r);
-
 		// We want to stack multiple chat popups next to each other
 		document.querySelectorAll('.chat-container').forEach((el) => {
 			popups_on_page++;
@@ -248,10 +246,7 @@ class ChatPopup {
 					x_offset = rect.left;
 				}
 			}
-			console.log("new offset: ", x_offset);
 		});
-
-		console.log("CHAT reference x_offset: ", x_offset);
 
 		//
 		// insert or replace popup on page
@@ -305,11 +300,9 @@ class ChatPopup {
 				}
 			}
 			
-			console.log("CHAT reference x_offset: ", x_offset);
 			// Keep popup on screen
 			x_offset = Math.min(window.innerWidth - 360, x_offset);
 			x_offset = Math.max(0, x_offset);
-			console.log("CHAT reference x_offset: ", x_offset);
 			
 			//
 			// now set left-position of popup
@@ -641,7 +634,6 @@ class ChatPopup {
 		let myBody = document.querySelector(popup_qs + ' .chat-body');
 		if (myBody && myBody?.lastElementChild) {
 			const pollScrollHeight = () => {
-				console.log("scrolling...");
 				let lastChild = myBody.lastElementChild;
 				if (lastChild.querySelector('.saito-user .saito-userline')) {
 					lastChild =
