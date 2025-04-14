@@ -31,19 +31,34 @@ console.log("MOVE: " + mv[0]);
 	  this.game.state.turn++;
 	  this.game.state.round = 0;	   
 
+
+console.log("##################");
+console.log("##################");
+console.log("##################");
+console.log("##################");
+console.log("##################");
+console.log("##################");
+console.log("##################");
+console.log("##################");
+console.log("====HANDS====");
+console.log(JSON.stringify(this.game.deck[0].hand));
+console.log(JSON.stringify(this.game.deck[1].hand));
+
 	  //
 	  // remove any "pass" option
 	  //
 	  for (let z = this.game.deck[0].hand.length-1; z >= 0; z--) {
-	    if (this.game.deck[0].hand[z] == "pass") { this.game.deck[0].hand.splice(z, 1); }
+	    if (this.game.deck[0].hand[z] === "pass") { this.game.deck[0].hand.splice(z, 1); }
 	  }
 	  for (let z = this.game.deck[1].hand.length-1; z >= 0; z--) {
-	    if (this.game.deck[1].hand[z] == "pass") { this.game.deck[1].hand.splice(z, 1); }
+	    if (this.game.deck[1].hand[z] === "pass") { this.game.deck[1].hand.splice(z, 1); }
 	  }
 
 this.updateLog(`###############`);
 this.updateLog(`### Turn ${this.game.state.turn} ###`);
 this.updateLog(`###############`);
+console.log(JSON.stringify(this.game.deck[0].hand));
+console.log(JSON.stringify(this.game.deck[1].hand));
 
 	  this.onNewTurn();
 
@@ -202,8 +217,8 @@ this.updateLog(`###############`);
           if (allies_cards_needed > this.game.deck[1].crypt.length) { allies_cards_needed = this.game.deck[1].crypt.length; }
           if (central_cards_needed > this.game.deck[0].crypt.length) { central_cards_needed = this.game.deck[0].crypt.length; }
           
-          this.game.queue.push("DEAL\t1\t6\t"+central_cards_needed);
-          this.game.queue.push("DEAL\t2\t7\t"+allies_cards_needed);
+          this.game.queue.push("DEAL\t1\t1\t"+central_cards_needed);
+          this.game.queue.push("DEAL\t2\t2\t"+allies_cards_needed);
 
 	  return 1;
 
@@ -213,6 +228,15 @@ this.updateLog(`###############`);
  	if (mv[0] == "replacement_phase") {
 
           this.game.queue.splice(qe, 1);
+
+	  //
+	  // Walter Rathenau
+	  //
+	  if (this.game.state.events.walter_rathenau == 1) {
+	    if (!this.game.state.rp["central"]["GE"]) { this.game.state.rp["central"]["GE"] = 0; }
+	    this.updateLog("Germany gets Walter Rathenau bonus...");
+	    this.game.state.rp["central"]["GE"]++;
+	  }
 
 	  this.game.queue.push("player_play_replacements\tallies");
 	  this.game.queue.push("player_play_replacements\tcentral");
@@ -228,6 +252,13 @@ this.updateLog(`###############`);
 
 	  let faction = mv[1];
           this.game.queue.splice(qe, 1);
+
+	  //	
+	  // skip if no replacement points	
+	  //	
+	  let count = 0;
+	  for (let key in this.game.state.rp[faction]) { count += parseInt(this.game.state.rp[faction][key]); }
+	  if (count == 0) { return 1; }
 
 	  if (this.returnPlayerOfFaction(faction) == this.game.player) {
 	    this.playerSpendReplacementPoints(faction);
@@ -340,7 +371,7 @@ this.updateLog(`###############`);
 	  if (faction == "central" && this.game.state.central_passed != 0) { return 1; }
 	  if (faction == "allies" && this.game.state.allies_passed != 0) { return 1; }
 
-	  this.onNewTurn();
+	  this.onNewRound();
 
 	  if (this.game.player == player) {
 	    this.playerTurn(faction);
@@ -349,6 +380,38 @@ this.updateLog(`###############`);
 	  }
 	  
 	  return 0;
+
+	}
+
+	if (mv[0] == "pass") {
+
+	  let faction = mv[1];
+	  if (faction == "central") {
+	    this.game.state.central_passed = 1;
+	  } else {
+	    this.game.state.allies_passed = 1;
+	  }
+
+          this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+	if (mv[0] == "record") {
+
+	  let faction = mv[1];
+	  let round = parseInt(mv[2]);
+	  let action = mv[3];
+
+	  if (faction == "central") {
+	    this.game.state.central_rounds.push(action);
+	  }
+	  if (faction == "allies") {
+	    this.game.state.allies_rounds.push(action);
+	  }
+
+          this.game.queue.splice(qe, 1);
+	  return 1;
 
 	}
 
@@ -491,6 +554,12 @@ try {
     	  this.addUnitToSpace("ru_army10", "arbox");
     	  this.addUnitToSpace("br_corps", "arbox");
 
+//
+//
+//
+this.game.spaces['strasbourg'].units[0].damaged = true;
+this.game.spaces['paris'].units[0].damaged = true;
+
 } catch(err) {console.log("error initing:" + JSON.stringify(err));}
 
           this.displayBoard();
@@ -568,17 +637,25 @@ try {
 	  let card = mv[2];
 
     	  let c = this.deck[card];
-    
-    	  for (let key in c.sr) {
+
+console.log("CARD RP: " + JSON.stringify(c));
+console.log("RP pre: " + JSON.stringify(this.game.state.rp));
+   
+    	  for (let key in c.rp) {
             if (faction == "central") {
               if (!this.game.state.rp["central"][key]) { this.game.state.rp["central"][key] = 0; }
-              this.game.state.rp["central"][key] += c.sr[key];
+console.log("adding RP C");
+              this.game.state.rp["central"][key] += parseInt(c.rp[key]);
             }
             if (faction == "allies") {
               if (!this.game.state.rp["allies"][key]) { this.game.state.rp["allies"][key] = 0; }
-              this.game.state.rp["allies"][key] += c.sr[key];
+console.log("adding RP A");
+              this.game.state.rp["allies"][key] += parseInt(c.rp[key]);
             }
           } 
+
+console.log("RP pst: " + JSON.stringify(this.game.state.rp));
+
 
 	  this.updateLog(this.returnFactionName(faction) + " plays " + this.popup(card) + " for Replacement Points");
           this.game.queue.splice(qe, 1);
@@ -707,8 +784,8 @@ try {
 //11. Defender Retreat
 //12. Attacker Advance
 
-	  this.combat_overlay.render();
-	  this.combat_overlay.pullHudOverOverlay();
+	  //this.combat_overlay.render();
+	  //this.combat_overlay.pullHudOverOverlay();
 
 	  return 1;
 
@@ -774,7 +851,7 @@ try {
 
 	  this.game.queue.splice(qe, 1);
 
-	  if (this.game.player == this.returnPlayerOfFaction(this.game.state.combat.defender_power)) {
+	  if (this.game.player != this.returnPlayerOfFaction(this.game.state.combat.attacking_faction)) {
 	    this.playerSelectDefenderCombatCards();
 	  }
 
@@ -787,7 +864,7 @@ try {
 
 	  this.game.queue.splice(qe, 1);
 
-	  if (this.game.player == this.returnPlayerOfFaction(this.game.state.combat.attacker_power)) {
+	  if (this.game.player == this.returnPlayerOfFaction(this.game.state.combat.attacking_faction)) {
 	    this.playerSelectAttackerCombatCards();
 	  }
 
@@ -972,7 +1049,6 @@ try {
 //
 //this.game.state.combat.attacker_loss_factor = 8;
 //this.game.state.combat.defender_loss_factor = 10;
-
 
 	  this.game.queue.splice(qe, 1);
 
@@ -1175,7 +1251,30 @@ try {
 	  return 1;
 
         }
+
+	if (mv[0] === "repair") {
+
+	  let faction = mv[1];
+	  let spacekey = mv[2];
+	  let unit_idx = parseInt(mv[3]);
+
+	  if (this.game.spaces[spacekey].units[unit_idx].destroyed) {
+	    this.game.spaces[spacekey].units[unit_idx].destroyed = 0;
+	    this.game.spaces[spacekey].units[unit_idx].damaged = 1;
+	  } else {
+	    this.game.spaces[spacekey].units[unit_idx].destroyed = 0;
+	    this.game.spaces[spacekey].units[unit_idx].damaged = 0;
+	  }
+
+	  this.displaySpace(spacekey);
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
 	if (mv[0] === "damage") {
+
+	  this.game.queue.splice(qe, 1);
 
 	  let spacekey = mv[1];
 	  let key = mv[2];
@@ -1183,28 +1282,57 @@ try {
 	  let player_to_ignore = 0;
 	  if (mv[4]) { player_to_ignore = parseInt(mv[4]); }
 
+	  let is_last_unit = 0;
+	  let tmpx = this.game.queue[this.game.queue.length-1].split("\t");
+	  if (tmpx[0] !== "damage" && tmpx[0] !== "add") { is_last_unit = 1; }
+
 	  if (player_to_ignore != this.game.player) {
 	    let unit = null;
+	    let unit_idx = 0;
 	    for (let z = 0; z < this.game.spaces[spacekey].units.length; z++) {
 	      if (!this.game.spaces[spacekey].units[z].destroyed) {
 	        if (damaged == 1) {
 	          if (this.game.spaces[spacekey].units[z].damaged == true && key === this.game.spaces[spacekey].units[z].key) {
 		    unit = this.game.spaces[spacekey].units[z];
+		    unit_idx = z;
 	          }
 	        } else {
 	          if (this.game.spaces[spacekey].units[z].damaged == false && key === this.game.spaces[spacekey].units[z].key) {
 		    unit = this.game.spaces[spacekey].units[z];
+		    unit_idx = z;
 	          }
 	        }
 	      }
 	    }
 	    if (unit) {
-	      if (unit.damaged == false) { unit.damaged = true; } else { unit.destroyed = true; }
+	      if (unit.damaged == false) {
+		unit.damaged = true;
+	      } else { 
+		unit.destroyed = true;
+	      }
 	    }
 	  }
 
+	  if (is_last_unit) {
+            for (let z = this.game.spaces[spacekey].units.length-1; z >= 0; z--) {
+              let u = this.game.spaces[spacekey].units[z];
+	      let f = this.returnPowerOfUnit(u);
+              if (u.destroyed == true) {
+		if (f === "central") {
+	          this.moveUnit(spacekey, z, "ceubox");
+		  this.displaySpace("ceubox");
+		} else {
+	          this.moveUnit(spacekey, z, "aeubox");
+		  this.displaySpace("aeubox");
+		}
+	      }
+            } 
+	  }
+            
+	  this.displaySpace("ceubox");
+	  this.displaySpace("aeubox");
 	  this.displaySpace(spacekey);
-	  this.game.queue.splice(qe, 1);
+
 	  return 1;
 
 	}
@@ -1235,8 +1363,6 @@ try {
 	  let action = mv[1];
 	  let eligible_spaces = JSON.parse(mv[2]);
 
-console.log("ES: " + eligible_spaces[0]);
-
 	  let drm_modifiers = 0;
           //
           // +1 for every unit without another army adjacent to it
@@ -1245,13 +1371,9 @@ console.log("ES: " + eligible_spaces[0]);
 
           for (let i = 0; i < eligible_spaces.length; i++) {
             if (i != action) {
-console.log("valid: " + eligible_spaces[i]);
               if (!flanking_spaces.includes(eligible_spaces[i])) {
-console.log("it is not a previously-examined flanking space...");
                 flanking_spaces.push(eligible_spaces[i]);
-console.log("can: " + eligible_spaces[i] + " flank?: " + this.canSpaceFlank(eligible_spaces[i]));
                 if (this.canSpaceFlank(eligible_spaces[i])) {
-console.log("adding +1 to drm modifiers...");
                   drm_modifiers++;
                 }
               }
@@ -1261,7 +1383,7 @@ console.log("adding +1 to drm modifiers...");
 	  let roll = this.rollDice(6);
 	  this.updateLog("roll: " + roll + " (+"+drm_modifiers+")"); 
 
-	  if (roll > (3+drm_modifiers)) {
+	  if ((roll+drm_modifiers) > 3) {
 	    this.game.state.combat.flank_attack = "attacker"; 
 	  } else {
 	    this.game.state.combat.flank_attack = "defender"; 
@@ -1422,7 +1544,9 @@ console.log("adding +1 to drm modifiers...");
 	  // toggle the besieged variable if needed.
 	  //
 	  if (this.returnPowerOfUnit(this.game.spaces[destinationkey].units[0]) != this.game.spaces[destinationkey].control) {
-	    this.game.spaces[destinationkey].besieged = 1;
+	    if (this.game.spaces[destinationkey].fort > 0) {
+	      this.game.spaces[destinationkey].besieged = 1;
+	    }
 	  }
 	  if (this.game.spaces[sourcekey].besieged == 1) {
 	    if (this.game.spaces[sourcekey].units.length > 0) {

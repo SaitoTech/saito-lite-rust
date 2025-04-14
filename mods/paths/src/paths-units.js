@@ -1,4 +1,5 @@
 
+  returnFactionOfUnit(unit) { return this.returnPowerOfUnit(unit); }
   returnPowerOfUnit(unit) {
 
     try { if (!unit.ckey) { unit = this.game.units[unit]; } } catch (err) {}
