@@ -412,3 +412,10 @@ span.attention {
 		/* testing, haven t seen any of this */
 	}
 }
+
+.league-rankings .sidebar-title {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding-right: 1rem;
+}
