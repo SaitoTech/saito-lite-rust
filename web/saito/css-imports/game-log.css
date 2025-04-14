@@ -9,7 +9,7 @@
   display: block;
   width: var(--ideal-game-log);
   height: 100%;
-  z-index: 500;
+  z-index: 90;
   color: #fff;
   background: #222d;
   transition: all 400ms;

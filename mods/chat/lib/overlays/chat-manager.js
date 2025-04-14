@@ -54,13 +54,13 @@ class ChatManagerOverlay {
 	// Note: mod = Arcade
 	//
 	attachEvents() {
-		document.querySelector('.chat-manager-overlay').onclick = (e) => {
+		/*document.querySelector('.chat-manager-overlay').onclick = (e) => {
 			if (e.currentTarget == e.target) {
 				document.querySelector(
 					'.chat-manager-overlay'
 				).style.visibility = 'hidden';
 			}
-		};
+		};*/
 
 		if (this.app.browser.isMobileBrowser() || window.innerWidth < 600) {
 			window.history.pushState("chat-manager-overlay", "");
@@ -74,6 +74,9 @@ class ChatManagerOverlay {
 				'chat-manager-overlay',
 				'chat-manager-header'
 			);
+
+			let cmo = document.getElementById('chat-manager-overlay');
+			cmo.style.resize = 'vertical';
 		}
 
 		/*

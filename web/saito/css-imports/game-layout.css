@@ -40,11 +40,11 @@ body {
 }
 
 .chat-container {
-  z-index: 88;
+  z-index: 90;
 }
 
 .chat-container.active {
-  z-index: 90;
+  z-index: 91;
 }
 
 

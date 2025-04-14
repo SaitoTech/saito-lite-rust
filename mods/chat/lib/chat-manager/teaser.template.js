@@ -53,13 +53,19 @@ module.exports  = (app, mod, group, chat_open) => {
 		classes += " saito-chat-active";
 	}
 
+	// reduce flicker of browser mutation observer
+	let display_name = group.name;
+	if (app.wallet.isValidPublicKey(display_name)){
+		display_name = app.keychain.returnUsername(display_name);
+	}
+
 	let html = `
   <div class="${classes}" id="saito-user-${id}" data-id="${id}" data-disable="true">
     <div class="saito-identicon-box">
       <img class="saito-identicon" src="${imgsrc}" data-disable="true"/>
     </div>
     <div class="saito-address saito-address-long">
-    	<div class="saito-address" data-id="${group.name}" data-disable="true">${group.name}</div>
+    	<div class="saito-address treated" data-id="${group.name}" data-disable="true">${display_name}</div>
     	${group?.muted ? `<i class="fa-solid fa-volume-xmark"></i>` : ""}
     </div>
     <div class="saito-userline">${last_msg}</div>
