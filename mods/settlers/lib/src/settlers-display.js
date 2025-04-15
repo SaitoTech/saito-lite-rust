@@ -100,15 +100,26 @@ class SettlersDisplay {
           
           let player = this.game.state.players[0].vp > this.game.state.players[1].vp ? 1 : 2;
 
-          if (score_change == player){
-            this.card_overlay.render({ player: 3-player , card : "Robin Hood"});
-            this.game.queue.push(`roll_bandit\t${player}`);
+          if (score_change == player) {
+            // Newly entering state
+            if (!this.game.state.robinhood) {
+              $('.main').addClass('robinhood');
+              this.game.state.robinhood = 3-player;
+              this.updateLog(`Robinhood will be friendly to ${this.formatPlayer(player)}`);
+            }
+  
+            // Only move Robinhood if bandit is threatening losing player
+            if (this.game.state.threatened.includes(this.game.state.robinhood)){
+              this.card_overlay.render({ player: this.game.state.robinhood , card : "Robin Hood"});
+              this.game.queue.push(`roll_bandit\t${player}`);
+            }
           }
-
-          console.log('Robin hood');
-          $('.main').addClass('robinhood');
         } else {
+          if (this.game.state.robinhood) {
+            this.updateLog("The bandit is neutral again");
+          }
           $('.main').removeClass('robinhood');
+          this.game.state.robinhood = 0;
         }
       }
 
