@@ -773,7 +773,7 @@
   font-size: 24px;
 }
 
-.chat-manager-overlay .chat-manager-header, .chat-manager-overlay .chat-manager-menu {
+.chat-manager-overlay .chat-manager-header {
   font-size: 20px;
 }
 
@@ -874,13 +874,14 @@
     grid-template-rows: var(--saito-header-height) 1fr;
   }
 
-  .chat-manager-overlay .chat-manager-menu i {
-    width: 40px;
-    height: 40px;
+  .chat-manager-overlay .close-chat-manager i {
+    width: 45px;
+    height: 70px;
+    font-size: 28px;
+    padding: 1.4rem 0.8rem;
   }
-  .chat-manager-overlay .chat-manager-header {
-    height: 100%;
-  }
+
+
   .chat-container {
     margin: 0;
     min-width: unset;
@@ -911,6 +912,7 @@
   .chat-manager-overlay+.chat-container {
     height: 100vh;
     height: calc(var(--saito-vh) * 100);
+    z-index: 90;
   }
 
   .chat-header-info {
