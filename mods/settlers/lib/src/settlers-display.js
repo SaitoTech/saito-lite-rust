@@ -105,7 +105,7 @@ class SettlersDisplay {
             if (!this.game.state.robinhood) {
               $('.main').addClass('robinhood');
               this.game.state.robinhood = 3-player;
-              this.updateLog(`Robinhood will be friendly to ${this.formatPlayer(player)}`);
+              this.updateLog(`Robinhood will be friendly to ${this.formatPlayer(this.game.state.robinhood)}`);
             }
   
             // Only move Robinhood if bandit is threatening losing player
