@@ -49,7 +49,7 @@ class SettlersActions {
         if (this.game.state.hexes[neighboringHex].value == value) {
           let resource = this.game.state.hexes[neighboringHex].resource;
 
-          if (this.game.state.hexes[neighboringHex].robber) {
+          if (this.game.state.hexes[neighboringHex].robber && player !== this.game.state.robinhood) {
             if (!blocked[player]){
               blocked[player] = [];
             }

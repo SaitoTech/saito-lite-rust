@@ -53,7 +53,7 @@
 }
 
 .chat-manager-list {
-  gap: 1.5rem;
+  gap: 0.75rem;
   display: flex;
   flex-direction: column;
   min-height: 22rem;
@@ -176,7 +176,6 @@
   the child (slidein menu) inherits it */
   position: fixed;
   bottom: 0px;
-  left: 0.5rem;
   border: var(--border-thickness-chat-popup) solid var(--border-color-chat-popup);
   background: var(--background-color-chat-popup-header);
   color: var(--font-color-chat-popup);
@@ -769,12 +768,12 @@
   position: absolute;
   left: 0;
   top: 0;
-  padding: 1rem;
+  padding: 0.6rem 1.1rem;
   background: var(--background-color-chat-popup-main); /* testing */
   font-size: 24px;
 }
 
-.chat-manager-overlay .chat-manager-header, .chat-manager-overlay .chat-manager-menu {
+.chat-manager-overlay .chat-manager-header {
   font-size: 20px;
 }
 
@@ -783,12 +782,13 @@
   position: absolute;
   left: 0;
   top: var(--saito-header-height);
-  z-index: 15;
+  z-index: 90;
   width: 300px;
   border: var(--border-thickness-chat-popup) solid var(--border-color-chat-popup);
   box-shadow: var(--box-shadow-sidebar-elements);
   border-radius: var(--border-radius-sidebar-menu);
   height: fit-content;
+  overflow: hidden;
 }
 
 .floating-cm-overlay .chat-manager-header {
@@ -841,11 +841,6 @@
     display: none;
   }
 
-  .close-chat-manager i {
-    height: 6rem;
-    line-height: 3rem;
-  }
-
   .chat-header > .chat-header-nav > i.chat-container-close {
     width: 4rem;
     text-align: center;
@@ -868,7 +863,6 @@
     width: 100vw;
     max-height: -webkit-fill-available;
     max-width: -webkit-fill-available;
-    z-index: 15;
     border-radius: unset;
   }
 
@@ -880,13 +874,14 @@
     grid-template-rows: var(--saito-header-height) 1fr;
   }
 
-  .chat-manager-overlay .chat-manager-menu i {
-    width: 40px;
-    height: 40px;
+  .chat-manager-overlay .close-chat-manager i {
+    width: 45px;
+    height: 70px;
+    font-size: 28px;
+    padding: 1.4rem 0.8rem;
   }
-  .chat-manager-overlay .chat-manager-header {
-    height: 6rem;
-  }
+
+
   .chat-container {
     margin: 0;
     min-width: unset;
@@ -917,6 +912,7 @@
   .chat-manager-overlay+.chat-container {
     height: 100vh;
     height: calc(var(--saito-vh) * 100);
+    z-index: 90;
   }
 
   .chat-header-info {
