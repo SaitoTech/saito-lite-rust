@@ -3,6 +3,8 @@
   // turns have several rounds
   onNewRound() {
 
+    this.calculateVictoryPoints();
+    this.displayGeneralRecordsTrack();
     this.calculateRussianCapitulationTrack();
     this.displayActionRoundTracks();
 

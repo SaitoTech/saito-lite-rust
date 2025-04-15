@@ -67,17 +67,35 @@
 
   }
 
+  addHighlightToSpacekey(spacekey="", htype="") {
+    let obj = document.querySelector(`.${spacekey}`);
+    if (htype == "central" && obj) { obj.classList.add('central-highlight'); }
+    if (htype == "allies" && obj) { obj.classList.add('allies-highlight'); }
+  }
+
   addHighlights(el) {
-//    if (!el.classList.contains("allies")) {
-//      el.classList.add('allies-highlight');
-//    }
-//    if (!el.classList.contains("neutral")) {
-//      el.classList.add('neutral-highlight');
-//    }
-//    if (!el.classList.contains("central")) {
-//      el.classList.add('central-highlight');
-//    }
-  } 
+    if (!el.classList.contains("allies")) {
+      el.classList.add('allies-highlight');
+    }
+    if (!el.classList.contains("neutral")) {
+      el.classList.add('neutral-highlight');
+    }
+    if (!el.classList.contains("central")) {
+      el.classList.add('central-highlight');
+    }
+  }
+
+  removeHighlights() {
+    document.querySelectorAll(".allies-highlight").forEach((el) => {
+      el.classList.remove("allies-highlight");
+    });
+    document.querySelectorAll(".neutral-highlight").forEach((el) => {
+      el.classList.remove("neutral-highlight");
+    });
+    document.querySelectorAll(".central-highlight").forEach((el) => {
+      el.classList.remove("central-highlight");
+    });
+  }
 
   addSelectable(el) {
     if (!el.classList.contains("selectable")) {
@@ -114,7 +132,7 @@
     //
     try {
       this.displaySpaces();
-      this.addHighlights();
+      //this.addHighlights();
 
     } catch (err) {
 console.log("!");

@@ -82,7 +82,7 @@
     if (just_link) { return `/paths/img/army/${key}_back.png`; }
     return `<img src="/paths/img/army/${key}_back.png" class="army-tile ${unit.key}" />`;
   }
-  returnUnitImageWithMouseoverOfStepwiseLoss(unit, just_link) {
+  returnUnitImageWithMouseoverOfStepwiseLoss(unit, just_link="", mouseout_first=false) {
     let key = unit.key;
     let face_img = "";
     let back_img = "";
@@ -99,7 +99,16 @@
       back_img = `/paths/img/army/${key}_back.png`;
     }
 
-    return `<img src="${face_img}" onmouseover="this.src='${back_img}'" onmouseout="this.src='${face_img}'" class="army-tile ${unit.key}" />`;
+    //
+    // the workaround below is part of our strategy to prevent tiles from insta-
+    // flipping once clicked on, so that mouseout is required in order to trigger
+    // tiles showing their reversed side on mouseover. see /lib/ui/overlays/loss.js
+    //
+    if (!mouseout_first) {
+      return `<img src="${face_img}" onmouseover="this.src='${back_img}'" onmouseout="this.src='${face_img}'" class="army-tile ${unit.key}" />`;
+    } else {
+      return `<img src="${face_img}" data-mouseover="false" onmouseover="if (this.dataset.mouseover === 'true') { this.src='${back_img}' }" onmouseout="this.dataset.mouseover = 'true'; this.src='${face_img}'" class="army-tile ${unit.key}" />`;
+    }
 
   }
   returnUnitImageInSpaceWithIndex(spacekey, idx) {

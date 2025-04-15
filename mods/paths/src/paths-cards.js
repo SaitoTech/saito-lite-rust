@@ -116,6 +116,7 @@
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  paths_self.game.state.events.blockade = 1;
+	  return 1;
         } ,
       }
 
@@ -229,6 +230,7 @@
 	      paths_self.game.state.combat.defender_drm += 2;
 	    }
 	  }
+	  return 1;
 	} ,
       }
 
@@ -246,11 +248,6 @@
         onEvent : function(paths_self, faction) {
 	  paths_self.addUnitToSpace("ru_corps", "arbox");
 	  paths_self.addUnitToSpace("ru_corps", "arbox");
-	  //if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	  //  paths_self.playerPlaceUnitOnBoard("russia", ["ru_corps", "ru_corps"], () => {
-	  //    paths_self.endTurn();
-	  //  });
-	  //}
 	  return 0;
 	} ,
       }
@@ -484,6 +481,7 @@ deck['ap14'] = {
           if (valid_option == true) {
             paths_self.game.state.combat.attacker_drm += 1;
 	  }
+	  return 1;
 	} ,
       }
 
@@ -750,7 +748,6 @@ console.log(paths_self.game.player + " ====== " + paths_self.returnPlayerOfFacti
 	  paths_self.addUnitToSpace("ah_corps", "crbox");
 	  paths_self.displayBoard();
 	  return 1;
-
 	} ,
       }
 
@@ -1145,6 +1142,8 @@ deck['ap29'] = {
 	  } else {
 	    paths_self.updateStatus("Russia placing unit...");
 	  }       
+
+	  return 0;
 	} ,
       }
 
@@ -1229,6 +1228,7 @@ deck['ap30'] = {
 	    paths_self.updateLog("Allies playing Salonika...");
 	  }
 
+	  return 0;
 	} ,
       }
 
