@@ -1217,6 +1217,9 @@ class Arcade extends ModTemplate {
 			return;
 		}
 
+
+		console.log("=============",JSON.parse(JSON.stringify(game)), "=============");
+
 		//
 		// Don't add the same player twice!
 		//
@@ -1260,7 +1263,7 @@ class Arcade extends ModTemplate {
 		}
 
 		// If this is an already initialized table game... stop
-		if (game.msg.request == 'active') {
+		if (game.msg.request == 'active' || game.msg.request == 'over') {
 			return;
 		}
 
