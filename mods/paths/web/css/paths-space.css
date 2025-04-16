@@ -4,7 +4,8 @@
 	max-height: 90vh;
 	max-width: 90vw;
 	border-radius: 2rem;
-	background-image: url('/paths/img/backgrounds/mark_iv_tank.jpg');
+	/* background-image: url('/paths/img/backgrounds/mark_iv_tank.jpg'); */
+	background-color: white;
 	background-size: cover;
 	overflow-y: auto;
 }

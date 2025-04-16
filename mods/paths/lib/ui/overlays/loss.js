@@ -348,19 +348,19 @@ if (faction == "attacker") {
 	attachEvents(am_i_the_attacker, my_qs ,faction) {
 
 		if (!this.canTakeMoreLosses()) {
-			let c = confirm('Maximum Losses Sustained: Submit?');
-			if (c) {
+			//let c = confirm('Maximum Losses Sustained: Submit?');
+			//if (c) {
 				for (let i = this.moves.length - 1; i >= 0; i--) {
 					this.mod.addMove(this.moves[i]);
 				}
 				this.mod.endTurn();
 				this.hide();
 				return;
-			} else {
-				this.moves = [];
-				this.render(this.faction);
-				return;
-			}
+			//} else {
+			//	this.moves = [];
+			//	this.render(this.faction);
+			//	return;
+			//}
 		}
 
 
@@ -374,8 +374,6 @@ if (faction == "attacker") {
 				let unit_key = e.currentTarget.dataset.key;
 				let unit_spacekey = e.currentTarget.dataset.spacekey;
 				let unit_damaged = 0; if (parseInt(e.currentTarget.dataset.damaged)) { unit_damaged = 1; }
-
-alert(unit_key + " -- " + unit_spacekey + " - " + unit_damaged);
 
 				let didx = idx;
 
@@ -402,7 +400,7 @@ alert(unit_key + " -- " + unit_spacekey + " - " + unit_damaged);
 						corpsunit.spacekey = unit.spacekey;
 						this.units.push(corpsunit);
 						this.moves.push(`add\t${unit.spacekey}\t${corpskey}\t${this.mod.game.player}`);
-						let html = `<div class="loss-overlay-unit" data-spacekey="${corpsunit.spacekey}" data-key="${corpskey}" data-damaged="0" id="${this.units.length - 1}">${this.mod.returnUnitImageWithMouseoverOfStepwiseLoss(this.units[this.units.length - 1])}</div>`;
+						let html = `<div class="loss-overlay-unit" data-spacekey="${corpsunit.spacekey}" data-key="${corpskey}" data-damaged="0" id="${this.units.length - 1}">${this.mod.returnUnitImageWithMouseoverOfStepwiseLoss(this.units[this.units.length - 1], false, true)}</div>`;
 						this.app.browser.addElementToSelector(html, my_qs);
 		  				this.attachEvents(am_i_the_attacker, my_qs, faction);
 
@@ -427,10 +425,9 @@ alert(unit_key + " -- " + unit_spacekey + " - " + unit_damaged);
 				} else {
 
 					this.moves.push(`damage\t${unit_spacekey}\t${unit_key}\t0\t${this.mod.game.player}`);
-
 					unit.damaged = true;
 					this.loss_factor -= unit.loss;
-					el.innerHTML = this.mod.returnUnitImageWithMouseoverOfStepwiseLoss(unit);
+					el.innerHTML = this.mod.returnUnitImageWithMouseoverOfStepwiseLoss(unit, false, true);
 					this.updateLossesRequired(this.loss_factor);
 
 				}
@@ -447,18 +444,18 @@ alert(unit_key + " -- " + unit_spacekey + " - " + unit_damaged);
 							el.onclick = (e) => {};
 						});
 					setTimeout(() => {
-						let c = confirm('Maximum Losses Sustained: Submit?');
-						if (c) {
+						//let c = confirm('Maximum Losses Sustained: Submit?');
+						//if (c) {
 							for (let i = this.moves.length - 1; i >= 0; i--) {
 								this.mod.addMove(this.moves[i]);
 							}
 							this.mod.endTurn();
 							this.hide();
 							return;
-						} else {
-							this.render(this.faction);
-							return;
-						}
+						//} else {
+						//	this.render(this.faction);
+						//	return;
+						//}
 					}, 50);
 				}
 			};

@@ -97,15 +97,12 @@
     let is_geography_suitable = true;
     let is_flank_attack_possible = false;
 
-console.log("ATTACKER UNITS");
-console.log(JSON.stringify(attacker_units));
-console.log("DEFENDER UNITS");
-console.log(JSON.stringify(defender_units));
+console.log("X: " + JSON.stringify(attacker_units));
 
     //
     // at least one army attacking
     //
-    for (let i = 0; i < attacker_units; i++) {
+    for (let i = 0; i < attacker_units.length; i++) {
       if (!attacker_spaces.includes(attacker_units[i].spacekey)) { attacker_spaces.push(spacekey); }
       if (attacker_units[i].type == "army") { is_one_army_attacking = true; }
     }
@@ -117,18 +114,14 @@ console.log(JSON.stringify(defender_units));
     if (space.terrain == "swamp")    { is_geography_suitable = false; }
     if (space.trench > 0)            { is_geography_suitable = false; }
     if (space.fort > 0)              { is_geography_suitable = false; }
-    if (attacker_spaces > 1)         { are_attacks_from_two_spaces = true; }
+    if (attacker_spaces.length > 1)         { are_attacks_from_two_spaces = true; }
+
+console.log("X: " + is_geography_suitable + " - " + is_one_army_attacking + " - " + are_attacks_from_two_spaces);
 
     if (is_geography_suitable == true && is_one_army_attacking == true && are_attacks_from_two_spaces == true) {
       is_flank_attack_possible = true;
     }
 
-console.log("#");
-console.log("#");
-console.log("# evaluating flank attack");
-console.log("#");
-
-return 1;
     return is_flank_attack_possible;
 
   }

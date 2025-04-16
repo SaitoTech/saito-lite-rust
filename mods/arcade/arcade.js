@@ -292,7 +292,7 @@ class Arcade extends ModTemplate {
 				for (let j = 0; j < this.games.offline.length; j++){
 					if (this.games.offline[j].from[0].publicKey == peer.publicKey){
 						let game = this.games.offline[j];
-						console.log("Mark game invite online again!");
+						console.log("Mark game invite online again!", game);
 						this.notifyPeers(this.games.offline[j]);
 						this.removeGame(game.signature);
 						this.addGame(game, "open");
@@ -313,6 +313,8 @@ class Arcade extends ModTemplate {
 
 					let status = game_tx.msg.request;
 					let game_added = arcade_self.addGame(game_tx);
+
+					console.log(game_tx, status, game_added);
 
 					//Game is marked as "active" but we didn't already add it from our app.options file...
 					if (status == 'active' && game_added && arcade_self.isMyGame(game_tx)) {
@@ -706,15 +708,7 @@ class Arcade extends ModTemplate {
 
 			for (let key in this.games) {
 				for (let g of this.games[key]) {
-					let pkey = g.from[0].publicKey;
-					let success = false;
-					for (let i = 0; i < peers.length; i++) {
-						if (peers[i].publicKey === pkey && peers[i]?.status !== "disconnected") {
-							txs.push(g.serialize_to_web(this.app));
-							success = true;
-							break;
-						}
-					}
+					txs.push(g.serialize_to_web(this.app));
 				}
 			}
 
@@ -824,9 +818,12 @@ class Arcade extends ModTemplate {
 			return;
 		}
 
+		console.log(this.games);
+
 		// Only care about open, public invites
 		for (let g of this.games["open"]){
 			if (publicKey == g.from[0].publicKey){
+				console.log("Mark offline", g);
 				let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 				newtx.msg = {
 					module: "Arcade",
@@ -853,7 +850,7 @@ class Arcade extends ModTemplate {
 		}
 		let peers = await this.app.network.getPeers();
 		for (let peer of peers) {
-			if (peer.synctype == 'lite') {
+			if (peer.synctype == 'lite' && peer?.status !== "disconnected") {
 				//
 				// fwd tx to peer
 				//
@@ -1220,6 +1217,9 @@ class Arcade extends ModTemplate {
 			return;
 		}
 
+
+		console.log("=============",JSON.parse(JSON.stringify(game)), "=============");
+
 		//
 		// Don't add the same player twice!
 		//
@@ -1263,7 +1263,7 @@ class Arcade extends ModTemplate {
 		}
 
 		// If this is an already initialized table game... stop
-		if (game.msg.request == 'active') {
+		if (game.msg.request == 'active' || game.msg.request == 'over') {
 			return;
 		}
 

@@ -1203,7 +1203,7 @@ class Tweet {
 	// but we should prioritize our replies (better to see my snarky reply than the latest from some rando)
 	//
 	isCriticalChild(tweet) {
-/*
+
 		// Opt out for league tweets
 		for (let peer of this.mod.peers) {
 			if (tweet.tx.isFrom(peer.publicKey)){
@@ -1217,7 +1217,7 @@ class Tweet {
 			}
 
 		}
-*/
+
 		if (tweet.thread_id !== this.thread_id) {
 			return false;
 		}

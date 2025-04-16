@@ -3,6 +3,8 @@
   // turns have several rounds
   onNewRound() {
 
+    this.calculateVictoryPoints();
+    this.displayGeneralRecordsTrack();
     this.calculateRussianCapitulationTrack();
     this.displayActionRoundTracks();
 
@@ -114,11 +116,27 @@
   calculateVictoryPoints() {
 
     let vp = 0;
+    let central_controlled_vp_spaces = 0;
 
     //
     // central VP spaces
     //
-    for (let key in this.game.spaces) { if (this.game.spaces[key].vp > 0 && this.game.spaces[key].control == "central") { vp++; } }
+    for (let key in this.game.spaces) { if (this.game.spaces[key].vp > 0 && this.game.spaces[key].control == "central") { central_controlled_vp_spaces++; } }
+
+    //
+    //
+    //
+    let expected_central_vp_spaces = this.countSpacesWithFilter((spacekey) => {
+      if (this.game.spaces[spacekey].country == "germany" && this.game.spaces[spacekey].vp > 0) { return 1; }
+      if (this.game.spaces[spacekey].country == "austria" && this.game.spaces[spacekey].vp > 0) { return 1; }
+      if (this.game.state.events.bulgaria) { 
+        if (this.game.spaces[spacekey].country == "bulgaria" && this.game.spaces[spacekey].vp > 0) { return 1; }
+      }
+    });
+
+    vp = central_controlled_vp_spaces - expected_central_vp_spaces + 10;
+
+console.log("STARTING VP: " + vp);
 
     if (this.game.state.events.rape_of_belgium) { vp--; }
     if (this.game.state.events.belgium) { 

@@ -36,15 +36,19 @@
     if (faction == "central") {
       for (let i = 0; i < this.game.deck[0].hand.length; i++) {
 	if (cards[this.game.deck[0].hand[i]].cc) { 
-	  num++;
-	  ccs.push(this.game.deck[0].hand[i]);
+	  if (this.game.state.cc_central_active.includes(this.game.deck[0].hand[i])) {
+	    num++;
+	    ccs.push(this.game.deck[0].hand[i]);
+	  }
 	}
       }
       for (let i = 0; i < this.game.state.cc_central_active.length; i++) {
 	let c = this.game.state.cc_central_active[i];
 	if (!this.game.state.cc_central_played_this_round.includes(c)) {
-	  num++;
-	  ccs.push(c);
+	  if (this.game.state.cc_central_active.includes(this.game.deck[0].hand[i])) {
+	    num++;
+	    ccs.push(c);
+          }
         }
       }
     }
@@ -56,15 +60,19 @@
     if (faction == "allies") {
       for (let i = 0; i < this.game.deck[1].hand.length; i++) {
 	if (cards[this.game.deck[1].hand[i]].cc) { 
-	  num++;
-	  ccs.push(this.game.deck[1].hand[i]);
+	  if (this.game.state.cc_allies_active.includes(this.game.deck[1].hand[i])) {
+	    num++;
+	    ccs.push(this.game.deck[1].hand[i]);
+	  }
 	}
       }
       for (let i = 0; i < this.game.state.cc_allies_active.length; i++) {
 	let c = this.game.state.cc_allies_active[i];
 	if (!this.game.state.cc_allies_played_this_round.includes(c)) {
-	  num++;
-	  ccs.push(c);
+	  if (this.game.state.cc_allies_active.includes(this.game.deck[1].hand[i])) {
+	    num++;
+	    ccs.push(c);
+          }
         }
       }
     }
@@ -79,11 +87,12 @@
     this.updateStatusAndListCards(`${name} - play combat card?`, ccs);
     this.attachCardboxEvents((card) => {
 
+      this.unbindBackButtonFunction();
       this.updateStatus("submitting...");
 
       if (card == "pass") {
-	this.addMove("pass\t"+faction);
 	this.endTurn();
+	return 1;
       }
 
       if (ccs.length > 2) { // > 1+PASS
@@ -109,30 +118,38 @@
     if (faction == "central") {
       for (let i = 0; i < this.game.deck[0].hand.length; i++) {
 	if (cards[this.game.deck[0].hand[i]].cc) { 
-	  num++;
-	  ccs.push(this.game.deck[0].hand[i]);
+	  if (this.game.state.cc_central_active.includes(this.game.deck[0].hand[i])) {
+	    num++;
+	    ccs.push(this.game.deck[0].hand[i]);
+	  }
 	}
       }
       for (let i = 0; i < this.game.state.cc_central_active.length; i++) {
 	let c = this.game.state.cc_central_active[i];
 	if (!this.game.state.cc_central_played_this_round.includes(c)) {
-	  num++;
-	  ccs.push(c);
+	  if (this.game.state.cc_central_active.includes(this.game.deck[0].hand[i])) {
+	    num++;
+	    ccs.push(c);
+          }
         }
       }
     }
     if (faction == "allies") {
       for (let i = 0; i < this.game.deck[1].hand.length; i++) {
 	if (cards[this.game.deck[1].hand[i]].cc) { 
-	  num++;
-	  ccs.push(this.game.deck[1].hand[i]);
+	  if (this.game.state.cc_allies_active.includes(this.game.deck[1].hand[i])) {
+	    num++;
+	    ccs.push(this.game.deck[1].hand[i]);
+	  }
 	}
       }
       for (let i = 0; i < this.game.state.cc_allies_active.length; i++) {
 	let c = this.game.state.cc_allies_active[i];
 	if (!this.game.state.cc_allies_played_this_round.includes(c)) {
-	  num++;
-	  ccs.push(c);
+	  if (this.game.state.cc_allies_active.includes(this.game.deck[1].hand[i])) {
+	    num++;
+	    ccs.push(c);
+          }
         }
       }
     }
@@ -147,10 +164,12 @@
     this.updateStatusAndListCards(`${name} - play combat card?`, ccs);
     this.attachCardboxEvents((card) => {
 
+      this.unbindBackButtonFunction();
       this.updateStatus("submitting...");
 
       if (card == "pass") {
 	this.endTurn();
+	return 1;
       }
 
       if (ccs.length > 2) { // > 1+PASS
@@ -290,6 +309,11 @@
         return 0;
       },
       (key) => {
+
+	this.unbindBackButtonFunction();
+	this.updateStatus("advancing...");
+
+
 	for (let i = 0; i < attacker_units.length; i++) {
           let x = attacker_units[i];
       	  let skey = x.spacekey;
@@ -531,6 +555,12 @@
       }
     );
 
+console.log("###################");
+console.log("###################");
+console.log("###################");
+console.log("SPACES WITHIN HOPS:");
+console.log(JSON.stringify(spaces_within_hops));
+
     //
     // remove source and single-hop destination if needed
     //
@@ -636,6 +666,7 @@ console.log("unit idx: " + unit_idx);
 
     this.attachCardboxEvents((action) => {
 
+      this.unbindBackButtonFunction();
       this.guns_overlay.remove();
       this.updateStatus("selected");
 
@@ -677,6 +708,7 @@ console.log("unit idx: " + unit_idx);
     this.updateStatusWithOptions(`Flank Attack?`, html);
     this.attachCardboxEvents((action) => {
 
+      this.unbindBackButtonFunction();
       this.updateStatus("submitting...");
       this.flank_overlay.hide();
 
@@ -749,19 +781,6 @@ console.log("unit idx: " + unit_idx);
 	this.addMove(`NOTIFY\tFlank Attack launched from: ${eligible_spaces[action]}`);
 	this.endTurn();
 
-//	for (let i = 0; i < eligible_spaces.length; i++) {
-//          html    += `<li class="option" id="${i}">${eligible_spaces[i]}</li>`;
-//	}
-//        html    += `</ul>`;
-//	
-//        this.flank_overlay.render();
-//        this.updateStatusWithOptions(`Which Space Pins Defender:`, html, true);
-//        this.attachCardboxEvents((action) => {
-//          this.flank_overlay.hide();
-//	  this.addMove(`flank_attack_attempt\t${action}\t${JSON.stringify(eligible_spaces)}`);
-//	  this.endTurn();
-//	});
-
       }
     });
   }
@@ -772,6 +791,7 @@ console.log("unit idx: " + unit_idx);
     // pass is pass!
     //
     if (card == "pass") {
+      this.addMove("pass\t"+faction);
       this.endTurn();
       return;
     }
@@ -920,7 +940,7 @@ console.log("unit idx: " + unit_idx);
       // select space to attack
       //
       paths_self.playerSelectSpaceWithFilter(
-	"Select Target for Attack: ",
+	"Execute Combat (Select Target): ",
 	(key) => {
 	  if (paths_self.game.state.events.oberost != 1) {
 	    if (faction == "central") {
@@ -1093,7 +1113,7 @@ console.log("unit idx: " + unit_idx);
       }
 
       paths_self.playerSelectSpaceWithFilter(
-	"Units Awaiting Command: ",
+	"Execute Movement (Awaiting Orders): ",
 	(key) => {
 	  if (
 	    paths_self.game.spaces[key].activated_for_movement == 1 
@@ -1517,6 +1537,20 @@ console.log("unit idx: " + unit_idx);
 
   }
 
+  countSpacesWithFilter(filter_func) {
+
+    let paths_self = this;
+    let count = 0;
+
+    for (let key in this.game.spaces) {
+      if (filter_func(key) == 1) { 
+	count++;
+      }
+    }
+
+    return count;
+  }
+
   countUnitsWithFilter(filter_func) {
 
     let paths_self = this;
@@ -1570,8 +1604,6 @@ console.log("unit idx: " + unit_idx);
             el.onclick = (e) => {
 
 	      let clicked_key = e.currentTarget.id;
-
-alert("ck: " + clicked_key);
 
               e.stopPropagation();
               e.preventDefault();   // clicking on keys triggers selection -- but clicking on map will still show zoom-in
@@ -1770,12 +1802,20 @@ alert("ck: " + clicked_key);
     // select box with unit
     //
     this.playerSelectSpaceWithFilter(
-      `Select Space with Unit to Strategically Redeploy`,
+      `Redeploy Units (${value} ops)`,
       (key) => {
 	if (spaces.includes(key)) { return 1; }
         return 0;
       },
       (key) => {
+
+	if (key === "end") {
+	  paths_self.unbindBackButtonFunction();
+	  paths_self.updateStatus("submitting...");
+	  paths_self.endTurn();
+	  return 1;
+	}
+
         if (key == "crbox") {
   	  paths_self.reserves_overlay.pickUnitAndTriggerCallback("central", (idx) => {
 	    let unit = paths_self.game.spaces[crbox].units[idx];
@@ -1797,7 +1837,6 @@ alert("ck: " + clicked_key);
 	  return;
 	}
 
-
         let units = [];
         for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
   	  if (paths_self.game.spaces[key].units[z].moved != 1) {
@@ -1805,25 +1844,43 @@ alert("ck: " + clicked_key);
 	  }
         }
 
-        paths_self.playerSelectOptionWithFilter(
-	  "Redeploy Which Unit?",
-	  units,
-	  (idx) => {
-	    let unit = paths_self.game.spaces[key].units[idx];
-	    return `<li class="option" id="${idx}">${unit.name}</li>`;
-	  },
-	  (idx) => {
-	    let unit = paths_self.game.spaces[key].units[idx];
-            if (unit.type == "corps") { value -= 1; }
-            if (unit.type == "army") { value -= 4; }
-	    paths_self.game.spaces[key].units[idx].moved = 1;
-	    paths_self.playerRedeployUnit(faction, card, value, key, idx);
-	  },
-          false
-        );
+	if (units.length == 0) {
+	  return 1;
+	}
+
+	if (units.length > 1) {
+          paths_self.playerSelectOptionWithFilter(
+	    "Redeploy Which Unit?",
+	    units,
+	    (idx) => {
+	      let unit = paths_self.game.spaces[key].units[idx];
+	      return `<li class="option" id="${idx}">${unit.name}</li>`;
+	    },
+	    (idx) => {
+	      paths_self.unbindBackButtonFunction();
+	      let unit = paths_self.game.spaces[key].units[idx];
+              if (unit.type == "corps") { value -= 1; }
+              if (unit.type == "army") { value -= 4; }
+	      paths_self.game.spaces[key].units[idx].moved = 1;
+	      paths_self.playerRedeployUnit(faction, card, value, key, idx);
+	    },
+            false
+          );
+	} else {
+
+	  paths_self.unbindBackButtonFunction();
+	
+	  let unit = paths_self.game.spaces[key].units[idx];
+          if (unit.type == "corps") { value -= 1; }
+          if (unit.type == "army") { value -= 4; }
+	  paths_self.game.spaces[key].units[idx].moved = 1;
+	  paths_self.playerRedeployUnit(faction, card, value, key, idx);
+
+	}
       },
       null,
-      true
+      true,
+      [{ key : "end" , value : "end" }] ,
     );
 
   }
@@ -1836,7 +1893,7 @@ alert("ck: " + clicked_key);
     let destinations = paths_self.returnSpacesConnectedToSpaceForStrategicRedeployment(faction, spacekey);
 
     this.playerSelectSpaceWithFilter(
-      "Select Space with Unit to Strategically Redeploy",
+      `Redeploy ${paths_self.game.spaces[spacekey].units[unit_idx].name}?`,
       (key) => {
         if (key == "aeubox" || key == "ceubox" || key == "arbox" || key == "crbox") { return 1; }
 	if (destinations.includes(key)) { return 1; }
@@ -1861,9 +1918,8 @@ alert("ck: " + clicked_key);
     //
     // you can pass once only 1 card left
     //
-    if (hand.length == 1) { hand.push("pass"); }
+    if (hand.length == 1) { hand.push("pass"); this.addMove("pass\t"+faction); }
     this.addMove("resolve\tplay");
-    this.addMove("SETVAR\tstate\t"+faction+"_passed\t1");
 
     this.updateStatusAndListCards(`${name} - select card`, hand);
     this.attachCardboxEvents((card) => {
@@ -1947,17 +2003,18 @@ console.log("####");
 	}
 	return 0;
       }
+console.log("countries: " + JSON.stringify(countries));
     }
 
     if (country == "germany") {
       countries = this.returnSpacekeysByCountry("germany");
-console.log("countries: " + JSON.stringify(countries));
+console.log("GERMANY: " + JSON.stringify(countries));
       filter_func = (spacekey) => { 
 	if (countries.includes(spacekey)) {
 	  if (this.game.spaces[spacekey].control == "central") { 
-console.log("checking for supply status: " + spacekey);
+console.log("checking: " + spacekey);
 	    if (this.checkSupplyStatus("germany", spacekey)) { 
-console.log("yes!");
+console.log("in supply!");
 	      return 1; 
 	    }
 	  }
@@ -1980,7 +2037,9 @@ console.log("yes!");
 
 
     let finish_fnct = (spacekey) => {
+      this.updateStatus("placing unit...");
       this.addUnitToSpace(units[unit_idx], spacekey);
+      this.addMove(`add\t${spacekey}\t${this.game.units[units[unit_idx]].key}\t${this.game.player}`);
       this.displaySpace(spacekey);
       unit_idx++;
       if (unit_idx >= units.length) {

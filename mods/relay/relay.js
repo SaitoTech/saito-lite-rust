@@ -140,7 +140,7 @@ class Relay extends ModTemplate {
     if (need_server){
       let peers = await this.app.network.getPeers();
       for (let i = 0; i < peers.length; i++) {
-
+        if (peers[i]?.status !== "disconnected"){
         // *** NOTE ***
         // tx.msg.data is a json-ready transaction
         // this network function wraps the whole thing within another transaction
@@ -151,6 +151,7 @@ class Relay extends ModTemplate {
           null,
           peers[i].peerIndex
         );
+      }
       }
     }
   
