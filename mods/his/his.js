@@ -7676,11 +7676,11 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
 	his_self.game.queue.push("hide_overlay\ttheses");
         his_self.game.queue.push("ACKNOWLEDGE\tThe Reformation has begun!");
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
-	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+//	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+//	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+//	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+//	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+//	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	his_self.game.queue.push("STATUS\tProtestants selecting reformation targets...\t"+JSON.stringify(players_to_go));
 	his_self.game.queue.push("show_overlay\ttheses");
@@ -23947,6 +23947,10 @@ if (this.game.state.scenario != "is_testing") {
 
     if (this.is_first_loop == undefined) {
       this.is_first_loop = 1;
+
+console.log("FIRST LOOP: confs_needed: " + JSON.stringify(this.game.confirms_needed));
+
+
     } else {
       this.is_first_loop = 0;
     }
@@ -29264,7 +29268,6 @@ console.log("----------------------------");
 	  }
 
 	  this.updateLog("Protestants ("+protestant_hits+") vs. Catholics ("+papacy_hits+")");
-
 
 	  if (protestant_hits > papacy_hits) {
 	    this.diet_of_worms_overlay.showResults({ protestant_hits : protestant_hits , papacy_hits : papacy_hits , winner : "protestant" , difference : (protestant_hits - papacy_hits) , protestant_rolls : protestant_arolls , papacy_rolls : papacy_arolls });
@@ -35639,6 +35642,7 @@ defender_hits - attacker_hits;
 	  let no_need_for_resolve = false;
 
 	  if (mv[1] && (mv[0] === "check_interventions" || mv[0] === "check_intervention")) { 
+console.log("splicing out check_interventions...");
 	    this.game.queue.splice(qe, 1);
 	    faction = mv[1];
 	    no_need_for_resolve = true;
@@ -35651,6 +35655,10 @@ defender_hits - attacker_hits;
 	  if (faction != "" && this.game.player == this.returnPlayerCommandingFaction(faction)) { should_i_check = true; resolve_required = true; }
 	  if (this.game.confirms_needed[this.game.player-1] == 1) { resolve_required = true; }
 	  if (should_i_check == false && this.game.confirms_needed[this.game.player-1] == 1) { should_i_check = true; }
+
+console.log("SHOULD I CHECK: " + should_i_check);
+console.log("RESOLVE REQUIRED: " + resolve_required);
+console.log("NO NEED FOR RESOLVE...: " + no_need_for_resolve);
 
 	  if (should_i_check) {
 
@@ -35711,6 +35719,7 @@ defender_hits - attacker_hits;
 	      }
 	    }
 
+console.log("SENDING CHECK_INTERVENTION ENDTURN()");
 	    this.endTurn();
 
 	  }
