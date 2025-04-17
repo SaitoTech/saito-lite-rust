@@ -74,6 +74,7 @@
     this.game.state.events.fall_of_the_tsar_russian_vp = 0;
     this.game.state.events.they_shall_not_pass = 0;
     this.game.state.events.wireless_intercepts = 0;
+    this.game.state.events.everyone_into_battle = 0;
 
   }
 
@@ -149,6 +150,8 @@ console.log("STARTING VP: " + vp);
     if (this.game.state.events.lusitania) { vp--; }
     if (this.game.state.events.war_in_africa_vp) { vp++; }
     if (this.game.state.events.fourteen_points) { vp--; }
+    if (this.game.state.events.convoy) { vp--; }
+    if (this.game.state.events.zimmerman_telegram) { vp--; }
 
     this.game.state.general_records_track.vp = vp;
   

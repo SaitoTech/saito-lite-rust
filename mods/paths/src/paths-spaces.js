@@ -266,7 +266,14 @@
     }
 
     for (let key in countries) { total_nationalities++; }
+
+    if (faction == "allies") {
+      if (this.game.state.events.everyone_into_battle == 1) {
+	if (space.country == "italy" || space.country == "france" || space.country == "belgium") { return 1; }
+      }
+    }
     
+
     if (faction == "central") {
       if (this.game.state.events.eleventh_army == 1) {
 	let has_eleventh_army = false;

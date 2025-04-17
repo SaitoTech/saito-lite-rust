@@ -281,8 +281,6 @@ console.log("\n\n\n\n");
 	  this.addDebater("protestant", "bucer-debater");
 	  this.addDebater("protestant", "carlstadt-debater");
 
-
-
 	}
 
       }

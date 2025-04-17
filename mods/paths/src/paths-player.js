@@ -210,7 +210,7 @@
     let continue_fnct = () => {
       if (just_stop == 1) { return 0; }
       if (units.length == 0) { return 0; }
-      return 0;
+      return 1;
     }
 
     let execute_fnct = (spacekey) => {
@@ -225,8 +225,17 @@
     let loop_fnct = () => {
       if (continue_fnct()) {
 
-	unit = units.splice(units.length-1, 1);
+	unit = paths_self.game.units[units[units.length-1]];
+	units.splice(units.length-1, 1);
 	let choices = [];
+
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("UNIT: " + JSON.stringify(unit));
 
 	
 	//

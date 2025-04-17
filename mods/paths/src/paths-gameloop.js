@@ -643,24 +643,20 @@ try {
 
     	  let c = this.deck[card];
 
-console.log("CARD RP: " + JSON.stringify(c));
-console.log("RP pre: " + JSON.stringify(this.game.state.rp));
-   
     	  for (let key in c.rp) {
             if (faction == "central") {
               if (!this.game.state.rp["central"][key]) { this.game.state.rp["central"][key] = 0; }
-console.log("adding RP C");
               this.game.state.rp["central"][key] += parseInt(c.rp[key]);
             }
             if (faction == "allies") {
               if (!this.game.state.rp["allies"][key]) { this.game.state.rp["allies"][key] = 0; }
-console.log("adding RP A");
               this.game.state.rp["allies"][key] += parseInt(c.rp[key]);
             }
-          } 
-
-console.log("RP pst: " + JSON.stringify(this.game.state.rp));
-
+          }
+	  if (faction == "allies" && this.game.state.events.over_there) {
+            if (!this.game.state.rp["allies"]["A"]) { this.game.state.rp["allies"]["A"] = 0; }
+            this.game.state.rp["allies"]["A"] += 1;
+	  }
 
 	  this.updateLog(this.returnFactionName(faction) + " plays " + this.popup(card) + " for Replacement Points");
           this.game.queue.splice(qe, 1);
