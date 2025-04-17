@@ -149,6 +149,8 @@ console.log("STARTING VP: " + vp);
     if (this.game.state.events.reichstag_truce) { vp++; }
     if (this.game.state.events.lusitania) { vp--; }
     if (this.game.state.events.war_in_africa_vp) { vp++; }
+    if (this.game.state.events.fall_of_the_tsar) { vp++; }
+    if (this.game.state.events.fall_of_the_tsar_romania_bonus) { vp++; }
     if (this.game.state.events.fourteen_points) { vp--; }
     if (this.game.state.events.convoy) { vp--; }
     if (this.game.state.events.zimmerman_telegram) { vp--; }

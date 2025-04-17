@@ -166,7 +166,7 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 	
 	    let discarded_cards = {};
     	    for (let key in this.game.deck[1].discards) { discarded_cards[key] = all_cards[key]; }
-	    let new_cards = this.returnFullWarDeck("allies");
+	    let new_cards = this.returnTotalWarDeck("allies");
 	    for (let key in discarded_cards) { new_cards[key] = discarded_cards[key]; }
 
             // shuffle in discarded cards
@@ -186,7 +186,7 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 	
 	    let discarded_cards = {};
     	    for (let key in this.game.deck[0].discards) { discarded_cards[key] = all_cards[key]; }
-	    let new_cards = this.returnFullWarDeck("central");
+	    let new_cards = this.returnTotalWarDeck("central");
 	    for (let key in discarded_cards) { new_cards[key] = discarded_cards[key]; }
 
             // shuffle in discarded cards
@@ -228,6 +228,14 @@ console.log(JSON.stringify(this.game.deck[1].hand));
  	if (mv[0] == "replacement_phase") {
 
           this.game.queue.splice(qe, 1);
+
+	  //
+	  // U-Boats Unleashed
+	  //
+	  if (this.game.state.events.uboats_unleashed == 1 && this.game.state.events.convoy != 1) {
+	    if (!this.game.state.rp["allies"]["BR"]) { this.game.state.rp["allies"]["BR"] = 0; }
+	    if (this.game.state.rp["allies"]["BR"] > 1) { this.game.state.rp["allies"]["BR"]--; }
+	  }
 
 	  //
 	  // Walter Rathenau
@@ -337,6 +345,16 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 	  let central = this.rollDice();
 	  let allies = this.rollDice();
 	
+	  if (this.game.state.events.hoffman == 1) {
+	    this.updateLog("Central Powers get Hoffman +1 bonus...");
+	    central++;
+	  }	
+
+	  if (this.game.state.events.hl_take_command == 1) {
+	    this.updateLog("H-L Take Command effect: no Central MO...");
+	    central = 6;
+	  }
+
  	  if (central == 1) { this.game.state.mandated_offensives.central = "AH"; }
  	  if (central == 2) { this.game.state.mandated_offensives.central = "AH IT"; }
  	  if (central == 3) { this.game.state.mandated_offensives.central = "TU"; }
