@@ -232,7 +232,7 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 	  //
 	  // Walter Rathenau
 	  //
-	  if (this.game.state.events.walter_rathenau == 1) {
+	  if (this.game.state.events.walter_rathenau == 1 && this.game.state.events.independent_air_force != 1) {
 	    if (!this.game.state.rp["central"]["GE"]) { this.game.state.rp["central"]["GE"] = 0; }
 	    this.updateLog("Germany gets Walter Rathenau bonus...");
 	    this.game.state.rp["central"]["GE"]++;
@@ -432,6 +432,8 @@ console.log("player: " + player);
 	  if (this.game.player != player_to_ignore) {
             this.addUnitToSpace(unit, spacekey);
 	  }
+
+	  this.shakeSpacekey(spacekeyy);
 
           this.game.queue.splice(qe, 1);
 	  return 1;
@@ -982,12 +984,14 @@ this.updateLog("Combat: Defenders play " + this.popup(card));
 	  for (let i = 0; i < this.game.spaces[this.game.state.combat.key].units.length; i++) {
 	    let unit = this.game.spaces[this.game.state.combat.key].units[i];
 	    if (this.returnPowerOfUnit(unit) == "allies") { attacker_power = "central"; defender_power = "allies"; } 
+	    if (this.game.state.events.yanks_and_tanks == 1 && unit.ckey == "US") { defender_drm += 2; }
 	    if (unit.key.indexOf("army") > 0) { attacker_table = "army"; }
 	  }
 
 	  for (let i = 0; i < this.game.state.combat.attacker.length; i++) {
 	    let unit = this.game.spaces[this.game.state.combat.attacker[i].unit_sourcekey].units[this.game.state.combat.attacker[i].unit_idx];
 	    if (unit.key.indexOf("army") > 0) { defender_table = "army"; }	    
+	    if (this.game.state.events.yanks_and_tanks == 1 && unit.ckey == "US") { attacker_drm += 2; }
 	    unit.attacked = 1;
 	  }
 
@@ -996,6 +1000,7 @@ this.updateLog("Combat: Defenders play " + this.popup(card));
 
 	  attacker_modified_roll = attacker_roll + attacker_drm;
 	  defender_modified_roll = defender_roll + defender_drm;
+
 
 	  if (attacker_drm > 0) {
 	    this.updateLog(`Attacker rolls: ${attacker_roll} [+${attacker_drm}]`);
@@ -1139,6 +1144,23 @@ this.updateLog("Combat: Defenders play " + this.popup(card));
 	  //
 	  if (this.game.spaces[this.game.state.combat.key].units.length <= 0) { return 1; } 
 
+	  //
+	  // no need to retreat if "they shall not pass"
+	  //
+	  if (this.game.state.events.they_shall_not_pass == 1) {
+	    let space = this.game.spaces[this.game.state.combat.key];
+	    if (space.country == "france" && space.fort > 0) {
+	      for (let z = space.units.length-1; z >= 0; z--) {
+	        let u = space.units[z];
+	        if (u.ckey == "FR" && this.game.state.combat.winner == "attacker") {
+		  this.updateLog("They Shall Not Pass cancels French retreat...");
+		  this.game.state.events.they_shall_not_pass = 0;
+		  return 1;
+		}
+	      }
+	    }
+	  }
+
 	  if (this.game.state.combat.winner == "defender") {
 	    this.updateLog("Defender Wins, no retreat...");
 	    return 1;
@@ -1180,6 +1202,14 @@ this.updateLog("Combat: Defenders play " + this.popup(card));
 
 	  if (this.game.state.combat.winner == "none") {
 	    this.updateLog("Mutual Loss, no advance...");
+	    return 1;
+	  }
+
+	  //
+	  // retreat was cancelled for some reason...
+	  //
+	  if (this.game.spaces[this.game.state.combat.key].units.length > 0) { 
+	    this.updateLog("Attacker unable to advance...");
 	    return 1;
 	  }
 
@@ -1365,6 +1395,8 @@ console.log("FLANK: " + this.canFlankAttack());
 	  }
 
 	  this.displaySpace(spacekey);
+	  this.shakeSpacekey(spacekeyy);
+
 	  this.game.queue.splice(qe, 1);
 	  return 1;
 
@@ -1583,11 +1615,10 @@ console.log("FLANK: " + this.canFlankAttack());
 	  this.game.queue.splice(qe, 1);
 
 
-//
-// shake the space
-//
-this.shakeSpacekey(destinationkey);
-
+	  //
+	  // shake the space
+	  //
+	  this.shakeSpacekey(destinationkey);
 
 	  return 1;
 	}

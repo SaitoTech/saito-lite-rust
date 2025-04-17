@@ -1,5 +1,63 @@
 
 
+  returnArrayOfSpacekeysForPlacingReinforcements(country="") {
+
+    let options = [];
+
+    if (country == "england") {
+      if (this.game.spaces["london"].control == "allies" && this.game.spaces["london"].units.length < 3) { options.push("london"); }
+    }
+    if (country == "usa") {
+      if (this.game.spaces["larochelle"].control == "allies" && this.game.spaces["larochelle"].units.length < 3) { options.push("larochelle"); }
+      if (this.game.spaces["nantes"].control == "allies" && this.game.spaces["nantes"].units.length < 3) { options.push("nantes"); }
+      if (this.game.spaces["cherbourg"].control == "allies" && this.game.spaces["cherbourg"].units.length < 3) { options.push("cherbourg"); }
+      if (this.game.spaces["lahavre"].control == "allies" && this.game.spaces["lahavre"].units.length < 3) { options.push("lahavre"); }
+      if (this.game.spaces["calais"].control == "allies" && this.game.spaces["calais"].units.length < 3) { options.push("calais"); }
+      if (this.game.spaces["bordeaux"].control == "allies" && this.game.spaces["bordeaux"].units.length < 3) { options.push("bordeaux"); }
+    }
+    if (country == "france") {
+      if (this.game.spaces["paris"].control == "allies" && this.game.spaces["paris"].units.length < 3) { options.push("paris"); }
+      if (this.game.spaces["paris"].control == "allies" && this.game.spaces["paris"].units.length >= 3) {
+        if (this.game.spaces["orleans"].control == "allies" && this.game.spaces["orleans"].units.length < 3) { options.push("orleans"); }
+      }
+    }
+    if (country == "italy") {
+      if (this.game.spaces["rome"].control == "allies" && this.game.spaces["rome"].units.length < 3) { options.push("rome"); }
+    }
+    if (country == "romania") {
+      if (this.game.spaces["bucharest"].control == "allies" && this.game.spaces["bucharest"].units.length < 3) { options.push("bucharest"); }
+    }
+    if (country == "russia") {
+      if (this.game.spaces["moscow"].control == "allies" && this.game.spaces["moscow"].units.length < 3) { options.push("moscow"); }
+      if (this.game.spaces["caucasus"].control == "allies" && this.game.spaces["caucasus"].units.length < 3) { options.push("caucasus"); }
+      if (this.game.spaces["kharkov"].control == "allies" && this.game.spaces["kharkov"].units.length < 3) { options.push("kharkov"); }
+      if (this.game.spaces["petrograd"].control == "allies" && this.game.spaces["petrograd"].units.length < 3) { options.push("petrograd"); }
+    }
+    if (country == "serbia") {
+      if (this.game.spaces["belgrade"].control == "allies" && this.game.spaces["belgrade"].units.length < 3) { options.push("belgrade"); }
+    }
+
+
+    if (country == "germany") {
+      if (this.game.spaces["berlin"].control == "central" && this.game.spaces["berlin"].units.length < 3) { options.push("berlin"); }
+      if (this.game.spaces["breslau"].control == "central" && this.game.spaces["breslau"].units.length < 3) { options.push("breslau"); }
+      if (this.game.spaces["essen"].control == "central" && this.game.spaces["essen"].units.length < 3) { options.push("essen"); }
+    }
+    if (country == "austria") {
+      if (this.game.spaces["vienna"].control == "central" && this.game.spaces["vienna"].units.length < 3) { options.push("vienna"); }
+    }
+    if (country == "bulgaria") {
+      if (this.game.spaces["sofia"].control == "central" && this.game.spaces["sofia"].units.length < 3) { options.push("sofia"); }
+    }
+
+    for (let i = options.length-1; i > 0; i--) {
+      if (this.game.spaces[options[i]].fort > 0 && this.game.spaces[options[i]].besieged) { options.splice(i, 1); }
+    }
+
+    return options;
+
+  }
+
   returnSpaceName(spacekey) {
     return this.game.spaces[spacekey].name;
   }

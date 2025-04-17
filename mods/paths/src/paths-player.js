@@ -77,6 +77,17 @@
       }
     }
 
+    //
+    // Mine Attack can only be used once per turn
+    //
+    if (this.game.state.events.mine_attack == 1) {
+      for (let i = 0; i < ccs.length; i++) {
+	if (ccs[i] === "ap36") {
+	  ccs.splice(i, 1);
+	}
+      }
+    }
+
     if (num == 0) {
       this.endTurn();
       return 0;
@@ -182,6 +193,119 @@
       }
 
     }); 
+  }
+
+
+  playerAddReinforcements(faction="", units=[], country="", options=[]) {
+
+    let paths_self = this;
+    let just_stop = 0;
+    let unit = null;
+
+    //
+    // corps go into reserve boxes
+    // armies into capital or supply sources
+    // if options specified, respect
+    //
+    let continue_fnct = () => {
+      if (just_stop == 1) { return 0; }
+      if (units.length == 0) { return 0; }
+      return 0;
+    }
+
+    let execute_fnct = (spacekey) => {
+      paths_self.updateStatus("deploying...");
+      paths_self.removeSelectable();
+      paths_self.addUnitToSpace(unit.key, spacekey);
+      paths_self.addMove(`add\t${spacekey}\t${unit.key}\t${paths_self.game.player}`);    
+      paths_self.displaySpace(spacekey);
+      loop_fnct();
+    };
+
+    let loop_fnct = () => {
+      if (continue_fnct()) {
+
+	unit = units.splice(units.length-1, 1);
+	let choices = [];
+
+	
+	//
+	// CORPS
+	//
+	if (unit.corps) {
+
+	  if (faction == "allies") { choices.push("arbox"); } 
+	  if (faction == "central") { choices.push("crbox"); } 
+
+	  //
+	  // one option? auto-handle
+	  //
+	  if (options.length == 0) {
+	    execute_fnct(choices[0]);
+	    return;
+
+	  //
+	  // multiple options? let player choose
+	  //
+	  } else {
+
+	    for (let z = 0; z < options.length; z++) {
+	      if (!choices.includes(options[z])) { choices.push(options[z]); }
+	    }
+
+            paths_self.playerSelectSpaceWithFilter(
+   	      `Destination for ${unit.name}` ,
+	      (spacekey) => { if (choices.includes(spacekey)) { return 1; } return 0; } ,
+	      execute_fnct ,
+	      null , 
+	      true ,
+            );
+
+	    return;
+	  }
+
+	//
+	// ARMIES
+	//
+	} else {
+
+	  //
+	  // armies go in spacekeys, options over-ride
+	  //
+	  let spacekeys = this.returnArrayOfSpacekeysForPlacingReinforcements(country);
+          if (options.length > 0) { spacekeys = options; }
+
+	  //
+	  // one option? auto-handle
+	  //
+	  if (spacekeys.length == 0) {
+	    alert("Error -- no viable placement options?");
+	    this.endTurn();
+	  }
+
+	  if (spacekeys.length == 1) {
+	    execute_fnct(spacekeys[0]);
+	    return;
+	  }
+
+	  if (spacekeys.length > 1) {
+            paths_self.playerSelectSpaceWithFilter(
+   	      `Destination for ${unit.name}` ,
+	      (spacekey) => { if (spacekeys.includes(spacekey)) { return 1; } return 0; } ,
+	      execute_fnct ,
+	      null , 
+	      true
+            );
+	    return;
+	  }
+
+	}
+      }
+    }    
+
+    loop_fnct();
+    return;
+
   }
 
 
@@ -355,6 +479,7 @@
     // 2. flip damaged units in the RB
     // 3. return eliminated units to RB 
     //
+    loop_fnct();
     let loop_fnct = () => {
       if (continue_fnct()) {
         paths_self.playerSelectUnitWithFilter(
@@ -475,7 +600,6 @@
       return 0;
     }
 
-    loop_fnct();
 
     return 1;
   }
