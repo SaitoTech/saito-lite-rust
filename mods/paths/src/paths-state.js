@@ -56,6 +56,8 @@
     this.game.state.allies_rounds = [];
     this.game.state.central_rounds = [];
 
+    this.game.state.entrenchments = [];
+
     this.game.state.rp = {};
     this.game.state.rp['central'] = {};
     this.game.state.rp['allies'] = {};
@@ -183,6 +185,8 @@ console.log("STARTING VP: " + vp);
 
     state.allies_rounds = [];
     state.central_rounds = [];
+
+    state.entrenchments = [];
 
     state.general_records_track = {};
     state.general_records_track.vp = 10;

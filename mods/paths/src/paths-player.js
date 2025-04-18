@@ -1441,12 +1441,16 @@ console.log("unit idx: " + unit_idx);
 	    true
 	  );
         }
+
         if (action === "entrench") {
+	  let u = paths_self.game.spaces[sourcekey].units[idx];
+	  let lf = u.loss; if (u.damaged) { lf = u.rloss; }
 	  paths_self.addMove(`player_play_movement\t${faction}`);
-	  paths_self.addMove(`entrench\t${faction}\t${sourcekey}\t${idx}`);
+	  paths_self.addMove(`entrench\t${faction}\t${sourcekey}\t${idx}\t${lf}`);
 	  paths_self.endTurn();
 	  return;
         }
+
         if (action === "skip") {
 	  paths_self.game.spaces[key].units[idx].moved = 1;
 	  let mint = false;
@@ -1500,6 +1504,7 @@ console.log("unit idx: " + unit_idx);
 
     if (!skipend) {
       this.addMove("player_play_combat\t"+faction);
+      this.addMove("dig_trenches");
       this.addMove("player_play_movement\t"+faction);
     }
 

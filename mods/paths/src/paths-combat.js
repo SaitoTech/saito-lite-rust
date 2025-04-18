@@ -32,11 +32,30 @@
 
   returnAttackerLossFactor() {
     let cp = this.returnDefenderCombatPower();
+
+    //
+    // forts lend their combat strength to the defender 
+    //
+    if (this.game.spaces[this.game.state.combat.key].fort > 0) {
+      this.updateLog("Defender Combat Bonus " + this.game.spaces[this.game.state.combat.key].fort);
+      cp += this.game.spaces[this.game.state.combat.key].fort;
+    }
+    
+
     let hits = this.returnArmyFireTable();
     if (this.game.state.combat.defender_table === "corps") { hits = this.returnCorpsFireTable(); }
     for (let i = hits.length-1; i >= 0; i--) {
       if (hits[i].max >= cp && hits[i].min <= cp) {
-        return hits[i][this.game.state.combat.defender_modified_roll];
+	
+	//
+	// we haev found the right column and row, but we shift
+	// based on combat modifiers...
+	//
+	let col = i + this.game.state.combat.defender_column_shift;
+	if (col <= 0) { col = 1; }
+	if (col >= hits.length) { col = hits.length-1; }
+
+        return hits[col][this.game.state.combat.defender_modified_roll];
       }
     }
     return 0;
@@ -48,6 +67,15 @@
     if (this.game.state.combat.attacker_table === "corps") { hits = this.returnCorpsFireTable(); }
     for (let i = hits.length-1; i >= 0; i--) {
       if (hits[i].max >= cp && hits[i].min <= cp) {
+	
+	//
+	// we haev found the right column and row, but we shift
+	// based on combat modifiers...
+	//
+	let col = i + this.game.state.combat.attacker_column_shift;
+	if (col <= 0) { col = 1; }
+	if (col >= hits.length) { col = hits.length-1; }
+
         return hits[i][this.game.state.combat.attacker_modified_roll];
       }
     }

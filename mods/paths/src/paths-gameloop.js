@@ -995,6 +995,34 @@ this.updateLog("Combat: Defenders play " + this.popup(card));
 	  let attacker_table = "corps";
 	  let defender_table = "corps";
 
+	  //
+	  // trenches and row shifts
+	  //
+	  let attacker_column_shift = 0;
+	  let defender_column_shift = 0;
+
+	  if (this.game.spaces[this.game.state.combat.key].terrain == "mountain") {
+            this.updateLog("Attacker -1 column shift (assaulting mountain)");
+	    attacker_column_shift -= 1;
+	  }
+	  if (this.game.spaces[this.game.state.combat.key].terrain == "swamp") {
+            this.updateLog("Attacker -1 column shift (assaulting swamp)");
+	    attacker_column_shift -= 1;
+	  }
+	  if (this.game.spaces[this.game.state.combat.key].trench == 1) {
+	    attacker_column_shift -= 1;
+            this.updateLog("Attacker -1 column shift (assaulting trench)");
+            this.updateLog("Defender +1 column shift (defending trench)");
+	    defender_column_shift += 1;
+	  }
+	  if (this.game.spaces[this.game.state.combat.key].trench == 2) {
+	    attacker_column_shift -= 2;
+	    defender_column_shift += 1;
+            this.updateLog("Attacker -2 column shift (assaulting trench)");
+            this.updateLog("Defender +1 column shift (defending trench)");
+	  }
+
+
 	  for (let i = 0; i < this.game.spaces[this.game.state.combat.key].units.length; i++) {
 	    let unit = this.game.spaces[this.game.state.combat.key].units[i];
 	    if (this.returnPowerOfUnit(unit) == "allies") { attacker_power = "central"; defender_power = "allies"; } 
@@ -1040,6 +1068,8 @@ this.updateLog("Combat: Defenders play " + this.popup(card));
 	  //this.game.state.combat.defender_drm = defender_drm;
 	  this.game.state.combat.attacker_roll = attacker_roll;
 	  this.game.state.combat.defender_roll = defender_roll;
+	  this.game.state.combat.attacker_column_shift = attacker_column_shift;
+	  this.game.state.combat.defender_column_shift = defender_column_shift;
 	  this.game.state.combat.attacker_modified_roll = attacker_modified_roll;
 	  this.game.state.combat.defender_modified_roll = defender_modified_roll;
 	  this.game.state.combat.attacker_loss_factor = this.returnAttackerLossFactor();
@@ -1545,6 +1575,12 @@ console.log("FLANK: " + this.canFlankAttack());
 	  let faction = mv[1];
 	  let key = mv[2];
 	  let idx = parseInt(mv[3]);
+	  let loss_factor = 0;
+	  if (mv[4]) { loss_factor = parseInt(mv[4]) };
+
+	  if (loss_factor) {
+	    this.game.state.entrenchment.push({ spacekey : key , loss_factor : loss_factor});
+	  }
 
 	  this.game.spaces[key].units[idx].moved = 1;
 
@@ -1552,6 +1588,25 @@ console.log("FLANK: " + this.canFlankAttack());
 	  return 1;
 
 	}
+
+	if (mv[0] === "dig_trenches") {
+
+	  for (let i = 0; i < this.game.state.entrenchment.length; i++) {
+	    let e = this.game.state.entrenchment[i];
+	    let roll = this.rollDice(6);
+	    if (this.game.state.entrenchment[i].loss_factor >= roll) {
+	      this.updateLog("Trench Success: " + this.game.spaces[e.spacekey].name + " ("+roll+")");
+	      this.addTrench(e.spacekey);
+	    } else {
+	      this.updateLog("Trench Failure: " + this.game.spaces[e.spacekey].name + " ("+roll+")");
+	    }
+	  }
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
 
 	if (mv[0] === "retreat") {
 
@@ -1609,7 +1664,15 @@ console.log("FLANK: " + this.canFlankAttack());
 	    if (this.game.spaces[destinationkey].fort > 0) {
 	      this.game.spaces[destinationkey].besieged = 1;
 	    } else {
+	      //
+	      // switch control
+	      //
 	      this.game.spaces[destinationkey].control = this.returnPowerOfUnit(this.game.spaces[destinationkey].units[0]);
+
+	      //
+	      // degrade trenches
+	      //
+	      if (this.game.spaces[destinationkey].trench > 0) { this.game.spaces[destinationkey].trench--; }
 	    }
 	  }
 
