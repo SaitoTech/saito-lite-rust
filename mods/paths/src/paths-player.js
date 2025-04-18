@@ -208,8 +208,8 @@
     // if options specified, respect
     //
     let continue_fnct = () => {
-      if (just_stop == 1) { return 0; }
-      if (units.length == 0) { return 0; }
+      if (just_stop == 1) { paths_self.endTurn(); return 0; }
+      if (units.length == 0) { paths_self.endTurn(); return 0; }
       return 1;
     }
 
@@ -320,6 +320,8 @@ console.log("UNIT: " + JSON.stringify(unit));
 
   playerPlayAdvance() {
 
+alert("playing advance...");
+
     let can_player_advance = false;
     let spacekey = this.game.state.combat.key;
     let space = this.game.spaces[spacekey];
@@ -329,8 +331,14 @@ console.log("UNIT: " + JSON.stringify(unit));
       let unit = attacker_units[i];
       if (!unit.damaged) { can_player_advance = true; }
     }
-    if (space.fort) { can_player_advance = false; }
-
+    if (space.fort) { 
+      //
+      // we cannot advance into a fort we attacked from an adjacent space if
+      // the fort was empty, but we can advance (and then besiege) a fort if
+      // we routed the opponent.
+      //
+      if (this.game.state.combat.unoccupied_fort == 1) { can_player_advance = false; }
+    }
 
     //
     // skip advance if not possible
@@ -372,6 +380,46 @@ console.log("UNIT: " + JSON.stringify(unit));
     let attacker_loss_factor = this.game.state.combat.attacker_loss_factor;
     let defender_loss_factor = this.game.state.combat.defender_loss_factor;
     if ((attacker_loss_factor-defender_loss_factor) == 1) { spaces_to_retreat = 1; }
+
+    if (this.game.state.combat.unoccupied_fort == 1 && this.game.space[this.game.state.combat.key].fort == -1) {
+      spaces_to_retreat = 1;
+      paths_self.playerSelectSpaceWithFilter(
+        `Advanced into Destroyed Fort?`,
+        (destination) => {
+          if (destination == this.game.state.combat.key) { return 1; }
+	  return 0;
+        },
+        (key) => {
+
+          this.unbindBackButtonFunction();
+          this.updateStatus("advancing...");
+
+          for (let i = 0; i < attacker_units.length; i++) {
+            let x = attacker_units[i];
+            let skey = x.spacekey;
+            let ukey = x.key;
+            let uidx = 0;
+            let u = {};
+            for (let z = 0; z < paths_self.game.spaces[skey].units.length; z++) {
+              if (paths_self.game.spaces[skey].units[z].key === ukey) {
+                uidx = z;
+              }
+            }
+            if (!attacker_units[i].damaged) {
+              paths_self.moveUnit(skey, uidx, key);
+              paths_self.addMove(`move\t${faction}\t${skey}\t${uidx}\t${key}\t${paths_self.game.player}`);
+            }
+            paths_self.displaySpace(skey);
+          }
+          paths_self.displaySpace(key);
+          paths_self.endTurn();
+        },
+        null,
+        true
+      );
+      return 0;
+    }
+
 
     let sourcekey = this.game.state.combat.retreat_sourcekey;
     let destinationkey = this.game.state.combat.retreat_destinationkey;
@@ -1079,6 +1127,9 @@ console.log("unit idx: " + unit_idx);
 	    if (faction == "central") {
 	      if (paths_self.game.spaces[key].country == "russia" && paths_self.game.spaces[key].fort > 0) { return 0; }
 	    }
+	  }
+	  if (paths_self.game.spaces[key].fort > 0 && paths_self.game.spaces[key].units.length == 0) {
+	    if (paths_self.game.spaces[key].control != faction) { return 1; }
 	  }
 	  if (paths_self.game.spaces[key].units.length > 0) {
 	    if (paths_self.returnPowerOfUnit(paths_self.game.spaces[key].units[0]) != faction) {

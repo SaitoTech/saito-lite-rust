@@ -182,27 +182,16 @@ class PathsOfGlory extends GameTemplate {
       text : "Control",
       id : "game-control",
       class : "game-control",
-      callback : null
-    });
-    this.menu.addSubMenuOption("game-confirm",{
-      text: `Central` ,
-      id: "game-control-central",
-      class:"game-control-central",
       callback: function(app,game_mod){
-	alert("Show Central Control!");
 	for (let key in game_mod.game.spaces) {
 	  if (game_mod.game.spaces[key].control == "central") {
 	    this.addHighlightToSpacekey(key, "central");
 	  }
+	  if (game_mod.game.spaces[key].control == "allies") {
+	    this.addHighlightToSpacekey(key, "allies");
+	  }
+	  document.querySelector("body").onclick = () => { document.querySelector("body").onclick = () => {}; this.removeHighlights(); }
 	}
-      }
-    });
-    this.menu.addSubMenuOption("game-confirm",{
-      text: `Allies` ,
-      id: "game-control-allies",
-      class:"game-control-allies",
-      callback: function(app,game_mod){
-	alert("Show Allied Control!");
       }
     });
 

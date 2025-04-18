@@ -452,10 +452,6 @@ if (faction == "attacker") {
 							this.mod.endTurn();
 							this.hide();
 							return;
-						//} else {
-						//	this.render(this.faction);
-						//	return;
-						//}
 					}, 50);
 				}
 			};
