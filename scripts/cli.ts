@@ -36,7 +36,8 @@ async function initCLI() {
 		new Factory(),
 		privateKey,
 		LogLevel.Info,
-		BigInt(1)
+		BigInt(1),
+		false
 	).then(() => {
 		console.log('saito wasm lib initialized');
 	});
