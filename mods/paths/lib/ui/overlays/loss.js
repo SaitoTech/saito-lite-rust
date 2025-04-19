@@ -15,6 +15,8 @@ class LossOverlay {
 		this.moves = [];
 	}
 
+	
+
 	hide() {
 		this.overlay.hide();
 	}
@@ -348,19 +350,16 @@ if (faction == "attacker") {
 	attachEvents(am_i_the_attacker, my_qs ,faction) {
 
 		if (!this.canTakeMoreLosses()) {
-			//let c = confirm('Maximum Losses Sustained: Submit?');
-			//if (c) {
 				for (let i = this.moves.length - 1; i >= 0; i--) {
 					this.mod.addMove(this.moves[i]);
 				}
 				this.mod.endTurn();
-				this.hide();
+
+				this.updateInstructions(`<div class="continue_btn">Click to Continue</div>`);
+				document.querySelector(".continue_btn").onclick = (e) => {
+				  this.hide();
+				}
 				return;
-			//} else {
-			//	this.moves = [];
-			//	this.render(this.faction);
-			//	return;
-			//}
 		}
 
 
