@@ -377,9 +377,7 @@ console.log("TRYING: " + mod.name);
     try {
       for (let i = 0; i < this.mods.length; i++) {
         module_name = this.mods[i].name;
-console.log("initializing " + module_name);
         await this.mods[i].initialize(this.app);
-console.log("done initializing " + module_name);
       }
     } catch (err) {
       console.error('Failing module: ' + module_name);
