@@ -152,12 +152,10 @@ class LossOverlay {
 	}
 
 	updateInstructions(msg="") {
-
 		let obj = document.querySelector(".loss-overlay .help");
 		if (obj) {
 			obj.innerHTML = msg;
 		}
-
 	}
 
 	renderToAssignAdditionalStewiseLoss(faction = "") {
@@ -189,6 +187,7 @@ class LossOverlay {
 
 		let am_i_the_attacker = false;
 
+		let space = this.mod.game.spaces[this.mod.game.state.combat.key];
 		let attacker_units;
 		let defender_units;
 		let attacker_loss_factor;
@@ -235,7 +234,6 @@ console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
 		this.moves = [];
 
 		this.overlay.show(LossTemplate());
-		//this.updateLossesRequired(this.loss_factor);
 
 		for (let i = 0; i < attacker_units.length; i++) {
 			let html = "";
@@ -260,17 +258,18 @@ console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
 			this.app.browser.addElementToSelector(html, qs_defender);
 		}
 
+
 		//
 		// add battle information
 		//
-		document.querySelector(".attacker.faction").innerHTML = this.mod.game.state.combat.attacker_power;
-		document.querySelector(".defender.faction").innerHTML = this.mod.game.state.combat.defender_power;
-		document.querySelector(".attacker.power").innerHTML = this.mod.game.state.combat.attacker_strength;
-		document.querySelector(".defender.power").innerHTML = this.mod.game.state.combat.defender_strength;
-		document.querySelector(".attacker.roll").innerHTML = this.mod.game.state.combat.attacker_modified_roll;
-		document.querySelector(".defender.roll").innerHTML = this.mod.game.state.combat.defender_modified_roll;
-		document.querySelector(".attacker.hits").innerHTML = this.mod.game.state.combat.defender_loss_factor;
-		document.querySelector(".defender.hits").innerHTML = this.mod.game.state.combat.attacker_loss_factor;
+		document.querySelector(".attacker_faction").innerHTML = this.mod.game.state.combat.attacker_power;
+		document.querySelector(".defender_faction").innerHTML = this.mod.game.state.combat.defender_power;
+		document.querySelector(".attacker_roll").innerHTML = this.mod.game.state.combat.attacker_modified_roll;
+		document.querySelector(".defender_roll").innerHTML = this.mod.game.state.combat.defender_modified_roll;
+		document.querySelector(".attacker_modifiers").innerHTML = this.game.state.combat.attacker_modified_roll - this.mod.game.state.combat.attacker_modified;
+		document.querySelector(".defender_modifiers").innerHTML = this.game.state.combat.defender_modified_roll - this.mod.game.state.combat.defender_modified;
+		document.querySelector(".attacker_column_shift").innerHTML = this.mod.game.state.combat.attacker_column_shift;
+		document.querySelector(".defender_column_shift").innerHTML = this.mod.game.state.combat.defender_column_shift;
 
 		if (this.mod.game.state.combat.winner == "attacker") {
 			document.querySelector(".attacker.hits").style.backgroundColor = "yellow";
@@ -279,6 +278,22 @@ console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
 			document.querySelector(".defender.hits").style.backgroundColor = "yellow";
 		}
 
+		//
+		// terrain effects
+		//
+		document.querySelector(".effects_table .row").style.display = "none";
+		if (space.terrain == "normal")   { document.querySelector(".effects_table .clear").style.display = "contents"; }
+		if (space.terrain == "mountain") { document.querySelector(".effects_table .mountain").style.display = "contents"; }
+		if (space.terrain == "swamp")    { document.querySelector(".effects_table .swamp").style.display = "contents"; }
+		if (space.terrain == "forest")   { document.querySelector(".effects_table .forest").style.display = "contents"; }
+		if (space.terrain == "desert")   { document.querySelector(".effects_table .desert").style.display = "contents"; }
+		if (space.trench == 1) 	  	 { document.querySelector(".effects_table .trench1").style.display = "contents"; }
+		if (space.trench == 2) 		 { document.querySelector(".effects_table .trench2").style.display = "contents"; }
+
+		//
+		// show dice rolls
+		//
+		
 
 //
 // HACK - bad var name, but debugging
@@ -343,9 +358,6 @@ if (faction == "attacker") {
 
 	}
 
-	updateLossesRequired(num) {
-		document.querySelector('.loss-overlay .help').innerHTML = num + ' More Losses Required';
-	}
 
 	attachEvents(am_i_the_attacker, my_qs ,faction) {
 
@@ -354,7 +366,6 @@ if (faction == "attacker") {
 					this.mod.addMove(this.moves[i]);
 				}
 				this.mod.endTurn();
-
 				this.updateInstructions(`<div class="continue_btn">Click to Continue</div>`);
 				document.querySelector(".continue_btn").onclick = (e) => {
 				  this.hide();
@@ -419,7 +430,7 @@ if (faction == "attacker") {
 					  this.moveUnit(spacekey, unit_idx, "aeubox");
 					}
 
-					this.updateLossesRequired(this.loss_factor);
+					this.updateInstructions("Hits Remaining: " + this.loss_factor);
 
 				} else {
 
@@ -427,7 +438,7 @@ if (faction == "attacker") {
 					unit.damaged = true;
 					this.loss_factor -= unit.loss;
 					el.innerHTML = this.mod.returnUnitImageWithMouseoverOfStepwiseLoss(unit, false, true);
-					this.updateLossesRequired(this.loss_factor);
+					this.updateInstructions("Hits Remaining: " + this.loss_factor);
 
 				}
 

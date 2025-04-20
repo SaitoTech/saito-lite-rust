@@ -1,5 +1,4 @@
 
-
   returnArrayOfSpacekeysForPlacingReinforcements(country="") {
 
     let options = [];

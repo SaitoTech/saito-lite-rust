@@ -493,6 +493,8 @@ console.log("player: " + player);
 	    }
 	  }
 
+	  this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(faction)} triggers ${deck[card].name}`);
+
 	  return 1;
 
 	}
@@ -766,6 +768,7 @@ try {
 	  this.game.state.combat.defender_drm = 0;
 	  this.game.state.combat.unoccupied_fort = 0;
 	  if (this.game.spaces[key].units.length == 0 && this.game.spaces[key].fort > 0) { this.game.state.combat.unoccupied_fort = 1; }
+	
 
 	  //
 	  // remove this from the queue
@@ -1002,33 +1005,13 @@ console.log(JSON.stringify(this.game.state.cc_allies_selected));
 	  //
 	  // trenches and row shifts
 	  //
-	  let attacker_column_shift = 0;
-	  let defender_column_shift = 0;
-
-	  if (this.game.spaces[this.game.state.combat.key].terrain == "mountain") {
-            this.updateLog("Attacker -1 column shift (assaulting mountain)");
-	    attacker_column_shift -= 1;
-	  }
-	  if (this.game.spaces[this.game.state.combat.key].terrain == "swamp") {
-            this.updateLog("Attacker -1 column shift (assaulting swamp)");
-	    attacker_column_shift -= 1;
-	  }
-	  if (this.game.spaces[this.game.state.combat.key].trench == 1) {
-	    attacker_column_shift -= 1;
-            this.updateLog("Attacker -1 column shift (assaulting trench)");
-            this.updateLog("Defender +1 column shift (defending trench)");
-	    defender_column_shift += 1;
-	  }
-	  if (this.game.spaces[this.game.state.combat.key].trench == 2) {
-	    attacker_column_shift -= 2;
-	    defender_column_shift += 1;
-            this.updateLog("Attacker -2 column shift (assaulting trench)");
-            this.updateLog("Defender +1 column shift (defending trench)");
-	  }
-
+	  let tshift = this.returnTerrainShift(this.game.state.combat.key);
+	  let attacker_column_shift = tshift.attack;
+	  let defender_column_shift = tshift.defense;
 
 	  if (this.game.state.combat.unoccupied_fort == 1) {
-
+	    attacker_table = "corps";
+ 
 	  } else {
 	    for (let i = 0; i < this.game.spaces[this.game.state.combat.key].units.length; i++) {
 	      let unit = this.game.spaces[this.game.state.combat.key].units[i];

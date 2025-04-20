@@ -31,6 +31,7 @@
   }
 
   returnAttackerLossFactor() {
+
     let cp = this.returnDefenderCombatPower();
 
     //
@@ -111,6 +112,39 @@
     return hits;
   }
 
+
+  returnTerrainShift(spacekey="") {
+    let tshift = { attack : 0 , defense : 0 , effects : [] };
+    let space = this.game.spaces[spacekey];
+    if (!space) { return tshift; }
+    if (space.terrain == "mountain") { tshift.attack--; }
+    if (space.terrain == "swamp") { tshift.attack--; }
+    if (space.trench == 1) { tshift.attack--; tshift.defense++; }
+    if (space.trench == 2) { tshift.attack--; tshift.defense+=2; }
+    return tshift;
+  }
+
+  canCancelRetreat(spacekey="") {
+    let space = this.game.spaces[spacekey];
+    if (!space) { return false; }
+    if (space.terrain == "mountain") { return true; }
+    if (space.terrain == "swamp") { return true; }
+    if (space.terrain == "forest") { return true; }
+    if (space.terrain == "desert") { return true; }
+    if (space.trench > 0) { return true; }
+    return false;
+  }
+
+  canStopAdvance(spacekey="") {
+    let space = this.game.spaces[spacekey];
+    if (!space) { return false; }
+    if (space.terrain == "mountain") { return true; }
+    if (space.terrain == "swamp") { return true; }
+    if (space.terrain == "forest") { return true; }
+    if (space.terrain == "desert") { return true; }
+    return false;
+  }
+
   canFlankAttack() {
 
     let combat = this.game.state.combat;
@@ -124,8 +158,6 @@
     let attacker_spaces = [];
     let is_geography_suitable = true;
     let is_flank_attack_possible = false;
-
-console.log("X: " + JSON.stringify(attacker_units));
 
     //
     // at least one army attacking
@@ -143,8 +175,6 @@ console.log("X: " + JSON.stringify(attacker_units));
     if (space.trench > 0)            { is_geography_suitable = false; }
     if (space.fort > 0)              { is_geography_suitable = false; }
     if (attacker_spaces.length > 1)         { are_attacks_from_two_spaces = true; }
-
-console.log("X: " + is_geography_suitable + " - " + is_one_army_attacking + " - " + are_attacks_from_two_spaces);
 
     if (is_geography_suitable == true && is_one_army_attacking == true && are_attacks_from_two_spaces == true) {
       is_flank_attack_possible = true;

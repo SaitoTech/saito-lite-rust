@@ -175,9 +175,8 @@ class PathsOfGlory extends GameTemplate {
     });
 
 
-
+/****
     this.menu.addMenuOption("game-info", "Info");
-
     this.menu.addSubMenuOption("game-info", {
       text : "Control",
       id : "game-control",
@@ -194,7 +193,7 @@ class PathsOfGlory extends GameTemplate {
 	}
       }
     });
-
+****/
 
     this.menu.addChatMenu();
     this.menu.render();

@@ -175,9 +175,8 @@ class PathsOfGlory extends GameTemplate {
     });
 
 
-
+/****
     this.menu.addMenuOption("game-info", "Info");
-
     this.menu.addSubMenuOption("game-info", {
       text : "Control",
       id : "game-control",
@@ -194,7 +193,7 @@ class PathsOfGlory extends GameTemplate {
 	}
       }
     });
-
+****/
 
     this.menu.addChatMenu();
     this.menu.render();
@@ -1708,6 +1707,8 @@ console.log("#HOPS: nantes to nevers " + this.returnHopsToDestination("nantes", 
 
 
 
+console.log("INITIALIZING PATHS");
+
     let first_time_running = 0;
 
     //
@@ -1763,6 +1764,7 @@ console.log("\n\n\n\n");
     //
     this.deck = this.returnDeck("all");
 
+console.log("INITIALIZING PATHS");
 
     //
     // and show the board
@@ -4668,6 +4670,7 @@ deck['cp65'] = {
   }
 
   returnAttackerLossFactor() {
+
     let cp = this.returnDefenderCombatPower();
 
     //
@@ -4748,6 +4751,39 @@ deck['cp65'] = {
     return hits;
   }
 
+
+  returnTerrainShift(spacekey="") {
+    let tshift = { attack : 0 , defense : 0 , effects : [] };
+    let space = this.game.spaces[spacekey];
+    if (!space) { return tshift; }
+    if (space.terrain == "mountain") { tshift.attack--; }
+    if (space.terrain == "swamp") { tshift.attack--; }
+    if (space.trench == 1) { tshift.attack--; tshift.defense++; }
+    if (space.trench == 2) { tshift.attack--; tshift.defense+=2; }
+    return tshift;
+  }
+
+  canCancelRetreat(spacekey="") {
+    let space = this.game.spaces[spacekey];
+    if (!space) { return false; }
+    if (space.terrain == "mountain") { return true; }
+    if (space.terrain == "swamp") { return true; }
+    if (space.terrain == "forest") { return true; }
+    if (space.terrain == "desert") { return true; }
+    if (space.trench > 0) { return true; }
+    return false;
+  }
+
+  canStopAdvance(spacekey="") {
+    let space = this.game.spaces[spacekey];
+    if (!space) { return false; }
+    if (space.terrain == "mountain") { return true; }
+    if (space.terrain == "swamp") { return true; }
+    if (space.terrain == "forest") { return true; }
+    if (space.terrain == "desert") { return true; }
+    return false;
+  }
+
   canFlankAttack() {
 
     let combat = this.game.state.combat;
@@ -4761,8 +4797,6 @@ deck['cp65'] = {
     let attacker_spaces = [];
     let is_geography_suitable = true;
     let is_flank_attack_possible = false;
-
-console.log("X: " + JSON.stringify(attacker_units));
 
     //
     // at least one army attacking
@@ -4780,8 +4814,6 @@ console.log("X: " + JSON.stringify(attacker_units));
     if (space.trench > 0)            { is_geography_suitable = false; }
     if (space.fort > 0)              { is_geography_suitable = false; }
     if (attacker_spaces.length > 1)         { are_attacks_from_two_spaces = true; }
-
-console.log("X: " + is_geography_suitable + " - " + is_one_army_attacking + " - " + are_attacks_from_two_spaces);
 
     if (is_geography_suitable == true && is_one_army_attacking == true && are_attacks_from_two_spaces == true) {
       is_flank_attack_possible = true;
@@ -5492,7 +5524,6 @@ console.log("err: " + err);
     return obj;
 
   }
-
 
 
 
@@ -9959,6 +9990,8 @@ console.log("player: " + player);
 	    }
 	  }
 
+	  this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(faction)} triggers ${deck[card].name}`);
+
 	  return 1;
 
 	}
@@ -10232,6 +10265,7 @@ try {
 	  this.game.state.combat.defender_drm = 0;
 	  this.game.state.combat.unoccupied_fort = 0;
 	  if (this.game.spaces[key].units.length == 0 && this.game.spaces[key].fort > 0) { this.game.state.combat.unoccupied_fort = 1; }
+	
 
 	  //
 	  // remove this from the queue
@@ -10468,33 +10502,13 @@ console.log(JSON.stringify(this.game.state.cc_allies_selected));
 	  //
 	  // trenches and row shifts
 	  //
-	  let attacker_column_shift = 0;
-	  let defender_column_shift = 0;
-
-	  if (this.game.spaces[this.game.state.combat.key].terrain == "mountain") {
-            this.updateLog("Attacker -1 column shift (assaulting mountain)");
-	    attacker_column_shift -= 1;
-	  }
-	  if (this.game.spaces[this.game.state.combat.key].terrain == "swamp") {
-            this.updateLog("Attacker -1 column shift (assaulting swamp)");
-	    attacker_column_shift -= 1;
-	  }
-	  if (this.game.spaces[this.game.state.combat.key].trench == 1) {
-	    attacker_column_shift -= 1;
-            this.updateLog("Attacker -1 column shift (assaulting trench)");
-            this.updateLog("Defender +1 column shift (defending trench)");
-	    defender_column_shift += 1;
-	  }
-	  if (this.game.spaces[this.game.state.combat.key].trench == 2) {
-	    attacker_column_shift -= 2;
-	    defender_column_shift += 1;
-            this.updateLog("Attacker -2 column shift (assaulting trench)");
-            this.updateLog("Defender +1 column shift (defending trench)");
-	  }
-
+	  let tshift = this.returnTerrainShift(this.game.state.combat.key);
+	  let attacker_column_shift = tshift.attack;
+	  let defender_column_shift = tshift.defense;
 
 	  if (this.game.state.combat.unoccupied_fort == 1) {
-
+	    attacker_table = "corps";
+ 
 	  } else {
 	    for (let i = 0; i < this.game.spaces[this.game.state.combat.key].units.length; i++) {
 	      let unit = this.game.spaces[this.game.state.combat.key].units[i];
@@ -12242,15 +12256,15 @@ console.log("unit idx: " + unit_idx);
     this.cardbox.hide();
 
     let html = `<ul>`;
-    html    += `<li class="card" id="ops">ops (movement / combat)</li>`;
+    html    += `<li class="card movement" id="ops">ops (movement / combat)</li>`;
     if (c.sr) {
-      html    += `<li class="card" id="sr">strategic redeployment</li>`;
+      html    += `<li class="card redeployment" id="sr">strategic redeployment</li>`;
     }
     if (c.rp) {
-      html    += `<li class="card" id="rp">replacement points</li>`;
+      html    += `<li class="card replacement" id="rp">replacement points</li>`;
     }
     if (c.canEvent(this, faction)) {
-      html    += `<li class="card" id="event">trigger event</li>`;
+      html    += `<li class="card event" id="event">trigger event</li>`;
     }
     html    += `</ul>`;
 

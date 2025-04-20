@@ -250,6 +250,9 @@ class Mods {
       }
     }
 
+
+console.log("TESITNG WE REACH HERE...");
+
     //
     // install any new modules
     //
@@ -338,6 +341,7 @@ class Mods {
 
     const modNames = {};
     this.mods.forEach((mod, i) => {
+console.log("TRYING: " + mod.name);
       if (modNames[mod.name]) {
         console.log(`*****************************************************************`);
         console.log(`***** WARNING: mod ${mod.name} is installed more than once! *****`);
@@ -373,7 +377,9 @@ class Mods {
     try {
       for (let i = 0; i < this.mods.length; i++) {
         module_name = this.mods[i].name;
+console.log("initializing " + module_name);
         await this.mods[i].initialize(this.app);
+console.log("done initializing " + module_name);
       }
     } catch (err) {
       console.error('Failing module: ' + module_name);

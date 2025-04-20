@@ -986,15 +986,15 @@ console.log("unit idx: " + unit_idx);
     this.cardbox.hide();
 
     let html = `<ul>`;
-    html    += `<li class="card" id="ops">ops (movement / combat)</li>`;
+    html    += `<li class="card movement" id="ops">ops (movement / combat)</li>`;
     if (c.sr) {
-      html    += `<li class="card" id="sr">strategic redeployment</li>`;
+      html    += `<li class="card redeployment" id="sr">strategic redeployment</li>`;
     }
     if (c.rp) {
-      html    += `<li class="card" id="rp">replacement points</li>`;
+      html    += `<li class="card replacement" id="rp">replacement points</li>`;
     }
     if (c.canEvent(this, faction)) {
-      html    += `<li class="card" id="event">trigger event</li>`;
+      html    += `<li class="card event" id="event">trigger event</li>`;
     }
     html    += `</ul>`;
 
