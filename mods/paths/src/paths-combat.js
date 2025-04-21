@@ -30,6 +30,32 @@
     return x;
   }
 
+  returnArmyColumnNumber(cp=0) {
+    if (cp >= 16) { return 10; }
+    if (cp >= 15) { return 9; }
+    if (cp >= 12) { return 8; }
+    if (cp >= 9) { return 7; }
+    if (cp >= 6) { return 6; }
+    if (cp >= 5) { return 5; }
+    if (cp >= 4) { return 4; }
+    if (cp >= 3) { return 3; }
+    if (cp >= 2) { return 2; }
+    if (cp >= 1) { return 1; }
+    return 0;
+  }
+
+  returnCorpsColumnNumber(cp=0) {
+    if (cp >= 8) { return 9; }
+    if (cp >= 7) { return 8; }
+    if (cp >= 6) { return 7; }
+    if (cp >= 5) { return 6; }
+    if (cp >= 4) { return 5; }
+    if (cp >= 3) { return 4; }
+    if (cp >= 2) { return 3; }
+    if (cp >= 1) { return 2; }
+    return 1;
+  }
+
   returnAttackerLossFactor() {
 
     let cp = this.returnDefenderCombatPower();

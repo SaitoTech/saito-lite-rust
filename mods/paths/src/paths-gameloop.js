@@ -87,7 +87,6 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 
 	}
 
-
 	if (mv[0] === "guns_of_august") {
 
 	  this.game.queue.splice(qe, 1);
@@ -1182,7 +1181,10 @@ alert("Fort Survives Assault");
 	  //
 	  // hide loss overlay
 	  //
-	  this.loss_overlay.hide();
+	  // we do not want to do this entirely automated, so we will leave it open if
+	  // we have not clicked
+	  //
+	  try { this.loss_overlay.showRetreatNotice(); } catch (err) {}
 
 	  //
 	  // remove all destroyed defender units
@@ -1655,6 +1657,20 @@ console.log("caa 3");
 	  return 1;
 
 	}
+
+
+	if (mv[0] === "selective_acknowledgement") {
+
+	  let player = parseInt(mv[1]);
+
+	  if (this.game.player == player) {
+	    this.game.queue.push("ACKNOWLEDGE\tClick to Continue");
+	  }
+
+	  return 1;
+
+	}
+
 
 	if (mv[0] === "move") {
 

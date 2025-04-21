@@ -4669,6 +4669,32 @@ deck['cp65'] = {
     return x;
   }
 
+  returnArmyColumnNumber(cp=0) {
+    if (cp >= 16) { return 10; }
+    if (cp >= 15) { return 9; }
+    if (cp >= 12) { return 8; }
+    if (cp >= 9) { return 7; }
+    if (cp >= 6) { return 6; }
+    if (cp >= 5) { return 5; }
+    if (cp >= 4) { return 4; }
+    if (cp >= 3) { return 3; }
+    if (cp >= 2) { return 2; }
+    if (cp >= 1) { return 1; }
+    return 0;
+  }
+
+  returnCorpsColumnNumber(cp=0) {
+    if (cp >= 8) { return 9; }
+    if (cp >= 7) { return 8; }
+    if (cp >= 6) { return 7; }
+    if (cp >= 5) { return 6; }
+    if (cp >= 4) { return 5; }
+    if (cp >= 3) { return 4; }
+    if (cp >= 2) { return 3; }
+    if (cp >= 1) { return 2; }
+    return 1;
+  }
+
   returnAttackerLossFactor() {
 
     let cp = this.returnDefenderCombatPower();
@@ -9584,7 +9610,6 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 
 	}
 
-
 	if (mv[0] === "guns_of_august") {
 
 	  this.game.queue.splice(qe, 1);
@@ -10679,7 +10704,10 @@ alert("Fort Survives Assault");
 	  //
 	  // hide loss overlay
 	  //
-	  this.loss_overlay.hide();
+	  // we do not want to do this entirely automated, so we will leave it open if
+	  // we have not clicked
+	  //
+	  try { this.loss_overlay.showRetreatNotice(); } catch (err) {}
 
 	  //
 	  // remove all destroyed defender units
@@ -11153,6 +11181,20 @@ console.log("caa 3");
 
 	}
 
+
+	if (mv[0] === "selective_acknowledgement") {
+
+	  let player = parseInt(mv[1]);
+
+	  if (this.game.player == player) {
+	    this.game.queue.push("ACKNOWLEDGE\tClick to Continue");
+	  }
+
+	  return 1;
+
+	}
+
+
 	if (mv[0] === "move") {
 
 	  let faction = mv[1];
@@ -11589,8 +11631,6 @@ console.log("UNIT: " + JSON.stringify(unit));
 
 
   playerPlayAdvance() {
-
-alert("playing advance...");
 
     let can_player_advance = false;
     let spacekey = this.game.state.combat.key;

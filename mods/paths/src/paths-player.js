@@ -320,8 +320,6 @@ console.log("UNIT: " + JSON.stringify(unit));
 
   playerPlayAdvance() {
 
-alert("playing advance...");
-
     let can_player_advance = false;
     let spacekey = this.game.state.combat.key;
     let space = this.game.spaces[spacekey];

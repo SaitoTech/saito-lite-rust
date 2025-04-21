@@ -22,20 +22,23 @@ module.exports = () => {
             <div class="col col-2">roll</div>
             <div class="col col-3">modifiers</div>
             <div class="col col-4">col-shift</div>
+            <div class="col col-5">damage</div>
           </div>
           <div class="row row-1">
             <div class="col col-0 attacker_faction">central</div>
             <div class="col col-1">attacker</div>
-            <div class="col col-2"><div class="dice attacker_roll">4</div></div>
-            <div class="col col-3 attacker_modifiers">+1</div>
-            <div class="col col-4 attacker_column_shift">+1</div>
+            <div class="col col-2"><div class="dice attacker_roll">-</div></div>
+            <div class="col col-3 attacker_modifiers">-</div>
+            <div class="col col-4 attacker_column_shift">-</div>
+            <div class="col col-5"><div class="dice attacker_damage">-</div></div>
           </div>
           <div class="row row-2">
             <div class="col col-0 defender_faction">allies</div>
             <div class="col col-1">defender</div>
-            <div class="col col-2"><div class="dice defender_roll">1</div></div>
+            <div class="col col-2"><div class="dice defender_roll">-</div></div>
             <div class="col col-3 defender_modifiers">-</div>
-            <div class="col col-4 defender_column_shift">+2</div>
+            <div class="col col-4 defender_column_shift">-</div>
+            <div class="col col-4"><div class="dice defender_damage">-</div></div>
           </div>
         </div>
 

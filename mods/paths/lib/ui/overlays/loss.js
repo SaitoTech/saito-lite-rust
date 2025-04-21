@@ -151,6 +151,15 @@ class LossOverlay {
 		return minval;
 	}
 
+	showRetreatNotice() {
+		try {
+		  this.updateInstructions(`<div class="continue_btn">Damage Assigned - <span style="text-decoration:underline;cursor:pointer">Click to Continue</span></div>`);
+		  document.querySelector(".continue_btn").onclick = (e) => {
+		    this.hide();
+		  }
+		} catch (err) {}
+	}
+
 	updateInstructions(msg="") {
 		let obj = document.querySelector(".loss-overlay .help");
 		if (obj) {
@@ -266,22 +275,20 @@ console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
 		document.querySelector(".defender_faction").innerHTML = this.mod.game.state.combat.defender_power;
 		document.querySelector(".attacker_roll").innerHTML = this.mod.game.state.combat.attacker_modified_roll;
 		document.querySelector(".defender_roll").innerHTML = this.mod.game.state.combat.defender_modified_roll;
-		document.querySelector(".attacker_modifiers").innerHTML = this.game.state.combat.attacker_modified_roll - this.mod.game.state.combat.attacker_modified;
-		document.querySelector(".defender_modifiers").innerHTML = this.game.state.combat.defender_modified_roll - this.mod.game.state.combat.defender_modified;
+		document.querySelector(".attacker_modifiers").innerHTML = this.mod.game.state.combat.attacker_modified_roll - this.mod.game.state.combat.attacker_roll;
+		document.querySelector(".defender_modifiers").innerHTML = this.mod.game.state.combat.defender_modified_roll - this.mod.game.state.combat.defender_roll;
 		document.querySelector(".attacker_column_shift").innerHTML = this.mod.game.state.combat.attacker_column_shift;
 		document.querySelector(".defender_column_shift").innerHTML = this.mod.game.state.combat.defender_column_shift;
-
-		if (this.mod.game.state.combat.winner == "attacker") {
-			document.querySelector(".attacker.hits").style.backgroundColor = "yellow";
-		}
-		if (this.mod.game.state.combat.winner == "defender") {
-			document.querySelector(".defender.hits").style.backgroundColor = "yellow";
-		}
+		document.querySelector(".attacker_damage").innerHTML = this.mod.game.state.combat.defender_loss_factor;
+		document.querySelector(".defender_damage").innerHTML = this.mod.game.state.combat.attacker_loss_factor;
 
 		//
-		// terrain effects
+		// show terrain effects
 		//
-		document.querySelector(".effects_table .row").style.display = "none";
+		document.querySelectorAll(".effects_table .row").forEach((el) => { el.style.display = "none"; });
+		document.querySelectorAll(".firing_table .row .col").forEach((el) => { el.style.color = "black"; });
+		document.querySelectorAll(".firing_table .row .col").forEach((el) => { el.style.backgroundColor = "transparent"; });
+console.log("SPACE: " + JSON.stringify(space));
 		if (space.terrain == "normal")   { document.querySelector(".effects_table .clear").style.display = "contents"; }
 		if (space.terrain == "mountain") { document.querySelector(".effects_table .mountain").style.display = "contents"; }
 		if (space.terrain == "swamp")    { document.querySelector(".effects_table .swamp").style.display = "contents"; }
@@ -291,63 +298,108 @@ console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
 		if (space.trench == 2) 		 { document.querySelector(".effects_table .trench2").style.display = "contents"; }
 
 		//
+		// 
+		//
+		let column_number = 0;
+		let attacker_column_number = 0;
+		let defender_column_number = 0;
+		let attacker_table = this.mod.game.state.combat.attacker_table;
+		let defender_table = this.mod.game.state.combat.defender_table;
+		let attacker_power = this.mod.game.state.combat.attacker_power;
+		let defender_power = this.mod.game.state.combat.defender_power;
+		let attacker_strength = this.mod.game.state.combat.attacker_strength;
+		let defender_strength = this.mod.game.state.combat.defender_strength;
+		let attacker_modified_roll = this.mod.game.state.combat.attacker_modified_roll;
+		let defender_modified_roll = this.mod.game.state.combat.defender_modified_roll;
+
+		//
+		// determine my faction
+		//
+		let am_iii_the_attacker = false;
+		if (this.mod.game.player == this.mod.returnPlayerOfFaction(this.mod.game.state.combat.attacker_power)) { am_iii_the_attacker = true; }
+
+		//
 		// show dice rolls
 		//
-		
+		let attacker_color = "#f2dade";
+		let attacker_color_highlight = "#b6344a";
+		let defender_color = "#dadcf2";
+		let defender_color_highlight = "#343ab6";
 
-//
-// HACK - bad var name, but debugging
-//
-let am_iii_the_attacker = false;
-if (this.mod.game.player == this.mod.returnPlayerOfFaction(this.mod.game.state.combat.attacker_power)) { am_iii_the_attacker = true; }
+		if (defender_power == "central") {
+		  let x = defender_color;
+		  let y = defender_color_highlight;
+		  defender_color = attacker_color;
+		  defender_color_highlight = attacker_color_highlight;
+		  attacker_color = x;
+		  attacker_color_highlight = y;
+		}
 
+		if (attacker_table == "army")  {
+		  attacker_column_number = this.mod.returnArmyColumnNumber(attacker_strength); 
+		  this.highlightFiringTable("army", "#f2dade", "#b6344a", attacker_modified_roll, attacker_column_number);
+		}
+		if (attacker_table == "corps") {
+		  attacker_column_number = this.mod.returnCorpsColumnNumber(attacker_strength);
+		  this.highlightFiringTable("corps", "#f2dade", "#b6344a", attacker_modified_roll, attacker_column_number);
+		}
+		if (defender_table == "army")  {
+		  defender_column_number = this.mod.returnArmyColumnNumber(defender_strength);
+		  this.highlightFiringTable("army", "#dadcf2", "#343ab6", defender_modified_roll, defender_column_number);
+		}
+		if (defender_table == "corps") {
+		  defender_column_number = this.mod.returnCorpsColumnNumber(defender_strength);
+		  this.highlightFiringTable("corps", "#dadcf2", "#343ab6", defender_modified_roll, defender_column_number);
+		}
 
-if (faction == "attacker") {
-	        if (this.mod.game.state.combat.flank_attack == "attacker") {
-		  if (am_iii_the_attacker) {
-		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.attacker_power)} - assign hits`);
-		  } else {
-		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.defender_power)} - opponent assigning hits`);
+		//
+		// Update Information Panel 
+		//
+		if (faction == "attacker") {
+	          if (this.mod.game.state.combat.flank_attack == "attacker") {
+		    if (am_iii_the_attacker) {
+		      this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.attacker_power)} - Assign ${this.loss_factor} Damage Now`);
+		    } else {
+		      this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.attacker_power)} assigning ${this.loss_factor} hits`);
+		    }
+	          }
+		  if (this.mod.game.state.combat.flank_attack == "defender") {
+		    if (am_iii_the_attacker) {
+		      this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.attacker_power)} - Assign ${this.loss_factor} Damage Now`);
+		    } else {
+		      this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.attacker_power)} assigning ${this.loss_factor} hits`);
+		    }
 		  }
-	        }
-		if (this.mod.game.state.combat.flank_attack == "defender") {
-		  if (am_iii_the_attacker) {
-		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.attacker_power)} - assign hits first`);
-		  } else {
-		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.defender_power)} - opponent assigning hits`);
+		  if (!this.mod.game.state.combat.flank_attack) {
+		    if (am_iii_the_attacker) {
+		      this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.attacker_power)} - Assign ${this.loss_factor} Damage Now`);
+		    } else {
+		      this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.attacker_power)} assigning ${this.loss_factor} hits`);
+		    }
+		  }
+		} else {
+	          if (this.mod.game.state.combat.flank_attack == "attacker") {
+		    if (am_iii_the_attacker) {
+		      this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.defender_power)} assigning ${this.loss_factor} hits`);
+		    } else {
+		      this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.defender_power)} - Assign ${this.loss_factor} Damage Now`);
+		    }
+	          }
+		  if (this.mod.game.state.combat.flank_attack == "defender") {
+		    if (am_iii_the_attacker) {
+		      this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.defender_power)} assigning ${this.loss_factor} hits`);
+		    } else {
+		      this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.defender_power)} - Assign ${this.loss_factor} Damage Now`);
+		    }
+		  }
+		  if (!this.mod.game.state.combat.flank_attack) {
+		    if (am_iii_the_attacker) {
+		      this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.defender_power)} assigning ${this.loss_factor} hits`);
+		    } else {
+		      this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.defender_power)} - Assign ${this.loss_factor} Damage Now`);
+		    }
 		  }
 		}
-		if (!this.mod.game.state.combat.flank_attack) {
-		  if (am_iii_the_attacker) {
-		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.attacker_power)} - assign hits`);
-		  } else {
-		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.defender_power)} - opponent assigning hits`);
-		  }
-		}
-} else {
-	        if (this.mod.game.state.combat.flank_attack == "attacker") {
-		  if (am_iii_the_attacker) {
-		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.attacker_power)} - opponent assigning hits`);
-		  } else {
-		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.defender_power)} - assign hits first`);
-		  }
-	        }
-		if (this.mod.game.state.combat.flank_attack == "defender") {
-		  if (am_iii_the_attacker) {
-		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.attacker_power)} - opponent assigning hits`);
-		  } else {
-		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.defender_power)} - assign hits`);
-		  }
-		}
-		if (!this.mod.game.state.combat.flank_attack) {
-		  if (am_iii_the_attacker) {
-		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.attacker_power)} - opponent assigning hits`);
-		  } else {
-		    this.updateInstructions(`${this.mod.returnFactionName(this.mod.game.state.combat.defender_power)} - assign hits`);
-		  }
-		}
-}
-
 
 		if (am_iii_the_attacker == 1 && faction == "attacker") {
 		  this.attachEvents(am_i_the_attacker, my_qs, faction);
@@ -358,6 +410,21 @@ if (faction == "attacker") {
 
 	}
 
+	highlightFiringTable(ftable="corps", color="blue", highlight_color="blue", defender_modified_roll=0, defender_column_number=0) {
+		let qs = `.${ftable}_firing_table .firing_table `;
+	        for (let i = 0; i <= defender_column_number; i++) {
+			console.log(`${qs} .row-${defender_modified_roll} .col-${i}`);
+			document.querySelector(`${qs} .row-${defender_modified_roll} .col-${i}`).style.backgroundColor = color;;
+		}
+	        for (let i = 0; i < defender_modified_roll; i++) {
+			console.log(`${qs} .row-${i} .col-${defender_column_number}`);
+			document.querySelector(`${qs} .row-${i} .col-${defender_column_number}`).style.backgroundColor = color;;
+		}
+		document.querySelector(`${qs} .row-${defender_modified_roll} .col-${defender_column_number}`).style.backgroundColor = highlight_color;
+		document.querySelector(`${qs} .row-${defender_modified_roll} .col-${defender_column_number}`).style.color = "#FFFFFF";
+	}
+
+
 
 	attachEvents(am_i_the_attacker, my_qs ,faction) {
 
@@ -365,11 +432,12 @@ if (faction == "attacker") {
 				for (let i = this.moves.length - 1; i >= 0; i--) {
 					this.mod.addMove(this.moves[i]);
 				}
+				let lmv = this.mod.game.queue[this.mod.game.queue.length-1].split("\t")[0];
 				this.mod.endTurn();
-				this.updateInstructions(`<div class="continue_btn">Click to Continue</div>`);
-				document.querySelector(".continue_btn").onclick = (e) => {
-				  this.hide();
-				}
+				//this.updateInstructions(`<div class="continue_btn">Click to Continue</div>`);
+				//document.querySelector(".continue_btn").onclick = (e) => {
+				//  this.hide();
+				//}
 				return;
 		}
 
@@ -386,6 +454,7 @@ if (faction == "attacker") {
 				let unit_damaged = 0; if (parseInt(e.currentTarget.dataset.damaged)) { unit_damaged = 1; }
 
 				let didx = idx;
+				let unit_idx = didx;
 
 				if (unit.damaged) {
 
@@ -423,14 +492,15 @@ if (faction == "attacker") {
 					//
 					// move to eliminated box
 					//
-                			let f = this.returnPowerOfUnit(unit);
-					if (f === "central") {
-					  this.moveUnit(spacekey, unit_idx, "ceubox");
-					} else {
-					  this.moveUnit(spacekey, unit_idx, "aeubox");
-					}
+                			let f = this.mod.returnPowerOfUnit(unit);
+// cannot move now
+//					if (f === "central") {
+//					  this.mod.moveUnit(unit_spacekey, unit_idx, "ceubox");
+//					} else {
+//					  this.mod.moveUnit(unit_spacekey, unit_idx, "aeubox");
+//					}
 
-					this.updateInstructions("Hits Remaining: " + this.loss_factor);
+		      			this.updateInstructions(`${this.mod.returnFactionName(this.mod.returnFactionOfPlayer(this.mod.game.player))} - Assign ${this.loss_factor} More Damage`);
 
 				} else {
 
@@ -438,7 +508,7 @@ if (faction == "attacker") {
 					unit.damaged = true;
 					this.loss_factor -= unit.loss;
 					el.innerHTML = this.mod.returnUnitImageWithMouseoverOfStepwiseLoss(unit, false, true);
-					this.updateInstructions("Hits Remaining: " + this.loss_factor);
+		      			this.updateInstructions(`${this.mod.returnFactionName(this.mod.returnFactionOfPlayer(this.mod.game.player))} - Assign ${this.loss_factor} More Damage`);
 
 				}
 
@@ -453,16 +523,16 @@ if (faction == "attacker") {
 						.forEach((el) => {
 							el.onclick = (e) => {};
 						});
-					setTimeout(() => {
+					//setTimeout(() => {
 						//let c = confirm('Maximum Losses Sustained: Submit?');
 						//if (c) {
 							for (let i = this.moves.length - 1; i >= 0; i--) {
 								this.mod.addMove(this.moves[i]);
 							}
 							this.mod.endTurn();
-							this.hide();
-							return;
-					}, 50);
+						//	this.hide();
+						//	return;
+					//}, 50);
 				}
 			};
 		});
