@@ -329,6 +329,10 @@ class StreamManager {
 
   parseSettings(settings) {
     this.videoEnabled = false;
+
+    // Check saved options (maybe redundant...)
+
+
     if (settings?.video) {
       this.videoEnabled = true;
       if (settings.video !== true) {
@@ -356,6 +360,9 @@ class StreamManager {
       this.audioSource = source;
       this.audioEnabled = true;
     }
+
+    this.app.options.stun.settings[`preferred_${type}`] = source;
+    this.app.storage.saveOptions();
 
     if (this.localStream){
 

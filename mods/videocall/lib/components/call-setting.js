@@ -116,14 +116,20 @@ class CallSetting {
 		}
 
 		if (this.videoInput){
-			this.videoInput.addEventListener('change', () =>
-				this.updateMedia('video', videoElement)
+			this.videoInput.addEventListener('change', () => {
+				this.updateMedia('video', videoElement);
+			    this.app.options.stun.settings[`preferred_video`] = this.videoInput.value;
+			    this.app.storage.saveOptions();
+				}
 			);
 		}
 
 		if (this.audioInput){
-			this.audioInput.addEventListener('change', () =>
-				this.updateMedia('audio', videoElement)
+			this.audioInput.addEventListener('change', () => {
+				this.updateMedia('audio', videoElement);
+			    this.app.options.stun.settings[`preferred_audio`] = this.audioInput.value;
+			    this.app.storage.saveOptions();
+			}
 			);
 		}
 
@@ -152,10 +158,29 @@ class CallSetting {
 	}
 
 	async getUserMedia(videoElement) {
-		try {
-			this.audioStream = await navigator.mediaDevices.getUserMedia({
+
+		// check saved preferences...
+		let audioConstraints = {
 				audio: true
-			});
+			};
+
+		let videoConstraints = {
+				video: {
+					width: { min: 640, max: 1280 },
+					height: { min: 400, max: 720 },
+					aspectRatio: { ideal: 1.333333 }
+				}
+			};
+
+		if (this.app.options.stun?.settings?.preferred_audio){
+			audioConstraints["deviceId"] = this.app.options.stun.settings.preferred_audio;
+		}
+		if (this.app.options.stun?.settings?.preferred_video){
+			videoConstraints["deviceId"] = this.app.options.stun.settings.preferred_video;
+		}
+
+		try {
+			this.audioStream = await navigator.mediaDevices.getUserMedia(audioConstraints);
 			this.audioEnabled = true;
 		} catch (error) {
 			console.error('Error accessing media devices.', error);
@@ -163,14 +188,7 @@ class CallSetting {
 		}
 
 		try {
-			console.log("hi");
-			this.videoStream = await navigator.mediaDevices.getUserMedia({
-				video: {
-					width: { min: 640, max: 1280 },
-					height: { min: 400, max: 720 },
-					aspectRatio: { ideal: 1.333333 }
-				}
-			});
+			this.videoStream = await navigator.mediaDevices.getUserMedia(videoConstraints);
 			videoElement.srcObject = this.videoStream;
 			this.videoEnabled = true;
 		} catch (error) {
@@ -194,9 +212,15 @@ class CallSetting {
 			option.textContent =
 				device.label || `${device.kind} - ${device.deviceId}`;
 			if (device.kind === 'videoinput' && this.videoInput) {
+				if (device.deviceId === this.app.options.stun?.settings?.preferred_video){
+					option.selected = true;
+				}
 				videoCt++;
 				this.videoInput.appendChild(option);
 			} else if (device.kind === 'audioinput' && this.audioInput) {
+				if (device.deviceId === this.app.options.stun?.settings?.preferred_audio){
+					option.selected = true;
+				}
 				audioCt++;
 				this.audioInput.appendChild(option);
 			}
