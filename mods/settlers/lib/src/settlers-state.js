@@ -346,10 +346,18 @@ class SettlersState {
         //let hexobj = document.getElementById(hex);
         let city_id = "city_" + city_component + "_" + hex;
 
+        // Calculate position value
+        //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        let neighbors = this.hexgrid.hexesFromVertex(city_component + "_" + hex);
+        let score = 0;
+        for (let n of neighbors){
+            score += (6 - Math.abs(7 - this.game.state.hexes[n].value));
+        }
+
         let selector = "hex_bg_" + hex;
         let hexobj = document.getElementById(selector);
         if (!document.getElementById(city_id)) {
-            let city_html = `<div class="city city${city_component} empty" id="${city_id}"></div>`;
+            let city_html = `<div class="city city${city_component} empty" id="${city_id}" data-score="${score}"></div>`;
             let city_obj = this.app.browser.htmlToElement(city_html);
             if (hexobj) hexobj.after(city_obj);
             //else console.log("Null selector: "+selector);

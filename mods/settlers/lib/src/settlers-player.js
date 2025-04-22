@@ -122,6 +122,10 @@ class SettlersPlayer {
       //$('.city').css('z-index', 9999999);
       $(".city.empty").off();
 
+      $(`.city.empty[data-score="15"]`).addClass("noselect");
+      $(`.city.empty[data-score="14"]`).addClass("noselect");
+      $('.city.noselect').removeClass("empty");
+
       $(".city.empty").on("mousedown", function (e) {
         xpos = e.clientX;
         ypos = e.clientY;

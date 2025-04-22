@@ -254,6 +254,23 @@ dt {
 	border-color: whitesmoke;
 }
 
+.chover:hover:after{
+	content: attr(data-score);
+	color: black;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+	font-weight: bold;
+}
+
+.chover.noselect:hover{
+	background-color: #222;
+}
+.chover.noselect:hover:after{
+	color: whitesmoke;
+}
+
 .city.empty.rhover {
     border: 1px solid #fff;
     position: absolute;
@@ -616,7 +633,6 @@ input[type='checkbox'] {
 	top: 50%;
 	transform: translate(-50%, -50%);
 	text-align: center;
-	cursor: pointer;
 }
 
 .sector-container.rhover:hover {
