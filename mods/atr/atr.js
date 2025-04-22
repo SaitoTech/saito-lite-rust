@@ -4,9 +4,7 @@ const JSON = require('json-bigint');
 const ATRMain = require('./lib/main');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const HomePage = require('./index');
-
-import S from 'saito-js/index.node';
-
+const S = require('saito-js/saito');
 
 class ATR extends ModTemplate {
 
