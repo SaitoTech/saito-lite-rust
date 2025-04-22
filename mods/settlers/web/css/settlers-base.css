@@ -119,6 +119,32 @@ span.tip {
 	right: -12.5%;
 }
 
+.sector-container:after{
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translateX(-50%);
+	font-size: 2.4rem;
+
+}
+
+.sc6:after, .sc8:after {
+	content: '.....';
+}
+.sc5:after, .sc9:after {
+	content: '....';
+}
+.sc4:after, .sc10:after {
+	content: '...';
+}
+.sc3:after, .sc11:after {
+	content: '..';
+}
+.sc2:after, .sc12:after {
+	content: '.';
+}
+
+
 dt {
 	margin-top: 0.8em;
 	margin-bottom: 0.5em;
@@ -254,7 +280,7 @@ dt {
 	border-color: whitesmoke;
 }
 
-.chover:hover:after{
+/*.chover:hover:after{
 	content: attr(data-score);
 	color: black;
 	display: flex;
@@ -262,10 +288,11 @@ dt {
 	align-items: center;
 	height: 100%;
 	font-weight: bold;
-}
+}*/
 
 .chover.noselect:hover{
 	background-color: #222;
+	cursor: help;
 }
 .chover.noselect:hover:after{
 	color: whitesmoke;

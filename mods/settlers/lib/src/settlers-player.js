@@ -124,7 +124,8 @@ class SettlersPlayer {
 
       $(`.city.empty[data-score="15"]`).addClass("noselect");
       $(`.city.empty[data-score="14"]`).addClass("noselect");
-      $('.city.noselect').removeClass("empty");
+      //$('.city.noselect').removeClass("empty");
+
 
       $(".city.empty").on("mousedown", function (e) {
         xpos = e.clientX;
@@ -138,6 +139,13 @@ class SettlersPlayer {
         if (Math.abs(ypos - e.clientY) > 4) {
           return;
         }
+
+        if ($(this).hasClass("noselect")){
+          salert("This space is too valuable for an initial placement");
+          return;
+        }
+
+
         $(".city.empty").css("background-color", "");
         //Confirm this move
         let slot = $(this).attr("id");
