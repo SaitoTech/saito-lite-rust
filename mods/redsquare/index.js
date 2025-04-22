@@ -75,9 +75,9 @@ module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
     }
   </style>
 </head>
-
-<body></body>`;
-  html += `<script type="text/javascript">
+<body>
+</body>`;
+	html += `<script type="text/javascript">
   if (!tweets) { 
     var tweets = [];
   }`;

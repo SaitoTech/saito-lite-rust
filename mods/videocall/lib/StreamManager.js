@@ -329,6 +329,10 @@ class StreamManager {
 
   parseSettings(settings) {
     this.videoEnabled = false;
+
+    // Check saved options (maybe redundant...)
+
+
     if (settings?.video) {
       this.videoEnabled = true;
       if (settings.video !== true) {
@@ -357,7 +361,13 @@ class StreamManager {
       this.audioEnabled = true;
     }
 
+    this.app.options.stun.settings[`preferred_${type}`] = source;
+    this.app.storage.saveOptions();
+
     if (this.localStream){
+
+      console.log("Videocall: changing inputs -- ", type, source);
+
         this.localStream.getTracks().forEach((track) => {
           track.stop()
         });
@@ -404,6 +414,8 @@ class StreamManager {
     console.log(this.videoSource, this.audioSource);
 
     let c = this.returnConstraints();
+
+    console.log(c);
 
     //Get my local media
     try {

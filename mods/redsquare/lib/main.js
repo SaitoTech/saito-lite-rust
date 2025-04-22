@@ -200,9 +200,9 @@ class RedSquareMain {
     });
 
     window.onpopstate = (event) => {
-      if (this.mod.debug){
-        console.log("===================", 'RS navigation: ', event?.state, window.location, "========================");  
-      }
+      //if (this.mod.debug){
+        console.log("===================", 'RSnavigation: ', event?.state, window.location, "========================");  
+      //}
       this.render(event.state);
     };
     
@@ -227,7 +227,7 @@ class RedSquareMain {
 
       switch (window.location.hash) {
         case '#notifications':
-          console.log("Render Notifications");
+          console.log("RSNAV: Render Notifications");
           this.renderNotifications();
           render_tweets = false;
           break;
@@ -244,7 +244,7 @@ class RedSquareMain {
       // render user profile
       //
       if (user_id) {
-        console.log("Render Profile");
+        console.log("RSNAV: Render Profile");
         render_tweets = false;
         this.renderProfile(user_id);
       }
@@ -254,9 +254,9 @@ class RedSquareMain {
       //
       let tweet_id = this.app.browser.returnURLParameter('tweet_id');
       if (tweet_id) {
-        console.log("Render Thread");
+        console.log("RSNAV: Render Thread");
         this.mod.loadTweetWithSig(tweet_id, (txs) => {
-          console.log(`Tweet thread load returned ${txs.length} tweets`);
+          console.log(`RSNAV: Tweet thread load returned ${txs.length} tweets`);
           for (let z = 0; z < txs.length; z++) {
             this.mod.addTweet(txs[z], 'url_sig');
           }
@@ -268,7 +268,7 @@ class RedSquareMain {
       }
 
       if (render_tweets){
-        console.log("Render Feed");
+        console.log("RSNAV: Render Feed");
         this.renderHome();
       }
 
