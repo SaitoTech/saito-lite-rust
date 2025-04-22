@@ -341,7 +341,6 @@ console.log("TESITNG WE REACH HERE...");
 
     const modNames = {};
     this.mods.forEach((mod, i) => {
-console.log("TRYING: " + mod.name);
       if (modNames[mod.name]) {
         console.log(`*****************************************************************`);
         console.log(`***** WARNING: mod ${mod.name} is installed more than once! *****`);
