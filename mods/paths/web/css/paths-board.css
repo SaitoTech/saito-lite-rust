@@ -613,13 +613,13 @@
   flex-direction: column;
 }
 
-.arbox {
+.crbox {
     top: 851px;
     left: 4250px;
     width: 730px;
     height: 380px;
 }
-.crbox {
+.arbox {
     top: 1280px;
     left: 4250px;
     width: 730px;

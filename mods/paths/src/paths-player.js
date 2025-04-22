@@ -1027,24 +1027,17 @@ console.log("unit idx: " + unit_idx);
       if (action === "event") {
 
 	//
-	// War Status
-	//
-	if (c.ws > 0) {
-	  if (card.substring(0, 2) == "ap") {
-	    this.game.state.general_records_track.allies_war_status += c.ws;
-	    this.game.state.general_records_track.combined_war_status += c.ws;
-	  } else {
-	    this.game.state.general_records_track.central_war_status += c.ws;
-	    this.game.state.general_records_track.combined_war_status += c.ws;
-	  }
-	  this.displayGeneralRecordsTrack();
-	}
-
-	//
 	// and trigger event
 	//
 	if (c.canEvent(this, faction)) {
 	  this.addMove("event\t"+card+"\t"+faction);
+	}
+
+	//
+	// War Status
+	//
+	if (c.ws > 0) {
+	  this.addMove("ws\t"+card+"\t"+faction+"\t"+c.ws);
 	}
 
         this.addMove(`record\t${faction}\t${this.game.state.round}\tevent`);
@@ -1129,8 +1122,10 @@ console.log("unit idx: " + unit_idx);
 	  if (paths_self.game.spaces[key].fort > 0 && paths_self.game.spaces[key].units.length == 0) {
 	    if (paths_self.game.spaces[key].control != faction) { return 1; }
 	  }
-	  if (paths_self.game.spaces[key].units.length > 0) {
-	    if (paths_self.returnPowerOfUnit(paths_self.game.spaces[key].units[0]) != faction) {
+	  if (paths_self.game.spaces[key].units.length > 0 || paths_self.game.spaces[key].fort > 0) {
+	    let power = paths_self.game.spaces[key].control;
+	    if (paths_self.game.spaces[key].units.length > 0) { power = paths_self.returnPowerOfUnit(paths_self.game.spaces[key].units[0]); }
+	    if (power != faction) {
   	      for (let i = 0; i < paths_self.game.spaces[key].neighbours.length; i++) {
 	        let n = paths_self.game.spaces[key].neighbours[i];
 	        if (paths_self.game.spaces[n].activated_for_combat == 1) {

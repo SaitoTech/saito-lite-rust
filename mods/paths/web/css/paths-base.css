@@ -68,9 +68,9 @@
 	width: 100%;
 	height: 100%;
 	position: absolute;
-	top: +30;
-	left: +30;
 	z-index: -1;
+    	right: 2rem;
+    	top: 2rem;
 }
 .trench-tile:hover {
 	z-index: 999;

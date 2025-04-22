@@ -470,6 +470,10 @@ console.log("err: " + err);
       let combined_war_status = `<img src="/paths/img/warstatus_combined.png" />`;
       let current_cp_russian_vp = `<img src="/paths/img/current_cp_russian_vp.png" />`;
 
+console.log("CHECKING WAR STATUS: ");
+console.log("Allies: " + this.game.state.general_records_track.allies_war_status);
+console.log("Central: " + this.game.state.general_records_track.central_war_status);
+
       document.querySelector(`.general-records-track-${this.game.state.general_records_track.allies_war_status}`).innerHTML += allies_war_status;
       document.querySelector(`.general-records-track-${this.game.state.general_records_track.central_war_status}`).innerHTML += central_war_status;
       document.querySelector(`.general-records-track-${this.game.state.general_records_track.combined_war_status}`).innerHTML += combined_war_status;

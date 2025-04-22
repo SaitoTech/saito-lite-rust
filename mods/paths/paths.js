@@ -4838,9 +4838,11 @@ deck['cp65'] = {
     // at least one army attacking
     //
     for (let i = 0; i < attacker_units.length; i++) {
-      if (!attacker_spaces.includes(attacker_units[i].spacekey)) { attacker_spaces.push(spacekey); }
+      if (!attacker_spaces.includes(attacker_units[i].spacekey)) { attacker_spaces.push(attacker_units[i].spacekey); }
       if (attacker_units[i].type == "army") { is_one_army_attacking = true; }
     }
+
+
 
     //
     // no swamp or mountain or trench or unoccupied fort
@@ -5330,6 +5332,10 @@ console.log("err: " + err);
       let central_war_status = `<img src="/paths/img/warstatus_cp.png" />`;
       let combined_war_status = `<img src="/paths/img/warstatus_combined.png" />`;
       let current_cp_russian_vp = `<img src="/paths/img/current_cp_russian_vp.png" />`;
+
+console.log("CHECKING WAR STATUS: ");
+console.log("Allies: " + this.game.state.general_records_track.allies_war_status);
+console.log("Central: " + this.game.state.general_records_track.central_war_status);
 
       document.querySelector(`.general-records-track-${this.game.state.general_records_track.allies_war_status}`).innerHTML += allies_war_status;
       document.querySelector(`.general-records-track-${this.game.state.general_records_track.central_war_status}`).innerHTML += central_war_status;
@@ -5850,10 +5856,11 @@ console.log("err: " + err);
         if (has_eleventh_army) { return this.game.spaces[key].units.length - number_cp_corps; }
         if (has_other_army) { return this.game.spaces[key].units.length - number_cp_corps + 1; }
       }
+
       if (this.game.state.events.falkenhayn != 1 && this.game.state.events.moltke == 1 && (space.country == "france" || space.country == "belgium")) {
-        if (units.length == 1) { return 1; }
-        if (units.length == 2) { return 2; }
-        if (units.length == 3) { return 3; }
+        if (space.units.length == 1) { return 1; }
+        if (space.units.length == 2) { return 2; }
+        if (space.units.length == 3) { return 3; }
       }
       if (this.game.state.events.sudarmy == 1) {
 	if (countries["GE"] >= 1 && countries["AH"] == 1) {
@@ -10190,6 +10197,28 @@ try {
 
 	}
 
+
+
+	if (mv[0] === "ws") {
+
+	  let card = mv[1];
+	  let faction = mv[2];
+	  let ws = parseInt(mv[3]);
+
+	  if (faction == "allies") {
+            this.game.state.general_records_track.allies_war_status += ws;
+            this.game.state.general_records_track.combined_war_status += ws;
+          } else {
+            this.game.state.general_records_track.central_war_status += ws;
+            this.game.state.general_records_track.combined_war_status += ws;
+          }
+          this.displayGeneralRecordsTrack();
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
   	if (mv[0] === "rp") {
 
 	  let faction = mv[1];
@@ -11244,21 +11273,26 @@ console.log("caa 3");
 	  // enough strength to besiege a fort, so if this is a fort we want to
 	  // toggle the besieged variable if needed.
 	  //
-	  if (this.returnPowerOfUnit(this.game.spaces[destinationkey].units[0]) != this.game.spaces[destinationkey].control) {
-	    if (this.game.spaces[destinationkey].fort > 0) {
-	      this.game.spaces[destinationkey].besieged = 1;
-	    } else {
-	      //
-	      // switch control
-	      //
-	      this.game.spaces[destinationkey].control = this.returnPowerOfUnit(this.game.spaces[destinationkey].units[0]);
+	  // note that this does not apply to units moving into a space they control...
+	  //
+	  if (this.game.spaces[destinationkey].units.length > 0) {
+	    if (this.returnPowerOfUnit(this.game.spaces[destinationkey].units[0]) != this.game.spaces[destinationkey].control) {
+	      if (this.game.spaces[destinationkey].fort > 0) {
+	        this.game.spaces[destinationkey].besieged = 1;
+	      } else {
+	        //
+	        // switch control
+	        //
+	        this.game.spaces[destinationkey].control = this.returnPowerOfUnit(this.game.spaces[destinationkey].units[0]);
 
-	      //
-	      // degrade trenches
-	      //
-	      if (this.game.spaces[destinationkey].trench > 0) { this.game.spaces[destinationkey].trench--; }
+	        //
+	        // degrade trenches
+	        //
+	        if (this.game.spaces[destinationkey].trench > 0) { this.game.spaces[destinationkey].trench--; }
+	      }
 	    }
 	  }
+
 
 	  //
 	  // check if no longer besieged?
@@ -12359,24 +12393,17 @@ console.log("unit idx: " + unit_idx);
       if (action === "event") {
 
 	//
-	// War Status
-	//
-	if (c.ws > 0) {
-	  if (card.substring(0, 2) == "ap") {
-	    this.game.state.general_records_track.allies_war_status += c.ws;
-	    this.game.state.general_records_track.combined_war_status += c.ws;
-	  } else {
-	    this.game.state.general_records_track.central_war_status += c.ws;
-	    this.game.state.general_records_track.combined_war_status += c.ws;
-	  }
-	  this.displayGeneralRecordsTrack();
-	}
-
-	//
 	// and trigger event
 	//
 	if (c.canEvent(this, faction)) {
 	  this.addMove("event\t"+card+"\t"+faction);
+	}
+
+	//
+	// War Status
+	//
+	if (c.ws > 0) {
+	  this.addMove("ws\t"+card+"\t"+faction+"\t"+c.ws);
 	}
 
         this.addMove(`record\t${faction}\t${this.game.state.round}\tevent`);
@@ -12461,8 +12488,10 @@ console.log("unit idx: " + unit_idx);
 	  if (paths_self.game.spaces[key].fort > 0 && paths_self.game.spaces[key].units.length == 0) {
 	    if (paths_self.game.spaces[key].control != faction) { return 1; }
 	  }
-	  if (paths_self.game.spaces[key].units.length > 0) {
-	    if (paths_self.returnPowerOfUnit(paths_self.game.spaces[key].units[0]) != faction) {
+	  if (paths_self.game.spaces[key].units.length > 0 || paths_self.game.spaces[key].fort > 0) {
+	    let power = paths_self.game.spaces[key].control;
+	    if (paths_self.game.spaces[key].units.length > 0) { power = paths_self.returnPowerOfUnit(paths_self.game.spaces[key].units[0]); }
+	    if (power != faction) {
   	      for (let i = 0; i < paths_self.game.spaces[key].neighbours.length; i++) {
 	        let n = paths_self.game.spaces[key].neighbours[i];
 	        if (paths_self.game.spaces[n].activated_for_combat == 1) {

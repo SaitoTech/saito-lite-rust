@@ -153,7 +153,7 @@ class LossOverlay {
 
 	showRetreatNotice() {
 		try {
-		  this.updateInstructions(`<div class="continue_btn">Damage Assigned - <span style="text-decoration:underline;cursor:pointer">Click to Continue</span></div>`);
+		  this.updateInstructions(`<div class="continue_btn">All Possible Damage Assigned - <span style="text-decoration:underline;cursor:pointer">Click to Continue</span></div>`);
 		  document.querySelector(".continue_btn").onclick = (e) => {
 		    this.hide();
 		  }

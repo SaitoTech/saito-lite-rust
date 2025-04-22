@@ -286,10 +286,11 @@
         if (has_eleventh_army) { return this.game.spaces[key].units.length - number_cp_corps; }
         if (has_other_army) { return this.game.spaces[key].units.length - number_cp_corps + 1; }
       }
+
       if (this.game.state.events.falkenhayn != 1 && this.game.state.events.moltke == 1 && (space.country == "france" || space.country == "belgium")) {
-        if (units.length == 1) { return 1; }
-        if (units.length == 2) { return 2; }
-        if (units.length == 3) { return 3; }
+        if (space.units.length == 1) { return 1; }
+        if (space.units.length == 2) { return 2; }
+        if (space.units.length == 3) { return 3; }
       }
       if (this.game.state.events.sudarmy == 1) {
 	if (countries["GE"] >= 1 && countries["AH"] == 1) {

@@ -657,6 +657,28 @@ try {
 
 	}
 
+
+
+	if (mv[0] === "ws") {
+
+	  let card = mv[1];
+	  let faction = mv[2];
+	  let ws = parseInt(mv[3]);
+
+	  if (faction == "allies") {
+            this.game.state.general_records_track.allies_war_status += ws;
+            this.game.state.general_records_track.combined_war_status += ws;
+          } else {
+            this.game.state.general_records_track.central_war_status += ws;
+            this.game.state.general_records_track.combined_war_status += ws;
+          }
+          this.displayGeneralRecordsTrack();
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
   	if (mv[0] === "rp") {
 
 	  let faction = mv[1];
@@ -1711,21 +1733,26 @@ console.log("caa 3");
 	  // enough strength to besiege a fort, so if this is a fort we want to
 	  // toggle the besieged variable if needed.
 	  //
-	  if (this.returnPowerOfUnit(this.game.spaces[destinationkey].units[0]) != this.game.spaces[destinationkey].control) {
-	    if (this.game.spaces[destinationkey].fort > 0) {
-	      this.game.spaces[destinationkey].besieged = 1;
-	    } else {
-	      //
-	      // switch control
-	      //
-	      this.game.spaces[destinationkey].control = this.returnPowerOfUnit(this.game.spaces[destinationkey].units[0]);
+	  // note that this does not apply to units moving into a space they control...
+	  //
+	  if (this.game.spaces[destinationkey].units.length > 0) {
+	    if (this.returnPowerOfUnit(this.game.spaces[destinationkey].units[0]) != this.game.spaces[destinationkey].control) {
+	      if (this.game.spaces[destinationkey].fort > 0) {
+	        this.game.spaces[destinationkey].besieged = 1;
+	      } else {
+	        //
+	        // switch control
+	        //
+	        this.game.spaces[destinationkey].control = this.returnPowerOfUnit(this.game.spaces[destinationkey].units[0]);
 
-	      //
-	      // degrade trenches
-	      //
-	      if (this.game.spaces[destinationkey].trench > 0) { this.game.spaces[destinationkey].trench--; }
+	        //
+	        // degrade trenches
+	        //
+	        if (this.game.spaces[destinationkey].trench > 0) { this.game.spaces[destinationkey].trench--; }
+	      }
 	    }
 	  }
+
 
 	  //
 	  // check if no longer besieged?

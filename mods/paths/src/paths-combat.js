@@ -189,9 +189,11 @@
     // at least one army attacking
     //
     for (let i = 0; i < attacker_units.length; i++) {
-      if (!attacker_spaces.includes(attacker_units[i].spacekey)) { attacker_spaces.push(spacekey); }
+      if (!attacker_spaces.includes(attacker_units[i].spacekey)) { attacker_spaces.push(attacker_units[i].spacekey); }
       if (attacker_units[i].type == "army") { is_one_army_attacking = true; }
     }
+
+
 
     //
     // no swamp or mountain or trench or unoccupied fort
