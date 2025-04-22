@@ -390,7 +390,6 @@ class Videocall extends ModTemplate {
 					icon: 'fa-solid fa-cog',
 					prepend: true,
 					callback: function (app) {
-						console.log("***** 1");
 						app.connection.emit('videocall-show-settings');
 					}
 				}

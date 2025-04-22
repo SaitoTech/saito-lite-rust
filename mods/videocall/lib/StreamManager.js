@@ -358,6 +358,9 @@ class StreamManager {
     }
 
     if (this.localStream){
+
+      console.log("Videocall: changing inputs -- ", type, source);
+
         this.localStream.getTracks().forEach((track) => {
           track.stop()
         });
@@ -404,6 +407,8 @@ class StreamManager {
     console.log(this.videoSource, this.audioSource);
 
     let c = this.returnConstraints();
+
+    console.log(c);
 
     //Get my local media
     try {
