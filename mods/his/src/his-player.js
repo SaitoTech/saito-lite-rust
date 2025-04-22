@@ -2020,6 +2020,8 @@ if (relief_siege == 1) {
 
     let sources = [];
     let any_need_to_intervene = false;
+    let confirm_leaders_move_with_troops = false;
+    let confirm_leaders_move_with_troops_spacekey = false;
 
     //
     // handle non-naval units
@@ -2058,9 +2060,7 @@ if (relief_siege == 1) {
     }
 
     if (any_need_to_intervene == false) {
-console.log("#");
-console.log("# no need to intervene - exit 1");
-console.log("#");
+      his_self.updateStatus("processing...");
       his_self.theses_overlay.hide();
       his_self.endTurn();
       return 1;
@@ -2069,13 +2069,9 @@ console.log("#");
 
     let next_unit_fnct = async (sources, sources_idx, unit_idx, next_unit_fnct) => {
 
-console.log("! " + sources.length + " -- " + sources_idx);
-
       if (sources.length < (sources_idx+1)) {
+        his_self.updateStatus("processing...");
         his_self.theses_overlay.hide();
-console.log("#");
-console.log("# no need to intervene - exit 2");
-console.log("#");
 	his_self.endTurn();
 	return 1;
       }
@@ -2094,8 +2090,6 @@ console.log("#");
 
       if (unit_idx >= 0) {
 
-console.log("into here...");
-
 	let unit_type = space.units[f][unit_idx].type;
 	let unit_name = "";
 	if (unit_type == "mercenary") { unit_name = "Mercenary"; }
@@ -2104,7 +2098,6 @@ console.log("into here...");
 	if (space.units[f][unit_idx].army_leader == true) { unit_type = space.units[f][unit_idx].name; }
 
         if (unit_name == "" || res.length == 0) {
-console.log(" next nuf");
 	   next_unit_fnct(sources, sources_idx, unit_idx-1, next_unit_fnct);
 	} else {
 
@@ -2113,21 +2106,19 @@ console.log(" next nuf");
             function(space) {
               if (destinations.includes(space.key)) { return 1; }
 	      return 0;
-            }, 
+            },
             function(spacekey) {
 
 	      let move_leader_with_troops = false;
 	      let moved_this_unit = false;
               let leader_idx = [];
 
-	      for (let i = 0; i < space.units[f].length; i++) {
+	      for (let i = space.units[f].length-1; i >= 0; i--) {
 		let u = space.units[f][i];
 		if (i != unit_idx && (u.army_leader || u.navy_leader)) {
 		  leader_idx.push(i);
 		}
 	      }
-
-console.log("leaders: " + leader_idx.length);
 
 	      if (leader_idx.length > 0) {
 		let c = confirm("Move Leader with Troops?");
@@ -2141,21 +2132,22 @@ console.log("leaders: " + leader_idx.length);
 		move_leader_with_troops = true;
 	      }
 
-              his_self.addUnit(f, spacekey, unit_type);
-	      his_self.removeUnit(f, space.key, unit_type);
-	      his_self.addMove("move\t"+f+"\tland\t"+space.key+"\t"+spacekey+"\t"+unit_idx+"\t"+his_self.game.player);
-
 	      if (move_leader_with_troops) {
 		for (let z = space.units[f].length-1; z >= 0; z--) {
 		  if (space.units[f][z].army_leader || space.units[f][z].navy_leader) {
 		    let u = space.units[f][z];
 	            his_self.removeUnit(f, space.key, u.type);
 	            his_self.addArmyLeader(f, spacekey, u.type);
-
-	            his_self.addMove("move\t"+f+"\tland\t"+space.key+"\t"+spacekey+"\t"+unit_idx+"\t"+his_self.game.player);
+	            his_self.addMove("move\t"+f+"\tland\t"+space.key+"\t"+spacekey+"\t"+z+"\t"+his_self.game.player);
+		    if (z < unit_idx) { unit_idx--; }
 		  }
 		}
 	      }
+
+              his_self.addUnit(f, spacekey, unit_type);
+	      his_self.removeUnit(f, space.key, unit_type);
+	      his_self.addMove("move\t"+f+"\tland\t"+space.key+"\t"+spacekey+"\t"+unit_idx+"\t"+his_self.game.player);
+
 
 	      //
 	      // reorganize MOVES
@@ -2192,16 +2184,11 @@ console.log("leaders: " + leader_idx.length);
     }
 
     if (sources.length > 0) {
-console.log("#");
-console.log("# sources so going into next_unit_fnct");
-console.log("#");
       let next_unit_idx = 100;
       next_unit_idx = his_self.game.spaces[sources[0].spacekey].units[f].length-1;
       next_unit_fnct(sources, 0, next_unit_idx, next_unit_fnct);
     } else {
-console.log("#");
-console.log("# no sources of any length");
-console.log("#");
+      his_self.updateStatus("processing...");
       his_self.theses_overlay.hide();
       his_self.endTurn();
     }
