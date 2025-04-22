@@ -281,8 +281,6 @@ console.log("\n\n\n\n");
 	  this.addDebater("protestant", "bucer-debater");
 	  this.addDebater("protestant", "carlstadt-debater");
 
-
-
 	}
 
       }
@@ -632,6 +630,10 @@ console.log("\n\n\n\n");
 	  this.addArmyLeader("hapsburg", "vienna", "ferdinand");
           //this.addRegular("hapsburg", "vienna", 4);
           this.addMercenary("hapsburg", "vienna", 2);
+
+// TESTING
+	  this.addArmyLeader("hapsburg", "palma", "duke-of-alva");
+          this.addRegular("hapsburg", "palma", 4);
 
           this.addRegular("hapsburg", "antwerp", 3);
           this.controlSpace("hapsburg", "prague");

@@ -77,6 +77,17 @@
       }
     }
 
+    //
+    // Mine Attack can only be used once per turn
+    //
+    if (this.game.state.events.mine_attack == 1) {
+      for (let i = 0; i < ccs.length; i++) {
+	if (ccs[i] === "ap36") {
+	  ccs.splice(i, 1);
+	}
+      }
+    }
+
     if (num == 0) {
       this.endTurn();
       return 0;
@@ -185,6 +196,128 @@
   }
 
 
+  playerAddReinforcements(faction="", units=[], country="", options=[]) {
+
+    let paths_self = this;
+    let just_stop = 0;
+    let unit = null;
+
+    //
+    // corps go into reserve boxes
+    // armies into capital or supply sources
+    // if options specified, respect
+    //
+    let continue_fnct = () => {
+      if (just_stop == 1) { paths_self.endTurn(); return 0; }
+      if (units.length == 0) { paths_self.endTurn(); return 0; }
+      return 1;
+    }
+
+    let execute_fnct = (spacekey) => {
+      paths_self.updateStatus("deploying...");
+      paths_self.removeSelectable();
+      paths_self.addUnitToSpace(unit.key, spacekey);
+      paths_self.addMove(`add\t${spacekey}\t${unit.key}\t${paths_self.game.player}`);    
+      paths_self.displaySpace(spacekey);
+      loop_fnct();
+    };
+
+    let loop_fnct = () => {
+      if (continue_fnct()) {
+
+	unit = paths_self.game.units[units[units.length-1]];
+	units.splice(units.length-1, 1);
+	let choices = [];
+
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("UNIT: " + JSON.stringify(unit));
+
+	
+	//
+	// CORPS
+	//
+	if (unit.corps) {
+
+	  if (faction == "allies") { choices.push("arbox"); } 
+	  if (faction == "central") { choices.push("crbox"); } 
+
+	  //
+	  // one option? auto-handle
+	  //
+	  if (options.length == 0) {
+	    execute_fnct(choices[0]);
+	    return;
+
+	  //
+	  // multiple options? let player choose
+	  //
+	  } else {
+
+	    for (let z = 0; z < options.length; z++) {
+	      if (!choices.includes(options[z])) { choices.push(options[z]); }
+	    }
+
+            paths_self.playerSelectSpaceWithFilter(
+   	      `Destination for ${unit.name}` ,
+	      (spacekey) => { if (choices.includes(spacekey)) { return 1; } return 0; } ,
+	      execute_fnct ,
+	      null , 
+	      true ,
+            );
+
+	    return;
+	  }
+
+	//
+	// ARMIES
+	//
+	} else {
+
+	  //
+	  // armies go in spacekeys, options over-ride
+	  //
+	  let spacekeys = this.returnArrayOfSpacekeysForPlacingReinforcements(country);
+          if (options.length > 0) { spacekeys = options; }
+
+	  //
+	  // one option? auto-handle
+	  //
+	  if (spacekeys.length == 0) {
+	    alert("Error -- no viable placement options?");
+	    this.endTurn();
+	  }
+
+	  if (spacekeys.length == 1) {
+	    execute_fnct(spacekeys[0]);
+	    return;
+	  }
+
+	  if (spacekeys.length > 1) {
+            paths_self.playerSelectSpaceWithFilter(
+   	      `Destination for ${unit.name}` ,
+	      (spacekey) => { if (spacekeys.includes(spacekey)) { return 1; } return 0; } ,
+	      execute_fnct ,
+	      null , 
+	      true
+            );
+	    return;
+	  }
+
+	}
+      }
+    }    
+
+    loop_fnct();
+    return;
+
+  }
+
+
   playerPlayAdvance() {
 
     let can_player_advance = false;
@@ -196,8 +329,14 @@
       let unit = attacker_units[i];
       if (!unit.damaged) { can_player_advance = true; }
     }
-    if (space.fort) { can_player_advance = false; }
-
+    if (space.fort) { 
+      //
+      // we cannot advance into a fort we attacked from an adjacent space if
+      // the fort was empty, but we can advance (and then besiege) a fort if
+      // we routed the opponent.
+      //
+      if (this.game.state.combat.unoccupied_fort == 1) { can_player_advance = false; }
+    }
 
     //
     // skip advance if not possible
@@ -239,6 +378,46 @@
     let attacker_loss_factor = this.game.state.combat.attacker_loss_factor;
     let defender_loss_factor = this.game.state.combat.defender_loss_factor;
     if ((attacker_loss_factor-defender_loss_factor) == 1) { spaces_to_retreat = 1; }
+
+    if (this.game.state.combat.unoccupied_fort == 1 && this.game.space[this.game.state.combat.key].fort == -1) {
+      spaces_to_retreat = 1;
+      paths_self.playerSelectSpaceWithFilter(
+        `Advanced into Destroyed Fort?`,
+        (destination) => {
+          if (destination == this.game.state.combat.key) { return 1; }
+	  return 0;
+        },
+        (key) => {
+
+          this.unbindBackButtonFunction();
+          this.updateStatus("advancing...");
+
+          for (let i = 0; i < attacker_units.length; i++) {
+            let x = attacker_units[i];
+            let skey = x.spacekey;
+            let ukey = x.key;
+            let uidx = 0;
+            let u = {};
+            for (let z = 0; z < paths_self.game.spaces[skey].units.length; z++) {
+              if (paths_self.game.spaces[skey].units[z].key === ukey) {
+                uidx = z;
+              }
+            }
+            if (!attacker_units[i].damaged) {
+              paths_self.moveUnit(skey, uidx, key);
+              paths_self.addMove(`move\t${faction}\t${skey}\t${uidx}\t${key}\t${paths_self.game.player}`);
+            }
+            paths_self.displaySpace(skey);
+          }
+          paths_self.displaySpace(key);
+          paths_self.endTurn();
+        },
+        null,
+        true
+      );
+      return 0;
+    }
+
 
     let sourcekey = this.game.state.combat.retreat_sourcekey;
     let destinationkey = this.game.state.combat.retreat_destinationkey;
@@ -355,6 +534,7 @@
     // 2. flip damaged units in the RB
     // 3. return eliminated units to RB 
     //
+    loop_fnct();
     let loop_fnct = () => {
       if (continue_fnct()) {
         paths_self.playerSelectUnitWithFilter(
@@ -475,7 +655,6 @@
       return 0;
     }
 
-    loop_fnct();
 
     return 1;
   }
@@ -805,15 +984,15 @@ console.log("unit idx: " + unit_idx);
     this.cardbox.hide();
 
     let html = `<ul>`;
-    html    += `<li class="card" id="ops">ops (movement / combat)</li>`;
+    html    += `<li class="card movement" id="ops">ops (movement / combat)</li>`;
     if (c.sr) {
-      html    += `<li class="card" id="sr">strategic redeployment</li>`;
+      html    += `<li class="card redeployment" id="sr">strategic redeployment</li>`;
     }
     if (c.rp) {
-      html    += `<li class="card" id="rp">replacement points</li>`;
+      html    += `<li class="card replacement" id="rp">replacement points</li>`;
     }
     if (c.canEvent(this, faction)) {
-      html    += `<li class="card" id="event">trigger event</li>`;
+      html    += `<li class="card event" id="event">trigger event</li>`;
     }
     html    += `</ul>`;
 
@@ -946,6 +1125,9 @@ console.log("unit idx: " + unit_idx);
 	    if (faction == "central") {
 	      if (paths_self.game.spaces[key].country == "russia" && paths_self.game.spaces[key].fort > 0) { return 0; }
 	    }
+	  }
+	  if (paths_self.game.spaces[key].fort > 0 && paths_self.game.spaces[key].units.length == 0) {
+	    if (paths_self.game.spaces[key].control != faction) { return 1; }
 	  }
 	  if (paths_self.game.spaces[key].units.length > 0) {
 	    if (paths_self.returnPowerOfUnit(paths_self.game.spaces[key].units[0]) != faction) {
@@ -1308,12 +1490,16 @@ console.log("unit idx: " + unit_idx);
 	    true
 	  );
         }
+
         if (action === "entrench") {
+	  let u = paths_self.game.spaces[sourcekey].units[idx];
+	  let lf = u.loss; if (u.damaged) { lf = u.rloss; }
 	  paths_self.addMove(`player_play_movement\t${faction}`);
-	  paths_self.addMove(`entrench\t${faction}\t${sourcekey}\t${idx}`);
+	  paths_self.addMove(`entrench\t${faction}\t${sourcekey}\t${idx}\t${lf}`);
 	  paths_self.endTurn();
 	  return;
         }
+
         if (action === "skip") {
 	  paths_self.game.spaces[key].units[idx].moved = 1;
 	  let mint = false;
@@ -1367,6 +1553,7 @@ console.log("unit idx: " + unit_idx);
 
     if (!skipend) {
       this.addMove("player_play_combat\t"+faction);
+      this.addMove("dig_trenches");
       this.addMove("player_play_movement\t"+faction);
     }
 
@@ -1730,6 +1917,9 @@ console.log("unit idx: " + unit_idx);
 
     $('.option').off();
     $('.option').on('click', function () {
+
+      paths_self.updateStatus("selected...");
+
 
       //
       // and remove on-board clickability

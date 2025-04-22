@@ -44,25 +44,25 @@ class MenuOverlay {
 		let html = `
 	      		<div id="ops" class="menu-option-container card">
 	        		<div class="menu-option-image">
-	        			<img src="/paths/img/backgrounds/tanks01.png" />
+	        			<img src="/paths/img/backgrounds/menu/artillery.png" />
 	        		</div>
 	        		<div class="menu-option-title">Movement / Combat</div>
 	      		</div>
 	      		<div id="sr" class="menu-option-container card">
 	        		<div class="menu-option-image">
-	        			<img src="/paths/img/backgrounds/tanks01.png" />
+	        			<img src="/paths/img/backgrounds/menu/train.jpg" />
 	        		</div>
 	        		<div class="menu-option-title">Strategic Redeployment</div>
 	      		</div>
 	      		<div id="rp" class="menu-option-container card">
 	        		<div class="menu-option-image">
-	        			<img src="/paths/img/backgrounds/tanks01.png" />
+	        			<img src="/paths/img/backgrounds/menu/recruiting.jpg" />
 	        		</div>
 	        		<div class="menu-option-title">Replacement Points</div>
 	      		</div>
 	      		<div id="event" class="menu-option-container card">
 	        		<div class="menu-option-image">
-	        			<img src="/paths/img/backgrounds/tanks01.png" />
+	        			<img src="/paths/img/backgrounds/menu/planning.jpg" />
 	        		</div>
 	        		<div class="menu-option-title">Card Event</div>
 	      		</div>

@@ -668,11 +668,13 @@ class Arcade extends ModTemplate {
 					// Archive game overs for async to work
 					//
 					if (!this.app.BROWSER) {
-						let step = txmsg?.step?.game || null;
+						let step = txmsg?.step?.game || txmsg.step || null;
 						if (step) {
 							step = String(step).padStart(5, '0');
 						}
-						//console.log("!!!!!!!!!! SAVE GAME STEP: ", step);
+						//if (txmsg.request !== "game"){
+						//	console.log("!!!!!!!!!! SAVE NON GAME STEP: ", step);	
+						//}
 						await this.app.storage.saveTransaction(
 							tx,
 							{ field4: txmsg.game_id, field5: step },

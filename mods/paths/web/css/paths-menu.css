@@ -3,6 +3,19 @@
   background-color: transparent;
 }
 
+.card.movement {
+
+}
+.card.replacement {
+
+}
+.card.redeployment {
+
+}
+.card.event {
+
+}
+
 .saito-overlay .menu {
 	display: flex;
 	flex-wrap: wrap;
