@@ -38,7 +38,7 @@ module.exports = () => {
             <div class="col col-2"><div class="dice defender_roll">-</div></div>
             <div class="col col-3 defender_modifiers">-</div>
             <div class="col col-4 defender_column_shift">-</div>
-            <div class="col col-4"><div class="dice defender_damage">-</div></div>
+            <div class="col col-5"><div class="dice defender_damage">-</div></div>
           </div>
         </div>
 

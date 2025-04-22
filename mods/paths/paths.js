@@ -2119,7 +2119,11 @@ console.log("INITIALIZING PATHS");
 	    //
 	    // no placement options
 	    //
-	    if (options.length == 0) { return 1; }
+	    if (options.length == 0) {
+	      paths_self.addMove("NOTIFY\tNo Valid Allied Entrenchment Options");
+	      paths_self.endTurn();
+	      return 0;
+	    }
 
 	    //
 	    // place a trench
@@ -2130,6 +2134,7 @@ console.log("INITIALIZING PATHS");
           	if (options.includes(key)) { return 1; }
               },
               (key) => {
+		paths_self.updateStatus("processing...");
  		paths_self.addMove("entrench\tallies\t"+key);
  		paths_self.endTurn();
 		return 0;
@@ -2338,7 +2343,11 @@ deck['ap14'] = {
 	    //
 	    // no placement options
 	    //
-	    if (options.length == 0) { return 1; }
+	    if (options.length == 0) {
+	      paths_self.addMove("NOTIFY\tNo Valid Central Entrechment Options");
+	      paths_self.endTurn();
+	      return 0;
+	    }
 
 	    //
 	    // place a trench
@@ -2349,6 +2358,7 @@ deck['ap14'] = {
           	if (options.includes(key)) { return 1; }
               },
               (key) => {
+		paths_self.updateStatus("processing...");
  		paths_self.addMove("entrench\tcentral\t"+key);
  		paths_self.endTurn();
 		return 0;
@@ -5747,9 +5757,9 @@ console.log("err: " + err);
     let controlling_faction = "allies";
 
     if (faction == "germany") { sources = ["essen", "breslau"]; controlling_faction = "central"; }
-    if (faction == "cp") { sources = ["essen","breslau","sofia","constantinople"]; controlling_faction = "central"; }
+    if (faction == "cp" || faction == "central") { sources = ["essen","breslau","sofia","constantinople"]; controlling_faction = "central"; }
     if (faction == "france") { sources = ["london"]; }
-    if (faction == "ap") { sources = ["london"]; }
+    if (faction == "ap" || faction == "allies") { sources = ["london"]; }
     if (faction == "ru" || faction == "russia") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
     if (faction == "ro") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
     if (faction == "sb") { 
@@ -11122,15 +11132,25 @@ console.log("caa 3");
 
 	  let faction = mv[1];
 	  let key = mv[2];
-	  let idx = parseInt(mv[3]);
+	  let idx = null;
+
+	  if (mv[3]) { idx = parseInt(mv[3]); }
 	  let loss_factor = 0;
 	  if (mv[4]) { loss_factor = parseInt(mv[4]) };
 
-	  if (loss_factor) {
-	    this.game.state.entrenchment.push({ spacekey : key , loss_factor : loss_factor});
+	  //
+	  // exists if a unit is doing it
+	  //
+	  if (idx) {
+	    if (loss_factor) {
+	      this.game.state.entrenchment.push({ spacekey : key , loss_factor : loss_factor});
+	    }
+	    this.game.spaces[key].units[idx].moved = 1;
+	  } else {
+	    if (!this.game.spaces[key].trench) { this.game.spaces[key].trench = 0; }
+	    this.game.spaces[key].trench++;
+	    if (this.game.spaces[key].trench > 2) { this.game.spaces[key].trench = 2; }
 	  }
-
-	  this.game.spaces[key].units[idx].moved = 1;
 
 	  this.game.queue.splice(qe, 1);
 	  return 1;
@@ -13229,6 +13249,9 @@ console.log("unit idx: " + unit_idx);
 
     $('.option').off();
     $('.option').on('click', function () {
+
+      paths_self.updateStatus("selected...");
+
 
       //
       // and remove on-board clickability

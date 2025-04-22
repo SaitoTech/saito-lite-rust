@@ -193,9 +193,9 @@
     let controlling_faction = "allies";
 
     if (faction == "germany") { sources = ["essen", "breslau"]; controlling_faction = "central"; }
-    if (faction == "cp") { sources = ["essen","breslau","sofia","constantinople"]; controlling_faction = "central"; }
+    if (faction == "cp" || faction == "central") { sources = ["essen","breslau","sofia","constantinople"]; controlling_faction = "central"; }
     if (faction == "france") { sources = ["london"]; }
-    if (faction == "ap") { sources = ["london"]; }
+    if (faction == "ap" || faction == "allies") { sources = ["london"]; }
     if (faction == "ru" || faction == "russia") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
     if (faction == "ro") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
     if (faction == "sb") { 

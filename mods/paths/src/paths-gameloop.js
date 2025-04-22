@@ -1599,15 +1599,25 @@ console.log("caa 3");
 
 	  let faction = mv[1];
 	  let key = mv[2];
-	  let idx = parseInt(mv[3]);
+	  let idx = null;
+
+	  if (mv[3]) { idx = parseInt(mv[3]); }
 	  let loss_factor = 0;
 	  if (mv[4]) { loss_factor = parseInt(mv[4]) };
 
-	  if (loss_factor) {
-	    this.game.state.entrenchment.push({ spacekey : key , loss_factor : loss_factor});
+	  //
+	  // exists if a unit is doing it
+	  //
+	  if (idx) {
+	    if (loss_factor) {
+	      this.game.state.entrenchment.push({ spacekey : key , loss_factor : loss_factor});
+	    }
+	    this.game.spaces[key].units[idx].moved = 1;
+	  } else {
+	    if (!this.game.spaces[key].trench) { this.game.spaces[key].trench = 0; }
+	    this.game.spaces[key].trench++;
+	    if (this.game.spaces[key].trench > 2) { this.game.spaces[key].trench = 2; }
 	  }
-
-	  this.game.spaces[key].units[idx].moved = 1;
 
 	  this.game.queue.splice(qe, 1);
 	  return 1;

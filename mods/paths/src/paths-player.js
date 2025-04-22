@@ -1918,6 +1918,9 @@ console.log("unit idx: " + unit_idx);
     $('.option').off();
     $('.option').on('click', function () {
 
+      paths_self.updateStatus("selected...");
+
+
       //
       // and remove on-board clickability
       //

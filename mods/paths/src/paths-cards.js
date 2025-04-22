@@ -341,7 +341,11 @@
 	    //
 	    // no placement options
 	    //
-	    if (options.length == 0) { return 1; }
+	    if (options.length == 0) {
+	      paths_self.addMove("NOTIFY\tNo Valid Allied Entrenchment Options");
+	      paths_self.endTurn();
+	      return 0;
+	    }
 
 	    //
 	    // place a trench
@@ -352,6 +356,7 @@
           	if (options.includes(key)) { return 1; }
               },
               (key) => {
+		paths_self.updateStatus("processing...");
  		paths_self.addMove("entrench\tallies\t"+key);
  		paths_self.endTurn();
 		return 0;
@@ -560,7 +565,11 @@ deck['ap14'] = {
 	    //
 	    // no placement options
 	    //
-	    if (options.length == 0) { return 1; }
+	    if (options.length == 0) {
+	      paths_self.addMove("NOTIFY\tNo Valid Central Entrechment Options");
+	      paths_self.endTurn();
+	      return 0;
+	    }
 
 	    //
 	    // place a trench
@@ -571,6 +580,7 @@ deck['ap14'] = {
           	if (options.includes(key)) { return 1; }
               },
               (key) => {
+		paths_self.updateStatus("processing...");
  		paths_self.addMove("entrench\tcentral\t"+key);
  		paths_self.endTurn();
 		return 0;
