@@ -167,7 +167,7 @@ class LossOverlay {
 		}
 	}
 
-	renderToAssignAdditionalStewiseLoss(faction = "") {
+	renderToAssignAdditionalStepwiseLoss(faction = "") {
 
 		let qs = '.loss-overlay .units';
 		let qs_attacker = '.loss-overlay .units.attacker';
@@ -179,13 +179,14 @@ class LossOverlay {
 		this.updateInstructions("Defender - Take Additional Hit to Cancel Retreat");
 
 		for (let i = 0; i < defender_units.length; i++) {
-			let html = `
-				<div class="loss-overlay-unit" id="${i}">${this.mod.returnUnitImageWithMouseoverOfStepwiseLoss(defender_units[i])}</div>
-			`;
+			let dkey = defender_units[i].key;
+			let dskey = defender_units[i].spacekey;
+			let dd = 0; if (defender_units[i].damaged) { dd = 1; }
+			html = `<div class="loss-overlay-unit" data-spacekey="${dskey}" data-key="${dkey}" data-damaged="${dd}" id="${i}">${this.mod.returnUnitImageWithMouseoverOfStepwiseLoss(defender_units[i])}</div>`;
 			this.app.browser.addElementToSelector(html, qs_defender);
 		}
 
-		this.attachEvents();
+		this.attachEvents(false, ".loss-overlay .units.defender", this.mod.game.state.combat.defender_power);
 		this.loss_factor = 0; // this results in canTakeMoreLosses() to return NO after the first hit
 
 	}
@@ -337,18 +338,30 @@ console.log("SPACE: " + JSON.stringify(space));
 
 		if (attacker_table == "army")  {
 		  attacker_column_number = this.mod.returnArmyColumnNumber(attacker_strength); 
+		  attacker_column_number += this.mod.game.state.combat.attacker_column_shift;
+		  if (attacker_column_number < 0) { attacker_column_number = 0; }
+		  if (attacker_column_number > 10) { attacker_column_number = 10; }
 		  this.highlightFiringTable("army", "#f2dade", "#b6344a", attacker_modified_roll, attacker_column_number);
 		}
 		if (attacker_table == "corps") {
 		  attacker_column_number = this.mod.returnCorpsColumnNumber(attacker_strength);
+		  attacker_column_number += this.mod.game.state.combat.attacker_column_shift;
+		  if (attacker_column_number < 0) { attacker_column_number = 0; }
+		  if (attacker_column_number > 9) { attacker_column_number = 9; }
 		  this.highlightFiringTable("corps", "#f2dade", "#b6344a", attacker_modified_roll, attacker_column_number);
 		}
 		if (defender_table == "army")  {
 		  defender_column_number = this.mod.returnArmyColumnNumber(defender_strength);
+		  defender_column_number += this.mod.game.state.combat.defender_column_shift;
+		  if (defender_column_number < 0) { defender_column_number = 0; }
+		  if (defender_column_number > 10) { defender_column_number = 10; }
 		  this.highlightFiringTable("army", "#dadcf2", "#343ab6", defender_modified_roll, defender_column_number);
 		}
 		if (defender_table == "corps") {
 		  defender_column_number = this.mod.returnCorpsColumnNumber(defender_strength);
+		  defender_column_number += this.mod.game.state.combat.defender_column_shift;
+		  if (defender_column_number < 0) { defender_column_number = 0; }
+		  if (defender_column_number > 9) { defender_column_number = 9; }
 		  this.highlightFiringTable("corps", "#dadcf2", "#343ab6", defender_modified_roll, defender_column_number);
 		}
 
@@ -447,6 +460,8 @@ console.log("SPACE: " + JSON.stringify(space));
 			el.onclick = (e) => {
 
 				let idx = e.currentTarget.id;
+
+alert('here: ' + idx);
 				let unit = this.units[idx];
 				if (unit.destroyed) { alert("destroyed"); }
 				let unit_key = e.currentTarget.dataset.key;
@@ -512,6 +527,7 @@ console.log("SPACE: " + JSON.stringify(space));
 
 				}
 
+
 				//
 				// redisplay space
 				//
@@ -534,7 +550,16 @@ console.log("SPACE: " + JSON.stringify(space));
 						//	return;
 					//}, 50);
 				}
+
+				//
+				// negative loss factor = we're cancelling hits
+				//
+				if (this.loss_factor < 0) { 
+					this.hide();
+				}
+
 			};
+
 		});
 	}
 }

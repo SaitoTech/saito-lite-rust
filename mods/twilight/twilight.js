@@ -14624,6 +14624,7 @@ console.log("total countries: " + total_countries);
       
       this.game.queue.push("resolve\tteardown");
       this.game.queue.push("teardownthiswall\tus");
+      this.game.queue.push("setvar\tgame\tstate\tback_button_cancelled\t1");
         
       if (!i_played_the_card){
         if (player == "ussr"){

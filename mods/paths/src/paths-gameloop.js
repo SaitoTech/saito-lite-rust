@@ -287,9 +287,59 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 	}
 
  	if (mv[0] == "war_status_phase") {
+
+  	  if (this.game.state.general_records_track.central_war_status >= 4 && this.game.state.central_limited_war_cards_added == false) {
+	    if (this.game.player == this.returnPlayerOfFaction("central")) {
+	      this.displayCustomOverlay({
+          	text : "Central Powers gain Limited War Cards",
+          	title : "Limited War!",
+          	img : "/paths/img/backgrounds/shells.png",
+          	msg : "CeBarbary Pirates in Play...",
+          	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+              });
+	    }
+	  }
+  	  if (this.game.state.general_records_track.allies_war_status >= 4 && this.game.state.allies_limited_war_cards_added == false) {
+	    if (this.game.player == this.returnPlayerOfFaction("central")) {
+	      this.displayCustomOverlay({
+          	text : "Central Powers gain Limited War Cards",
+          	title : "Limited War!",
+          	img : "/paths/img/backgrounds/shells.png",
+          	msg : "CeBarbary Pirates in Play...",
+          	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+              });
+	    }
+
+	  }
+  	  if (this.game.state.general_records_track.allies_war_status >= 11 && this.game.state.allies_total_war_cards_added == false) {
+	    if (this.game.player == this.returnPlayerOfFaction("central")) {
+	      this.displayCustomOverlay({
+          	text : "Central Powers gain Limited War Cards",
+          	title : "Limited War!",
+          	img : "/paths/img/backgrounds/shells.png",
+          	msg : "CeBarbary Pirates in Play...",
+          	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+              });
+	    }
+
+	  }
+  	  if (this.game.state.general_records_track.central_war_status >= 11 && this.game.state.central_total_war_cards_added == false) {
+	    if (this.game.player == this.returnPlayerOfFaction("central")) {
+	      this.displayCustomOverlay({
+          	text : "Central Powers gain Limited War Cards",
+          	title : "Limited War!",
+          	img : "/paths/img/backgrounds/shells.png",
+          	msg : "CeBarbary Pirates in Play...",
+          	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+              });
+	    }
+
+	  }
+
           this.game.queue.splice(qe, 1);
 	  return 1;
 	}
+
  	if (mv[0] == "siege_phase") {
 
 	  for (let key in this.game.spaces) {
@@ -1194,6 +1244,21 @@ alert("Fort Survives Assault");
 	  this.game.queue.splice(qe, 1);
 	  let attacker_units = this.returnAttackerUnits();
 	  let does_defender_retreat = false;
+	  let can_defender_cancel = false;
+
+	  //
+	  // can we take another stepwise loss to cancel the retreat?
+	  //
+	  can_defender_cancel = this.canCancelRetreat(this.game.state.combat.key);;
+	  if (this.game.spaces[this.game.state.combat.key].units.length == 1) {
+	    if (this.game.spaces[this.game.state.combat.key].units[0].damaged == 1) {
+	      if (this.game.spaces[this.game.state.combat.key].units[0].corps == 1) {
+		can_defender_cancel = false;
+	      }
+	    }
+	  }
+	  this.game.state.combat.can_defender_cancel = can_defender_cancel;
+
 
 	  //
 	  // no retreating from unoccupied fort
@@ -1337,7 +1402,13 @@ console.log("caa 3");
 
 	if (mv[0] === "post_combat_cleanup") {
 
+	  this.game.queue.splice(qe, 1);
+
+	  if (!this.game.state.combat) { return 1; }
+
 	  let spacekey = this.game.state.combat.key;
+	  if (!spacekey) { return 1; }
+
 	  for (let i = this.game.spaces[spacekey].units.length-1; i >= 0; i--) {
 	    let u = this.game.spaces[spacekey].units[i];
 	    if (u.destroyed == true) {
@@ -1358,7 +1429,6 @@ console.log("caa 3");
 	    this.displaySpace(key);
 	  }
 
-	  this.game.queue.splice(qe, 1);
 	  return 1;
 
 	}
@@ -1640,6 +1710,8 @@ console.log("caa 3");
 	    this.game.spaces[key].trench++;
 	    if (this.game.spaces[key].trench > 2) { this.game.spaces[key].trench = 2; }
 	  }
+
+	  this.displaySpace(key);
 
 	  this.game.queue.splice(qe, 1);
 	  return 1;

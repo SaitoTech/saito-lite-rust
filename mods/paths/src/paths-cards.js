@@ -402,7 +402,7 @@ deck['ap14'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.playerAddReinforcements("allies", ["br_army01", "br_corps"], "russia");
+	    paths_self.playerAddReinforcements("allies", ["br_army01", "br_corps"], "england");
 	  }
 	  return 0;
 	} ,

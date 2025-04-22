@@ -672,6 +672,7 @@ console.log("UNIT: " + JSON.stringify(unit));
     //
     let space = this.game.spaces[this.game.state.combat.key];
 
+    if (space.terrain == "forest") 	{ can_defender_cancel_retreat = true; }
     if (space.terrain == "mountain") 	{ can_defender_cancel_retreat = true; }
     if (space.terrain == "swamp") 	{ can_defender_cancel_retreat = true; }
     if (space.terrain == "desert") 	{ can_defender_cancel_retreat = true; }
@@ -691,12 +692,12 @@ console.log("UNIT: " + JSON.stringify(unit));
     this.attachCardboxEvents((action) => {
 
       if (action === "retreat") {
-	this.loss_overlay.renderToAssignAdditionalStepwiseLoss();
+	this.playerHandleRetreat();
 	return;
       }
 
       if (action === "hit") {
-	this.playerHandleRetreat();
+	this.loss_overlay.renderToAssignAdditionalStepwiseLoss();
         return;
       }
 
@@ -1522,20 +1523,31 @@ console.log("unit idx: " + unit_idx);
 	}
       }
 
-      paths_self.playerSelectOptionWithFilter(
-	"Which Unit?",
-	units,
-	(idx) => {
-	  let unit = paths_self.game.spaces[key].units[idx];
-	  return `<li class="option" id="${idx}">${unit.name} / ${unit.movement}</li>`;
-	},
-	(idx) => {
-	  let unit = paths_self.game.spaces[key].units[idx];
-	  paths_self.game.spaces[key].units[idx].moved = 1;
-          unitActionInterface(key, idx, options, mainInterface, moveInterface, unitActionInterface);
-	},
-        false
-      );
+      if (units.length == 1) {
+
+	let unit = paths_self.game.spaces[key].units[units[0]];
+	paths_self.game.spaces[key].units[units[0]].moved = 1;
+        unitActionInterface(key, units[0], options, mainInterface, moveInterface, unitActionInterface);
+
+      } else {
+
+        paths_self.playerSelectOptionWithFilter(
+	  "Which Unit?",
+	  units,
+	  (idx) => {
+	    let unit = paths_self.game.spaces[key].units[idx];
+	    return `<li class="option" id="${idx}">${unit.name} / ${unit.movement}</li>`;
+	  },
+	  (idx) => {
+	    let unit = paths_self.game.spaces[key].units[idx];
+	    paths_self.game.spaces[key].units[idx].moved = 1;
+            unitActionInterface(key, idx, options, mainInterface, moveInterface, unitActionInterface);
+	  },
+          false
+        );
+
+      }
+
     }
 
     mainInterface(options, mainInterface, moveInterface, unitActionInterface);
@@ -1589,7 +1601,7 @@ console.log("unit idx: " + unit_idx);
 
       let movement_fnct = (movement_fnct) => {
 	this.playerSelectSpaceWithFilter(
-	  `Select Space to Activate:`,
+	  `Select Space to Activate (${cost} ops):`,
 	  (key) => {
 	    if (cost < this.returnActivationCost(faction, key)) { return 0; }
 	    let space = this.game.spaces[key];
@@ -1627,7 +1639,7 @@ console.log("unit idx: " + unit_idx);
  
       let combat_fnct = (combat_fnct) => {
 	this.playerSelectSpaceWithFilter(
-	  "Select Space to Activate:",
+	  `Select Space to Activate (${cost} ops):`,
 	  (key) => {
 	    let space = this.game.spaces[key];
 	    if (space.activated_for_movement == 1) { return 0; }

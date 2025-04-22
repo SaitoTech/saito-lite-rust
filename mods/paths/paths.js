@@ -2180,7 +2180,7 @@ deck['ap14'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.playerAddReinforcements("allies", ["br_army01", "br_corps"], "russia");
+	    paths_self.playerAddReinforcements("allies", ["br_army01", "br_corps"], "england");
 	  }
 	  return 0;
 	} ,
@@ -9827,9 +9827,59 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 	}
 
  	if (mv[0] == "war_status_phase") {
+
+  	  if (this.game.state.general_records_track.central_war_status >= 4 && this.game.state.central_limited_war_cards_added == false) {
+	    if (this.game.player == this.returnPlayerOfFaction("central")) {
+	      this.displayCustomOverlay({
+          	text : "Central Powers gain Limited War Cards",
+          	title : "Limited War!",
+          	img : "/paths/img/backgrounds/shells.png",
+          	msg : "CeBarbary Pirates in Play...",
+          	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+              });
+	    }
+	  }
+  	  if (this.game.state.general_records_track.allies_war_status >= 4 && this.game.state.allies_limited_war_cards_added == false) {
+	    if (this.game.player == this.returnPlayerOfFaction("central")) {
+	      this.displayCustomOverlay({
+          	text : "Central Powers gain Limited War Cards",
+          	title : "Limited War!",
+          	img : "/paths/img/backgrounds/shells.png",
+          	msg : "CeBarbary Pirates in Play...",
+          	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+              });
+	    }
+
+	  }
+  	  if (this.game.state.general_records_track.allies_war_status >= 11 && this.game.state.allies_total_war_cards_added == false) {
+	    if (this.game.player == this.returnPlayerOfFaction("central")) {
+	      this.displayCustomOverlay({
+          	text : "Central Powers gain Limited War Cards",
+          	title : "Limited War!",
+          	img : "/paths/img/backgrounds/shells.png",
+          	msg : "CeBarbary Pirates in Play...",
+          	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+              });
+	    }
+
+	  }
+  	  if (this.game.state.general_records_track.central_war_status >= 11 && this.game.state.central_total_war_cards_added == false) {
+	    if (this.game.player == this.returnPlayerOfFaction("central")) {
+	      this.displayCustomOverlay({
+          	text : "Central Powers gain Limited War Cards",
+          	title : "Limited War!",
+          	img : "/paths/img/backgrounds/shells.png",
+          	msg : "CeBarbary Pirates in Play...",
+          	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+              });
+	    }
+
+	  }
+
           this.game.queue.splice(qe, 1);
 	  return 1;
 	}
+
  	if (mv[0] == "siege_phase") {
 
 	  for (let key in this.game.spaces) {
@@ -10734,6 +10784,21 @@ alert("Fort Survives Assault");
 	  this.game.queue.splice(qe, 1);
 	  let attacker_units = this.returnAttackerUnits();
 	  let does_defender_retreat = false;
+	  let can_defender_cancel = false;
+
+	  //
+	  // can we take another stepwise loss to cancel the retreat?
+	  //
+	  can_defender_cancel = this.canCancelRetreat(this.game.state.combat.key);;
+	  if (this.game.spaces[this.game.state.combat.key].units.length == 1) {
+	    if (this.game.spaces[this.game.state.combat.key].units[0].damaged == 1) {
+	      if (this.game.spaces[this.game.state.combat.key].units[0].corps == 1) {
+		can_defender_cancel = false;
+	      }
+	    }
+	  }
+	  this.game.state.combat.can_defender_cancel = can_defender_cancel;
+
 
 	  //
 	  // no retreating from unoccupied fort
@@ -10877,7 +10942,13 @@ console.log("caa 3");
 
 	if (mv[0] === "post_combat_cleanup") {
 
+	  this.game.queue.splice(qe, 1);
+
+	  if (!this.game.state.combat) { return 1; }
+
 	  let spacekey = this.game.state.combat.key;
+	  if (!spacekey) { return 1; }
+
 	  for (let i = this.game.spaces[spacekey].units.length-1; i >= 0; i--) {
 	    let u = this.game.spaces[spacekey].units[i];
 	    if (u.destroyed == true) {
@@ -10898,7 +10969,6 @@ console.log("caa 3");
 	    this.displaySpace(key);
 	  }
 
-	  this.game.queue.splice(qe, 1);
 	  return 1;
 
 	}
@@ -11180,6 +11250,8 @@ console.log("caa 3");
 	    this.game.spaces[key].trench++;
 	    if (this.game.spaces[key].trench > 2) { this.game.spaces[key].trench = 2; }
 	  }
+
+	  this.displaySpace(key);
 
 	  this.game.queue.splice(qe, 1);
 	  return 1;
@@ -12038,6 +12110,7 @@ console.log("UNIT: " + JSON.stringify(unit));
     //
     let space = this.game.spaces[this.game.state.combat.key];
 
+    if (space.terrain == "forest") 	{ can_defender_cancel_retreat = true; }
     if (space.terrain == "mountain") 	{ can_defender_cancel_retreat = true; }
     if (space.terrain == "swamp") 	{ can_defender_cancel_retreat = true; }
     if (space.terrain == "desert") 	{ can_defender_cancel_retreat = true; }
@@ -12057,12 +12130,12 @@ console.log("UNIT: " + JSON.stringify(unit));
     this.attachCardboxEvents((action) => {
 
       if (action === "retreat") {
-	this.loss_overlay.renderToAssignAdditionalStepwiseLoss();
+	this.playerHandleRetreat();
 	return;
       }
 
       if (action === "hit") {
-	this.playerHandleRetreat();
+	this.loss_overlay.renderToAssignAdditionalStepwiseLoss();
         return;
       }
 
@@ -12888,20 +12961,31 @@ console.log("unit idx: " + unit_idx);
 	}
       }
 
-      paths_self.playerSelectOptionWithFilter(
-	"Which Unit?",
-	units,
-	(idx) => {
-	  let unit = paths_self.game.spaces[key].units[idx];
-	  return `<li class="option" id="${idx}">${unit.name} / ${unit.movement}</li>`;
-	},
-	(idx) => {
-	  let unit = paths_self.game.spaces[key].units[idx];
-	  paths_self.game.spaces[key].units[idx].moved = 1;
-          unitActionInterface(key, idx, options, mainInterface, moveInterface, unitActionInterface);
-	},
-        false
-      );
+      if (units.length == 1) {
+
+	let unit = paths_self.game.spaces[key].units[units[0]];
+	paths_self.game.spaces[key].units[units[0]].moved = 1;
+        unitActionInterface(key, units[0], options, mainInterface, moveInterface, unitActionInterface);
+
+      } else {
+
+        paths_self.playerSelectOptionWithFilter(
+	  "Which Unit?",
+	  units,
+	  (idx) => {
+	    let unit = paths_self.game.spaces[key].units[idx];
+	    return `<li class="option" id="${idx}">${unit.name} / ${unit.movement}</li>`;
+	  },
+	  (idx) => {
+	    let unit = paths_self.game.spaces[key].units[idx];
+	    paths_self.game.spaces[key].units[idx].moved = 1;
+            unitActionInterface(key, idx, options, mainInterface, moveInterface, unitActionInterface);
+	  },
+          false
+        );
+
+      }
+
     }
 
     mainInterface(options, mainInterface, moveInterface, unitActionInterface);
@@ -12955,7 +13039,7 @@ console.log("unit idx: " + unit_idx);
 
       let movement_fnct = (movement_fnct) => {
 	this.playerSelectSpaceWithFilter(
-	  `Select Space to Activate:`,
+	  `Select Space to Activate (${cost} ops):`,
 	  (key) => {
 	    if (cost < this.returnActivationCost(faction, key)) { return 0; }
 	    let space = this.game.spaces[key];
@@ -12993,7 +13077,7 @@ console.log("unit idx: " + unit_idx);
  
       let combat_fnct = (combat_fnct) => {
 	this.playerSelectSpaceWithFilter(
-	  "Select Space to Activate:",
+	  `Select Space to Activate (${cost} ops):`,
 	  (key) => {
 	    let space = this.game.spaces[key];
 	    if (space.activated_for_movement == 1) { return 0; }
