@@ -119,30 +119,6 @@ span.tip {
 	right: -12.5%;
 }
 
-.sector-container:after{
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	transform: translateX(-50%);
-	font-size: 2.4rem;
-
-}
-
-.sc6:after, .sc8:after {
-	content: '.....';
-}
-.sc5:after, .sc9:after {
-	content: '....';
-}
-.sc4:after, .sc10:after {
-	content: '...';
-}
-.sc3:after, .sc11:after {
-	content: '..';
-}
-.sc2:after, .sc12:after {
-	content: '.';
-}
 
 
 dt {
@@ -681,16 +657,44 @@ input[type='checkbox'] {
 	font-weight: bold;
 	border: 2px solid #fff;
 	border-radius: 50%;
-	width: 7rem;
-	height: 7rem;
-	line-height: 7rem;
-	text-align: center;
+	width: 8rem;
+	height: 8rem;
 	background: #6664;
 	color: white;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
 }
 
 .sector_value.rolled {
 	box-shadow: 0 0 10px 5px ghostwhite;
+	color: #000;
+	background: #FFF6;
+}
+
+.sector_value::after{
+	position: absolute;
+	left: 50%;
+	top: 42%;
+	transform: translateX(-50%);
+	font-size: 3.4rem;
+}
+
+.sv6::after, .sv8::after {
+	content: '.....';
+}
+.sv5::after, .sv9::after {
+	content: '....';
+}
+.sv4::after, .sv10::after {
+	content: '...';
+}
+.sv3::after, .sv11::after {
+	content: '..';
+}
+.sv2::after, .sv12::after {
+	content: '.';
 }
 
 .bandit {
@@ -703,15 +707,16 @@ input[type='checkbox'] {
 	top: 0;
 	left: 0;
 	color: #fff9;
-    background-image: url(/settlers/img/icons/bandit.png);
-    background-size: 45%;
-    overflow: visible;
-    border: none;
-    width: 100%; 
-    height: 100%; 
-    background-repeat: no-repeat;
-    background-position: 50% 100%;
-    z-index: 2;
+  background-image: url(/settlers/img/icons/bandit.png);
+  background-size: 45%;
+  overflow: visible;
+  border: none;
+  width: 100%; 
+  height: 100%; 
+  background-repeat: no-repeat;
+  background-position: 50% 100%;
+  z-index: 2;
+  transform: unset;
 }
 
 .robinhood .bandit::after {

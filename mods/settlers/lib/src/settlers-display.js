@@ -468,7 +468,6 @@ class SettlersDisplay {
     $('.sector_value:not(.bandit)').attr('style', '');
     let divname = '.sv' + roll + ':not(.bandit)';
     $(divname)
-      .addClass('rolled')
       .css('color', '#000')
       .css('background', '#FFF6')
       .delay(600)
@@ -491,14 +490,11 @@ class SettlersDisplay {
       .queue(function () {
         $(this).css('color', '#FFF').css('background', '#0004').dequeue();
       })
+      .addClass('rolled')
       .delay(600)
       .queue(function () {
-        $(this).css('color', '#000').css('background', '#FFF6').dequeue();
-      });
-    /*.delay(800)
-      .queue(function () {
         $(this).removeAttr("style").dequeue();
-      });*/
+      });
   }
 
 

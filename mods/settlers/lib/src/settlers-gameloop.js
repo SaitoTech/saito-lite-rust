@@ -1098,8 +1098,8 @@ class SettlersGameloop {
         this.game.state.hasRolled = false;
         this.game.state.canTrade = false;
         this.game.queue.splice(qe - 1, 2);
-        let divname = `.sector_value:not(.bandit)`;
-        $(divname).attr("style", "");
+        console.log("CLEAR FORMATTING!!!!");
+        $(".sector_value").attr("style", "");
         $(".rolled").removeClass("rolled");
         return 1;
       }
