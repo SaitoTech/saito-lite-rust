@@ -53,6 +53,7 @@ module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
   <script src="/saito/lib/pace/pace.min.js"></script>
   <link rel="stylesheet" href="/saito/lib/pace/pace-theme.min.css">
   <link rel="stylesheet" type="text/css" href="/saito/saito.css?v=${build_number}" />
+  <link rel="stylesheet" type="text/css" href="/redsquare/style.css?v=${build_number}" />
 
   <title>Saito RedSquare</title>
 
@@ -74,9 +75,9 @@ module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
     }
   </style>
 </head>
-
-<body></body>`;
-  html += `<script type="text/javascript">
+<body>
+</body>`;
+	html += `<script type="text/javascript">
   if (!tweets) { 
     var tweets = [];
   }`;

@@ -84,9 +84,6 @@ class AdjustStake {
 						'#approve-crypto-request-container #approve-crypto-stake-confirm-input'
 					).checked;
 
-					this.app.options.gameprefs.crypto_transfers_inbound_trusted = confirm ? 1 : 0;
-					this.app.wallet.saveWallet();
-
 					if (!confirm) {
 						salert('You need to confirm');
 						return;

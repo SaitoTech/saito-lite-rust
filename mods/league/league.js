@@ -6,7 +6,6 @@ const LeagueMain = require('./lib/main');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
 const JoinLeagueOverlay = require('./lib/overlays/join');
-const localforage = require('localforage');
 const PeerService = require('saito-js/lib/peer_service').default;
 
 //Trial -- So that we can display league results in game page
@@ -83,17 +82,6 @@ class League extends ModTemplate {
 		return [new PeerService(null, 'league', null, 'saito')];
 	}
 
-	async onUpgrade(type, privatekey, walletfile) {
-		if (type == 'nuke') {
-			if (this.app.options?.leagues?.length > 0) {
-				for (let i = 0; i < this.app.options.leagues.length; i++) {
-					await localforage.removeItem(`league_${this.app.options.leagues[i]}`);
-				}
-			}
-		}
-		return 1;
-	}
-
 	respondTo(type, obj = null) {
 		if (type == 'league_membership') {
 			let league_self = this;
@@ -136,8 +124,6 @@ class League extends ModTemplate {
 	async initialize(app) {
 		await super.initialize(app);
 
-		//Trial -- So that we can display league results in game page
-		this.overlay = new LeagueOverlay(app, this);
 
 		if (!this.app.options.leagues) {
 			this.app.options.leagues = [];
@@ -162,6 +148,13 @@ class League extends ModTemplate {
 		await this.loadLeagues();
 
 		//this.pruneOldPlayers();
+
+		if (!app.BROWSER){
+			return;
+		}
+
+		//Trial -- So that we can display league results in game page
+		this.overlay = new LeagueOverlay(app, this);
 
 		if (app.browser.returnURLParameter('view_game')) {
 			let game = app.browser.returnURLParameter('view_game').toLowerCase();
@@ -586,44 +579,36 @@ class League extends ModTemplate {
 					);
 				}
 
-				let cnt = this.app.options.leagues.length;
 
 				for (let lid of this.app.options.leagues) {
-					await localforage.getItem(`league_${lid}`, async function (error, value) {
-						//Because this is async, the initialize function may have created an
-						//empty default group
+					let value = await this.app.storage.getLocalForageItem(`league_${lid}`);
+					if (value) {
+						//console.log(`Loaded League ${lid.substring(0,10)} from IndexedDB`);
+						await league_self.updateLeague(value);
 
-						if (value) {
-							//console.log(`Loaded League ${lid.substring(0,10)} from IndexedDB`);
-							await league_self.updateLeague(value);
+						let league = league_self.returnLeague(lid);
 
-							let league = league_self.returnLeague(lid);
+						//Make sure we get these data right!
+						league.players = value.players;
+						league.rank = value.rank;
+						league.numPlayers = value.numPlayers;
 
-							//Make sure we get these data right!
-							league.players = value.players;
-							league.rank = value.rank;
-							league.numPlayers = value.numPlayers;
-
-							if (league.game === league_self.app.modules.returnActiveModule()?.name) {
-								console.log(
-									'Local version of this game league: ',
-									JSON.parse(JSON.stringify(league))
-								);
-							}
+						if (league.game === league_self.app.modules.returnActiveModule()?.name) {
+							console.log(
+								'Local version of this game league: ',
+								JSON.parse(JSON.stringify(league))
+							);
 						}
-
-						cnt--;
-
-						if (cnt == 0) {
-							console.log('All leagues loaded from IndexedDB --> refresh UI');
-							league_self.sortLeagues();
-							//Render initial UI based on what we have saved
-							league_self.app.connection.emit('leagues-render-request'); // league/ main
-							league_self.app.connection.emit('league-rankings-render-request'); // sidebar league list
-							league_self.app.connection.emit('finished-loading-leagues');
-						}
-					});
+					}
 				}
+
+				console.log('All leagues loaded from IndexedDB --> refresh UI');
+				league_self.sortLeagues();
+				//Render initial UI based on what we have saved
+				league_self.app.connection.emit('leagues-render-request'); // league/ main
+				league_self.app.connection.emit('league-rankings-render-request'); // sidebar league list
+				league_self.app.connection.emit('finished-loading-leagues');
+
 
 				return;
 			} else {
@@ -665,13 +650,8 @@ class League extends ModTemplate {
 				//let newLeague = JSON.parse(JSON.stringify(league));
 				//delete newLeague.players;
 				this.app.options.leagues.push(league.id);
-				localforage.setItem(`league_${league.id}`, league).then(function () {
-					if (league_self.debug) {
-						console.log('Saved league data for ' + league.id);
-						console.log(JSON.parse(JSON.stringify(league)));
-					}
-					//console.log(`Saved ${++cnt} out of ${league_self.app.options.leagues.length} leagues`);
-				});
+
+				this.app.storage.setLocalForageItem(`league_${league.id}`, league);
 			}
 		}
 
@@ -1567,7 +1547,7 @@ class League extends ModTemplate {
 			if (this.leagues[i].id === league_id) {
 				this.leagues.splice(i, 1);
 				if (this.app.BROWSER) {
-					await localforage.removeItem(`league_${league_id}`);
+					await this.app.storage.removeLocalForageItem(`league_${league_id}`);
 				}
 				this.saveLeagues();
 				return;

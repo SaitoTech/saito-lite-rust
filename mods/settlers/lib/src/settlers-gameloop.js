@@ -15,10 +15,10 @@ class SettlersGameloop {
       //
       // catch win condition
       //
-      if (this.browser_active){
+      if (this.browser_active) {
         this.displayPlayers(); //Is it enough to update the player huds each iteration, board doesn't get redrawn at all?  
       }
-      
+
       let qe = this.game.queue.length - 1;
       let mv = this.game.queue[qe].split("\t");
 
@@ -127,8 +127,8 @@ class SettlersGameloop {
         let cardname = mv[2];
         this.game.queue.splice(qe, 1);
 
-	// show overlay
-	this.card_overlay.render({ player : player , card : cardname});
+      	// show overlay
+      	this.card_overlay.render({ player : player , card : cardname});
 
         //Score gets recounted a lot, so we save the number of VP cards
         this.game.state.players[player - 1].vpc++; //Number of victory point cards for the player
@@ -423,8 +423,9 @@ class SettlersGameloop {
 
         this.game.queue.splice(qe, 1);
 
+        this.buildCity(player, slot);
+
         if (this.game.player != player) {
-          this.buildCity(player, slot);
           this.updateStatus(`${this.game.playerNames[player - 1]} built a ${this.c1.name}`, 1);
         }else{
           this.updateStatus(`you built a ${this.c1.name}`, 1);
@@ -715,10 +716,12 @@ class SettlersGameloop {
         }
         for (let i = 0; i < outCount; i++) {
           this.game.queue.push("spend_resource\t" + player + "\t" + outResource);
+          this.game.stats.banked[outResource][player - 1]++;
         }
         for (let j = 0; j < inCount; j++) {
           //Should always be 1
           this.game.state.players[player - 1].resources.push(inResource);
+          this.game.stats.traded[inResource][player - 1]++;
         }
         this.updateLog(`${this.formatPlayer(player)} traded ${outCount}x${this.formatResource(outResource)}<span> with the bank for </span>${this.formatResource(inResource)}.`);
 
@@ -847,9 +850,9 @@ class SettlersGameloop {
 
           //Manage discarding before bandit comes into play
           let playersToDiscard = [];
-          for (let i = 0; i < this.game.state.players.length; i++) {
-            if (this.game.state.players[i].resources.length > 7) {
-              playersToDiscard.push(i + 1);
+          for (let i = 1; i <= this.game.state.players.length; i++) {
+            if (this.game.state.players[i-1].resources.length > 7 && this.game.state.robinhood !== i) {
+              playersToDiscard.push(i);
             }
           }
 
@@ -861,12 +864,8 @@ class SettlersGameloop {
 
           let eo = this.loadGamePreference('settlers_overlays');
           if (eo == null || eo) {
-            if (this.game.players.length == 2 && Math.abs(this.game.state.players[0].vp - this.game.state.players[1].vp) > 1){
-              if (this.game.state.players[0].vp < this.game.state.players[1].vp){
-                this.card_overlay.render({ player : 1 , card : "Robin Hood"});
-              }else{
-                this.card_overlay.render({ player : 2 , card : "Robin Hood"});
-              }
+            if (this.game.state.robinhood){
+              this.card_overlay.render({ player : this.game.state.robinhood , card : "Robin Hood"});
             }else{
               this.card_overlay.render({ player : player , card : "Bandit"});
             }
@@ -943,10 +942,8 @@ class SettlersGameloop {
         this.game.queue.splice(qe, 1);
 
         let player = player_who_rolled;
-        if (this.game.players.length == 2){
-          if (this.game.state.players[player_who_rolled-1].vp > this.game.state.players[2 - player_who_rolled].vp + 1){
-            player = 3 - player_who_rolled;
-          }
+        if (this.game.state.robinhood) {
+          player = this.game.state.robinhood;
         }
 
         this.game.stats.move_bandit[player-1]++;
@@ -992,7 +989,7 @@ class SettlersGameloop {
 
         for (let city of this.game.state.cities) {
           if (city.neighbours.includes(hexId)) {
-            if (!this.game.state.threatened.includes(city.player)) {
+            if (!this.game.state.threatened.includes(city.player) && city.player !== this.game.state.robinhood) {
               this.game.state.threatened.push(city.player);
             }
           }
@@ -1101,8 +1098,8 @@ class SettlersGameloop {
         this.game.state.hasRolled = false;
         this.game.state.canTrade = false;
         this.game.queue.splice(qe - 1, 2);
-        let divname = `.sector_value:not(.bandit)`;
-        $(divname).attr("style", "");
+        console.log("CLEAR FORMATTING!!!!");
+        $(".sector_value").attr("style", "");
         $(".rolled").removeClass("rolled");
         return 1;
       }

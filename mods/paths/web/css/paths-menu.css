@@ -1,0 +1,67 @@
+.saito-overlay:has(> .menu) {
+  box-shadow: none;
+  background-color: transparent;
+}
+
+.card.menu_movement {
+        background-image: url('/paths/img/backgrounds/menu/artillery.png');
+}
+.card.menu_redeployment {
+        background-image: url('/paths/img/backgrounds/menu/train.jpg');
+}
+.card.menu_replacement {
+        background-image: url('/paths/img/backgrounds/menu/recruiting.jpg');
+}
+.card.menu_event {
+        background-image: url('/paths/img/backgrounds/menu/planning.jpg');
+}
+
+.saito-overlay .menu {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr 1fr;
+	row-gap: 1rem;
+	column-gap: 1rem;
+	overflow-y: auto;
+    	height: 92.5vh;
+    	background-color: transparent;
+    	width: 90vw;
+    	justify-content: space-between;
+    	gap: 2rem;
+}
+
+.saito-overlay .menu .card {
+	height: 45.5vh;
+	width: 100%;
+	box-sizing: border-box;
+	cursor: pointer;
+}
+
+.menu-option-title-large {
+	background: #0009;
+	width: max-content;
+	padding: 1.5rem;
+	font-size: 3rem;
+	color: white;
+	padding-left: 2.5rem;
+	padding-right: 2.5rem;
+}
+.menu-option-title {
+	position: absolute;
+	height: 6rem;
+	background-color: #000a;
+	overflow-x: hide;
+	color: white;
+	width: 100%;
+	top: 0;
+	left: 0px;
+	padding: 1.6rem;
+	font-size: 2.5rem;
+	text-transform: uppercase;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+
+

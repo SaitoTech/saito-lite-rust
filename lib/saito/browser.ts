@@ -374,14 +374,14 @@ class Browser {
 			}
 		);
 
-		window.onpopstate = (event)=> {
-			//console.log("Browser navigation: ", event?.state);
+		/*window.onpopstate = (event)=> {
+			console.log("Browser navigation: ", event?.state);
 			if (event.state){
 				this.popBackFn(event);	
 			}else{
 				//console.log(event);
 			}
-		}
+		}*/
 
 		//hide pace-js if its still active
 		setTimeout(function () {
@@ -514,7 +514,7 @@ class Browser {
 			const entries = this.urlParams.entries();
 			for (const pair of entries) {
 				if (pair[0] == name) {
-					return pair[1];
+					return pair[1] || pair[0];
 				}
 			}
 		} catch (err) { }
@@ -2331,11 +2331,6 @@ class Browser {
 				}
 			};
 
-			window.setHash = function (hash) {
-				window.history.pushState('', '', `/redsquare/#${hash}`);
-			};
-
-
 			window.reloadWindow = this.reloadWindow;
 			window.navigateWindow = this.navigateWindow.bind(this);
 
@@ -2658,12 +2653,84 @@ class Browser {
       } 
 	}
 
-	formatDecimals(num, string = false){
-		let pos = Math.abs((Math.log10(num))); 
-		let number = Number(num);
-	  	number = number.toFixed(pos+2);
-	  	number = (number);
-	  	return (string) ? number.toString(): number;  
+	// from saito/wallet.ts
+	formatDecimals(balance, exact_precision = false) {
+		if (typeof balance == 'undefined') {
+			balance = '0.00';
+		}
+
+		let balance_as_float = parseFloat(balance);
+
+		let options = {};
+
+		if (!exact_precision) {
+
+			let minimumFractionDigits = 4;
+			let maximumFractionDigits = 6;
+
+			if (balance_as_float >= 1) {
+				maximumFractionDigits = 5;
+			}
+
+			if (balance_as_float >= 10) {
+				minimumFractionDigits = 3;
+				maximumFractionDigits = 4;
+			}
+
+			if (balance_as_float >= 100) {
+				minimumFractionDigits = 2;
+				maximumFractionDigits = 3;
+			}
+
+			if (balance_as_float >= 1000) {
+				minimumFractionDigits = 1;
+			}
+
+			if (balance_as_float >= 10000) {
+				maximumFractionDigits = 2;
+			}
+
+			if (balance_as_float >= 100000) {
+				minimumFractionDigits = 0;
+			}
+
+			if (balance_as_float >= 1000000) {
+				maximumFractionDigits = 1;
+			}
+
+			options = {
+				minimumFractionDigits,
+				maximumFractionDigits
+			};
+		}
+
+		let locale = window.navigator?.language || 'en-US';
+		let nf = new Intl.NumberFormat(locale, options);
+
+		return nf.format(balance_as_float).toString();
+	}
+
+
+	returnBalanceHTML(balance, exact_precision){
+
+		balance = this.formatDecimals(balance, exact_precision);
+		let separator = this.getDecimalSeparator();
+		
+		let split = balance.split(`${separator}`);
+
+		let html = `<span class="balance-amount-whole">${split[0]}</span>`;
+
+		if (split[1]){
+			html += `<span class="balance-amount-separator">${separator}</span>`;
+			html += `<span class="balance-amount-decimal">${split[1]}</span>`;
+		}
+
+		return html;
+
+		document.querySelector(`.balance-amount-whole`).innerHTML = whole_amt;
+		document.querySelector(`.balance-amount-separator`).innerHTML = separator;
+		document.querySelector(`.balance-amount-decimal`).innerHTML = decimal_amt;
+
 	}
 
 	reloadWindow(delay = 0){
@@ -2674,8 +2741,17 @@ class Browser {
 		}
 	}
 
-	lockNavigation(callback){
+	beforeUnloadHandler(event){
+		event.preventDefault();
+		event.returnValue = true;
+	}
+
+	lockNavigation(callback, beforeUnload = false){
 		this.navigation_locked = true;
+
+		if (beforeUnload){
+			window.addEventListener('beforeunload', this.beforeUnloadHandler);
+		}
 
 	    window.addEventListener(this.terminationEvent, callback);
 	    if (this.app.browser.isMobileBrowser()) {
@@ -2686,6 +2762,7 @@ class Browser {
 	unlockNavigation(callback){
 		this.navigation_locked = false;
 
+		window.removeEventListener('beforeunload', this.beforeUnloadHandler);
 	    window.removeEventListener(this.terminationEvent, callback);
 	    if (this.app.browser.isMobileBrowser()) {
 	      document.removeEventListener('visibilitychange', callback);
@@ -2699,6 +2776,7 @@ class Browser {
 			if (!c){
 				return;
 			}
+			window.removeEventListener('beforeunload', this.beforeUnloadHandler);
 		}
 
 		if (delay > 0){

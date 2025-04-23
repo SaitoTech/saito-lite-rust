@@ -269,47 +269,7 @@ export default class Crypto {
 
 		return stringx;
 	}
-	// from template/cryptomodule.js
-	/*async formatBalance(balance) { 
-		if (typeof balance == 'undefined') {
-			balance = 0.0;
-		}
 
-		let balance_as_float = parseFloat(balance);
-		if (balance_as_float < 9999) {
-			balance_as_float = balance_as_float.toPrecision(3);
-		}
-
-		return balance_as_float.toString();
-	}
-	// from mixinModule
-	async formatBalance(balance, precision = 2) {
-		// previous implmentation was causing rounding off issues
-		// 0.745 was being rounded off to 0.75
-		// find first non zero value's postion after decimal
-		let pos = balance > 0 ? Math.abs(Math.floor(Math.log10(Number(balance)))) : 0;
-		pos += precision;
-
-		let bal = Number(balance);
-		bal = bal.toFixed(pos);
-		bal = parseFloat(bal);
-		return bal.toString();
-	}*/
-	// from saito/wallet.ts
-	formatBalance(balance, precision = 2) {
-		if (typeof balance == 'undefined') {
-			balance = '0.00';
-		}
-
-		let locale = window.navigator?.language || 'en-US';
-		let nf = new Intl.NumberFormat(locale, {
-			minimumFractionDigits: 2,
-			maximumFractionDigits: precision
-		});
-
-		let balance_as_float = parseFloat(balance);
-		return nf.format(balance_as_float).toString();
-	}
 
 	isValidPublicKey(key) {
 		if (typeof key !== 'string') {

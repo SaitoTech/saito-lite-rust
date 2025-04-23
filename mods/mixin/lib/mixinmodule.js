@@ -465,13 +465,18 @@ class MixinModule extends CryptoModule {
 				},
 				function (res) {
 					console.log('miximodule res: ', res);
+					// this.address + '|' + this.mixin.mixin.user_id + '|' + 'mixin';
 					if (res.length > 0) {
 						for (let i = 0; i < res.length; i++) {
 							console.log(res[i].asset_id, ' - ', this_self.asset_id, ' - ', res[i].asset_id == this_self.asset_id);
 							if (res[i].asset_id == this_self.asset_id) {
+								let address = res[i].address;
+								if (res[i]?.user_id){
+									address += "|" + res[i].user_id + "|mixin";
+								}
 								// save address to keychain if publickey exists in keychain
-								this_self.app.keychain.addCryptoAddress(publicKey, this_self.ticker, res[i].address);
-								return res[i].address;
+								this_self.app.keychain.addCryptoAddress(publicKey, this_self.ticker, address);
+								return address;
 							}
 						}
 					}
@@ -501,6 +506,12 @@ class MixinModule extends CryptoModule {
 	}
 
 	validateAddress(address) {
+
+		if (address.includes("|")){
+			let r = address.split('|');
+			address = r[0];
+		}
+
 		// suported cryptos by validator package
 		//https://www.npmjs.com/package/multicoin-address-validator?activeTab=readme
 		try {

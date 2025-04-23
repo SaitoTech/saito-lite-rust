@@ -1,0 +1,100 @@
+/* Balances View Styles */
+.balances-view h2 {
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.balances-table {
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.balances-table th {
+    text-align: left;
+    white-space: nowrap;
+}
+
+.balances-table td,
+.balances-table th {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--saito-border-color-light);
+}
+
+.balances-table .number-column {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.balances-table .balance-row.clickable {
+    cursor: pointer;
+}
+
+.balances-table .balance-row.clickable:hover {
+    background-color: var(--saito-background-highlight);
+}
+
+.balances-table .slips-detail-row td {
+    padding: 0; /* Remove padding from the container TD */
+    border-bottom: 1px solid var(--saito-border-color); /* Add slightly stronger border */
+}
+
+/* Ensure nested SlipsTable has appropriate styling */
+.balances-table .slips-detail-row .slips-table-container {
+    border: none; /* Remove outer border */
+    border-radius: 0;
+    margin: 0;
+    max-height: 300px; /* Adjust height */
+    border-top: 1px dashed var(--saito-border-color-light); /* Add visual separator */
+    padding: 0.5rem; /* Add some inner padding */
+}
+
+.balances-table .slips-detail-row .slips-table th {
+     /* Keep sticky header */
+     top: 0;
+     background-color: var(--saito-background-highlight); /* Give header slight background */
+}
+
+/* Balance List Styles */
+.balance-list-card {
+  background-color: var(--saito-background-color, #fff);
+  border: 1px solid var(--saito-border-color, #eee);
+  border-radius: var(--saito-border-radius, 6px);
+  padding: 1rem;
+  margin-bottom: 1rem; 
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.balance-list-card h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  font-weight: 600; /* Semibold */
+}
+
+.balance-list-table {
+  width: 100%;
+}
+
+/* Add padding to rows (target data cells) */
+.balance-list-table tbody td {
+  padding-top: 0.75rem;    /* Vertical padding */
+  padding-bottom: 0.75rem;
+}
+
+/* Right align numeric columns */
+.balance-list-table th.numeric-column,
+.balance-list-table td.numeric-column {
+  text-align: right;
+}
+
+/* Style for the expanded slip details row */
+.slip-details-row td {
+  padding: 0 !important; /* Remove padding for the full-width cell */
+}
+
+.slip-details-row .slips-table-container {
+  margin: 0.5rem 0; /* Add some margin around the nested table */
+  padding: 0.5rem; 
+  background-color: var(--saito-background-muted, #f9f9f9);
+  border-radius: var(--saito-border-radius, 4px);
+}

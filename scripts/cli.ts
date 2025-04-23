@@ -35,7 +35,9 @@ async function initCLI() {
 		new NodeSharedMethods(app),
 		new Factory(),
 		privateKey,
-		LogLevel.Info
+		LogLevel.Info,
+		BigInt(1),
+		false
 	).then(() => {
 		console.log('saito wasm lib initialized');
 	});

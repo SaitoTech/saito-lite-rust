@@ -281,8 +281,6 @@ console.log("\n\n\n\n");
 	  this.addDebater("protestant", "bucer-debater");
 	  this.addDebater("protestant", "carlstadt-debater");
 
-
-
 	}
 
       }
@@ -633,6 +631,10 @@ console.log("\n\n\n\n");
           //this.addRegular("hapsburg", "vienna", 4);
           this.addMercenary("hapsburg", "vienna", 2);
 
+// TESTING
+	  this.addArmyLeader("hapsburg", "palma", "duke-of-alva");
+          this.addRegular("hapsburg", "palma", 4);
+
           this.addRegular("hapsburg", "antwerp", 3);
           this.controlSpace("hapsburg", "prague");
           this.controlSpace("hapsburg", "breslau");
@@ -690,9 +692,9 @@ console.log("\n\n\n\n");
           this.addArmyLeader("england", "london", "charles-brandon");
           this.addRegular("england", "london", 3);
           this.addMercenary("england", "london", 2);
-          this.addNavalSquadron("england", "london", 1);
-          this.addNavalSquadron("england", "plymouth", 1);
-          this.addNavalSquadron("england", "portsmouth", 1);
+          //this.addNavalSquadron("england", "london", 1);
+          //this.addNavalSquadron("england", "plymouth", 1);
+          //this.addNavalSquadron("england", "portsmouth", 1);
           this.addRegular("england", "calais", 2);
           this.addRegular("england", "york", 1);
           this.addRegular("england", "bristol", 1);
@@ -830,7 +832,7 @@ console.log("\n\n\n\n");
           this.controlSpace("independent", "tunis");	
           this.controlSpace("independent", "malta", 1);
           this.addRegular("independent", "malta", 1);
-          this.addRegular("independent", "metz", 1);
+          //this.addRegular("independent", "metz", 1);
           this.addRegular("independent", "milan", 1);
           this.addRegular("independent", "tunis", 1);
 
@@ -859,10 +861,24 @@ console.log("\n\n\n\n");
           this.addArmyLeader("ottoman", "pressburg", "ibrahim-pasha");
           this.addRegular("ottoman", "pressburg", 6);
 
+	  //
+	  // TESTING AND MODIFICTIONS
+	  //
+	  //
 	  this.addRegular("hapsburg", "graz", 4);
 
-	  //this.game.spaces["salonika"].units["ottoman"][1].owner = "france";
-	  //this.setAllies("france", "ottoman");
+	  this.setAllies("england", "scotland");
+	  this.setEnemies("hapsburg", "france");
+	  this.setEnemies("england", "france");
+	  this.controlSpace("hapsburg", "metz");
+
+	  this.controlSpace("ottoman", "linz");
+	  this.controlSpace("ottoman", "brunn");
+	  this.controlSpace("ottoman", "salzburg");
+
+	  this.game.spaces["london"].unrest = 1;
+	  this.game.spaces["metz"].besieged = 1;
+	  this.addRegular("france", "metz", 2);
 
 	  this.removeCardFromGame("009");
 	  this.removeCardFromGame("008");

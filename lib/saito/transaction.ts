@@ -262,21 +262,21 @@ returnMessage() {
 			}
 		} catch (err) {
 			// TODO : handle this without printing an error
-			console.log('ERROR: ' + JSON.stringify(err));
+			// console.log('ERROR: ' + JSON.stringify(err));
 			try {
-				console.log('fallback on failure... 1');
+				// console.log('fallback on failure... 1');
 				const reconstruct = Buffer.from(this.data).toString('utf-8');
-				console.log('fallback on failure... 2');
+				// console.log('fallback on failure... 2');
 				this.msg = JSON.parse(reconstruct);
-				console.log('fallback on failure... 3');
+				// console.log('fallback on failure... 3');
 			} catch (err) {
-				console.log(
-					`buffer length = ${
-						this.data.byteLength
-					} type = ${typeof this.data}`
-				);
-				console.error('error parsing return message', err);
-				console.log('here: ' + JSON.stringify(this.msg));
+				// console.log(
+				// 	`buffer length = ${
+				// 		this.data.byteLength
+				// 	} type = ${typeof this.data}`
+				// );
+				// console.error('error parsing return message', err);
+				// console.log('here: ' + JSON.stringify(this.msg));
 			}
 		}
 

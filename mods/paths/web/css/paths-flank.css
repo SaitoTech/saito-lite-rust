@@ -1,0 +1,61 @@
+.flank-overlay {
+	min-width: 1131px;
+	min-height: 827px;
+	max-height: 90vh;
+	max-width: 90vw;
+	border-radius: 2rem;
+	background-image: url('/paths/img/backgrounds/mark_iv_tank.jpg');
+	background-size: cover;
+}
+
+.flank-overlay .help {
+	background: #0009;
+	width: 100%;
+	color: white;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: 2.4rem;
+	padding: 0.75rem;
+	max-width: 100%;
+	padding: 1rem;
+	line-height: 3.4rem;
+	text-align: center;
+}
+
+.flank-overlay .info {
+	display: flex;
+	flex-direction: row;
+	row-gap: 5rem;
+	column-gap: 5rem;
+	bottom: 0px;
+	position: absolute;
+	width: 100%;
+	background-color: white;
+	font-size: 2rem;
+}
+
+.flank-overlay .status {
+        position: relative;
+        height: 4rem;
+        line-height: 4rem;
+        min-height: 0;
+        width: 30rem;
+        max-width: 35rem;
+        background-color: whitesmoke;
+        z-index: 10;
+        border-radius: 1rem;
+        top: 0px;
+        left: 0px;
+        white-space: nowrap;
+        float: left;
+        margin-left: 1rem;
+        margin-top: 1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+}
+
+.flank-overlay .controls {
+        max-height: 80vh;
+}
+
+

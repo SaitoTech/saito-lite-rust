@@ -25,6 +25,9 @@ class SettlersActions {
       console.error("Error with ACKWNOLEDGE notice!: " + err);
     }
 
+    this.halted = 1;
+    this.saveGame(this.game.id);
+
     return 0;
   }
 
@@ -46,7 +49,7 @@ class SettlersActions {
         if (this.game.state.hexes[neighboringHex].value == value) {
           let resource = this.game.state.hexes[neighboringHex].resource;
 
-          if (this.game.state.hexes[neighboringHex].robber) {
+          if (this.game.state.hexes[neighboringHex].robber && player !== this.game.state.robinhood) {
             if (!blocked[player]){
               blocked[player] = [];
             }

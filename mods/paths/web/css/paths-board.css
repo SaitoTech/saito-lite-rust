@@ -100,46 +100,106 @@
   height: 100px;
   width: 100px;
   position: absolute;
+  z-index: 10;
 }
-.general-records-track img:nth-child(1) {
+.general-records-track-1 img:nth-child(1) {
   top: -10px;
   left: -10px;
+}
+.general-records-track-1 img:nth-child(2) {
+  top: -10px;
+  left: -10px;
+}
+.general-records-track-1 img:nth-child(3) {
+  top: -10px;
+  left: -10px;
+}
+.general-records-track-1 img:nth-child(4) {
+  top: -10px;
+  left: -10px;
+}
+.general-records-track-1 img:nth-child(5) {
+  top: -10px;
+  left: -10px;
+}
+.general-records-track-1 img:nth-child(6) {
+  top: -10px;
+  left: -10px;
+}
+.general-records-track-1 img:nth-child(7) {
+  top: -10px;
+  left: -10px;
+}
+.general-records-track-1 img:nth-child(8) {
+  top: -10px;
+  left: -10px;
+}
+.general-records-track-1 img:nth-child(9) {
+  top: -10px;
+  left: -10px;
+}
+.general-records-track-1 img:nth-child(10) {
+  top: -10px;
+  left: -10px;
+}
+.general-records-track-1 img:nth-child(11) {
+  top: -10px;
+  left: -10px;
+}
+.general-records-track-1 img:nth-child(12) {
+  top: -10px;
+  left: -10px;
+}
+.general-records-track img:hover {
+  z-index: 9999;
+}
+.general-records-track img:nth-child(1) {
+  top: -20px;
+  left: -20px;
 }
 .general-records-track img:nth-child(2) {
   top: 0px;
   left: 0px;
 }
 .general-records-track img:nth-child(3) {
-  top: 10px;
-  left: 10px;
-}
-.general-records-track img:nth-child(4) {
   top: 20px;
   left: 20px;
 }
-.general-records-track img:nth-child(5) {
-  top: 30px;
-  left: 30px;
-}
-.general-records-track img:nth-child(6) {
+.general-records-track img:nth-child(4) {
   top: 40px;
   left: 40px;
 }
-.general-records-track img:nth-child(7) {
-  top: 50px;
-  left: 50px;
-}
-.general-records-track img:nth-child(8) {
+.general-records-track img:nth-child(5) {
   top: 60px;
   left: 60px;
 }
-.general-records-track img:nth-child(9) {
-  top: 70px;
-  left: 70px;
-}
-.general-records-track img:nth-child(10) {
+.general-records-track img:nth-child(6) {
   top: 80px;
   left: 80px;
+}
+.general-records-track img:nth-child(7) {
+  top: 100px;
+  left: 100px;
+}
+.general-records-track img:nth-child(8) {
+  top: 120px;
+  left: 120px;
+}
+.general-records-track img:nth-child(9) {
+  top: 140px;
+  left: 140px;
+}
+.general-records-track img:nth-child(10) {
+  top: 160px;
+  left: 160px;
+}
+.general-records-track img:nth-child(11) {
+  top: 180px;
+  left: 180px;
+}
+.general-records-track img:nth-child(12) {
+  top: 200px;
+  left: 200px;
 }
 .general-records-track-0 {
   top: 2707px;
@@ -605,6 +665,20 @@
   flex-direction: column;
 }
 
-
-
+.crbox {
+    top: 851px;
+    left: 4250px;
+    width: 730px;
+    height: 380px;
+}
+.arbox {
+    top: 1280px;
+    left: 4250px;
+    width: 730px;
+    height: 380px;
+}
+.reserve-box.selectable::before {
+    width: inherit;
+    height: inherit;
+}
 

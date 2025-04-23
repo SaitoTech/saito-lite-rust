@@ -39,6 +39,15 @@ body {
   justify-content: space-evenly;
 }
 
+.chat-container {
+  z-index: 90;
+}
+
+.chat-container.active {
+  z-index: 91;
+}
+
+
 /*********************/
 /*  SIZING ISSUES    */
 /*********************/

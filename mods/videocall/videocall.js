@@ -82,6 +82,14 @@ class Videocall extends ModTemplate {
 
 			this.app.storage.saveOptions();
 		});
+
+
+		app.connection.on('stun-connection-close', (peerId)=> {
+			if (this?.streams?.active) {
+				this.disconnect(peerId, " has no connection");	
+			}
+			
+		});
 	}
 
 	/**
@@ -382,7 +390,6 @@ class Videocall extends ModTemplate {
 					icon: 'fa-solid fa-cog',
 					prepend: true,
 					callback: function (app) {
-						console.log("***** 1");
 						app.connection.emit('videocall-show-settings');
 					}
 				}
@@ -537,6 +544,8 @@ class Videocall extends ModTemplate {
 						this.streams.remoteStreams.delete("presentation");
 						this.screen_share = null;
 					}
+
+					// Peer sharing connection state with people in the call...
 					if (txmsg.request === 'broadcast-call-list') {
 						this.receiveBroadcastListTransaction(this.app, tx);
 					}
@@ -854,7 +863,6 @@ class Videocall extends ModTemplate {
 		let call_list = [];
 
 		for (let peer in txmsg.data) {
-			console.log(peer, txmsg.data[peer]);
 			if (txmsg.data[peer] == 'connected') {
 				if (peer !== this.publicKey) {
 					if (!this.room_obj.call_peers.includes(peer)) {

@@ -188,7 +188,6 @@ class PokerQueue {
 								am_i_out = true;
 							}
 
-							this.removePlayerFromState(i);
 							this.removePlayer(this.game.players[i]);
 
 							//Adjust dealer for each removed player
@@ -304,7 +303,7 @@ class PokerQueue {
 					}
 
 					this.animateWin(total_pot, winners);
-					this.halted = 1; // because not inside the function for now
+					this.halted = 1;
 					this.playerAcknowledgeNotice(msg, async () => {
 						this.animating = false;
 						this.cardfan.hide();
@@ -314,6 +313,7 @@ class PokerQueue {
 						await this.timeout(1000);
 						this.restartQueue();
 					});
+					this.saveGame(this.game.id);
 					this.setShotClock('.acknowledge');
 
 					return 0;
@@ -631,7 +631,7 @@ class PokerQueue {
 				//
 				// non-winners send wagers to winner
 				//
-				if (this.game.crypto) {
+				if (this.game.crypto !== "CHIPS") {
 					for (let ii = 0; ii < this.game.players.length; ii++) {
 						for (let i = 0; i < winners.length; i++) {
 							if (!winners.includes(ii) && this.game.state.player_pot[ii] > 0) {
@@ -647,9 +647,10 @@ class PokerQueue {
 					}
 				}
 
-				this.halted = 1; // because not inside the function for now
 				this.animateWin(pot_total, winObj);
+				this.halted = 1;
 				this.playerAcknowledgeNotice(winnerStr, async () => {
+					console.log("Continuing poker...");
 					this.animating = false;
 					this.cardfan.hide();
 					this.pot.clearPot();
@@ -658,6 +659,7 @@ class PokerQueue {
 					await this.timeout(1000);
 					this.restartQueue();
 				});
+				this.saveGame(this.game.id);
 				this.setShotClock('.acknowledge');
 
 

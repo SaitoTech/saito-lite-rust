@@ -3,6 +3,35 @@
     this.zoom_overlay.hide();
   }
 
+  shakeSpacekey(spacekey) {
+    let qs = `.space.${spacekey}`;
+    let element = document.querySelector(qs);
+
+    if (!element) { return; }
+
+    if (element.classList.contains("shake")) return;
+
+    element.classList.add("shake");
+
+    setTimeout(() => { 
+      element.classList.remove("shake");
+    }, 1500);
+  }
+
+  shakeUnit(skey, ukey) {
+
+    let qs = `.${ukey}`;
+    document.querySelectorAll(qs).forEach((element) => {
+
+      if (element.classList.contains("shake")) return;
+      element.classList.add("shake");
+
+      setTimeout(() => { 
+        element.classList.remove("shake");
+      }, 1500);
+    });
+
+  }
 
   displayCustomOverlay(c="", msg="") {
 
@@ -38,6 +67,12 @@
 
   }
 
+  addHighlightToSpacekey(spacekey="", htype="") {
+    let obj = document.querySelector(`.${spacekey}`);
+    if (htype == "central" && obj) { obj.classList.add('central-highlight'); }
+    if (htype == "allies" && obj) { obj.classList.add('allies-highlight'); }
+  }
+
   addHighlights(el) {
     if (!el.classList.contains("allies")) {
       el.classList.add('allies-highlight');
@@ -48,7 +83,19 @@
     if (!el.classList.contains("central")) {
       el.classList.add('central-highlight');
     }
-  } 
+  }
+
+  removeHighlights() {
+    document.querySelectorAll(".allies-highlight").forEach((el) => {
+      el.classList.remove("allies-highlight");
+    });
+    document.querySelectorAll(".neutral-highlight").forEach((el) => {
+      el.classList.remove("neutral-highlight");
+    });
+    document.querySelectorAll(".central-highlight").forEach((el) => {
+      el.classList.remove("central-highlight");
+    });
+  }
 
   addSelectable(el) {
     if (!el.classList.contains("selectable")) {
@@ -85,7 +132,7 @@
     //
     try {
       this.displaySpaces();
-      this.addHighlights();
+      //this.addHighlights();
 
     } catch (err) {
 console.log("!");
@@ -153,6 +200,8 @@ console.log("!");
 
   displaySpace(key) {
 
+    if (key == "arbox" || key == "crbox" || key == "aeubox" || key == "ceubox") { return; }
+
     try {
 
       let space = this.game.spaces[key];
@@ -196,10 +245,17 @@ console.log("!");
 	}
       }
 
+      if (space.besieged == 1) {
+        html += `<img src="/paths/img/tiles/fort_besieged.png" class="trench-tile fort-besieged" />`;
+      }
+      if (space.fort == -1) {
+        html += `<img src="/paths/img/tiles/fort_destroyed.png" class="trench-tile fort-destroyed" />`;
+      }
+
       document.querySelectorAll(`.${key}`).forEach((el) => { 
-        if (control == "allies") { el.classList.add("allies-highlight"); }
-        if (control == "central") { el.classList.add("central-highlight"); }
-        if (control == "neutral") { el.classList.add("neutral-highlight"); }
+//        if (control == "allies") { el.classList.add("allies-highlight"); }
+//        if (control == "central") { el.classList.add("central-highlight"); }
+//        if (control == "neutral") { el.classList.add("neutral-highlight"); }
 	el.innerHTML = html; 
       });
 
@@ -209,7 +265,7 @@ console.log("err: " + err);
   }
 
   displaySpaceDetailedView(key) {
-alert("display detailed space!");
+    this.space_overlay.render(key);
   }
 
   displaySpaces() {
@@ -296,7 +352,7 @@ alert("display detailed space!");
       card = deck[cardname];
       html = `<img class="${cardclass}" src="/paths/img/${card.img}" />`;
       try {
-	if (card.canEvent(this)) {
+	if (!card.canEvent(this)) {
           html += `<img class="${cardclass} cancel_x" src="/paths/img/cancel_x.png" />`;
         }
       } catch (err) {}
@@ -368,32 +424,59 @@ alert("display detailed space!");
 
     try {
 
-      let rp_ge     = `<img src="/paths/img/rp_allied.png" />`;
-      let rp_ah     = `<img src="/paths/img/rp_allied.png" />`;
-      let rp_allied = `<img src="/paths/img/rp_allied.png" />`;
-      let rp_br     = `<img src="/paths/img/rp_br.png" />`;
-      let rp_fr     = `<img src="/paths/img/rp_fr.png" />`;
-      let rp_ru     = `<img src="/paths/img/rp_ru.png" />`;
-      let vp_button = `<img src="/paths/img/vp_button.png" />`;
+      document.querySelectorAll(".general-records-track").forEach((el) => { el.classList.remove("vp"); el.innerHTML = ""; });
+
+      ////////////////////////
+      // Replacement Points //
+      ////////////////////////
+
+      // central
+      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["GE"]}`).innerHTML += `<img src="/paths/img/rp/rp_ge.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["AH"]}`).innerHTML += `<img src="/paths/img/rp/rp_ah.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["TU"]}`).innerHTML += `<img src="/paths/img/rp/rp_tu.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["BU"]}`).innerHTML += `<img src="/paths/img/rp/rp_bu.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["central"]["CP"]}`).innerHTML += `<img src="/paths/img/rp/rp_cp.png" />`;
+
+      // allies
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["A"]}`).innerHTML += `<img src="/paths/img/rp/rp_a.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["BR"]}`).innerHTML += `<img src="/paths/img/rp/rp_br.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["FR"]}`).innerHTML += `<img src="/paths/img/rp/rp_fr.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["IT"]}`).innerHTML += `<img src="/paths/img/rp/rp_it.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["RU"]}`).innerHTML += `<img src="/paths/img/rp/rp_ru.png" />`;
+      document.querySelector(`.general-records-track-${this.game.state.rp["allies"]["AP"]}`).innerHTML += `<img src="/paths/img/rp/rp_ap.png" />`;
+
+      let central_rp = 0;
+      for (let key in this.game.state.rp["central"]) { central_rp += this.game.state.rp["central"][key]; }
+
+      let allied_rp = 0;
+      for (let key in this.game.state.rp["allies"]) { allied_rp += this.game.state.rp["allies"][key]; }
+
+      document.querySelector(`.general-records-track-${central_rp}`).innerHTML += `<img src="/paths/img/rp/rp_cp.png" />`;
+      document.querySelector(`.general-records-track-${allied_rp}`).innerHTML += `<img src="/paths/img/rp/rp_allied.png" />`;
+
+
+      ////////////////////
+      // Victory Points //
+      ////////////////////
+      this.calculateVictoryPoints();
+      document.querySelector(`.general-records-track-${this.game.state.general_records_track.vp}`).innerHTML += `<img src="/paths/img/vp.png" />`;
+
+
+      ////////////////
+      // War Status //
+      ////////////////
       let allies_war_status = `<img src="/paths/img/warstatus_ap.png" />`;
       let central_war_status = `<img src="/paths/img/warstatus_cp.png" />`;
       let combined_war_status = `<img src="/paths/img/warstatus_combined.png" />`;
       let current_cp_russian_vp = `<img src="/paths/img/current_cp_russian_vp.png" />`;
 
-      document.querySelectorAll(".general-records-track").forEach((el) => { el.classList.remove("vp"); el.innerHTML = ""; });
+console.log("CHECKING WAR STATUS: ");
+console.log("Allies: " + this.game.state.general_records_track.allies_war_status);
+console.log("Central: " + this.game.state.general_records_track.central_war_status);
 
-      document.querySelector(`.general-records-track-${this.game.state.general_records_track.vp}`).innerHTML += vp_button;
       document.querySelector(`.general-records-track-${this.game.state.general_records_track.allies_war_status}`).innerHTML += allies_war_status;
       document.querySelector(`.general-records-track-${this.game.state.general_records_track.central_war_status}`).innerHTML += central_war_status;
       document.querySelector(`.general-records-track-${this.game.state.general_records_track.combined_war_status}`).innerHTML += combined_war_status;
-
-      document.querySelector(`.general-records-track-${this.game.state.general_records_track.ge_replacements}`).innerHTML += rp_ge;
-      document.querySelector(`.general-records-track-${this.game.state.general_records_track.ah_replacements}`).innerHTML += rp_ah;
-      document.querySelector(`.general-records-track-${this.game.state.general_records_track.allied_replacements}`).innerHTML += rp_allied;
-      document.querySelector(`.general-records-track-${this.game.state.general_records_track.br_replacements}`).innerHTML += rp_br;
-      document.querySelector(`.general-records-track-${this.game.state.general_records_track.fr_replacements}`).innerHTML += rp_fr;
-      document.querySelector(`.general-records-track-${this.game.state.general_records_track.ru_replacements}`).innerHTML += rp_ru;
-
       document.querySelector(`.general-records-track-${this.game.state.general_records_track.current_cp_russian_vp}`).innerHTML += current_cp_russian_vp;
 
     } catch (err) {
@@ -404,13 +487,39 @@ alert("display detailed space!");
 
   displayActionRoundTracks() {
 
+    let central_token = `<img src="/paths/img/control_cp.png" />`;
+    let allies_token = `<img src="/paths/img/allies_cp.png" />`;
+    let current_round = this.game.state.round;
+    let current_turn = this.game.state.turn;
+
+    let last_allies_move = "";
+    let last_central_move = "";
+
+    document.querySelectorAll(`.central-action-round-track`).forEach((el) => { el.innerHTML = ""; });
+    document.querySelectorAll(`.allies-action-round-track`).forEach((el) => { el.innerHTML = ""; });
+
+
+    if (this.game.state.allies_rounds.length > 0) {
+      last_allies_move = this.game.state.allies_rounds[this.game.state.allies_rounds.length-1];
+    }
+    if (this.game.state.central_rounds.length > 0) {
+      last_central_move = this.game.state.central_rounds[this.game.state.central_rounds.length-1];
+    }
+
+    if (last_central_move === "rp") {
+
+    }
+ 
+
+    if (this.game.state.neutral_entry != 0) {
+      document.querySelector(`.central-action-round-track-1`).innerHTML = central_token;;
+      document.querySelector(`.allies-action-round-track-1`).innerHTML = allies_token;;
+    }
+
   }
 
   displayMandatedOffensiveTracks() {
-/***
-    if (this.game.state.mandated_offensives.central == "AH") {
-
-    }
+/****
           if (central == 2) { this.game.state.mandated_offensives.central = "AH IT"; }
           if (central == 3) { this.game.state.mandated_offensives.central = "TU"; }
           if (central == 4) { this.game.state.mandated_offensives.central = "GE"; }
@@ -422,7 +531,7 @@ alert("display detailed space!");
           if (allies == 4)  { this.game.state.mandated_offensives.allies = "IT"; }
           if (allies == 5)  { this.game.state.mandated_offensives.allies = "IT"; }
           if (allies == 6)  { this.game.state.mandated_offensives.allies = "RU"; }
-***/
+****/
   }
 
   displayUSCommitmentTrack() {
@@ -498,11 +607,19 @@ alert("display detailed space!");
       arb.innerHTML = "";
       crb.innerHTML = "";
 
-      for (let z = 0; z < this.game.state.reserves['allies'].length; z++) {
-        arb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.state.reserves['allies'][z]}.png" />`;
+      for (let z = 0; z < this.game.spaces["arbox"].units.length; z++) {
+	if (this.game.spaces["arbox"].units[z].damaged) {
+          arb.innerHTML += `<img class="army-tile ${this.game.spaces["arbox"].units[z].key}" src="/paths/img/army/${this.game.spaces["arbox"].units[z].back}" />`;
+        } else {
+          arb.innerHTML += `<img class="army-tile ${this.game.spaces["arbox"].units[z].key}" src="/paths/img/army/${this.game.spaces["arbox"].units[z].front}" />`;
+	}
       }
-      for (let z = 0; z < this.game.state.reserves['central'].length; z++) {
-        crb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.state.reserves['central'][z]}.png" />`;
+      for (let z = 0; z < this.game.spaces["crbox"].units.length; z++) {
+	if (this.game.spaces["crbox"].units[z].damaged) {
+          crb.innerHTML += `<img class="army-tile ${this.game.spaces["crbox"].units[z].key}" src="/paths/img/army/${this.game.spaces["crbox"].units[z].back}" />`;
+        } else {
+          crb.innerHTML += `<img class="army-tile ${this.game.spaces["crbox"].units[z].key}" src="/paths/img/army/${this.game.spaces["crbox"].units[z].front}" />`;
+	}
       }
 
     } catch (err) {
@@ -522,10 +639,10 @@ alert("display detailed space!");
       crb.innerHTML = "";
 
       for (let z = 0; z < this.game.state.eliminated['allies'].length; z++) {
-        arb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.state.eliminated['allies'][z]}.png" />`;
+        arb.innerHTML += `<img class="army-tile ${this.game.state.eliminated["allies"][z].key}" src="/paths/img/army/${this.game.state.eliminated['allies'][z]}.png" />`;
       }
       for (let z = 0; z < this.game.state.eliminated['central'].length; z++) {
-        crb.innerHTML += `<img class="army-tile" src="/paths/img/army/${this.game.state.eliminated['central'][z]}.png" />`;
+        crb.innerHTML += `<img class="army-tile ${this.game.state.eliminated["central"][z].key}" src="/paths/img/army/${this.game.state.eliminated['central'][z]}.png" />`;
       }
 
     } catch (err) {

@@ -721,7 +721,7 @@ class Server {
                     }
                     return key;
                 });
-                console.log('fetching balance snapshot with keys : ', keys);
+                // console.log('fetching balance snapshot with keys : ', keys);
 
                 const snapshot = await S.getInstance().getBalanceSnapshot(keys);
                 res.setHeader('Content-Disposition', 'attachment; filename=' + snapshot.file_name);

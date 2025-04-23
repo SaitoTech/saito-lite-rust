@@ -1,5 +1,7 @@
 
 
+console.log("INITIALIZING PATHS");
+
     let first_time_running = 0;
 
     //
@@ -55,6 +57,7 @@ console.log("\n\n\n\n");
     //
     this.deck = this.returnDeck("all");
 
+console.log("INITIALIZING PATHS");
 
     //
     // and show the board

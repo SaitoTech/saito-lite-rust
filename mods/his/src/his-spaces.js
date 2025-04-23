@@ -1221,6 +1221,11 @@
 	  }
 	}
 
+        //
+        // unrest is a "no"
+        //
+	if (his_self.game.spaces[spacekey].unrest == 1) { return 0; }
+
         if (his_self.isSpaceFortified(his_self.game.spaces[spacekey])) {
 	  if (his_self.isSpaceControlled(spacekey, faction)) {
 	    return 1;
@@ -1235,6 +1240,7 @@
       // route through this?
       function(spacekey) {
 	if (already_routed_through[spacekey] == 1) { return 0; }
+        if (his_self.game.spaces[spacekey].unrest == 1) { return 0; }
         already_routed_through[spacekey] = 1;
 	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
 	if (spacekey == original_spacekey) { return 1; }
@@ -1775,10 +1781,10 @@
             if (this.areAllies(f, faction2)) {
               faction_map[f] = faction2;
             }
-            if (this.returnCommandingPower(f) == faction1) {
+            if (this.returnControllingPower(f) == faction1) {
               faction_map[f] = faction1;
 	    }
-            if (this.returnCommandingPower(f) == faction2) {
+            if (this.returnControllingPower(f) == faction2) {
               faction_map[f] = faction2;
 	    }
             if (this.returnPlayerCommandingFaction(f) === this.returnPlayerCommandingFaction(faction1)) {

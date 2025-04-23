@@ -75,7 +75,7 @@ html[data-theme="dark"] {
   --font-color-button-hover-modal-oldschool: var(--font-color-heavy);
   --font-color-hover-icons-left-sidebar: var(--font-color-heavy);
   --font-color-button-hover-wallet-control: var(--font-color-heavy);
-  --font-color-button-wallet-control: var(--saito-primary);
+  --font-color-button-wallet-control: var(--font-color-primary);
   --font-color-calendar-today: var(--font-color-primary);
   --font-color-calendar-hover: var(--font-color-primary);
   /* Menu and Header Font Colors */
@@ -117,7 +117,7 @@ html[data-theme="dark"] {
   --border-color-chat-popup-docked: var(--color-primary);
   --border-color-selection-box: var(--color-highlight);
   --border-color-form-input-checkbox: var(--color-contrast);
-  --border-color-qr-code: var(--saito-white);
+  --border-color-qr-code: var(--saito-border-color-dark); /*var(--saito-white);*/
   /* BACKGROUNDS */
   /* General Background Colors */
   --background-color-sidebar-left: var(--color-shadow-bubble-light);

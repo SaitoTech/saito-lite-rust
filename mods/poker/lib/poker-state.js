@@ -72,13 +72,18 @@ class PokerState {
                 return stats;
         }
 
-        removePlayerFromState(index) {
+        removePlayerFromState(pkey) {
+
+                let index = this.game.players.indexOf(pkey);
+
                 if (index >= 0 && index < this.game.state.player_names.length){
+                        this.game.stats[pkey].final_chips = this.game.state.player_credit[index];
                         this.game.state.player_names.splice(index, 1);
                         this.game.state.player_pot.splice(index, 1);
                         this.game.state.player_credit.splice(index, 1);
                         this.game.state.passed.splice(index, 1);
                         this.game.state.debt.splice(index, 1);
+                        return `${this.game.stats[pkey].final_chips} CHIPS`;
                 }else{
                         console.warn("Invalid index removePlayerFromState");
                 }

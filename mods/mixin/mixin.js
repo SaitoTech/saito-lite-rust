@@ -907,10 +907,7 @@ class Mixin extends ModTemplate {
     return await this.app.network.sendRequestAsTransaction(
       "mixin fetch user by publickey",
       params,
-      function (res) {
-        console.log("Callback for sendFetchUserByPublicKeyTransaction request: ", res);
-        return callback(res);
-      },
+      callback,
       peers[0].peerIndex
     );
   }

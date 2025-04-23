@@ -51,6 +51,7 @@ class Disburse extends ModTemplate {
 		// });
 	}
 
+	/*
 	async onConfirmation(blk, tx, conf) {
 
 		if (this.app.BROWSER && !tx.isTo(this.publicKey)) {
@@ -66,6 +67,7 @@ class Disburse extends ModTemplate {
 			console.log('ERROR in ' + this.name + ' onConfirmation: ' + err);
 		}
 	}
+	*/
 
 	parseData(raw_data, this_wallet_balance) { /*    expected data, list of 'wallet \t value \n'    */
 		try {
@@ -159,7 +161,7 @@ class Disburse extends ModTemplate {
 			console.log("senders.length :" + senders.length);
 			// if (senders.length > 1) {
 			console.log("sendPayments");
-			let hash = await this.app.wallet.sendPayments(
+			await this.app.wallet.sendPayments(
 				senders,
 				receivers,
 				amounts,
@@ -168,7 +170,7 @@ class Disburse extends ModTemplate {
 				async function (res) {
 					console.log("hash:\t" + res.hash);
 					if (res.hash) {
-						salert("Success, please wait - transaction hash: " + res.hash);
+						salert("Success, please wait - transaction hash: " + res.hash.substring(0, 250));
 					} 
 					if (res.err) {
 						salert("Error: " + res.err);
@@ -176,20 +178,6 @@ class Disburse extends ModTemplate {
 				},
 				ticker
 			);
-			// } else {
-			// 	console.log("sendPayment");
-			// 	amounts[0] = amounts[0]/100000000; // original send payment assume input its saito and not nolan
-			// 	let hash = await this.app.wallet.sendPayment(
-			// 		senders,
-			// 		receivers,
-			// 		amounts,
-			// 		timestamp,
-			// 		unique_hash,
-			// 		null,
-			// 		ticker
-			// 	);
-			// 	console.log('hash: ' + hash);
-			// }
 		} catch (error) {
 			console.log(error);
 		}

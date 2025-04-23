@@ -11,7 +11,6 @@ class DietOfWormsOverlay {
 
 	hide() {
 		this.visible = false;
-                try { document.querySelector(".acknowledge").click(); } catch (err) {}
 		this.overlay.hide();
 	}
 
@@ -165,8 +164,13 @@ class DietOfWormsOverlay {
 			let lqe = his_self.game.queue[his_self.game.queue.length - 1];
 			let mv = lqe.split('\t');
 			if (mv[0] === 'ACKNOWLEDGE') {
-				his_self.game.queue.splice(his_self.game.queue.length - 1, 1);
-				his_self.restartQueue();
+		    		let obj = document.querySelector(".option.acknowledge");
+				if (obj) {
+					obj.click();
+				} else {
+					his_self.game.queue.splice(his_self.game.queue.length - 1, 1);
+					his_self.restartQueue();
+				}
 			}
 			this.overlay.remove();
 		});

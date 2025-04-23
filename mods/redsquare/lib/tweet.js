@@ -48,7 +48,6 @@ class Tweet {
 		if (!this.tx.optional.thread_id) { this.tx.optional.thread_id = ''; }
 		if (!this.tx.optional.retweeters) { this.tx.optional.retweeters = []; }
 		if (!this.tx.optional.thread_id) { this.tx.optional.thread_id = this.tx.signature; }		//
-		if (!this.tx.optional.source) { this.tx.optional.source = {}; }
 
 		//
 		// keep track of parent_id and thread_id (replies include these vars)
@@ -70,6 +69,11 @@ class Tweet {
 		this.youtube_id = null;
 		this.created_at = this.tx.timestamp;
 		this.updated_at = this.tx?.updated_at || this.tx.timestamp;
+
+		//
+		// is this tweet curated
+		//
+		this.curated = 0;
 
 		//
 		// the notice shows up at the top of the tweet BEFORE the username and
@@ -105,8 +109,14 @@ class Tweet {
 		this.unknown_children = [];
 		this.unknown_children_sigs_hmap = {};
 		this.user.notice = 'new post on ' + this.formatDate(this.created_at);
-		this.source = this.tx.optional.source;
-
+		this.source = {};
+		if (!this.source.text && this.tx?.optional?.source?.text) { this.source.text = this.tx.optional.source.text; }
+		if (!this.source.type && this.tx?.optional?.source?.type) { this.source.type = this.tx.optional.source.type; }
+		if (!this.source.peer && this.tx?.optional?.source?.peer) { this.source.peer = this.tx.optional.source.peer; }
+		if (!this.source.text)    { this.source.text = "unknown"; }
+		if (!this.source.type)    { this.source.type = "unknown"; }
+		if (!this.source.peer)    { this.source.peer = "unknown"; }
+		if (!this.source.curated) { this.source.curated = 0; }
 
 		//
 		// transactions can contain more specifi information for 
@@ -222,8 +232,10 @@ class Tweet {
 
 
 	hideTweet() {
+
 		//remove from archive
 		this.app.storage.deleteTransaction(this.tx, null, 'localhost');
+
 		//remove from dom
 		this.remove();
 
@@ -231,13 +243,8 @@ class Tweet {
 		this.mod.hidden_tweets.push(this.tx.signature);
 		this.mod.saveOptions();
 
-		//remove from tweet list!
-	    for (let i = 0; i < this.mod.tweets.length; i++) {
-	        if (this.mod.curated_tweets[i].tx.signature === this.tx.signature) {
-    	      this.mod.curated_tweets.splice(i, 1);
-        	  return;
-        	}
-      	}
+		this.curated = 0;
+
 	}
 
 
@@ -263,6 +270,17 @@ class Tweet {
 	}
 
 	render(prepend = false) {
+
+		//
+		// Apply curation Here !!!!
+		//
+		if (this.mod.curated && this?.curated == -1) {
+			if (this.mod.debug){
+				console.log("Filter tweet: ", this.text);
+			}
+			return -1;
+		}
+
 
 		//
 		// create link preview if link
@@ -338,7 +356,7 @@ class Tweet {
 				this.retweet.user.render();
 				this.retweet.attachEvents();
 			}
-			return;
+			return 0;
 		}
 
 		//
@@ -449,6 +467,8 @@ class Tweet {
 		}
 
 		this.attachEvents();
+
+		return 1;
 	}
 
 	rerenderControls(complete_rerender = false) {
@@ -470,69 +490,84 @@ class Tweet {
 	}
 
 	forceRenderWithCriticalChild() {
-		this.render();
+		let rtn_value = this.render();
 
-		if (this.critical_child) {
+		if (rtn_value !== -1 && this.critical_child) {
 			this.critical_child.render_after_selector = '.tweet-' + this.tx.signature;
-			this.critical_child.render();
-
-			let myqs = this.container + ` .tweet-${this.tx.signature}`;
-			let obj = document.querySelector(myqs);
-			if (obj) {
-				if (this.critical_child.parent_id == this.tx.signature) {
-					obj.classList.add('has-reply');
-				} else {
-					obj.classList.add('has-reply-disconnected');
+			if (this.critical_child.render() !== -1){
+				let myqs = this.container + ` .tweet-${this.tx.signature}`;
+				let obj = document.querySelector(myqs);
+				if (obj) {
+					if (this.critical_child.parent_id == this.tx.signature) {
+						obj.classList.add('has-reply');
+					} else {
+						obj.classList.add('has-reply-disconnected');
+					}
 				}
 			}
 		}
 
 		this.attachEvents();
 	}
+
+	//
+	// for rendering the tweet on the main page
+	//
 	renderWithCriticalChild() {
+
 		let does_tweet_already_exist_on_page = false;
 		if (document.querySelector(`.tweet-${this.tx.signature}`)) {
 			does_tweet_already_exist_on_page = true;
 		}
 
+		let rtn_value = -1;
+		// render tweet
 		if (!does_tweet_already_exist_on_page) {
-			this.render();
+			rtn_value = this.render();
 		}
 
-		if (this.critical_child && does_tweet_already_exist_on_page == false) {
+		// render critical child (to show one reply and prompt discussion)
+		if (this.critical_child && does_tweet_already_exist_on_page == false && rtn_value !== -1) {
 			//
 			// does child already exist on page
 			//
 			if (document.querySelector(`.tweet-${this.critical_child.tx.signature}`)) {
+				if (this.mod.debug){
+					console.log("already rendered critical child for tweet: ", this.text);
+				}
 				return;
 			}
 
 			this.critical_child.render_after_selector = '.tweet-' + this.tx.signature;
-			this.critical_child.render();
-
-			let myqs = this.container + ` .tweet-${this.tx.signature}`;
-			let obj = document.querySelector(myqs);
-			if (obj) {
-				if (this.critical_child.parent_id == this.tx.signature) {
-					obj.classList.add('has-reply');
-				} else {
-					obj.classList.add('has-reply-disconnected');
+			if (this.critical_child.render() > 0) {
+				let myqs = this.container + ` .tweet-${this.tx.signature}`;
+				let obj = document.querySelector(myqs);
+				if (obj) {
+					if (this.critical_child.parent_id == this.tx.signature) {
+						obj.classList.add('has-reply');
+					} else {
+						obj.classList.add('has-reply-disconnected');
+					}
 				}
+
+				//
+				// if no replies are listed, but we are showing a reply... show least one to avoid confusion
+				//
+				if (this.tx.optional.num_replies == 0) {
+					let obj = document.querySelector(
+						`.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`
+					);
+					try {
+						obj.innerHTML++;
+					} catch (err) {
+						console.log('err: ' + err);
+					}
+				}
+
+			}else{
+
 			}
 
-			//
-			// if no replies are listed, but we are showing a reply... show least one to avoid confusion
-			//
-			if (this.tx.optional.num_replies == 0) {
-				let obj = document.querySelector(
-					`.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-comment .tweet-tool-comment-count`
-				);
-				try {
-					obj.innerHTML++;
-				} catch (err) {
-					console.log('err: ' + err);
-				}
-			}
 		}
 
 		this.attachEvents();
@@ -556,6 +591,9 @@ class Tweet {
 				obj.classList.add('has-reply');
 			}
 
+			//
+			// Breadth -- Show all replies at one level
+			//
 			if (this.children.length > 1) {
 				if (obj) {
 					obj.classList.remove('has-reply');
@@ -567,6 +605,9 @@ class Tweet {
 					this.children[i].renderChild();
 				}
 			} else {
+				//
+				// Depth -- Recurse down through tweet thread
+				//
 				this.children[0].container = this.container;
 				this.children[0].render_after_selector = `.tweet-${this.tx.signature}`;
 				this.children[0].renderWithChildren();
@@ -576,8 +617,26 @@ class Tweet {
 		this.attachEvents();
 	}
 
+	renderNullTweet(){
+		let html = `<div class="tweet tweet-${this.tx.signature} is-reply null-tweet">
+          <div class="tweet-body">
+            <div class="tweet-sidebar"></div>
+            <div class="tweet-main">
+              <div class="tweet-text">filtered tweet not shown</div>
+            </div>
+          </div>
+        </div>`;
+
+		this.app.browser.addElementAfterSelector(
+				html,
+				this.render_after_selector
+			);
+	}
+
 	renderChild() {
-		this.render();
+		if (this.render() == -1){
+			this.renderNullTweet();
+		}
 		let myqs = this.container + ` .tweet-${this.tx.signature}`;
 		let obj = document.querySelector(myqs);
 		if (obj) {
@@ -928,41 +987,6 @@ class Tweet {
 				};
 			}
 
-			//////////
-			// edit //
-			//////////
-			let edit = document.querySelector(
-				`.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-edit`
-			);
-			if (edit) {
-				edit.onclick = (e) => {
-					e.preventDefault();
-					e.stopImmediatePropagation();
-
-					let post = new Post(this.app, this.mod, this);
-
-					post.source = 'Edit';
-					post.render();
-				};
-			}
-
-			//////////
-			// trash //
-			//////////
-			let trash = document.querySelector(
-				`.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-delete`
-			);
-			if (trash) {
-				trash.onclick = (e) => {
-					e.preventDefault();
-					e.stopImmediatePropagation();
-
-					let post = new Post(this.app, this.mod, this);
-
-					post.deleteTweet();
-				};
-			}
-
 			let more = document.querySelector(
 				`.tweet-${this.tx.signature} .tweet-body .tweet-main .tweet-controls .tweet-tool-more`
 			);
@@ -1179,6 +1203,21 @@ class Tweet {
 	// but we should prioritize our replies (better to see my snarky reply than the latest from some rando)
 	//
 	isCriticalChild(tweet) {
+
+		// Opt out for league tweets
+		for (let peer of this.mod.peers) {
+			if (tweet.tx.isFrom(peer.publicKey)){
+				if (peer.publicKey == this.mod.publicKey){
+					// My tweets! (because local is also a peer)
+					return true;
+				} else {
+					// Server tweets
+					return false;
+				}
+			}
+
+		}
+
 		if (tweet.thread_id !== this.thread_id) {
 			return false;
 		}

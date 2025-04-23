@@ -137,6 +137,11 @@ class ChatManager {
 							data.name
 						);
 					}
+				}else{
+					console.log("**********", data);
+					if (data.id && data.name) {
+						this.mod.createFreshGroup(data.name, data.id);
+					}
 				}
 
 				//Other modules can specify a chat group id (maybe linked to game_id or league_id)

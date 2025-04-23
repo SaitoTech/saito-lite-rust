@@ -149,11 +149,11 @@ video {
 }
 
 @media only screen and (orientation: landscape) {
-	.qrcode img {
+	/*.qrcode img {
 		margin: 5vw 35vw;
 		width: 30vw;
 		display: block;
-	}
+	}*/
 	.scanner-placeholder {
 		border: 3px solid var(--saito-red);
 		margin: 2vh auto;
@@ -163,11 +163,11 @@ video {
 }
 
 @media only screen and (orientation: portrait) {
-	.qrcode img {
+	/*.qrcode img {
 		margin: 20vw;
 		width: 60vw;
 		display: block;
-	}
+	}*/
 	.scanner-placeholder {
 		border: 3px solid var(--saito-red);
 		margin: 10vw;

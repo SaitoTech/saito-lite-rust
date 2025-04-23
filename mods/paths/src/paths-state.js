@@ -1,13 +1,15 @@
 
 
+  // turns have several rounds
   onNewRound() {
-  }
 
-  onNewTurn() {
+    this.calculateVictoryPoints();
+    this.displayGeneralRecordsTrack();
+    this.calculateRussianCapitulationTrack();
+    this.displayActionRoundTracks();
 
-    this.game.state.mandated_offensives = {};
-    this.game.state.mandated_offensives.central = "";
-    this.game.state.mandated_offensives.allies = "";
+    this.game.state.events.wireless_intercepts = 0;
+    if (this.game.state.events.high_seas_fleet > 1) { this.game.state.events.high_seas_fleet--; }
 
     for (let key in this.game.spaces) {
       let redisplay = false;
@@ -25,20 +27,166 @@
 
   }
 
+  // the turn is the "round" (rounds have turns)
+  onNewTurn() {
+
+    this.game.state.mandated_offensives = {};
+    this.game.state.mandated_offensives.central = "";
+    this.game.state.mandated_offensives.allies = "";
+
+    this.game.state.allies_passed = 0;
+    this.game.state.central_passed = 0;
+
+    this.game.state.ccs = {};
+    this.game.state.cc_central_selected = [];
+    this.game.state.cc_central_active = [];
+    this.game.state.cc_central_played_this_round = [];
+    this.game.state.cc_allies_selected = [];
+    this.game.state.cc_allies_played_this_round = [];
+
+    this.game.state.neutral_entry = 0;
+    this.game.state.central_reinforcements_ge = 0;
+    this.game.state.central_reinforcements_ah = 0;
+    this.game.state.central_reinforcements_tu = 0;
+    this.game.state.allies_reinforcements_fr = 0;
+    this.game.state.allies_reinforcements_br = 0;
+    this.game.state.allies_reinforcements_ru = 0;
+    this.game.state.allies_reinforcements_it = 0;
+    this.game.state.allies_reinforcements_us = 0;
+    this.game.state.allies_rounds = [];
+    this.game.state.central_rounds = [];
+
+    this.game.state.entrenchments = [];
+
+    this.game.state.rp = {};
+    this.game.state.rp['central'] = {};
+    this.game.state.rp['allies'] = {};
+    this.game.state.rp['central']['GE'] = 0;
+    this.game.state.rp['central']['AH'] = 0;
+    this.game.state.rp['central']['TU'] = 0;
+    this.game.state.rp['central']['BU'] = 0;
+    this.game.state.rp['central']['CP'] = 0;
+    this.game.state.rp['allies']['A'] = 0;
+    this.game.state.rp['allies']['BR'] = 0;
+    this.game.state.rp['allies']['FR'] = 0;
+    this.game.state.rp['allies']['IT'] = 0;
+    this.game.state.rp['allies']['RU'] = 0;
+    this.game.state.rp['allies']['AP'] = 0;
+
+    this.game.state.events.fall_of_the_tsar_russian_vp = 0;
+    this.game.state.events.they_shall_not_pass = 0;
+    this.game.state.events.wireless_intercepts = 0;
+    this.game.state.events.everyone_into_battle = 0;
+
+  }
+
+
+  calculateRussianCapitulationTrack() {
+
+    let count = 0;
+    let position = 1;
+
+    for (let key in this.game.spaces) {
+      let space = this.game.spaces[key];
+      if (space.country == "russia" && space.control == "central" && space.vp == 1) {
+	count++;
+      }
+    }
+    if (count >= 3) { position++; }
+
+    if (this.game.state.events.tsar_takes_command) { position++; }
+
+    if (position >= 3) {
+      if ((this.game.state.general_records_track.combined_war_status + count) >= 33) { position++; }
+    }
+
+    if (this.game.state.events.fall_of_the_tsar) { position++; }
+
+    if (count == 7 || count > this.game.state.events.fall_of_the_tsar_russian_vp && this.game.state.events.fall_of_the_tsar_russian_vp != -1) {
+      position++;
+    }
+
+    if (this.game.state.events.bolshevik_revolution) { position++; }
+
+    if (position != this.game.state.russian_capitulation_track) {    
+      this.game.state.russian_capitulation_track = position;
+      this.displayRussianCapitulationTrack();
+    }
+
+  }
+
+
+  calculateVictoryPoints() {
+
+    let vp = 0;
+    let central_controlled_vp_spaces = 0;
+
+    //
+    // central VP spaces
+    //
+    for (let key in this.game.spaces) { if (this.game.spaces[key].vp > 0 && this.game.spaces[key].control == "central") { central_controlled_vp_spaces++; } }
+
+    //
+    //
+    //
+    let expected_central_vp_spaces = this.countSpacesWithFilter((spacekey) => {
+      if (this.game.spaces[spacekey].country == "germany" && this.game.spaces[spacekey].vp > 0) { return 1; }
+      if (this.game.spaces[spacekey].country == "austria" && this.game.spaces[spacekey].vp > 0) { return 1; }
+      if (this.game.state.events.bulgaria) { 
+        if (this.game.spaces[spacekey].country == "bulgaria" && this.game.spaces[spacekey].vp > 0) { return 1; }
+      }
+    });
+
+    vp = central_controlled_vp_spaces - expected_central_vp_spaces + 10;
+
+console.log("STARTING VP: " + vp);
+
+    if (this.game.state.events.rape_of_belgium) { vp--; }
+    if (this.game.state.events.belgium) { 
+      if (this.game.state.turn >= 5) { vp--; }
+      if (this.game.state.turn >= 9) { vp--; }
+      if (this.game.state.turn >= 13) { vp--; }
+      if (this.game.state.turn >= 17) { vp--; }
+    }
+    if (this.game.state.events.reichstag_truce) { vp++; }
+    if (this.game.state.events.lusitania) { vp--; }
+    if (this.game.state.events.war_in_africa_vp) { vp++; }
+    if (this.game.state.events.fall_of_the_tsar) { vp++; }
+    if (this.game.state.events.fall_of_the_tsar_romania_bonus) { vp++; }
+    if (this.game.state.events.fourteen_points) { vp--; }
+    if (this.game.state.events.convoy) { vp--; }
+    if (this.game.state.events.zimmerman_telegram) { vp--; }
+
+    this.game.state.general_records_track.vp = vp;
+  
+    return vp;
+
+  }
+
   returnState() {
 
     let state = {};
 
     state.events = {};
+
     state.players = [];
     state.removed = []; // removed cards
+    state.round = 0;
     state.turn = 0;
     state.skip_counter_or_acknowledge = 0; // don't skip
     state.cards_left = {};
 
+    state.neutral_entry = 0;
+
+
     state.mandated_offensives = {};
     state.mandated_offensives.central = "";
     state.mandated_offensives.allies = "";
+
+    state.allies_rounds = [];
+    state.central_rounds = [];
+
+    state.entrenchments = [];
 
     state.general_records_track = {};
     state.general_records_track.vp = 10;
@@ -61,8 +209,11 @@
     state.reserves = {};
     //state.reserves['central'] = ["ah_corps","ah_corps","ah_corps","ah_corps","ge_corps","ge_corps","ge_corps","ge_corps","ge_corps","ge_corps","ge_corps","ge_corps"];
     //state.reserves['allies'] = ["it_corps","it_corps","it_corps","it_corps","fr_corps","fr_corps","fr_corps","fr_corps","fr_corps","fr_corps","fr_corps","br_corps","bef_corps","ru_corps","ru_corps","ru_corps","ru_corps","ru_corps","be_corps","sb_corps","sb_corps"];
-    state.reserves['central'] = ["gr_army04", "gr_army06", "gr_army08"];
+    state.reserves['central'] = ["ge_army04", "ge_army06", "ge_army08"];
     state.reserves['allies'] = ["fr_army01", "br_corps", "ru_army09", "ru_army10"];
+
+    state.allies_passed = 0;
+    state.central_passed = 0;
 
     state.eliminated = {};
     state.eliminated['central'] = [];
@@ -71,19 +222,59 @@
     state.rp = {};
     state.rp['central'] = {};
     state.rp['allies'] = {};
-
+    state.rp['central']['GE'] = 0;
+    state.rp['central']['AH'] = 0;
+    state.rp['central']['TU'] = 0;
+    state.rp['central']['BU'] = 0;
+    state.rp['central']['CP'] = 0;
+    state.rp['allies']['A'] = 0;
+    state.rp['allies']['BR'] = 0;
+    state.rp['allies']['FR'] = 0;
+    state.rp['allies']['IT'] = 0;
+    state.rp['allies']['RU'] = 0;
+    state.rp['allies']['AP'] = 0;
 
     state.active_player = -1;
+
+    state.ccs = {};
+    state.cc_central_selected = [];
+    state.cc_central_active = [];
+    state.cc_central_played_this_round = [];
+    state.cc_allies_selected = [];
+    state.cc_allies_active = [];
+    state.cc_allies_played_this_round = [];
+
+    state.central_limited_war_cards_added = false;
+    state.allies_limited_war_cards_added = false;
+    state.central_total_war_cards_added = false;
+    state.allies_total_war_cards_added = false;
+
+    state.events.war_in_africa_vp = 0;
 
     return state;
 
   }
 
-  returnActivationCost(key) {
-    return 1;
-  }
 
-  returnMovementCost(key) {
-    return 1;
-  }
+  moveUnitToSpacekey(ukey, to="") {
 
+    let unit = this.game.units[ukey];
+
+    for (let key in this.game.spaces) {
+      for (let i = 0; i < this.game.spaces[key].units.length; i++) {
+        if (this.game.spaces[key].units[i].key == ukey) {
+	  unit = this.game.spaces[key].units[i];
+	  this.game.spaces[key].units.splice(i, 1);
+	  break;
+        }
+      }
+    }
+
+    unit.spacekey = to;
+    this.game.spaces[to].units.push(unit);
+
+    this.displayBoard();
+    
+    return 1;
+
+  }

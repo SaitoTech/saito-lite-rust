@@ -119,6 +119,8 @@ span.tip {
 	right: -12.5%;
 }
 
+
+
 dt {
 	margin-top: 0.8em;
 	margin-bottom: 0.5em;
@@ -254,20 +256,38 @@ dt {
 	border-color: whitesmoke;
 }
 
+/*.chover:hover:after{
+	content: attr(data-score);
+	color: black;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+	font-weight: bold;
+}*/
+
+.chover.noselect:hover{
+	background-color: #222;
+	cursor: help;
+}
+.chover.noselect:hover:after{
+	color: whitesmoke;
+}
+
 .city.empty.rhover {
-	border: 1px solid #fff;
+    border: 1px solid #fff;
     position: absolute;
     z-index: 0;
     background: linear-gradient(145deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 70%), radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.4), rgba(0, 0, 1, 0.5) 80%);
     box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.5), 0 5px 15px rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(1px);
-	z-index: 999;
+    z-index: 999;
 }
 
 .road.rhover {
     border: 1px solid #aaa;
     position: absolute;
-    z-index: 0;
+    z-index: 9999;
     background: linear-gradient(145deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 70%), radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.3) 80%);
     box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.5), 0 5px 15px rgba(0, 0, 0, 0.3);
 }
@@ -616,7 +636,6 @@ input[type='checkbox'] {
 	top: 50%;
 	transform: translate(-50%, -50%);
 	text-align: center;
-	cursor: pointer;
 }
 
 .sector-container.rhover:hover {
@@ -638,16 +657,44 @@ input[type='checkbox'] {
 	font-weight: bold;
 	border: 2px solid #fff;
 	border-radius: 50%;
-	width: 7rem;
-	height: 7rem;
-	line-height: 7rem;
-	text-align: center;
+	width: 8rem;
+	height: 8rem;
 	background: #6664;
 	color: white;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
 }
 
 .sector_value.rolled {
 	box-shadow: 0 0 10px 5px ghostwhite;
+	color: #000;
+	background: #FFF6;
+}
+
+.sector_value::after{
+	position: absolute;
+	left: 50%;
+	top: 42%;
+	transform: translateX(-50%);
+	font-size: 3.4rem;
+}
+
+.sv6::after, .sv8::after {
+	content: '.....';
+}
+.sv5::after, .sv9::after {
+	content: '....';
+}
+.sv4::after, .sv10::after {
+	content: '...';
+}
+.sv3::after, .sv11::after {
+	content: '..';
+}
+.sv2::after, .sv12::after {
+	content: '.';
 }
 
 .bandit {
@@ -660,15 +707,16 @@ input[type='checkbox'] {
 	top: 0;
 	left: 0;
 	color: #fff9;
-    background-image: url(/settlers/img/icons/bandit.png);
-    background-size: 45%;
-    overflow: visible;
-    border: none;
-    width: 100%; 
-    height: 100%; 
-    background-repeat: no-repeat;
-    background-position: 50% 100%;
-    z-index: 2;
+  background-image: url(/settlers/img/icons/bandit.png);
+  background-size: 45%;
+  overflow: visible;
+  border: none;
+  width: 100%; 
+  height: 100%; 
+  background-repeat: no-repeat;
+  background-position: 50% 100%;
+  z-index: 2;
+  transform: unset;
 }
 
 .robinhood .bandit::after {

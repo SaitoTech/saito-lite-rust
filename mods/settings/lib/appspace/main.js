@@ -1,7 +1,6 @@
 const SettingsAppspaceTemplate = require('./main.template.js');
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
 const SaitoModule = require('./../../../../lib/saito/ui/saito-module/saito-module');
-const localforage = require('localforage');
 const jsonTree = require('json-tree-viewer');
 
 class SettingsAppspace {
@@ -450,18 +449,13 @@ class SettingsAppspace {
 						"This will clear your browser's DB, proceed cautiously"
 					);
 					if (confirmation) {
-						localforage
-							.clear()
-							.then(function () {
-								console.log('Cleared LocalForage');
-							})
-							.catch(function (err) {
-								console.error(err);
-							});
+
+						// Centrally Manage localForage
+						await this.app.storage.clearLocalForage();
 
 						let archive = this.app.modules.returnModule('Archive');
 						if (archive) {
-							await archive.onWalletReset(true);
+							await archive.onUpgrade('nuke');
 						}
 					}
 				};
@@ -469,13 +463,13 @@ class SettingsAppspace {
 
 			Array.from(
 				document.querySelectorAll(
-					'.settings-appspace .pubkey-containter'
+					'.settings-appspace .pubkey-grid'
 				)
 			).forEach((key) => {
 				key.onclick = (e) => {
 					navigator.clipboard.writeText(e.currentTarget.dataset.id);
 					let icon_element = e.currentTarget.querySelector(
-						'.pubkey-containter i'
+						'.pubkey-grid i'
 					);
 					icon_element.classList.toggle('fa-copy');
 					icon_element.classList.toggle('fa-check');

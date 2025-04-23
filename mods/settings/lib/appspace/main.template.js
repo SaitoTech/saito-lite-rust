@@ -70,14 +70,14 @@ module.exports  = (app, mod, main) => {
             ${identifier_registered}
       
             <div>Public Key:</div>
-            <div class="pubkey-containter" data-id="${publicKey}">
-              <div class="profile-public-key">${publicKey}</div>
+            <div class="pubkey-grid" data-id="${publicKey}">
+              <div>${publicKey}</div>
               <i class="fas fa-copy" id="copy-public-key"></i>
             </div>
       
             <div>Private Key:</div>
-            <div class="pubkey-containter" data-id="${main.privateKey}">
-              <div class="profile-public-key saito-password">${main.privateKey}</div>
+            <div class="pubkey-grid" data-id="${main.privateKey}">
+              <div class="saito-password">${main.privateKey}</div>
               <i class="fas fa-copy" id="copy-private-key"></i>
             </div>
 

@@ -51,6 +51,9 @@ class SettlersDisplay {
 
   displayScore() {
     try {
+
+      let score_change = false;
+
       for (let i = 0; i < this.game.state.players.length; i++) {
         let score = 0;
         //Count towns and cities
@@ -75,28 +78,51 @@ class SettlersDisplay {
         //Save Score
         this.game.state.players[i].vp = score;
 
-        //Check for winner
-        if (this.game.state.players[i].vp >= this.game.options.game_length) {
-          this.game.queue.push(`winner\t${i}`);
-        }
-      }
-
-      for (let i = 0; i < this.game.state.players.length; i++) {
+        //Check if there is a difference (and who went up)
         if (this.game.state.players[i].vp !== this.racetrack.players[i].score) {
+          if (this.game.state.players[i].vp > this.racetrack.players[i].score) {
+            score_change = i + 1;
+          }
           this.racetrack.players[i].score = this.game.state.players[i].vp;
           this.racetrack.render();
           this.racetrack.lock();
         }
-      }
 
-      if (this.game.players.length == 2) {
-        if (Math.abs(this.game.state.players[0].vp - this.game.state.players[1].vp) > 1) {
-          console.log('Robin hood');
-          $('.main').addClass('robinhood');
-        } else {
-          $('.main').removeClass('robinhood');
+        //Check for winner
+        if (this.game.state.players[i].vp >= this.game.options.game_length) {
+          this.game.queue.push(`winner\t${i}`);
+          score_change = false;
         }
       }
+
+      if (this.game.players.length == 2 && score_change) {
+        if (Math.abs(this.game.state.players[0].vp - this.game.state.players[1].vp) > 1) {
+          
+          let player = this.game.state.players[0].vp > this.game.state.players[1].vp ? 1 : 2;
+
+          if (score_change == player) {
+            // Newly entering state
+            if (!this.game.state.robinhood) {
+              $('.main').addClass('robinhood');
+              this.game.state.robinhood = 3-player;
+              this.updateLog(`Robinhood will be friendly to ${this.formatPlayer(this.game.state.robinhood)}`);
+            }
+  
+            // Only move Robinhood if bandit is threatening losing player
+            if (this.game.state.threatened.includes(this.game.state.robinhood)){
+              this.card_overlay.render({ player: this.game.state.robinhood , card : "Robin Hood"});
+              this.game.queue.push(`roll_bandit\t${player}`);
+            }
+          }
+        } else {
+          if (this.game.state.robinhood) {
+            this.updateLog("The bandit is neutral again");
+          }
+          $('.main').removeClass('robinhood');
+          this.game.state.robinhood = 0;
+        }
+      }
+
     } catch (err) {
       console.error(err);
     }
@@ -442,7 +468,6 @@ class SettlersDisplay {
     $('.sector_value:not(.bandit)').attr('style', '');
     let divname = '.sv' + roll + ':not(.bandit)';
     $(divname)
-      .addClass('rolled')
       .css('color', '#000')
       .css('background', '#FFF6')
       .delay(600)
@@ -465,14 +490,11 @@ class SettlersDisplay {
       .queue(function () {
         $(this).css('color', '#FFF').css('background', '#0004').dequeue();
       })
+      .addClass('rolled')
       .delay(600)
       .queue(function () {
-        $(this).css('color', '#000').css('background', '#FFF6').dequeue();
-      });
-    /*.delay(800)
-      .queue(function () {
         $(this).removeAttr("style").dequeue();
-      });*/
+      });
   }
 
 
@@ -515,34 +537,14 @@ class SettlersDisplay {
             complex_str += s;
           }
 
-          console.log(complex_str);
+          //console.log(complex_str);
 
           status_obj.innerHTML = complex_str;
           $('.status').disableSelection();
         }
       }
-      if (this.hud.user_dragged == 0) {
-        this.setHudHeight();
-      }
     } catch (err) {
       console.error("ERR: " + err);
-    }
-  }
-
-  //
-  // this affixes HUD to bottom of screen...
-  //
-  setHudHeight() {
-    try {
-      console.log('Adjusting hud');
-      let hud = document.querySelector('.hud');
-      if (hud) {
-        //hud.style.bottom = "24px";
-        //hud.style.height = "auto";
-        //hud.style.top = "unset";
-      }
-    } catch (err) {
-      console.erorr(err);
     }
   }
 

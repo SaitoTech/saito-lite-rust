@@ -1,0 +1,81 @@
+/* explorerc main.css */
+
+/* Add global styles or resets here */
+
+body {
+  /* Set default font for general text */
+  font-family: "Visuelt Lite", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  /* Reset default margin */
+  margin: 0;
+}
+
+/* Define monospace font stack for data elements */
+.mono-data,
+code,
+pre {
+  font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.9em; /* Slightly smaller for mono */
+}
+
+.saito-container {
+  /* Styles for the main App container if needed */
+}
+
+.saito-main {
+  /* Styles for the main content area */
+  padding: 1rem;
+}
+
+/* --- Basic Component Styles --- */
+
+/* Back Button */
+.back-button {
+  margin-bottom: 1rem; /* Space below the button */
+  display: inline-flex; /* Align icon and text */
+  align-items: center;
+  gap: 0.4em; /* Space between icon and text */
+  /* Inherits general .saito-button-secondary styles */
+}
+
+.back-button .heroicon {
+  width: 1.1em; /* Adjust size as needed */
+  height: 1.1em;
+  /* Stroke color should be inherited from button text color */
+}
+
+/* General Card/Component Styling (if not already defined elsewhere) */
+.saito-component {
+  /* Example base styles if needed 
+  background-color: var(--saito-background-color, #ffffff);
+  border: 1px solid var(--saito-border-color, #e0e0e0);
+  border-radius: var(--saito-border-radius, 8px);
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  box-shadow: var(--saito-box-shadow-small, 0 2px 5px rgba(0,0,0,0.05));
+  overflow: hidden; 
+  */
+} 
+
+
+#message-wrapper {
+    border: var(--border-thickness-status-message) solid var(--border-color-status-message);
+    min-width: 500px;
+    max-width: 100vw;
+    padding: 2rem;
+    background: var(--background-color-status-message);
+    position: fixed;
+    bottom: 2rem;
+    left: 3rem;
+    z-index: 200;
+    border-radius: var(border-radius-status-message);
+  }
+  
+  .message-message {
+    font-size: 1.5rem;
+    color: var(--font-color-status-message);
+    cursor: default;
+  }
+  
+  .message-clickable, .message-clickable .message-message{
+    cursor: pointer;
+  }

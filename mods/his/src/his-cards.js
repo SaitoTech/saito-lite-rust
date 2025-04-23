@@ -3532,6 +3532,7 @@ console.log("selected: " + spacekey);
 		  }
 		}
 
+    		his_self.addMove("remove_cards_left");
     		his_self.addMove("cards_left\tprotestant\t"+(parseInt(his_self.game.state.cards_left["protestant"])+1));
 		his_self.addMove("discard\tprotestant\t007");
 		his_self.addMove("NOTIFY\tProtestants retrieve "+his_self.popup(card));
@@ -3792,11 +3793,11 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
 	his_self.game.queue.push("hide_overlay\ttheses");
         his_self.game.queue.push("ACKNOWLEDGE\tThe Reformation has begun!");
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
-	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+//	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+//	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+//	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+//	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+//	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	his_self.game.queue.push("STATUS\tProtestants selecting reformation targets...\t"+JSON.stringify(players_to_go));
 	his_self.game.queue.push("show_overlay\ttheses");
@@ -10338,7 +10339,7 @@ if (space.key == "milan") {
 
         his_self.game.state.events.revolt_in_egypt = 1;
 
-        his_self.game.queue.push("check_for_broken_seiges");
+        his_self.game.queue.push("check_for_broken_sieges");
         his_self.game.queue.push("revolt_in_egypt_leader_removal\tottoman");
         his_self.game.queue.push("revolt_in_egypt_troop_removal\tottoman\t3");
         his_self.game.queue.push("revolt_in_egypt_troop_removal\tottoman\t2");
@@ -10544,7 +10545,7 @@ if (space.key == "milan") {
           his_self.game.queue.push("revolt_in_ireland_bonus_resistance\t"+faction);
 	}
 
-        his_self.game.queue.push("check_for_broken_seiges");
+        his_self.game.queue.push("check_for_broken_sieges");
         his_self.game.queue.push("revolt_in_ireland_leader_removal\tengland");
         his_self.game.queue.push("revolt_in_ireland_troop_removal\tengland\t4");
         his_self.game.queue.push("revolt_in_ireland_troop_removal\tengland\t3");
@@ -12301,7 +12302,7 @@ if (space.key == "milan") {
 
         his_self.game.state.events.war_in_persia = 1;
 
-        his_self.game.queue.push("check_for_broken_seiges");
+        his_self.game.queue.push("check_for_broken_sieges");
         his_self.game.queue.push("war_in_persia_leader_removal\tottoman");
         his_self.game.queue.push("war_in_persia_troop_removal\tottoman\t5");
         his_self.game.queue.push("war_in_persia_troop_removal\tottoman\t4");
@@ -12683,7 +12684,7 @@ if (space.key == "milan") {
       turn : 3 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { if (his_self.areAllies("ottoman", "france")) { return 1; } return 0; } ,
-      canEvent : function(his_self, faction) { return 1; },
+      canEvent : function(his_self, faction) { if (his_self.areAllies("ottoman", "france")) { return 1; }; return 0; },
       onEvent : function(his_self, faction) {
 
 	if (his_self.areAllies("ottoman", "france")) {

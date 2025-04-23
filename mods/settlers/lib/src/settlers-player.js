@@ -122,6 +122,11 @@ class SettlersPlayer {
       //$('.city').css('z-index', 9999999);
       $(".city.empty").off();
 
+      $(`.city.empty[data-score="15"]`).addClass("noselect");
+      $(`.city.empty[data-score="14"]`).addClass("noselect");
+      //$('.city.noselect').removeClass("empty");
+
+
       $(".city.empty").on("mousedown", function (e) {
         xpos = e.clientX;
         ypos = e.clientY;
@@ -134,6 +139,13 @@ class SettlersPlayer {
         if (Math.abs(ypos - e.clientY) > 4) {
           return;
         }
+
+        if ($(this).hasClass("noselect")){
+          salert("This space is too valuable for an initial placement");
+          return;
+        }
+
+
         $(".city.empty").css("background-color", "");
         //Confirm this move
         let slot = $(this).attr("id");
@@ -141,7 +153,7 @@ class SettlersPlayer {
           $(".city.empty").removeClass("chover");
           $(".city.empty").off();
           settlers_self.game.state.placedCity = slot;
-          settlers_self.buildCity(settlers_self.game.player, slot);
+          //settlers_self.buildCity(settlers_self.game.player, slot);
           if (existing_cities == 1)
             settlers_self.addMove(
               `secondcity\t${settlers_self.game.player}\t${slot.replace("city_", "")}`
@@ -194,7 +206,7 @@ class SettlersPlayer {
           $(".rhover").off();
           $(".rhover").removeClass("rhover");
 
-          settlers_self.buildCity(settlers_self.game.player, slot);
+          //settlers_self.buildCity(settlers_self.game.player, slot);
           settlers_self.addMove(`build_city\t${settlers_self.game.player}\t${slot}`);
           settlers_self.endTurn();
         });
@@ -214,10 +226,6 @@ class SettlersPlayer {
     if (this.game.state.placedCity) {
       this.hud.updateStatus(`<div class="player-notice">YOUR TURN: place a connecting ${this.r.name}</diiv>`);
 
-      /*Initial placing of settlements and roads, road must connect to settlement just placed
-          Use a "new" class tag to restrict scope
-          This is literally just a fix for the second road in the initial placement
-        */
       let newRoads = this.hexgrid.edgesFromVertex(this.game.state.placedCity.replace("city_", ""));
       for (let road of newRoads) {
         $(`#road_${road}`).addClass("new");
@@ -381,9 +389,9 @@ class SettlersPlayer {
     // auto-end my turn if I cannot do anything
     //
     if (can_do_something != true) {
-      this.addMove("end_turn\t" + this.game.player); //End turn deletes the previous move (player_actions)
-      this.addMove("ACKNOWLEDGE\tyou cannot do anything - end turn\t" + this.game.player);
-      this.endTurn();
+        this.addMove("end_turn\t" + this.game.player); //End turn deletes the previous move (player_actions)
+        this.addMove("ACKNOWLEDGE\tyou cannot do anything - end turn\t" + this.game.player);
+        this.endTurn();
       return;
     }
 

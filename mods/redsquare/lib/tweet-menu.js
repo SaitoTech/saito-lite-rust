@@ -9,8 +9,6 @@ class TweetMenu {
 		this.overlay = new SaitoOverlay(app, mod, false);
 
 		app.connection.on('rs-show-tweet-options', (tweet, elem) => {
-			//let tweet_id = tweet.tx.signature;
-
 			this.tweet = tweet;
 			this.tweeter = tweet.tx.from[0].publicKey;
 			this.container = elem;
@@ -21,7 +19,9 @@ class TweetMenu {
 	render() {
 
 		this.overlay.remove();
-		this.overlay.show(TweetMenuTemplate(this), () => {
+		let is_tweet_mine = false;
+		if (this.tweet.tx.from[0].publicKey == this.mod.publicKey) { is_tweet_mine = true; }
+		this.overlay.show(TweetMenuTemplate(this, this.tweet, is_tweet_mine), () => {
 			this.close();
 			if (document.querySelector(".activated-dot-menu")){
 				document.querySelector(".activated-dot-menu").classList.remove("activated-dot-menu");
@@ -44,11 +44,11 @@ class TweetMenu {
 				item.onclick = async (e) => {
 					console.log(e.currentTarget);
 					switch (e.currentTarget.getAttribute('id')) {
-						case 'follow_contact':
-							this.mod.sendFollowTransaction(this.tweeter);
+						case 'delete_tweet':
+							this.deleteTweet();
 							break;
-						case 'unfollow_contact':
-							this.mod.sendUnfollowTransaction(this.tweeter);
+						case 'edit_tweet':
+							this.editTweet();
 							break;
 						case 'block_contact':
 							this.blockContact();
@@ -56,8 +56,11 @@ class TweetMenu {
 						case 'report_tweet':
 							await this.reportTweet();
 							break;
+						case 'show_tweet_info':
+							this.showTweetInfo();
+							break;
 						case 'hide_tweet':
-							this.tweet.hideTweet();
+							this.hideTweet();
 					}
 
 					this.overlay.close();
@@ -70,6 +73,26 @@ class TweetMenu {
 		this.tweet = null;
 		this.container = null;
 	}
+
+	showTweetInfo() {
+		if (!this.tweet) { alert("No Info Available"); return; }
+		if (!this.tweet.source) { alert("No Info Available"); return; }
+		let info = "";
+		if (this.tweet.source?.text) { info += "Source: " + this.tweet.source.text + "\n"; }
+		if (this.tweet.source?.type) { info += "Type: " + this.tweet.source.type + "\n"; }
+		if (this.tweet.source?.peer) { info += "Node: " + this.tweet.source.peer + "\n"; }
+		alert(info);
+	}
+
+	editTweet() {
+                let post = new Post(this.app, this.mod, this.tweet);
+                post.source = 'Edit';
+                post.render();
+        }
+	deleteTweet() {
+        	let post = new Post(this.app, this.mod, this.tweet);
+                post.deleteTweet();
+        }
 
 	blockContact() {
 		//Also flag the tweet

@@ -13,12 +13,6 @@ const {
 } = require('@multiversx/sdk-core');
 const PeerService = require('saito-js/lib/peer_service').default;
 
-////  !!!!!!!!!!!!!!!!!!!!!!!!!
-
-///  don't forget to store this.balance as a string!
-
-//  !!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 
 
 class EGLDModule extends CryptoModule {
@@ -33,6 +27,12 @@ class EGLDModule extends CryptoModule {
     this.account = null;
     this.address_obj = null;
     this.secretKey = null;
+
+    /* Should default to testnet if no ENV variables...
+    this.base_url = "https://testnet-api.multiversx.com";
+    this.network_provider_url = "https://testnet-gateway.multiversx.com";
+    this.explorer_url = "https://testnet-explorer.multiversx.com";
+    */
   }
 
   async initialize(app) {
@@ -58,8 +58,9 @@ class EGLDModule extends CryptoModule {
 
       if (!this.options?.mnemonic_text) {
         await this.getAddress();
-        await this.generateAccount();
       }
+
+      await this.updateAccount();
 
       await super.activate();
 
@@ -96,25 +97,10 @@ class EGLDModule extends CryptoModule {
     }
   }
 
-  async generateAccount() {
-    try {
-      if (this.address_obj != null) {
-        let account = new Account(this.address_obj);
-        this.account = account;
-
-        this.options.balance = this.balance = this.account.balance;
-        this.options.nonce = this.account.nonce;
-
-        //console.log("generateAccount account: ", this.account);
-      }
-    } catch (error) {
-      console.error('Error creating EGLD account:', error);
-    }
-  }
-
   async updateAccount() {
     try {
       if (this.apiNetworkProvider == null) {
+        console.warn("No API Network Provided...");
         return;
       }
 
@@ -179,6 +165,8 @@ class EGLDModule extends CryptoModule {
         `accounts/${address.toBech32()}/transactions`
       );
 
+      await this.updateAccount();
+      
       let balance = BigInt(this.account.balance); // Start with the latest balance
       console.log('return history: ', transactions);
 
@@ -246,12 +234,21 @@ class EGLDModule extends CryptoModule {
       // update account to get latest nonce
       this.updateAccount();
 
-      console.log('this.secretKey: ', this.secretKey);
+      // Determine chainID from api-urls
+      let chainID = '1';
+
+      if (this.options.base_url.includes("devnet")){
+        chainID = "D";
+      }
+      if (this.options.base_url.includes("testnet")){
+        chainID = "T";
+      }
+
       let txObj = {
         value: this.convertEgldToAtomic(amount),
         sender: this.address_obj,
         receiver: Address.newFromBech32(recipient),
-        chainID: '1',
+        chainID,
         nonce: this.options.nonce,
         gasLimit: 50000
         //data: "SAITO multiwallet transfer"
@@ -417,16 +414,13 @@ class EGLDModule extends CryptoModule {
     try {
       let this_self = this;
 
-      if (this_self.options.base_url == null) {
+      if (!this_self.options?.base_url) {
         await this_self.sendFetchEnvTransaction(async function (res) {
           if (typeof res == 'object' && Object.keys(res).length > 0) {
             this_self.options.base_url = res.base_url;
             this_self.options.explorer_url = res.explorer_url;
             this_self.options.network_provider_url = res.network_provider_url;
-
             await this_self.initiateNetwork();
-          } else {
-            console.error("Unable to load config from env");
           }
         });
       } else {

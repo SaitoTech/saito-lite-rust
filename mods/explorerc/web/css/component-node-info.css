@@ -1,0 +1,138 @@
+/* Styles for the NodeInfo Component */
+
+.node-info-card,
+.node-info-loading,
+.node-info-error,
+.node-info-empty {
+  background-color: var(--saito-background-color, #ffffff);
+  border: 1px solid var(--saito-border-color, #e0e0e0);
+  border-radius: var(--saito-border-radius, 8px);
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  box-shadow: var(--saito-box-shadow-small, 0 2px 5px rgba(0,0,0,0.05));
+  overflow: hidden;
+}
+
+.node-info-loading,
+.node-info-error,
+.node-info-empty {
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--saito-text-color-muted, #888);
+  font-style: italic;
+}
+
+.node-info-error {
+    color: var(--saito-warning, red);
+    border-color: var(--saito-warning, red);
+}
+
+.node-info-header {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: var(--saito-text-color, #333);
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid var(--saito-border-color-light, #eee);
+}
+
+.node-info-body p {
+  margin-bottom: 0.6rem;
+  line-height: 1.5;
+  color: var(--saito-text-color-secondary, #555);
+  display: flex;
+  align-items: flex-start;
+}
+
+.node-info-label {
+  display: inline-block;
+  width: 120px;
+  min-width: 120px;
+  margin-right: 0.8em;
+  font-weight: 600;
+  color: var(--saito-text-color, #333);
+  flex-shrink: 0;
+}
+
+.node-info-body .mono-data {
+  word-break: break-all;
+}
+
+.node-info-box h3 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid var(--saito-border-color, #ccc);
+  padding-bottom: 0.5rem;
+}
+
+.node-info-box ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.node-info-box li {
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.node-info-box li span:first-child {
+  font-weight: bold;
+  margin-right: 0.5rem;
+  min-width: 120px;
+  display: inline-block;
+}
+
+.node-info-box li .mono-data {
+  margin-right: 0.25rem;
+}
+
+.node-info-box li .node-info-key {
+  word-break: break-all;
+}
+
+.node-info-box .error-message {
+    color: var(--saito-warning, red);
+}
+
+/* Styles for two-column layout */
+.node-info-body.two-column {
+  display: flex;
+  flex-wrap: wrap; /* Allow columns to wrap on very small screens if needed */
+  gap: 0 1.5rem; /* Gap between columns, no gap between rows within columns */
+}
+
+.node-info-column {
+  flex: 1; /* Allow columns to share space equally */
+  min-width: 200px; /* Minimum width before potentially wrapping */
+}
+
+/* Style for the new indicator refresh icon */
+.indicator.indicator-refresh {
+  margin-left: 0.6em; /* Keep spacing */
+  background-color: transparent; /* Override default indicator background */
+  border: none; /* Override default indicator border */
+  padding: 0; /* Override default indicator padding */
+  cursor: pointer;
+}
+
+.indicator.indicator-refresh .heroicon {
+    stroke: var(--saito-red, #d9534f); /* Red color */
+    /* Explicitly set size to match other indicators */
+    width: 18px; 
+    height: 18px;
+}
+
+/* Row styling might still be needed if NodeInfo <p> isn't flex by default */
+.latest-block-row {
+    display: flex;
+    align-items: center; /* Align vertically better */
+}
+
+/* Style for the block ID when updates are available */
+.latest-block-row .mono-data.has-updates {
+  color: var(--saito-red, #d9534f); /* Saito red */
+  font-weight: 600; /* Optional: make it bold too */
+} 

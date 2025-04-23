@@ -1,0 +1,20 @@
+.space-overlay {
+	min-width: 600px;
+	min-height: 500px;
+	max-height: 90vh;
+	max-width: 90vw;
+	border-radius: 2rem;
+	background-color: white;
+	background-size: cover;
+	overflow-y: auto;
+}
+
+.space-overlay .units {
+	min-height: max-content;
+}
+
+.space-overlay .details {
+	min-height: max-content;
+
+}
+

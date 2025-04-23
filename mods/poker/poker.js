@@ -93,12 +93,20 @@ class Poker extends GameTableTemplate {
 		//console.log("score2: " + JSON.stringify(score2));
 		//console.log("winner: " + JSON.stringify(winner));
 
-		super.initializeGame(); //Update max players
+		super.initializeGame(); 
 
 		//
 		// CHIPS or CRYPTO ?
 		//
 		this.settleNow = false;
+		this.settle_every_hand = false;
+
+
+		if (this.game.player == 0){
+			if (!this.game.pool[0]){
+				this.addPool();
+			}
+		}
 
 		//
 		// initialize game state
@@ -147,6 +155,14 @@ class Poker extends GameTableTemplate {
 					okey = 'chips';
 				}
 
+				if (okey == 'eliminated') {
+					let str = "";
+					for (let key in oval){
+						str += this.app.keychain.returnUsername(key) + ", ";
+					}
+					oval = str;
+				}
+				
 				if (output_me == 1) {
 					ngoa[okey] = oval;
 				}

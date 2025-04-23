@@ -11,7 +11,7 @@ class TST extends CryptoModule {
 		this.information =
 			'This is some important information you may care to read about when enabling the TST crypto module';
 		this.warning = 'The TST crypto module wishes you to read this warning';
-		this.balance = "0.0"; 
+
 	}
 
 	//
@@ -21,18 +21,24 @@ class TST extends CryptoModule {
 		// just given them our Saito publickey - easy to test
 		//console.log("TST return address: " + this.publicKey);
 
-		//
-		// Strange that this.publicKey is not intialized...
-		//
-
-		return this.app.wallet.publicKey;
+		return this.address;
 	}
 
 	async activate(){
 
 		if (!this.isActivated()){
-			this.balance = (100*Math.random()).toFixed(8);
+
+			if (!this?.address){
+				this.privateKey = this.app.crypto.generateKeys();
+				this.address = this.app.crypto.generatePublicKey(this.privateKey);			
+			}
+
+			if (Number(this.balance) == 0){
+				this.balance = (100*Math.random()).toFixed(8);
+			}
+
 			this.app.connection.emit('header-install-crypto', this.ticker);
+			this.save();
 		}
 		
 		await super.activate();
@@ -43,7 +49,7 @@ class TST extends CryptoModule {
 	//
 	async returnPrivateKey() {
 		// just give them our Saito privatekey - easy to test
-		return await this.app.wallet.returnPrivateKey();
+		return this.privateKey;
 	}
 
 	async checkBalance(){

@@ -7,7 +7,7 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 const HomePage = require('./index');
 const React = require('react');
 const { createRoot } = require('react-dom/client');
-const App = require('./react-components/App').default;
+const App = require('./react-components/App').App;
 
 class ReactMod extends ModTemplate {
   constructor(app) {

@@ -30,13 +30,59 @@
     return x;
   }
 
+  returnArmyColumnNumber(cp=0) {
+    if (cp >= 16) { return 10; }
+    if (cp >= 15) { return 9; }
+    if (cp >= 12) { return 8; }
+    if (cp >= 9) { return 7; }
+    if (cp >= 6) { return 6; }
+    if (cp >= 5) { return 5; }
+    if (cp >= 4) { return 4; }
+    if (cp >= 3) { return 3; }
+    if (cp >= 2) { return 2; }
+    if (cp >= 1) { return 1; }
+    return 0;
+  }
+
+  returnCorpsColumnNumber(cp=0) {
+    if (cp >= 8) { return 9; }
+    if (cp >= 7) { return 8; }
+    if (cp >= 6) { return 7; }
+    if (cp >= 5) { return 6; }
+    if (cp >= 4) { return 5; }
+    if (cp >= 3) { return 4; }
+    if (cp >= 2) { return 3; }
+    if (cp >= 1) { return 2; }
+    return 1;
+  }
+
   returnAttackerLossFactor() {
+
     let cp = this.returnDefenderCombatPower();
+
+    //
+    // forts lend their combat strength to the defender 
+    //
+    if (this.game.spaces[this.game.state.combat.key].fort > 0) {
+      this.updateLog("Defender Combat Bonus " + this.game.spaces[this.game.state.combat.key].fort);
+      cp += this.game.spaces[this.game.state.combat.key].fort;
+    }
+    
+
     let hits = this.returnArmyFireTable();
     if (this.game.state.combat.defender_table === "corps") { hits = this.returnCorpsFireTable(); }
     for (let i = hits.length-1; i >= 0; i--) {
       if (hits[i].max >= cp && hits[i].min <= cp) {
-        return hits[i][this.game.state.combat.defender_modified_roll];
+	
+	//
+	// we haev found the right column and row, but we shift
+	// based on combat modifiers...
+	//
+	let col = i + this.game.state.combat.defender_column_shift;
+	if (col <= 0) { col = 1; }
+	if (col >= hits.length) { col = hits.length-1; }
+
+        return hits[col][this.game.state.combat.defender_modified_roll];
       }
     }
     return 0;
@@ -48,6 +94,15 @@
     if (this.game.state.combat.attacker_table === "corps") { hits = this.returnCorpsFireTable(); }
     for (let i = hits.length-1; i >= 0; i--) {
       if (hits[i].max >= cp && hits[i].min <= cp) {
+	
+	//
+	// we haev found the right column and row, but we shift
+	// based on combat modifiers...
+	//
+	let col = i + this.game.state.combat.attacker_column_shift;
+	if (col <= 0) { col = 1; }
+	if (col >= hits.length) { col = hits.length-1; }
+
         return hits[i][this.game.state.combat.attacker_modified_roll];
       }
     }
@@ -81,5 +136,79 @@
     hits.push({ min : 7, max : 7, 1 : 1 , 2 : 2 , 3 : 2 , 4 : 3 , 5 : 3 , 6 : 4 })
     hits.push({ min : 8, max : 100, 1 : 2 , 2 : 2 , 3 : 3 , 4 : 3 , 5 : 4 , 6 : 4 })
     return hits;
+  }
+
+
+  returnTerrainShift(spacekey="") {
+    let tshift = { attack : 0 , defense : 0 , effects : [] };
+    let space = this.game.spaces[spacekey];
+    if (!space) { return tshift; }
+    if (space.terrain == "mountain") { tshift.attack--; }
+    if (space.terrain == "swamp") { tshift.attack--; }
+    if (space.trench == 1) { tshift.attack--; tshift.defense++; }
+    if (space.trench == 2) { tshift.attack--; tshift.defense+=2; }
+    return tshift;
+  }
+
+  canCancelRetreat(spacekey="") {
+    let space = this.game.spaces[spacekey];
+    if (!space) { return false; }
+    if (space.terrain == "mountain") { return true; }
+    if (space.terrain == "swamp") { return true; }
+    if (space.terrain == "forest") { return true; }
+    if (space.terrain == "desert") { return true; }
+    if (space.trench > 0) { return true; }
+    return false;
+  }
+
+  canStopAdvance(spacekey="") {
+    let space = this.game.spaces[spacekey];
+    if (!space) { return false; }
+    if (space.terrain == "mountain") { return true; }
+    if (space.terrain == "swamp") { return true; }
+    if (space.terrain == "forest") { return true; }
+    if (space.terrain == "desert") { return true; }
+    return false;
+  }
+
+  canFlankAttack() {
+
+    let combat = this.game.state.combat;
+    let spacekey = this.game.state.combat.key;
+    let attacker_units = this.returnAttackerUnits();
+    let defender_units = this.returnDefenderUnits();
+    let space = this.game.spaces[spacekey];
+
+    let is_one_army_attacking = false;
+    let are_attacks_from_two_spaces = false;
+    let attacker_spaces = [];
+    let is_geography_suitable = true;
+    let is_flank_attack_possible = false;
+
+    //
+    // at least one army attacking
+    //
+    for (let i = 0; i < attacker_units.length; i++) {
+      if (!attacker_spaces.includes(attacker_units[i].spacekey)) { attacker_spaces.push(attacker_units[i].spacekey); }
+      if (attacker_units[i].type == "army") { is_one_army_attacking = true; }
+    }
+
+
+
+    //
+    // no swamp or mountain or trench or unoccupied fort
+    //
+    if (space.terrain == "mountain") { is_geography_suitable = false; }
+    if (space.terrain == "swamp")    { is_geography_suitable = false; }
+    if (space.trench > 0)            { is_geography_suitable = false; }
+    if (space.fort > 0)              { is_geography_suitable = false; }
+    if (attacker_spaces.length > 1)         { are_attacks_from_two_spaces = true; }
+
+    if (is_geography_suitable == true && is_one_army_attacking == true && are_attacks_from_two_spaces == true) {
+      is_flank_attack_possible = true;
+    }
+
+    return is_flank_attack_possible;
+
   }
 
