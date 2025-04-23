@@ -104,6 +104,7 @@ export default class Wallet extends SaitoWallet {
       console.log(fee);
       console.log(receipient_publicKey);
 
+      let nft_type = "Standard";
       return S.getInstance().createBoundTransaction(
         amt,
         bid,
@@ -114,7 +115,8 @@ export default class Wallet extends SaitoWallet {
         change,
         data,
         fee,
-        receipient_publicKey
+        receipient_publicKey,
+        nft_type
       );
   }
 
