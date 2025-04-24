@@ -228,6 +228,16 @@ console.log(JSON.stringify(this.game.deck[1].hand));
           this.game.queue.splice(qe, 1);
 
 	  //
+	  // Zeppelin Raids
+	  //
+	  if (this.game.state.events.zeppelin_raids == 1) {
+	    this.updateLog("Zepplin Raids reduce British Replacement Points (-4)...");
+	    if (!this.game.state.rp["allies"]["BR"]) { this.game.state.rp["allies"]["BR"] = 0; }
+	    this.game.state.rp["allies"]["BR"] -= 4;
+	    if (this.game.state.rp["allies"]["BR"] < 0) { this.game.state.rp["allies"]["BR"] = 0; }
+	  }
+
+	  //
 	  // U-Boats Unleashed
 	  //
 	  if (this.game.state.events.uboats_unleashed == 1 && this.game.state.events.convoy != 1) {
@@ -724,6 +734,15 @@ try {
             this.game.state.general_records_track.central_war_status += ws;
             this.game.state.general_records_track.combined_war_status += ws;
           }
+
+	  //
+	  // Zimmerman Telegram Allowed 
+	  //
+	  if (this.game.state.general_records_track.combined_war_status >= 30 && this.game.state.us_commitment_track == 1) {
+	    this.game.state.us_commitment_track = 2;
+	    this.displayUSCommitmentTrack();
+	  }
+
           this.displayGeneralRecordsTrack();
 
 	  this.game.queue.splice(qe, 1);
@@ -967,6 +986,16 @@ console.log("#############");
 console.log(JSON.stringify(this.game.state.cc_central_selected));
 console.log(JSON.stringify(this.game.state.cc_allies_selected));
 
+	  //
+	  // brusilov offensive
+	  //
+	  if (this.game.state.combat.attacker_power == "allies" && this.game.state.events.brusilov_offensive == 1) {
+	    let attacker_units = this.returnAttackerUnits();
+            for (let i = 0; i < attacker_units.length; i++) {
+              if (attacker_units[i].ckey == "RU") { this.game.state.combat.attacker_drm += 1; i = attacker_units.length; }
+            }
+	  }
+
 	  for (let i = 0; i < this.game.state.cc_central_selected.length; i++) {
 	    let card = this.game.state.cc_central_selected[i];
 	    if (this.game.state.combat.attacker_power == "central") { 
@@ -980,8 +1009,17 @@ console.log(JSON.stringify(this.game.state.cc_allies_selected));
 	  for (let i = 0; i < this.game.state.cc_allies_selected.length; i++) {
 	    let card = this.game.state.cc_allies_selected[i];
 	    if (this.game.state.combat.attacker_power == "allies") { 
-	      this.updateLog("Combat: Attackers play " + this.popup(card));
-	      deck[card].onEvent(this, "attacker");
+	      //
+	      // kerensky_offensive
+	      //
+	      if (card === "ap45") {
+  	        this.updateLog("Combat: Attackers play " + this.popup(card));
+		this.game.state.combat.attacker_drm += 2;
+		this.game.state.events.kerensky_offensive = 0;
+	      } else {
+  	        this.updateLog("Combat: Attackers play " + this.popup(card));
+	        deck[card].onEvent(this, "attacker");
+	      }
 	    } else {
 	      this.updateLog("Combat: Defenders play " + this.popup(card));
 	      deck[card].onEvent(this, "defender");
@@ -1144,7 +1182,22 @@ console.log(JSON.stringify(this.game.state.cc_allies_selected));
 	    }
 	  }
 
-alert("attacker: " + attacker_power + " //// defender: " + defender_power);
+	  //
+	  // sinai -3 DRM modifier
+	  //
+	  if (["portsaid","cairo","gaza","beersheba"].includes(this.game.state.combat.key)) {
+	    let attacker_units = this.returnAttackerUnits();
+	    let attacking_from_sinai = false;
+	    for (let i = 0; i < attacker_units.length; i++) { if (attacker_units[i].spacekey == "sinai") { attacking_from_sinai = true; } }
+	    for (let i = 0; i < attacker_units.length; i++) { if (attacker_units[i].spacekey != "sinai") { attacking_from_sinai = false; } }
+	    if (attacking_from_sinai == true) {
+	      if (attacker_power == "allies" && this.game.state.events.sinai_pipeline == 1) {} else {
+		this.updateLog("Sinai -3 DRM modifier punishes attacker...");
+	        this.game.state.combat.attacker_drm -= 3;
+	        attacker_drm -= 3;
+	      }
+	    }
+	  }
 
 	  for (let i = 0; i < this.game.state.combat.attacker.length; i++) {
 	    let unit = this.game.spaces[this.game.state.combat.attacker[i].unit_sourcekey].units[this.game.state.combat.attacker[i].unit_idx];
@@ -1412,7 +1465,7 @@ alert("Fort Survives Assault");
 	        let u = space.units[z];
 	        if (u.ckey == "FR" && this.game.state.combat.winner == "attacker") {
 		  this.updateLog("They Shall Not Pass cancels French retreat...");
-		  this.game.state.events.they_shall_not_pass = 0;
+	          this.game.state.events.they_shall_not_pass = 0;
 		  return 1;
 		}
 	      }
@@ -1501,6 +1554,15 @@ console.log("caa 3");
 
 	  this.game.queue.splice(qe, 1);
 
+	  //
+	  // Von Hutier 
+	  //
+	  if (this.game.state.events.von_hutier == 1) {
+	    this.game.state.combat.flank_attack = "attacker";
+	    return 1;
+	  }
+
+
 	  if (this.canFlankAttack()) {
 	    if (this.game.player == this.returnPlayerOfFaction(this.game.state.combat.attacking_faction)) {
 	      this.playerPlayFlankAttack();
@@ -1518,6 +1580,11 @@ console.log("caa 3");
 	if (mv[0] === "post_combat_cleanup") {
 
 	  this.game.queue.splice(qe, 1);
+
+	  //
+	  // disable combat events that should disappear
+	  //
+	  this.game.state.events.von_hutier = 0;
 
 	  if (!this.game.state.combat) { return 1; }
 
@@ -1800,6 +1867,24 @@ console.log("caa 3");
 	  return 1;
 
 	}
+
+
+
+	if (mv[0] === "mef_placement") {
+
+	  let spacekey = mv[1];
+
+	  this.game.state.events.mef = 1;	
+	  this.game.state.events.mef_beachhead = spacekey;
+	  this.game.spaces[spacekey].control = "allies";
+          this.addUnitToSpace("mef_army", spacekey);
+	  this.displaySpace(spacekey);
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
 
 
 	if (mv[0] === "entrench") {

@@ -52,6 +52,11 @@
         }
       }
     }
+    if (ccs.includes("cp44")) {
+      for (let i = 0; i < ccs.length; i++) {
+	if (ccs[i] == "cp44") { ccs.splice(i, 1); }
+      }
+    }
     if (ccs.includes("cp02")) {
       for (let i = 0; i < ccs.length; i++) {
 	if (ccs[i] == "cp02") { ccs.splice(i, 1); }
@@ -86,6 +91,13 @@
 	  ccs.splice(i, 1);
 	}
       }
+    }
+
+    //
+    // Kerensky Offensive +2 bonus / one
+    //
+    if (faction == "allies" && this.game.state.events.kerensky_offensive == 1) {
+      if (!ccs.includes("ap45")) { ccs.push("ap45"); }
     }
 
     if (num == 0) {
@@ -1095,6 +1107,17 @@ console.log(JSON.stringify(spaces_within_hops));
     let html = `<ul>`;
     html    += `<li class="option" id="yes">flank attack</li>`;
     html    += `<li class="option" id="no">normal attack</li>`;
+    if (this.game.deck[0].hand.includes("cp44")) {
+      let attacker_units = this.returnAttackerUnits();
+      let defender_units = this.returnDefenderUnits();
+      let valid_attacker = false;
+      let valid_defender = false;
+      for (let i = 0; i < attacker_units.length; i++) { if (attacker_units[i].ckey == "GE") { valid_attacker = true; } }
+      for (let i = 0; i < defender_units.length; i++) { if (defender_units[i].ckey == "RU") { valid_defender = true; } }
+      if (valid_attacker && valid_defender) {
+        html    += `<li class="option showcard" id="cp44">von hutier</li>`;
+      }
+    }
     if (this.game.deck[0].hand.includes("cp02")) {
       let attacker_units = this.returnAttackerUnits();
       let defender_units = this.returnDefenderUnits();
@@ -1122,6 +1145,11 @@ console.log(JSON.stringify(spaces_within_hops));
 
       if (action === "cp02") {
 	this.addMove("event\tcp02\tcentral");
+        this.endTurn();
+      }
+
+      if (action === "cp44") {
+	this.addMove("event\tcp44\tcentral");
         this.endTurn();
       }
 

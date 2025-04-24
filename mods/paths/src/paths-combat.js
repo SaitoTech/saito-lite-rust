@@ -145,8 +145,10 @@
     if (!space) { return tshift; }
     if (space.terrain == "mountain") { tshift.attack--; }
     if (space.terrain == "swamp") { tshift.attack--; }
-    if (space.trench == 1) { tshift.attack--; tshift.defense++; }
-    if (space.trench == 2) { tshift.attack--; tshift.defense+=2; }
+    if (this.game.state.combat.cancel_trench_effects != 1) {
+      if (space.trench == 1) { tshift.attack--; tshift.defense++; }
+      if (space.trench == 2) { tshift.attack--; tshift.defense+=2; }
+    }
     return tshift;
   }
 

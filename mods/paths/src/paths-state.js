@@ -11,6 +11,7 @@
     this.game.state.events.wireless_intercepts = 0;
     this.game.state.events.withdrawal = 0;
     this.game.state.events.withdrawal_bonus_used = 0;
+    this.game.state.events.brusilov_offensive = 0;
 
     if (this.game.state.events.high_seas_fleet > 1) { this.game.state.events.high_seas_fleet--; }
 
@@ -76,6 +77,7 @@
     this.game.state.rp['allies']['RU'] = 0;
     this.game.state.rp['allies']['AP'] = 0;
 
+    this.game.state.events.zeppelin_raids = 0;
     this.game.state.events.great_retreat = 0;
     this.game.state.events.great_retreat_used = 0;
     this.game.state.events.fall_of_the_tsar_russian_vp = 0;
@@ -84,6 +86,7 @@
     this.game.state.events.everyone_into_battle = 0;
     this.game.state.events.withdrawal = 0;
     this.game.state.events.withdrawal_bonus_used = 0;
+    this.game.state.events.mine_attack = 0;
 
   }
 
@@ -209,8 +212,19 @@
 
     state.general_records_track.current_cp_russian_vp = 0;
 
-    state.us_commitment_track = 1;
-    state.russian_capitulation_track = 1;
+    state.us_commitment_track = 1;		// 1 = neutral
+						// 2 = Zimmerman Telegram Allowed
+						// 3 = Zimmerman Telegram
+						// 4 = Over There !
+
+    state.russian_capitulation_track = 1;	// 1 = God Save the Tsar
+						// 2 = Tsar Takes Command Allowed 
+						// 3 = Tsar Takes Command
+						// 4 = Fall of the Tsar Allowed
+						// 5 = Fall of the Tsar
+						// 6 = Bolshevik Revolution Allowed
+						// 7 = Bolshevik Revolution
+						// 8 = Treaty of Bresk Litovsk
 
     state.reserves = {};
     //state.reserves['central'] = ["ah_corps","ah_corps","ah_corps","ah_corps","ge_corps","ge_corps","ge_corps","ge_corps","ge_corps","ge_corps","ge_corps","ge_corps"];
