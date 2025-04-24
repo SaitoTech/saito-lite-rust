@@ -2371,8 +2371,10 @@ console.log(JSON.stringify(spaces_within_hops));
     if (hand.length == 1) { hand.push("pass"); this.addMove("pass\t"+faction); }
     this.addMove("resolve\tplay");
 
+    this.game.state.player_turn_card_select = true;
     this.updateStatusAndListCards(`${name} - select card`, hand);
     this.attachCardboxEvents((card) => {
+      this.game.state.player_turn_card_select = false;
       this.playerPlayCard(faction, card);
     });
 

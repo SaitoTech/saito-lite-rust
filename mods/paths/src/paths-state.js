@@ -187,7 +187,6 @@
 
     state.neutral_entry = 0;
 
-
     state.mandated_offensives = {};
     state.mandated_offensives.central = "";
     state.mandated_offensives.allies = "";
@@ -209,6 +208,15 @@
     state.general_records_track.br_replacements = 0;
     state.general_records_track.fr_replacements = 0;
     state.general_records_track.ru_replacements = 0;
+
+    state.central_reinforcements_ge = 0;
+    state.central_reinforcements_ah = 0;
+    state.central_reinforcements_tu = 0;
+    state.allies_reinforcements_fr = 0;
+    state.allies_reinforcements_br = 0;
+    state.allies_reinforcements_ru = 0;
+    state.allies_reinforcements_it = 0;
+    state.allies_reinforcements_us = 0;
 
     state.general_records_track.current_cp_russian_vp = 0;
 

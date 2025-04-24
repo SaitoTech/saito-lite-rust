@@ -892,7 +892,7 @@ try {
 	  //
 	  // withdrawal must mark-up withdrawal-eligible corps
 	  //
-	  for (let z = 0; z < this.gare.spaces[this.game.state.combat.key].units.length; z++) {
+	  for (let z = 0; z < this.game.spaces[this.game.state.combat.key].units.length; z++) {
 	    let u = this.game.spaces[this.game.state.combat.key].units[z];
 	    if (u.corps) { u.eligible_for_withdrawal_bonus = 1; }
 	  }

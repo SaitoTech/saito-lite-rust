@@ -41,8 +41,6 @@
     this.welcome_overlay.pullHudOverOverlay();
     this.welcome_overlay.pushHudUnderOverlay();
 
-alert("display custom overlay inside fn");
-
     let deck = this.returnDeck(); // include removed
 
     let title = "";
@@ -54,8 +52,6 @@ alert("display custom overlay inside fn");
     if (obj.text) { text = obj.text; }
     if (obj.img) { img = obj.img; }
     if (obj.card) { card = obj.card; }
-
-alert("rendering welcome overlay! : " + text + " / " + title + " / " + img);
 
         this.welcome_overlay.renderCustom({
           text : text,
@@ -350,11 +346,27 @@ console.log("err: " + err);
     if (deck[cardname]) {
       card = deck[cardname];
       html = `<img class="${cardclass}" src="/paths/img/${card.img}" />`;
+      let can_event_card = false;
       try {
-	if (!card.canEvent(this)) {
+	can_event_card = card.canEvent(this);
+      } catch (err) {}
+      try {
+        if (!can_event_card || (this.game.state.player_turn_card_select == true && card.cc == true)) {
           html += `<img class="${cardclass} cancel_x" src="/paths/img/cancel_x.png" />`;
         }
-      } catch (err) {}
+      } catch (err) {
+
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$");
+console.log(err);
+
+      }
     }
 
     return html
@@ -392,26 +404,26 @@ console.log("err: " + err);
 
       document.querySelectorAll(".turn-track").forEach((el) => { el.classList.remove("active"); });
 
-      if (this.game.state.turn_track == 1) { document.querySelector(".turn-track-1").classList.add("active"); }
-      if (this.game.state.turn_track == 2) { document.querySelector(".turn-track-2").classList.add("active"); }
-      if (this.game.state.turn_track == 3) { document.querySelector(".turn-track-3").classList.add("active"); }
-      if (this.game.state.turn_track == 4) { document.querySelector(".turn-track-4").classList.add("active"); }
-      if (this.game.state.turn_track == 5) { document.querySelector(".turn-track-5").classList.add("active"); }
-      if (this.game.state.turn_track == 6) { document.querySelector(".turn-track-6").classList.add("active"); }
-      if (this.game.state.turn_track == 7) { document.querySelector(".turn-track-7").classList.add("active"); }
-      if (this.game.state.turn_track == 8) { document.querySelector(".turn-track-8").classList.add("active"); }
-      if (this.game.state.turn_track == 9) { document.querySelector(".turn-track-9").classList.add("active"); }
-      if (this.game.state.turn_track == 10) { document.querySelector(".turn-track-10").classList.add("active"); }
-      if (this.game.state.turn_track == 11) { document.querySelector(".turn-track-11").classList.add("active"); }
-      if (this.game.state.turn_track == 12) { document.querySelector(".turn-track-12").classList.add("active"); }
-      if (this.game.state.turn_track == 13) { document.querySelector(".turn-track-13").classList.add("active"); }
-      if (this.game.state.turn_track == 14) { document.querySelector(".turn-track-14").classList.add("active"); }
-      if (this.game.state.turn_track == 15) { document.querySelector(".turn-track-15").classList.add("active"); }
-      if (this.game.state.turn_track == 16) { document.querySelector(".turn-track-16").classList.add("active"); }
-      if (this.game.state.turn_track == 17) { document.querySelector(".turn-track-17").classList.add("active"); }
-      if (this.game.state.turn_track == 18) { document.querySelector(".turn-track-18").classList.add("active"); }
-      if (this.game.state.turn_track == 19) { document.querySelector(".turn-track-19").classList.add("active"); }
-      if (this.game.state.turn_track == 20) { document.querySelector(".turn-track-20").classList.add("active"); }
+      if (this.game.state.turn == 1) { document.querySelector(".turn-track-1").classList.add("active"); }
+      if (this.game.state.turn == 2) { document.querySelector(".turn-track-2").classList.add("active"); }
+      if (this.game.state.turn == 3) { document.querySelector(".turn-track-3").classList.add("active"); }
+      if (this.game.state.turn == 4) { document.querySelector(".turn-track-4").classList.add("active"); }
+      if (this.game.state.turn == 5) { document.querySelector(".turn-track-5").classList.add("active"); }
+      if (this.game.state.turn == 6) { document.querySelector(".turn-track-6").classList.add("active"); }
+      if (this.game.state.turn == 7) { document.querySelector(".turn-track-7").classList.add("active"); }
+      if (this.game.state.turn == 8) { document.querySelector(".turn-track-8").classList.add("active"); }
+      if (this.game.state.turn == 9) { document.querySelector(".turn-track-9").classList.add("active"); }
+      if (this.game.state.turn == 10) { document.querySelector(".turn-track-10").classList.add("active"); }
+      if (this.game.state.turn == 11) { document.querySelector(".turn-track-11").classList.add("active"); }
+      if (this.game.state.turn == 12) { document.querySelector(".turn-track-12").classList.add("active"); }
+      if (this.game.state.turn == 13) { document.querySelector(".turn-track-13").classList.add("active"); }
+      if (this.game.state.turn == 14) { document.querySelector(".turn-track-14").classList.add("active"); }
+      if (this.game.state.turn == 15) { document.querySelector(".turn-track-15").classList.add("active"); }
+      if (this.game.state.turn == 16) { document.querySelector(".turn-track-16").classList.add("active"); }
+      if (this.game.state.turn == 17) { document.querySelector(".turn-track-17").classList.add("active"); }
+      if (this.game.state.turn == 18) { document.querySelector(".turn-track-18").classList.add("active"); }
+      if (this.game.state.turn == 19) { document.querySelector(".turn-track-19").classList.add("active"); }
+      if (this.game.state.turn == 20) { document.querySelector(".turn-track-20").classList.add("active"); }
 
     } catch (err) {
 
@@ -497,18 +509,51 @@ console.log("Central: " + this.game.state.general_records_track.central_war_stat
     document.querySelectorAll(`.central-action-round-track`).forEach((el) => { el.innerHTML = ""; });
     document.querySelectorAll(`.allies-action-round-track`).forEach((el) => { el.innerHTML = ""; });
 
-
     if (this.game.state.allies_rounds.length > 0) {
       last_allies_move = this.game.state.allies_rounds[this.game.state.allies_rounds.length-1];
+      if (last_allies_move == "sr") {
+	document.querySelector(".central-action-round-track-5").innerHTML = `<ing src="/paths/img/action_ap1.png" />`;
+      }
+      if (last_allies_move == "rp") {
+	document.querySelector(".central-action-round-track-6").innerHTML = `<ing src="/paths/img/action_ap1.png" />`;
+      }
     }
     if (this.game.state.central_rounds.length > 0) {
       last_central_move = this.game.state.central_rounds[this.game.state.central_rounds.length-1];
+      if (last_allies_move == "sr") {
+	document.querySelector(".central-action-round-track-7").innerHTML = `<ing src="/paths/img/action_cp1.png" />`;
+      }
+      if (last_allies_move == "rp") {
+	document.querySelector(".central-action-round-track-8").innerHTML = `<ing src="/paths/img/action_cp1.png" />`;
+      }
     }
 
-    if (last_central_move === "rp") {
-
+    if (parseInt(this.game.state.central_reinforcements_ge) > 0) {
+      document.querySelector(`.central-action-round-track-2`).innerHTML = `<img src="/paths/img/action_cp1.png" />`;
     }
- 
+    if (parseInt(this.game.state.central_reinforcements_ah) > 0) {
+      document.querySelector(`.central-action-round-track-3`).innerHTML = `<img src="/paths/img/action_cp1.png" />`;
+    }
+    if (parseInt(this.game.state.central_reinforcements_tu) > 0) {
+      document.querySelector(`.central-action-round-track-4`).innerHTML = `<img src="/paths/img/action_cp1.png" />`;
+    }
+
+    if (parseInt(this.game.state.allies_reinforcements_fr) > 0) {
+      document.querySelector(`.allies-action-round-track-2`).innerHTML = `<img src="/paths/img/action_ap1.png" />`;
+    }
+    if (parseInt(this.game.state.allies_reinforcements_br) > 0) {
+      document.querySelector(`.allies-action-round-track-3`).innerHTML = `<img src="/paths/img/action_ap1.png" />`;
+    }
+    if (parseInt(this.game.state.allies_reinforcements_ru) > 0) {
+      document.querySelector(`.allies-action-round-track-4`).innerHTML = `<img src="/paths/img/action_ap1.png" />`;
+    }
+    if (parseInt(this.game.state.allies_reinforcements_it) > 0) {
+      document.querySelector(`.allies-action-round-track-5`).innerHTML = `<img src="/paths/img/action_ap1.png" />`;
+    }
+    if (parseInt(this.game.state.allies_reinforcements_us) > 0) {
+      document.querySelector(`.allies-action-round-track-6`).innerHTML = `<img src="/paths/img/action_ap1.png" />`;
+    }
+
 
     if (this.game.state.neutral_entry != 0) {
       document.querySelector(`.central-action-round-track-1`).innerHTML = central_token;;
