@@ -315,7 +315,18 @@ class StreamManager {
         this.localStream.getTracks().forEach((track) => {
           peerConnection.senders.push(peerConnection.addTrack(track, this.localStream));
         });
-      }
+
+        if (this.presentationStream){
+          console.log('Share screen with new connection');
+          setTimeout(async ()=> {
+            await this.mod.sendOffChainMessage('screen-share-start', {});
+            this.presentationStream.getTracks().forEach((track) => {
+              peerConnection.addTrack(track, this.presentationStream);
+            });
+
+          }, 1500);
+        }
+       }
     });
 
     app.connection.on('stun-disconnect', () => {
