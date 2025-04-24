@@ -157,7 +157,7 @@ class Poker extends GameTableTemplate {
 
 				if (okey == 'eliminated') {
 					let str = "";
-					for (let key in oval){
+					for (let key of oval){
 						str += this.app.keychain.returnUsername(key) + ", ";
 					}
 					oval = str;

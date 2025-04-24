@@ -118,17 +118,17 @@
 }
 
 
-.saito-link {
+.saito-pseudo-link {
   font-style: italic;
   color: var(--font-color-mention);
   cursor: pointer;
 }
 
-.saito-link:hover{
+.saito-pseudo-link:hover{
   color: var(--font-color-hover-mention);
 }
 
-.contact .saito-link{
+.contact .saito-pseudo-link{
   float: right;
 }
 
