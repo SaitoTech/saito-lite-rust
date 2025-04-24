@@ -327,28 +327,8 @@ class Arcade extends ModTemplate {
 				// For processing direct link to game invite
 				//
 				if (arcade_self.app.browser.returnURLParameter('game_id')) {
-					let game_id_short = arcade_self.app.browser.returnURLParameter('game_id');
-					let game = arcade_self.returnGameFromHash(game_id_short);
+					this.loadGameInviteById(arcade_self.app.browser.returnURLParameter('game_id'));
 
-					if (!game) {
-						salert('Sorry, the game is no longer available');
-						return;
-					}
-
-					if (arcade_self.isAvailableGame(game)) {
-						//Mark myself as an invited guest
-						game.msg.options.desired_opponent_publickey = this.publicKey;
-
-						//Then we have to remove and readd the game so it goes under "mine"
-						arcade_self.removeGame(game.signature);
-						arcade_self.addGame(game);
-					}
-
-					app.browser.logMatomoEvent('GameInvite', 'FollowLink', game.game);
-
-					let invite = new Invite(app, this, null, null, game, this.publicKey);
-					let join_overlay = new JoinGameOverlay(app, this, invite.invite_data);
-					join_overlay.render();
 					// Overwrite link-url with baseline url
 					window.history.replaceState('', '', `/arcade/`);
 				}
@@ -398,6 +378,30 @@ class Arcade extends ModTemplate {
 			}
 		}
 ********/
+	}
+
+	loadGameInviteById(game_id_short){
+		let game = this.returnGameFromHash(game_id_short);
+
+		if (!game) {
+			salert('Sorry, the game is no longer available');
+			return;
+		}
+
+		if (this.isAvailableGame(game)) {
+			//Mark myself as an invited guest
+			game.msg.options.desired_opponent_publickey = this.publicKey;
+
+			//Then we have to remove and readd the game so it goes under "mine"
+			this.removeGame(game.signature);
+			this.addGame(game);
+		}
+
+		this.app.browser.logMatomoEvent('GameInvite', 'FollowLink', game.game);
+
+		let invite = new Invite(this.app, this, null, null, game, this.publicKey);
+		let join_overlay = new JoinGameOverlay(this.app, this, invite.invite_data);
+		join_overlay.render();
 	}
 
 	////////////
@@ -590,6 +594,18 @@ class Arcade extends ModTemplate {
 				}
 			});
 			return x;
+		}
+
+		if (type === 'saito-link') {
+			const urlParams = new URLSearchParams(obj?.link);
+			const entries = urlParams.entries();
+			for (const pair of entries) {
+				if (pair[0] == 'game_id') {
+					return { processLink: (link) => { 
+						this.loadGameInviteById(pair[1]);
+					}}
+				}
+			}
 		}
 
 		return super.respondTo(type, obj);
