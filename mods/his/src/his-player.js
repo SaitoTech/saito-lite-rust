@@ -2022,6 +2022,8 @@ if (relief_siege == 1) {
     let any_need_to_intervene = false;
     let confirm_leaders_move_with_troops = false;
     let confirm_leaders_move_with_troops_spacekey = false;
+    let leaders_to_remove_moves = [];
+    let units_to_remove_moves = [];
 
     //
     // handle non-naval units
@@ -2072,6 +2074,12 @@ if (relief_siege == 1) {
       if (sources.length < (sources_idx+1)) {
         his_self.updateStatus("processing...");
         his_self.theses_overlay.hide();
+	for (let z = leaders_to_remove_moves.length-1; z >= 0; z--) {
+	  his_self.addMove(leaders_to_remove_moves[z]);
+	}
+	for (let z = units_to_remove_moves.length-1; z >= 0; z--) {
+	  his_self.addMove(units_to_remove_moves[z]);
+	}
 	his_self.endTurn();
 	return 1;
       }
@@ -2132,13 +2140,14 @@ if (relief_siege == 1) {
 		move_leader_with_troops = true;
 	      }
 
+
 	      if (move_leader_with_troops) {
 		for (let z = space.units[f].length-1; z >= 0; z--) {
 		  if (space.units[f][z].army_leader || space.units[f][z].navy_leader) {
 		    let u = space.units[f][z];
 	            his_self.removeUnit(f, space.key, u.type);
 	            his_self.addArmyLeader(f, spacekey, u.type);
-	            his_self.addMove("move\t"+f+"\tland\t"+space.key+"\t"+spacekey+"\t"+z+"\t"+his_self.game.player);
+	            leaders_to_remove_moves.push("move\t"+f+"\tland\t"+space.key+"\t"+spacekey+"\t"+z+"\t"+his_self.game.player);
 		    if (z < unit_idx) { unit_idx--; }
 		  }
 		}
@@ -2146,8 +2155,7 @@ if (relief_siege == 1) {
 
               his_self.addUnit(f, spacekey, unit_type);
 	      his_self.removeUnit(f, space.key, unit_type);
-	      his_self.addMove("move\t"+f+"\tland\t"+space.key+"\t"+spacekey+"\t"+unit_idx+"\t"+his_self.game.player);
-
+	      units_to_remove_moves.push("move\t"+f+"\tland\t"+space.key+"\t"+spacekey+"\t"+unit_idx+"\t"+his_self.game.player);
 
 	      //
 	      // reorganize MOVES
@@ -3935,10 +3943,10 @@ console.log("just attached options.... should be selectable..");
 
           function(space) {
             if (his_self.isSpaceFriendly(space, faction)) {
-	      // 1 = transit seas
+	      // 2 = transit seas
 	      // source_spacekey => connect to this capital
 	      if (space.unrest) { return 0; }
-              if (his_self.isSpaceConnectedToCapitalSpringDeployment(space, faction, 1, source_spacekey)) {
+              if (his_self.isSpaceConnectedToCapitalSpringDeployment(space, faction, 2, source_spacekey)) { // 2 = no independent or enemy ships
                 if (!his_self.isSpaceFactionCapital(space, faction)) {
 		  if (his_self.game.state.events.schmalkaldic_league == 0) {
 		    if (his_self.isSpaceElectorate(space.key)) {
@@ -3951,7 +3959,6 @@ console.log("just attached options.... should be selectable..");
             }
             return 0;
           },
-
 
           function(destination_spacekey) {
 

@@ -615,7 +615,7 @@ console.log("\n\n\n\n");
 
 
 	  // HAPSBURG
-	  this.addArmyLeader("hapsburg", "valladolid", "charles-v");
+//	  this.addArmyLeader("hapsburg", "valladolid", "charles-v");
 	  this.addArmyLeader("hapsburg", "valladolid", "duke-of-alva");
           this.addRegular("hapsburg", "valladolid", 4);
           this.addRegular("hapsburg", "seville", 1);
@@ -633,7 +633,8 @@ console.log("\n\n\n\n");
 
 // TESTING
 	  this.addArmyLeader("hapsburg", "palma", "duke-of-alva");
-          this.addRegular("hapsburg", "palma", 4);
+	  this.addArmyLeader("hapsburg", "palma", "charles-v");
+          this.addMercenary("hapsburg", "palma", 4);
 
           this.addRegular("hapsburg", "antwerp", 3);
           this.controlSpace("hapsburg", "prague");

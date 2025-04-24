@@ -6299,8 +6299,10 @@ try {
 	      if (this.game.spaces[spacekey].type == "fortress" || this.game.spaces[spacekey].type == "electorate" || this.game.spaces[spacekey].type == "key") {
 	        let fac = this.returnFactionControllingSpace(spacekey);
 	        if (fac != attacker) {
-	    	  this.game.spaces[spacekey].besieged = 2;
-                  this.game.spaces[spacekey].besieged_factions.push(fac);
+		  if (this.game.spaces[spacekey].besieged != 1) {
+	    	    this.game.spaces[spacekey].besieged = 2;
+                    this.game.spaces[spacekey].besieged_factions.push(fac);
+		  }
 	        }
 	      }
 
@@ -8036,7 +8038,7 @@ try {
 		        //
 		        if (space.neighbours[z] == this.game.state.attacker_comes_from_this_spacekey) {
 		          let fac = this.returnFactionControllingSpace(space.neighbours[z]);
-		          if (fac == f || this.areAllies(fac, f)) { can_faction_retreat = 1; }
+		          if (this.returnControllingPower(fac) == this.returnControllingPower(f) || fac == f || this.areAllies(fac, f, 1)) { can_faction_retreat = 1; }
 		        }
                       }
                       if (can_faction_retreat == 1) {

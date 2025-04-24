@@ -447,8 +447,13 @@
   }
 
 
-  doesSpaceHaveLineOfControl(space, faction) { return this.isSpaceInLineOfControl(space, faction); }
-  isSpaceInLineOfControl(space, faction, transit_passes=1, transit_seas=1) {
+  //
+  // transit_seas 1 ==> default (no enemy ships, no requirement for my own)
+  // transit_seas 3 ==> assault
+  // transit_seas 2 ==> spring deployment
+  //
+  doesSpaceHaveLineOfControl(space, faction, transit_passes=1, transit_seas=3) { return this.isSpaceInLineOfControl(space, faction, transit_passes, transit_seas); }
+  isSpaceInLineOfControl(space, faction, transit_passes=1, transit_seas=3) { // transit_seas=3 ==> my ships need to be in any connecting navalspace
 
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
@@ -529,6 +534,11 @@
       // already crossed sea zone optional
       0
     );
+
+
+if (space.key == "malta") {
+console.log("RES: " + JSON.stringify(res));
+}
 
     //
     // we put the neighbours immediately into the search space for the 
@@ -706,7 +716,7 @@
       // transit passes? 0
       transit_passes,
 
-      // transit seas? 1
+      // transit seas? 1 = enemy ships block, 2 = all other ships block, 3 = friendly ships required (2 for SD)
       transit_seas,
      
       // faction? optional
@@ -1640,12 +1650,19 @@
     }
     return 0;
   }
-  doesFactionHaveLandUnitsInSpace(faction, key) {
+  doesFactionHaveLandUnitsInSpace(faction, key, include_minor_allies=false) {
     if (this.game.spaces[key]) {
-      if (this.game.spaces[key].units[faction]) {
-        for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
-          if (this.game.spaces[key].units[faction][i].type === "regular" || this.game.spaces[key].units[faction][i].type === "cavalry" || this.game.spaces[key].units[faction][i].type === "mercenary") {
-  	    return 1;
+      for (let f in this.game.spaces[key].units) { 
+	let analyse_faction = false;
+	if (include_minor_allies == true && (this.returnControllingPower(f) == faction)) { analyse_faction = true; }
+	if (include_minor_allies == false) { if (faction == f) { analyse_faction = true; } }
+	if (analyse_faction) {
+          if (this.game.spaces[key].units[f]) {
+            for (let i = 0; i < this.game.spaces[key].units[f].length; i++) {
+              if (this.game.spaces[key].units[f][i].type === "regular" || this.game.spaces[key].units[f][i].type === "cavalry" || this.game.spaces[key].units[f][i].type === "mercenary") {
+  	        return 1;
+              }
+            }
           }
         }
       }
@@ -1829,8 +1846,15 @@
     }
     return res;
   }
+
+  //
+  // transit_seas == 1 , any sea with no adjacent enemy ships (default)
+  // transit_seas == 2 , any sea with no adjacent enemy or independent ships (spring deployment)
+  // transit_seas == 3 , must have friendly ships, which implies no enemy ships (LOC assault)
+  //
   returnNeighbours(space, transit_passes=1, transit_seas=0, faction="", is_spring_deployment=0) {
-try {
+
+//try {
 
     let is_naval_space = false;
 
@@ -1838,7 +1862,6 @@ try {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; is_naval_space = true; } } catch (err) {}
     try { if (this.game.navalspaces[space.key]) { is_naval_space = true; } } catch (err) {}
-
 
     if (transit_seas == 0 && is_naval_space != true) {
       if (transit_passes == 1) {
@@ -1859,6 +1882,7 @@ try {
       }
       return neighbours;
     } else {
+
 
       let neighbours = [];
 
@@ -1892,33 +1916,83 @@ try {
 	    }
 
 	    let any_unfriendly_ships = false;
+	    let any_of_my_ships = false;
 
+	    let ignore_non_hostiles = true;
 	    let ignore_hostiles = false;
 
+	    //
+	    // transit_seas == 1 , any sea with friendly ships and no enemy ships, in-or-adjacent (assault, LOC)
+	    // transit_seas == 2 , any sea with adjacent no enemy or independent ships (spring deployment)
+	    // transit_seas == 3 , all seas must have friendly ships (assault)
+	    //
+	    // Spring Deployment card permits ignoring all ships, even hostiles
+	    //
 	    if (this.game.state.spring_deploy_across_passes.includes(faction) && is_spring_deployment == 1) { ignore_hostiles = true; }
 
 	    if (navalspace.ports) {
 	      if (faction != "") {
 	        for (let z = 0; z < navalspace.ports.length; z++) {
-	          if (this.doesOtherFactionHaveNavalUnitsInSpace(faction, navalspace.ports[z], 1)) { // 1 = ignore independent/unaligned
-		    if (this.game.state.events.spring_preparations != faction) {
-	              if (ignore_hostiles == false) {
-		        any_unfriendly_ships = true;
+		  if (transit_seas == 1) {
+	            if (this.doesOtherFactionHaveNavalUnitsInSpace(faction, navalspace.ports[z], 1)) { // 1 = ignore independent/unaligned
+	 	      if (this.game.state.events.spring_preparations != faction) {
+	                if (ignore_hostiles == false) {
+		          any_unfriendly_ships = true;
+		        }
+		      }
+		    }
+		    if (any_unfriendly_ships != true) {
+	              let already_listed = false;
+                      for (let z = 0; z < navalspace.ports.length; z++) {
+	                for (let zz = 0; zz < neighbours.length; zz++) {
+	                  if (neighbours[zz].neighbour === navalspace.ports[z]) {
+		            already_listed = true;
+		          }
+		        }
+	                if (already_listed == false) {
+	                  neighbours.push({ neighbour : navalspace.ports[z] , overseas : true });
+	                }
+ 		      }
+		    }
+		  }
+		  if (transit_seas == 2) {
+	            if (this.doesOtherFactionHaveNavalUnitsInSpace(faction, navalspace.ports[z], 0)) { // 1 = ignore independent/unaligned
+	 	      if (this.game.state.events.spring_preparations != faction) {
+	                if (ignore_hostiles == false) {
+		          any_unfriendly_ships = true;
+		        }
 		      }
 		    }
 		  }
+		  if (any_unfriendly_ships != true) {
+	            let already_listed = false;
+                    for (let z = 0; z < navalspace.ports.length; z++) {
+	              for (let zz = 0; zz < neighbours.length; zz++) {
+	                if (neighbours[zz].neighbour === navalspace.ports[z]) {
+		          already_listed = true;
+		        }
+		      }
+	              if (already_listed == false) {
+	                neighbours.push({ neighbour : navalspace.ports[z] , overseas : true });
+	              }
+ 		    }
+		  }
 	        }
 	      }
-              for (let z = 0; z < navalspace.ports.length; z++) {
-		let already_listed = false;
-	        for (let zz = 0; zz < neighbours.length; zz++) {
-	          if (neighbours[zz].neighbour === navalspace.ports[z]) {
-		    already_listed = true;
-		  }
- 		}
-	        if (already_listed == false && any_unfriendly_ships == false) {
-	          neighbours.push({ neighbour : navalspace.ports[z] , overseas : true });
-	        };
+	      if (transit_seas == 3) {
+		if (this.doesFactionHaveFriendlyNavalUnitsInSpace(faction, navalspace.key)) {
+	          let already_listed = false;
+                  for (let z = 0; z < navalspace.ports.length; z++) {
+	            for (let zz = 0; zz < neighbours.length; zz++) {
+	              if (neighbours[zz].neighbour === navalspace.ports[z]) {
+		        already_listed = true;
+		      }
+		    }
+	            if (already_listed == false) {
+	              neighbours.push({ neighbour : navalspace.ports[z] , overseas : true });
+	            }
+ 		  }
+		}
 	      }
 	    }
  	  }
@@ -1926,9 +2000,10 @@ try {
       }
       return neighbours;
     }
-} catch (err) {
-  alert("return neighbours bug? this won't kill the game, but it would be useful to know if there is an error message here ---> " + JSON.stringify(err));
-}
+
+//} catch (err) {
+//  alert("return neighbours bug? this won't kill the game, but it would be useful to know if there is an error message here ---> " + JSON.stringify(err));
+//}
     return [];
   }
 
@@ -2122,8 +2197,7 @@ try {
   //
   // find the nearest destination.
   //
-  // transit_eas = filters on spring deploment criteria of two friendly ports on either side of the zone + no uncontrolled ships in zone
-  //
+  // transit_seas = filters on spring deploment criteria of two friendly ports on either side of the zone + no uncontrolled ships in zone
   //
   // res = {
   //  hops : N ,   
@@ -2154,7 +2228,14 @@ try {
     //
     // put the neighbours into pending
     //
+if (transit_seas == 2 && sourcekey == "palma") {
+  console.log("$ transit seas is 2");
+}
+
     let n = this.returnNeighbours(sourcekey, transit_passes, transit_seas, faction, is_spring_deployment);
+if (transit_seas == 3 && sourcekey == "malta") {
+  console.log("$ neighbours: " + JSON.stringify(n));
+}
 
     //
     // add any spaces with naval connection
@@ -2174,17 +2255,17 @@ try {
 
 	  for (let i = 0; i < vnslen; i++) {
 	    let x = this.game.navalspaces[vns[i]];
-if (x) {
-	    for (let ii = 0; ii < x.neighbours.length; ii++) {
-	      if (this.doesNavalSpaceHaveFriendlyShip(x.neighbours[ii], faction)) {        
-		if (!vns.includes(x.neighbours[ii])) {
-		  vns.push(x.neighbours[ii]);
-		  vnslen++;
-		}
+	    if (x) {
+	      for (let ii = 0; ii < x.neighbours.length; ii++) {
+	        if (this.doesNavalSpaceHaveFriendlyShip(x.neighbours[ii], faction)) {        
+		  if (!vns.includes(x.neighbours[ii])) {
+		    vns.push(x.neighbours[ii]);
+		    vnslen++;
+		  }
+	        }
 	      }
 	    }
 	  }
-}
 
 	  //
 	  // any space in port on vns is a starting point too!
@@ -3219,7 +3300,7 @@ if (x) {
       home: "hapsburg",
       political: "",
       ports: ["gulflyon","barbary"],
-      neighbours: ["cartagena","cagliari"],
+      neighbours: [],
       language: "spanish",
       religion: "catholic",
       type: "town"

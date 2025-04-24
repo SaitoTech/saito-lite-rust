@@ -3793,11 +3793,11 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
 	his_self.game.queue.push("hide_overlay\ttheses");
         his_self.game.queue.push("ACKNOWLEDGE\tThe Reformation has begun!");
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
-//	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-//	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-//	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-//	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-//	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	his_self.game.queue.push("STATUS\tProtestants selecting reformation targets...\t"+JSON.stringify(players_to_go));
 	his_self.game.queue.push("show_overlay\ttheses");
@@ -5941,6 +5941,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
             if (his_self.game.deck[0].fhand[i].includes('035')) {
 	      let assault_spacekey = his_self.game.state.assault.spacekey;
 	      let attacker_faction = his_self.game.state.assault.attacker_faction;
+	      if (his_self.game.spaces[assault_spacekey].neighbours.length == 0) { return 0; }
 	      for (let z = 0; z < his_self.game.state.players_info[his_self.game.player-1].factions.length; z++) {
 		if (attacker_faction == his_self.game.state.players_info[his_self.game.player-1].factions[z]) {
 	          if (4 >= his_self.returnHopsToFortifiedHomeSpace(assault_spacekey, attacker_faction)) {
