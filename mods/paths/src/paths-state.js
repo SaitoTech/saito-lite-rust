@@ -9,6 +9,9 @@
     this.displayActionRoundTracks();
 
     this.game.state.events.wireless_intercepts = 0;
+    this.game.state.events.withdrawal = 0;
+    this.game.state.events.withdrawal_bonus_used = 0;
+
     if (this.game.state.events.high_seas_fleet > 1) { this.game.state.events.high_seas_fleet--; }
 
     for (let key in this.game.spaces) {
@@ -73,10 +76,14 @@
     this.game.state.rp['allies']['RU'] = 0;
     this.game.state.rp['allies']['AP'] = 0;
 
+    this.game.state.events.great_retreat = 0;
+    this.game.state.events.great_retreat_used = 0;
     this.game.state.events.fall_of_the_tsar_russian_vp = 0;
     this.game.state.events.they_shall_not_pass = 0;
     this.game.state.events.wireless_intercepts = 0;
     this.game.state.events.everyone_into_battle = 0;
+    this.game.state.events.withdrawal = 0;
+    this.game.state.events.withdrawal_bonus_used = 0;
 
   }
 
@@ -139,8 +146,6 @@
 
     vp = central_controlled_vp_spaces - expected_central_vp_spaces + 10;
 
-console.log("STARTING VP: " + vp);
-
     if (this.game.state.events.rape_of_belgium) { vp--; }
     if (this.game.state.events.belgium) { 
       if (this.game.state.turn >= 5) { vp--; }
@@ -156,6 +161,7 @@ console.log("STARTING VP: " + vp);
     if (this.game.state.events.fourteen_points) { vp--; }
     if (this.game.state.events.convoy) { vp--; }
     if (this.game.state.events.zimmerman_telegram) { vp--; }
+    if (this.game.state.events.blockade > 1) { vp -= (this.game.state.events.blockade-1); }
 
     this.game.state.general_records_track.vp = vp;
   
@@ -250,6 +256,9 @@ console.log("STARTING VP: " + vp);
     state.allies_total_war_cards_added = false;
 
     state.events.war_in_africa_vp = 0;
+    state.events.blockade = 0;
+    state.events.great_retreat = 0;
+    state.events.great_retreat_used = 0;
 
     return state;
 

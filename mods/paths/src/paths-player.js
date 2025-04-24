@@ -29,14 +29,14 @@
 
     let num = 0;
     let ccs = [];
-    let cards = this.returnDeck("all");
+    let cards = this.returnDeck();
     let faction = this.returnFactionOfPlayer(this.game.player);
     let name = this.returnPlayerName(faction);
 
     if (faction == "central") {
       for (let i = 0; i < this.game.deck[0].hand.length; i++) {
 	if (cards[this.game.deck[0].hand[i]].cc) { 
-	  if (this.game.state.cc_central_active.includes(this.game.deck[0].hand[i])) {
+	  if (!this.game.state.cc_central_active.includes(this.game.deck[0].hand[i])) {
 	    num++;
 	    ccs.push(this.game.deck[0].hand[i]);
 	  }
@@ -45,7 +45,7 @@
       for (let i = 0; i < this.game.state.cc_central_active.length; i++) {
 	let c = this.game.state.cc_central_active[i];
 	if (!this.game.state.cc_central_played_this_round.includes(c)) {
-	  if (this.game.state.cc_central_active.includes(this.game.deck[0].hand[i])) {
+	  if (!this.game.state.cc_central_active.includes(c)) {
 	    num++;
 	    ccs.push(c);
           }
@@ -60,7 +60,7 @@
     if (faction == "allies") {
       for (let i = 0; i < this.game.deck[1].hand.length; i++) {
 	if (cards[this.game.deck[1].hand[i]].cc) { 
-	  if (this.game.state.cc_allies_active.includes(this.game.deck[1].hand[i])) {
+	  if (!this.game.state.cc_allies_active.includes(this.game.deck[1].hand[i])) {
 	    num++;
 	    ccs.push(this.game.deck[1].hand[i]);
 	  }
@@ -69,7 +69,7 @@
       for (let i = 0; i < this.game.state.cc_allies_active.length; i++) {
 	let c = this.game.state.cc_allies_active[i];
 	if (!this.game.state.cc_allies_played_this_round.includes(c)) {
-	  if (this.game.state.cc_allies_active.includes(this.game.deck[1].hand[i])) {
+	  if (!this.game.state.cc_allies_active.includes(c)) {
 	    num++;
 	    ccs.push(c);
           }
@@ -129,7 +129,7 @@
     if (faction == "central") {
       for (let i = 0; i < this.game.deck[0].hand.length; i++) {
 	if (cards[this.game.deck[0].hand[i]].cc) { 
-	  if (this.game.state.cc_central_active.includes(this.game.deck[0].hand[i])) {
+	  if (!this.game.state.cc_central_active.includes(this.game.deck[0].hand[i])) {
 	    num++;
 	    ccs.push(this.game.deck[0].hand[i]);
 	  }
@@ -138,7 +138,7 @@
       for (let i = 0; i < this.game.state.cc_central_active.length; i++) {
 	let c = this.game.state.cc_central_active[i];
 	if (!this.game.state.cc_central_played_this_round.includes(c)) {
-	  if (this.game.state.cc_central_active.includes(this.game.deck[0].hand[i])) {
+	  if (!this.game.state.cc_central_active.includes(c)) {
 	    num++;
 	    ccs.push(c);
           }
@@ -148,7 +148,7 @@
     if (faction == "allies") {
       for (let i = 0; i < this.game.deck[1].hand.length; i++) {
 	if (cards[this.game.deck[1].hand[i]].cc) { 
-	  if (this.game.state.cc_allies_active.includes(this.game.deck[1].hand[i])) {
+	  if (!this.game.state.cc_allies_active.includes(this.game.deck[1].hand[i])) {
 	    num++;
 	    ccs.push(this.game.deck[1].hand[i]);
 	  }
@@ -157,7 +157,7 @@
       for (let i = 0; i < this.game.state.cc_allies_active.length; i++) {
 	let c = this.game.state.cc_allies_active[i];
 	if (!this.game.state.cc_allies_played_this_round.includes(c)) {
-	  if (this.game.state.cc_allies_active.includes(this.game.deck[1].hand[i])) {
+	  if (!this.game.state.cc_allies_active.includes(c)) {
 	    num++;
 	    ccs.push(c);
           }
@@ -370,6 +370,59 @@ console.log("UNIT: " + JSON.stringify(unit));
   }
 
 
+
+  playerPlayGreatAdvance(spacekey="") {
+
+    let can_player_advance = false;
+    if (!this.game.spaces[spacekey]) { this.endTurn(); return 0; }
+    let space = this.game.spaces[spacekey];
+    let attacker_units = this.returnAttackerUnits();
+
+    for (let i = 0; i < attacker_units.length; i++) {
+      let unit = attacker_units[i];
+      if (!unit.damaged) { can_player_advance = true; }
+    }
+    if (space.fort) { 
+      //
+      // we cannot advance into a fort we attacked from an adjacent space if
+      // the fort was empty, but we can advance (and then besiege) a fort if
+      // we routed the opponent.
+      //
+      if (this.game.state.combat.unoccupied_fort == 1) { can_player_advance = false; }
+    }
+
+    //
+    // skip advance if not possible
+    //
+    if (can_player_advance == false) {
+      this.endTurn();
+      return;
+    }
+
+
+    let html = `<ul>`;
+    html    += `<li class="card" id="advance">advance</li>`;
+    html    += `<li class="card" id="refuse">do not advance</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Russians Retreat - Advance Full-Strength Units?`, html);
+    this.attachCardboxEvents((action) => {
+
+      if (action === "advance") {
+	this.playerHandleGreatAdvance(spacekey);
+	return;
+      }
+
+      if (action === "refuse") {
+	this.endTurn();
+	return;
+      }
+
+    });
+
+  }
+
+
   playerHandleAdvance() {
 
     let paths_self = this;
@@ -461,11 +514,6 @@ console.log("UNIT: " + JSON.stringify(unit));
       let s = this.game.spaces[roptions[z]];
       if (s.fort) { spliceout = true; }
       if (s.units.length > 0) { spliceout = true; }
-      if (faction == "central" && this.game.state.events.race_to_the_sea != 1) {
-	if (roptions[z] == "amiens") { spliceout = true; }
-	if (roptions[z] == "ostend") { spliceout = true; }
-	if (roptions[z] == "calais") { spliceout = true; }
-      }
       if (spliceout == true) {
 	roptions.splice(z, 1);
       }
@@ -492,6 +540,52 @@ console.log("UNIT: " + JSON.stringify(unit));
 	this.unbindBackButtonFunction();
 	this.updateStatus("advancing...");
 
+
+	for (let i = 0; i < attacker_units.length; i++) {
+          let x = attacker_units[i];
+      	  let skey = x.spacekey;
+      	  let ukey = x.key;
+      	  let uidx = 0;
+	  let u = {};
+	  for (let z = 0; z < paths_self.game.spaces[skey].units.length; z++) {
+	    if (paths_self.game.spaces[skey].units[z].key === ukey) {
+	      uidx = z;
+	    } 
+	  }
+	  if (!attacker_units[i].damaged) {
+            paths_self.moveUnit(skey, uidx, key);
+	    paths_self.addMove(`move\t${faction}\t${skey}\t${uidx}\t${key}\t${paths_self.game.player}`);
+	  }
+          paths_self.displaySpace(skey);
+	}
+        paths_self.displaySpace(key);
+	paths_self.endTurn();
+      },
+      null,
+      true
+    );
+  }
+
+  playerHandleGreatAdvance(sourcekey="") {
+
+    let paths_self = this;
+
+    let roptions = [sourcekey];
+    let attacker_units = this.returnAttackerUnits();
+    let faction = "central";
+
+    paths_self.playerSelectSpaceWithFilter(
+      `Select Advance Destination`,
+      (destination) => {
+	if (roptions.includes(destination)) {
+	  return 1;
+	}
+        return 0;
+      },
+      (key) => {
+
+	this.unbindBackButtonFunction();
+	this.updateStatus("advancing...");
 
 	for (let i = 0; i < attacker_units.length; i++) {
           let x = attacker_units[i];
@@ -666,6 +760,24 @@ console.log("UNIT: " + JSON.stringify(unit));
     let can_defender_cancel_retreat = false;
 
     //
+    // triggers if we only have 1 unit left and they are a damaged
+    // corps...
+    //
+    if (this.game.state.combat.can_defender_cancel == false) {
+      this.playerHandleRetreat();
+      return;
+    }
+
+    //
+    // withdrawal forces retreat -- no other options
+    //
+    if (this.game.state.events.withdrawal) {
+      this.playerHandleRetreat();
+      return;
+    }
+
+
+    //
     // Defending units in Trenches, Forests, Deserts, Mountains, or 
     // Swamps may chose to ignore a retreat by taking one additional
     // step loss. 
@@ -717,6 +829,11 @@ console.log("UNIT: " + JSON.stringify(unit));
     if ((attacker_loss_factor-defender_loss_factor) == 1) { spaces_to_retreat = 2; } // 1 + source
     let faction = this.returnFactionOfPlayer(this.game.player);
     let sourcekey = this.game.state.combat.key;
+
+    //
+    // withdrawal forces spaces to retreat to 1
+    //
+    if (this.game.state.events.withdrawal) { spaces_to_retreat = 2; } // 1 + source
 
     //
     // 
@@ -772,13 +889,15 @@ console.log(JSON.stringify(spaces_within_hops));
 	  spaces_within_hops.splice(i, 1);
 	}
       }
-      if (faction == "central" && paths_self.game.state.events.race_to_the_sea != 1) {
-	if (spaces_within_hops[i] == "amiens") { spaces_within_hops.splice(i, 1); } else {
-	  if (spaces_within_hops[i] == "ostend") { spaces_within_hops.splice(i, 1); } else {
-	    if (spaces_within_hops[i] == "calais") { spaces_within_hops.splice(i, 1); }
-	  }
-	}
-      }
+
+      // what is not prohibited is explicitly allowed?
+      //if (faction == "central" && paths_self.game.state.events.race_to_the_sea != 1) {
+	//if (spaces_within_hops[i] == "amiens") { spaces_within_hops.splice(i, 1); } else {
+	//  if (spaces_within_hops[i] == "ostend") { spaces_within_hops.splice(i, 1); } else {
+	//    if (spaces_within_hops[i] == "calais") { spaces_within_hops.splice(i, 1); }
+	//  }
+	//}
+      //}
     }
 
     //
@@ -797,14 +916,118 @@ console.log(JSON.stringify(spaces_within_hops));
     // allow UI for moving unit...
     //
     let retreat_function = (unit_idx, retreat_function) => {
-console.log(JSON.stringify(source));
-console.log("unit idx: " + unit_idx);
       let unit = source.units[unit_idx];
       paths_self.playerSelectSpaceWithFilter(
           `Select Retreat Destination for ${unit.name}`,
 	  (destination) => {
 	    if (spaces_within_hops.includes(destination)) {
-	      return 1;
+	      if (paths_self.game.spaces[destination].control == paths_self.returnFactionOfPlayer(paths_self.game.player)) {
+		return 1;
+	      }
+	    }
+	    return 0;
+	  },
+	  (key) => {
+	    paths_self.updateStatus("retreating...");
+            paths_self.moveUnit(sourcekey, unit_idx, key);
+	    paths_self.prependMove(`retreat\t${faction}\t${sourcekey}\t${unit_idx}\t${key}\t${paths_self.game.player}`);
+            paths_self.displaySpace(key);
+	    if (unit_idx <= 0) {
+	      paths_self.endTurn();
+	      return 0;
+	    } else {
+	      retreat_function(unit_idx-1, retreat_function);
+	    }
+	  },
+	  null,
+    	  true
+      );
+    };
+  
+    //
+    // now allow moves
+    //
+    retreat_function(source.units.length-1, retreat_function);
+
+  }
+
+
+
+  playerHandleGreatRetreat(sourcekey="") {
+
+    let paths_self = this;
+
+    let spaces_to_retreat = 2; // just 1 space!
+    let faction = "allies";
+
+    //
+    // retreat options 
+    //
+    let spaces_within_hops = paths_self.returnSpacesWithinHops(
+      this.game.state.combat.key,
+      spaces_to_retreat, 
+      (spacekey) => {
+	if (spacekey == this.game.state.combat.key) { return 1; }; // pass through
+        if (paths_self.game.spaces[spacekey].units.length > 0) {
+	  if (paths_self.returnPowerOfUnit(paths_self.game.spaces[spacekey].units[0]) != faction) { 
+  	    return 0; 
+          }
+        }
+        return 1;
+      }
+    );
+
+console.log("###################");
+console.log("###################");
+console.log("###################");
+console.log("SPACES WITHIN HOPS:");
+console.log(JSON.stringify(spaces_within_hops));
+
+    //
+    // remove source and single-hop destination if needed
+    //
+    let source = this.game.spaces[this.game.state.combat.key];
+    for (let i = spaces_within_hops.length-1; i >= 0; i--) {
+      let destination = spaces_within_hops[i];
+      if (destination == this.game.state.combat.key) {
+	spaces_within_hops.splice(i, 1);
+      }
+    }
+
+    //
+    // no retreat options? this is voluntary, so we should just end without retreating
+    //
+    if (spaces_within_hops.length == 0) {
+      paths_self.endTurn();
+      return 0;
+    }
+
+  
+    //
+    // allow UI for moving unit...
+    //
+    let retreat_function = (unit_idx, retreat_function) => {
+      let unit = source.units[unit_idx];
+
+      //
+      // only RU units retreat
+      //
+      while (unit.ckey != "RU") { 
+	unit_idx--; 
+	if (unit_idx < 0) {
+	  paths_self.endTurn();
+	  return 0;
+	}
+        unit = source.units[unit_idx];
+      }
+
+      paths_self.playerSelectSpaceWithFilter(
+          `Select Retreat Destination for ${unit.name}`,
+	  (destination) => {
+	    if (spaces_within_hops.includes(destination)) {
+	      if (paths_self.game.spaces[destination].control == paths_self.returnFactionOfPlayer(paths_self.game.player)) {
+		return 1;
+	      }
 	    }
 	    return 0;
 	  },
@@ -1346,9 +1569,11 @@ console.log("unit idx: " + unit_idx);
 	  });
 
 	  paths_self.playerSelectSpaceWithFilter(
+
 	    `Select Destination for ${unit.name}`,
+
 	    (destination) => {
-	      if (faction == "central" && paths_self.game.state.events.race_to_the_sea != 1) {
+	      if (faction == "central" && paths_self.game.state.events.race_to_the_sea != 1 && paths_self.game.state.general_records_track.central_war_status <4 ) {
 		if (destination == "amiens") { return 0; }
 		if (destination == "ostend") { return 0; }
 		if (destination == "calais") { return 0; }

@@ -33,7 +33,7 @@
 
   }
 
-  displayCustomOverlay(c="", msg="") {
+  displayCustomOverlay(obj={}) {
 
     //
     // move HUD above winter if winter is showing
@@ -41,29 +41,28 @@
     this.welcome_overlay.pullHudOverOverlay();
     this.welcome_overlay.pushHudUnderOverlay();
 
+alert("display custom overlay inside fn");
 
-    let deck = this.returnDeck(true); // include removed
-    if (deck[c]) {
-      if (deck[c].returnCustomOverlay) {
+    let deck = this.returnDeck(); // include removed
 
-        let obj = deck[c].returnCustomOverlay();
-        let title = obj.title;
-        let text = obj.text;
-        let img = obj.img;
-        let card = this.returnCardImage(c);
+    let title = "";
+    let text = "";
+    let img = "";
+    let card = "";
 
-        if (msg == "") {
-          msg = this.popup(c) + " triggers";
-        }
- 
+    if (obj.title) { title = obj.title; }
+    if (obj.text) { text = obj.text; }
+    if (obj.img) { img = obj.img; }
+    if (obj.card) { card = obj.card; }
+
+alert("rendering welcome overlay! : " + text + " / " + title + " / " + img);
+
         this.welcome_overlay.renderCustom({
           text : text,
           title : title,
           img : img,
-          card : card,
+	  card : card
         });
-      }
-    }
 
   }
 

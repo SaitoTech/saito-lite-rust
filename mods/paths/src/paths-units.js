@@ -4,8 +4,8 @@
 
     try { if (!unit.ckey) { unit = this.game.units[unit]; } } catch (err) {}
 
-    let allied = ["FR", "RU", "BR", "BE", "IT", "US"];
-    let central = ["GE", "AH", "TU", "BG"];
+    let allied = ["FR", "RU", "BR", "BE", "IT", "US", "ANA", "AUS", "BEF", "CAU", "CND", "CZL", "GR", "MEF", "MN", "NE", "OA", "POL", "PT" , "RO", "SB"];
+    let central = ["GE", "AH", "TU", "BG", "AOI", "BU", "SN" , "YLD"];
 
     if (allied.includes(unit.ckey)) { return "allies"; }
     if (central.includes(unit.ckey)) { return "central"; }

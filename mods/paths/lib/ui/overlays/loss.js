@@ -299,6 +299,22 @@ console.log("SPACE: " + JSON.stringify(space));
 		if (space.trench == 2) 		 { document.querySelector(".effects_table .trench2").style.display = "contents"; }
 
 		//
+		// add active card effects
+		//
+console.log("A ACTIVE CARDS: " + JSON.stringify(this.mod.game.state.cc_allies_active));
+console.log("C ACTIVE CARDS: " + JSON.stringify(this.mod.game.state.cc_central_active));
+		for (let z = 0; z < this.mod.game.state.cc_allies_active.length; z++) {
+		  let cc = this.mod.game.state.cc_allies_active[z];
+		  let html = this.mod.popup(cc) + " ";
+		  document.querySelector(".other_effects").innerHTML += html;
+		}
+		for (let z = 0; z < this.mod.game.state.cc_central_active.length; z++) {
+		  let cc = this.mod.game.state.cc_central_active[z];
+		  let html = this.mod.popup(cc) + " ";
+		  document.querySelector(".other_effects").innerHTML += html;
+		}
+
+		//
 		// 
 		//
 		let column_number = 0;
@@ -461,7 +477,6 @@ console.log("SPACE: " + JSON.stringify(space));
 
 				let idx = e.currentTarget.id;
 
-alert('here: ' + idx);
 				let unit = this.units[idx];
 				if (unit.destroyed) { alert("destroyed"); }
 				let unit_key = e.currentTarget.dataset.key;
@@ -470,6 +485,19 @@ alert('here: ' + idx);
 
 				let didx = idx;
 				let unit_idx = didx;
+
+				//
+				// withdrawal
+				//
+				if (unit.corps && unit.eligible_for_withdrawal_bonus && this.game.state.events.withdrawal && this.game.state.events.withdrawal_bonus_used != 1) {
+				  try { salert("Withdrawal Negates 1 Corps Stepwise Loss..."); } catch (err) {}
+				  if (unit.damaged) {
+				    this.loss_factor -= unit.rloss;
+				  } else {
+				    this.loss_factor -= unit.loss;
+				  }
+				  this.game.state.events.withdrawal_bonus_used = 1;
+				}
 
 				if (unit.damaged) {
 

@@ -149,7 +149,17 @@
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { 
+	  let attacker_units = paths_self.returnAttackerUnits();
+	  let defender_units = paths_self.returnDefenderUnits();
+	  for (let i = 0; i < attacker_units.length; i++) {
+	    if (attacker_units[i].country === "russia") { return 1; }
+	  }
+	  for (let i = 0; i < defender_units.length; i++) {
+	    if (defender_units[i].country === "russia") { return 1; }
+	  }
+	  return 0;
+        } ,
         onEvent : function(paths_self, faction) {
 	  let attacker_units = paths_self.returnAttackerUnits();
 	  let defender_units = paths_self.returnDefenderUnits();
@@ -173,7 +183,17 @@
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { 
+	  let attacker_units = paths_self.returnAttackerUnits();
+	  let defender_units = paths_self.returnDefenderUnits();
+	  for (let i = 0; i < attacker_units.length; i++) {
+	    if (attacker_units[i].country === "serbia") { return 1; }
+	  }
+	  for (let i = 0; i < defender_units.length; i++) {
+	    if (defender_units[i].country === "serbia") { return 1; }
+	  }
+	  return 0; 
+	} ,
         onEvent : function(paths_self, faction) {
 	  let attacker_units = paths_self.returnAttackerUnits();
 	  let defender_units = paths_self.returnDefenderUnits();
@@ -199,6 +219,7 @@
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
+	  paths_self.game.state.events.withdrawal = 1;
 	  paths_self.game.state.combat.withdrawal = 1; 
 	  return 1;
 	} ,
@@ -214,7 +235,20 @@
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) {
+	  let space = paths_self.game.spaces[paths_self.game.state.combat.key];
+	  if (space.terrain == "mountain") {
+	    if ([3,4,7,8,11,12,15,16,19,20].includes(paths_self.game.state.turn)) { 
+	      return 1;
+	    }
+	  }
+	  if (space.terrain == "swamp") {
+	    if ([3,5,7,9,11,13,15,17,19].includes(paths_self.game.state.turn)) { 
+	      return 1;
+	    }
+	  }
+	  return 0;
+	} ,
         onEvent : function(paths_self, faction) {
 	  let space = paths_self.game.spaces[paths_self.game.state.combat.key];
 	  if (space.terrain == "mountain") {
@@ -470,16 +504,22 @@ deck['ap14'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
-        onEvent : function(paths_self, faction) {
-          let attacker_units = this.returnAttackerUnits();
-          let defender_units = this.returnDefenderUnits();
+        canEvent : function(paths_self, faction) {
+          let attacker_units = paths_self.returnAttackerUnits();
+          let defender_units = paths_self.returnDefenderUnits();
           let valid_option = false;
           for (let i = 0; i < attacker_units.length; i++) { if (attacker_units[i].country == "germany") { valid_option = true; } }
           for (let i = 0; i < defender_units.length; i++) { if (defender_units[i].country != "russia") { valid_option = false; } }
-          if (valid_option == true) {
-            paths_self.game.state.combat.attacker_drm += 1;
-	  }
+          if (valid_option == true) { return 1; }
+	  return 0;
+	} ,
+        onEvent : function(paths_self, faction) {
+          let attacker_units = paths_self.returnAttackerUnits();
+          let defender_units = paths_self.returnDefenderUnits();
+          let valid_option = false;
+          for (let i = 0; i < attacker_units.length; i++) { if (attacker_units[i].country == "germany") { valid_option = true; } }
+          for (let i = 0; i < defender_units.length; i++) { if (defender_units[i].country != "russia") { valid_option = false; } }
+          if (valid_option == true) { paths_self.game.state.combat.attacker_drm += 1; }
 	  return 1;
 	} ,
       }
@@ -494,7 +534,20 @@ deck['ap14'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) {
+	  let space = paths_self.game.spaces[paths_self.game.state.combat.key];
+	  if (space.terrain == "mountain") {
+	    if ([3,4,7,8,11,12,15,16,19,20].includes(paths_self.game.state.turn)) { 
+	      return 1;
+	    }
+	  }
+	  if (space.terrain == "swamp") {
+	    if ([3,5,7,9,11,13,15,17,19].includes(paths_self.game.state.turn)) { 
+	      return 1;
+	    }
+	  }
+	  return 0;
+	} ,
         onEvent : function(paths_self, faction) { 
 	  let space = paths_self.game.spaces[paths_self.game.state.combat.key];
 	  if (space.terrain == "mountain") {
@@ -524,9 +577,91 @@ deck['ap14'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) { 
 	  this.game.queue.push(`rp\tcentral\tcp05`);
-	  alert("TODO - +2 Landwehr bonus");
+	  this.game.queue.push(`landwehr`);
 	  return 1;
 	} ,
+        handleGameLoop : function(his_self, qe, mv) {
+      
+          if (mv[0] === "landwehr") {
+
+            paths_self.game.queue.splice(qe, 1);
+            let p1 = paths_self.returnPlayerOfFaction("central");
+	    if (paths_self.game.player == p1) {
+
+	      let units_to_restore = 2;
+
+	      let loop_fnct = () => {
+        	paths_self.removeSelectable();
+    		if (units_to_restore > 0) {
+    	          //
+    	          // players can flip 2 damaged armies back to full strength
+    	          //
+		  units_to_restore--;
+                  paths_self.playerSelectUnitWithFilter(
+            	    "Select Unit to Repair / Deploy" ,
+          	    filter_fnct ,
+          	    execute_fnct ,
+          	    null ,
+          	    true ,
+          	    [{ key : "pass" , value : "pass" }]
+                  );
+	        } else {
+        	  paths_self.removeSelectable();
+        	  paths_self.endTurn();
+		  return 0;
+		}
+	      }
+
+    	      let filter_fnct = (spacekey, unit) => {
+        	if (unit.damaged == 1 && unit.destroyed != 1) { return 1; }
+		return 0;
+      	      }
+
+	      let execute_fnct = (spacekey, unit_idx) => {
+      		paths_self.updateStatus("processing...");
+	        if (spacekey === "pass") {
+        	  paths_self.removeSelectable();
+        	  paths_self.endTurn();
+        	  just_stop = 1;
+		  units_to_restore = 0;
+        	  return 1;
+      	        }
+        	paths_self.game.spaces[spacekey].units[unit_idx].damaged = 0;
+        	paths_self.addMove(`repair\t${faction}\t${spacekey}\t${unit_idx}`);
+        	paths_self.displaySpace(spacekey);
+		units_to_repair--;
+		loop_fnct();
+	      } 
+
+	      let count = paths_self.countUnitsWithFilter(filter_fnct);
+
+              if (count == 0) {
+		paths_self.addMove("NOTIFY\tNo eligible units for "+paths_self.popup("cp05"));
+		paths_self.endTurn();
+		return 0;
+	      }
+
+              if (count == 1 || count == 2) {
+    	        let update_filter_fnct = (spacekey, unit) => {
+        	  if (unit.damaged == 1 && unit.destroyed != 1) { unit.damaged = 0; paths_self.displaySpace(spacekey); }
+		  return 0;
+	        }
+	        paths_self.countUnitsWithFilter(filter_fnct);
+		paths_self.addMove("NOTIFY\tAll eligible units upgraded ("+paths_self.popup("cp05")+")");
+		paths_self.endTurn();
+		return 0;
+	      }
+
+	      loop_fnct();
+
+	    } else {
+	      paths_self.updateStatus("Central Powers playing " + paths_self.popup("cp05"));
+	    }
+            return 0;
+          } 
+          
+	  return 1;
+	}
       }
 
       deck['cp06'] = { 
@@ -808,7 +943,6 @@ deck['ap16'] = {
 	} ,
       }
 
-
 deck['ap17'] = { 
         key : 'italy',
         img : "cards/card_ap17.svg" ,
@@ -854,8 +988,14 @@ deck['ap18'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
-        onEvent : function(paths_self, faction) {
+        canEvent : function(paths_self, faction) { 
+          let attacker_units = paths_self.returnAttackerUnits();
+          for (let i = 0; i < attacker_units.length; i++) {
+            if (attacker_units[i].ckey == "BR") { return 1; }
+          }
+          return 0;
+        } ,
+	onEvent : function(paths_self, faction) {
           let attacker_units = paths_self.returnAttackerUnits();
           for (let i = 0; i < attacker_units.length; i++) {
             if (attacker_units[i].ckey == "BR") { paths_self.game.state.combat.attacker_drm++; return 1; }
@@ -874,7 +1014,13 @@ deck['ap19'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 0; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) {
+          let attacker_units = paths_self.returnAttackerUnits();
+          for (let i = 0; i < attacker_units.length; i++) {
+            if (attacker_units[i].ckey == "BR" || attacker_units[i].ckey == "FR") { return 1; }
+          }
+          return 0;
+	} ,
         onEvent : function(paths_self, faction) {
           let attacker_units = paths_self.returnAttackerUnits();
           for (let i = 0; i < attacker_units.length; i++) {
@@ -914,7 +1060,13 @@ deck['ap21'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { 
+          let attacker_units = paths_self.returnAttackerUnits();
+          for (let i = 0; i < attacker_units.length; i++) {
+            if (attacker_units[i].ckey == "FR") { return 1; }
+          }
+          return 0;
+	} ,
         onEvent : function(paths_self, faction) {
           let attacker_units = paths_self.returnAttackerUnits();
           for (let i = 0; i < attacker_units.length; i++) {
@@ -1042,7 +1194,7 @@ deck['ap26'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { if (paths_self.game.state.events.blockade && !paths_self.game.state.events.zimmerman) { return 1; } return 0; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.events.blockade && !paths_self.game.state.events.zimmerman_telegram) { return 1; } return 0; } ,
         onEvent : function(paths_self, faction) {
 	  paths_self.game.state.events.lusitania = 1;
 	  paths_self.displayGeneralRecordsTrack();
@@ -2500,8 +2652,8 @@ deck['ap65'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 
-          let attacker_units = this.returnAttackerUnits();
-          let defender_units = this.returnDefenderUnits();
+          let attacker_units = paths_self.returnAttackerUnits();
+          let defender_units = paths_self.returnDefenderUnits();
           let valid_attacker = false;
 	  let valid_defender = true; 
 
