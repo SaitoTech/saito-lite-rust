@@ -230,7 +230,7 @@ class PathsOfGlory extends GameTemplate {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
         //this.hammer.render();
       } else {
-	let his_self = this;
+	let paths_self = this;
         this.sizer.render();
         this.sizer.attachEvents('#gameboard');
       }
@@ -1798,6 +1798,43 @@ console.log("INITIALIZING PATHS");
     return `<span class="showcard ${card}" id="${card}">${card}</span>`;
   }
 
+  canPlayStrategicRedeployment(faction="allies") {
+    if (faction == "allies") {
+      if (this.game.state.allies_rounds.length > 0) {
+        if (this.game.state.allies_rounds[this.game.state.allies_rounds.length-1] == "sr") {  
+  	  return 0;
+        }
+      }
+      return 1;
+    } else {
+      if (this.game.state.central_rounds.length > 0) {
+        if (this.game.state.central_rounds[this.game.state.central_rounds.length-1] == "sr") {  
+  	  return 0;
+        }
+      }
+      return 1;
+    }
+  }
+
+  canPlayReinforcementPoints(faction="allies") {
+    if (faction == "allies") {
+      if (this.game.state.allies_rounds.length > 0) {
+        if (this.game.state.allies_rounds[this.game.state.allies_rounds.length-1] == "rp") {  
+  	  return 0;
+        }
+      }
+      return 1;
+    } else {
+      if (this.game.state.central_rounds.length > 0) {
+        if (this.game.state.central_rounds[this.game.state.central_rounds.length-1] == "rp") {  
+  	  return 0;
+        }
+      }
+      return 1;
+    }
+  }
+
+
   removeCardFromHand(card) {
 
     if (card[0] === 'c' && this.game.player == this.returnPlayerOfFaction("central")) {
@@ -1874,7 +1911,7 @@ console.log("INITIALIZING PATHS");
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_br\t1");
+	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_br\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("allies", ["br_army02", "br_corps"], "england");
 	  }
 	  return 0;
@@ -1912,7 +1949,7 @@ console.log("INITIALIZING PATHS");
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_ru\t1");
+	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_ru\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("allies", ["ru_army11", "ru_corps"], "russia");
 	  }
 	  return 0;
@@ -2058,7 +2095,7 @@ console.log("INITIALIZING PATHS");
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_ru\t1");
+	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_ru\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("allies", ["ru_corps", "ru_corps"], "russia");
 	  }
 	  return 0;
@@ -2095,7 +2132,7 @@ console.log("INITIALIZING PATHS");
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_fr\t1");
+	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_fr\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("allies", ["fr_army10"], "france");
 	  }
 	  return 0;
@@ -2115,7 +2152,7 @@ console.log("INITIALIZING PATHS");
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_ru\t1");
+	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_ru\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("allies", ["ru_army09", "ru_army10"], "russia");
 	  }
 	  return 0;
@@ -2219,7 +2256,7 @@ deck['ap14'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_br\t1");
+	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_br\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("allies", ["br_army01", "br_corps"], "england");
 	  }
 	  return 0;
@@ -2527,7 +2564,7 @@ deck['ap14'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t1");
+	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("central", ["ge_army09"], "germany");
 	  }
 	  return 0;
@@ -2618,7 +2655,7 @@ deck['ap14'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t1");
+	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("central", ["ge_corps","ge_corps","ge_army10"], "germany");
 	  }
 	  return 0;
@@ -2660,7 +2697,7 @@ deck['ap14'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ah\t1");
+	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ah\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("central", ["ah_army07","ah_corps","ah_corps"], "austria");
 	  }
 	  return 0;
@@ -2696,7 +2733,7 @@ deck['ap15'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_br\t1");
+	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_br\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("allies", ["br_army04","br_corps"], "england");
 	  }
 	  return 0;
@@ -2831,7 +2868,7 @@ deck['ap20'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_br\t1");
+	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_br\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("allies", ["cad_corps", "aus_corps"], "england");
 	  }
 	  return 0;
@@ -2878,7 +2915,7 @@ deck['ap22'] = {
         canEvent : function(paths_self, faction) { if (paths_self.game.state.events.italy) { return 1; } return 0; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_it\t1");
+	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_it\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("allies", ["it_army05"], "italy");
 	  }
 	  return 0;
@@ -2948,7 +2985,7 @@ deck['ap24'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_fr\t1");
+	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_fr\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("allies", ["fr_army07"], "france");
 	  }
 	  return 0;
@@ -2968,7 +3005,7 @@ deck['ap25'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_ru\t1");
+	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_ru\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("allies", ["ru_corps", "ru_corps", "ru_army07"], "russia");
 	  }
 	  return 0;
@@ -3236,7 +3273,7 @@ deck['ap32'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_ru\t1");
+	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_ru\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("allies", ["ru_army12"], "russia");
 	  }
 	  return 0;
@@ -3276,7 +3313,7 @@ deck['ap34'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_br\t1");
+	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_br\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("allies", ["br_corps", "br_army03", "br_corps"], "england");
 	  }
 	  return 0;
@@ -3465,7 +3502,7 @@ deck['ap34'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ah\t1");
+	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ah\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("central", ["ah_army10"], "austria");
 	  }
           return 0;
@@ -3485,7 +3522,7 @@ deck['ap34'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t1");
+	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("central", ["ge_corps","ge_army11"], "germany");
 	  }
           return 0;
@@ -3505,7 +3542,7 @@ deck['ap34'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t1");
+	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("central", ["ge_army12","ge_corps"], "germany");
 	  }
           return 0;
@@ -3526,7 +3563,7 @@ deck['ap34'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ah\t1");
+	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ah\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("central", ["ah_army11"], "austria");
 	  }
           return 0;
@@ -3934,7 +3971,7 @@ deck['ap38'] = {
         canEvent : function(paths_self, faction) { if (paths_self.game.state.events.over_there == 1) { return 1; } return 0;  } ,
         onEvent : function(paths_self, faction) { return 1; 
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_us\t1");
+	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_us\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("allies", ["us_corps"], "usa");
 	  }
 	  return 0;
@@ -4006,7 +4043,7 @@ deck['ap42'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_br\t1");
+	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_br\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("allies", ["br_army05","br_corps", "pt_corps"], "england");
 	  }
 	  return 0;
@@ -4026,7 +4063,7 @@ deck['ap43'] = {
         canEvent : function(paths_self, faction) { if (paths_self.game.state.events.over_there == 1) { return 1; } return false; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_us\t1");
+	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_us\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("allies", ["us_army01","us_corps", "us_corps"], "usa");
 	  }
 	  return 0;
@@ -4487,7 +4524,7 @@ deck['ap65'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t1");
+	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("central", ["ge_corps", "ge_corps"], "germany");
 	  }
 	  return 0;
@@ -4507,7 +4544,7 @@ deck['ap65'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t1");
+	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("central", ["ge_corps", "ge_corps"], "germany");
 	  }
 	  return 0;
@@ -4554,7 +4591,7 @@ deck['ap65'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t1");
+	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("central", ["ge_army14"], "germany");
 	  }
 	  return 0;
@@ -4574,7 +4611,7 @@ deck['ap65'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_tu\t1");
+	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_tu\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("central", ["yld_army01"], "turkey");
 	  }
 	  return 0;
@@ -4680,7 +4717,7 @@ deck['ap65'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t1");
+	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("central", ["ge_army17","ge_army18"], "germany");
 	  }
 	  return 0;
@@ -4715,7 +4752,7 @@ deck['cp48'] = {
         canEvent : function(paths_self, faction) { return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
-	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_tu\t1");
+	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_tu\t"+paths_self.game.state.round);
 	    paths_self.playerAddReinforcements("central", ["aoi_army"], "turkey");
 	  }
 	  return 0;
@@ -5700,6 +5737,16 @@ console.log("Central: " + this.game.state.general_records_track.central_war_stat
       document.querySelector(`.general-records-track-${this.game.state.general_records_track.current_cp_russian_vp}`).innerHTML += current_cp_russian_vp;
 
     } catch (err) {
+console.log("X");
+console.log("X");
+console.log("X");
+console.log("X");
+console.log("X");
+console.log("X");
+console.log("X");
+console.log("X");
+console.log("X");
+console.log("X");
       console.log(err);
     }
 
@@ -5712,57 +5759,53 @@ console.log("Central: " + this.game.state.general_records_track.central_war_stat
     let current_round = this.game.state.round;
     let current_turn = this.game.state.turn;
 
-    let last_allies_move = "";
-    let last_central_move = "";
-
     document.querySelectorAll(`.central-action-round-track`).forEach((el) => { el.innerHTML = ""; });
     document.querySelectorAll(`.allies-action-round-track`).forEach((el) => { el.innerHTML = ""; });
 
-    if (this.game.state.allies_rounds.length > 0) {
-      last_allies_move = this.game.state.allies_rounds[this.game.state.allies_rounds.length-1];
-      if (last_allies_move == "sr") {
-	document.querySelector(".central-action-round-track-5").innerHTML = `<ing src="/paths/img/action_ap1.png" />`;
+    for (let z = 0; z < this.game.state.allies_rounds.length; z++) {
+      let allies_move = this.game.state.allies_rounds[z];
+      if (allies_move == "sr") {
+	document.querySelector(".allies-action-round-track-5").innerHTML = `<ing src="/paths/img/action_ap${(z+1)}.png" />`;
       }
-      if (last_allies_move == "rp") {
-	document.querySelector(".central-action-round-track-6").innerHTML = `<ing src="/paths/img/action_ap1.png" />`;
+      if (allies_move == "rp") {
+	document.querySelector(".allies-action-round-track-6").innerHTML = `<ing src="/paths/img/action_ap${(z+1)}.png" />`;
       }
     }
-    if (this.game.state.central_rounds.length > 0) {
-      last_central_move = this.game.state.central_rounds[this.game.state.central_rounds.length-1];
-      if (last_allies_move == "sr") {
-	document.querySelector(".central-action-round-track-7").innerHTML = `<ing src="/paths/img/action_cp1.png" />`;
+    for (let z = 0; z < this.game.state.central_rounds.length; z++) {
+      let central_move = this.game.state.central_rounds[z];
+      if (central_move == "sr") {
+	document.querySelector(".central-action-round-track-7").innerHTML = `<ing src="/paths/img/action_cp${(z+1)}.png" />`;
       }
-      if (last_allies_move == "rp") {
-	document.querySelector(".central-action-round-track-8").innerHTML = `<ing src="/paths/img/action_cp1.png" />`;
+      if (central_move == "rp") {
+	document.querySelector(".central-action-round-track-8").innerHTML = `<ing src="/paths/img/action_cp${(z+1)}.png" />`;
       }
     }
 
     if (parseInt(this.game.state.central_reinforcements_ge) > 0) {
-      document.querySelector(`.central-action-round-track-2`).innerHTML = `<img src="/paths/img/action_cp1.png" />`;
+      document.querySelector(`.central-action-round-track-2`).innerHTML = `<img src="/paths/img/action_cp${this.game.state.central_reinforcements_ge}.png" />`;
     }
     if (parseInt(this.game.state.central_reinforcements_ah) > 0) {
-      document.querySelector(`.central-action-round-track-3`).innerHTML = `<img src="/paths/img/action_cp1.png" />`;
+      document.querySelector(`.central-action-round-track-3`).innerHTML = `<img src="/paths/img/action_cp${this.game.state.central_reinforcements_ah}.png" />`;
     }
     if (parseInt(this.game.state.central_reinforcements_tu) > 0) {
-      document.querySelector(`.central-action-round-track-4`).innerHTML = `<img src="/paths/img/action_cp1.png" />`;
+      document.querySelector(`.central-action-round-track-4`).innerHTML = `<img src="/paths/img/action_cp${this.game.state.central_reinforcements_tu}.png" />`;
     }
 
     if (parseInt(this.game.state.allies_reinforcements_fr) > 0) {
-      document.querySelector(`.allies-action-round-track-2`).innerHTML = `<img src="/paths/img/action_ap1.png" />`;
+      document.querySelector(`.allies-action-round-track-2`).innerHTML = `<img src="/paths/img/action_ap${this.game.state.allies_reinforcements_fr}.png" />`;
     }
     if (parseInt(this.game.state.allies_reinforcements_br) > 0) {
-      document.querySelector(`.allies-action-round-track-3`).innerHTML = `<img src="/paths/img/action_ap1.png" />`;
+      document.querySelector(`.allies-action-round-track-3`).innerHTML = `<img src="/paths/img/action_ap${this.game.state.allies_reinforcements_br}.png" />`;
     }
     if (parseInt(this.game.state.allies_reinforcements_ru) > 0) {
-      document.querySelector(`.allies-action-round-track-4`).innerHTML = `<img src="/paths/img/action_ap1.png" />`;
+      document.querySelector(`.allies-action-round-track-4`).innerHTML = `<img src="/paths/img/action_ap${this.game.state.allies_reinforcements_ru}.png" />`;
     }
     if (parseInt(this.game.state.allies_reinforcements_it) > 0) {
-      document.querySelector(`.allies-action-round-track-5`).innerHTML = `<img src="/paths/img/action_ap1.png" />`;
+      document.querySelector(`.allies-action-round-track-5`).innerHTML = `<img src="/paths/img/action_ap${this.game.state.allies_reinforcements_it}.png" />`;
     }
     if (parseInt(this.game.state.allies_reinforcements_us) > 0) {
-      document.querySelector(`.allies-action-round-track-6`).innerHTML = `<img src="/paths/img/action_ap1.png" />`;
+      document.querySelector(`.allies-action-round-track-6`).innerHTML = `<img src="/paths/img/action_ap${this.game.state.allies_reinforcements_us}.png" />`;
     }
-
 
     if (this.game.state.neutral_entry != 0) {
       document.querySelector(`.central-action-round-track-1`).innerHTML = central_token;;
@@ -5937,20 +5980,20 @@ console.log("Central: " + this.game.state.general_records_track.central_war_stat
     // 1 = fall through, 0 = halt game
     //
     if (obj.handleGameLoop == null) {
-      obj.handleGameLoop = function(his_self, qe, mv) { return 1; } // 1 means fall-through / no-stop
+      obj.handleGameLoop = function(paths_self, qe, mv) { return 1; } // 1 means fall-through / no-stop
     }
 
     //
     // functions for convenience
     //
     if (obj.menuOptionTriggers == null) {
-      obj.menuOptionTriggers = function(his_self, stage, player, faction) { return 0; }
+      obj.menuOptionTriggers = function(paths_self, stage, player, faction) { return 0; }
     }
     if (obj.menuOption == null) {
-      obj.menuOption = function(his_self, stage, player, faction) { return 0; }
+      obj.menuOption = function(paths_self, stage, player, faction) { return 0; }
     }
     if (obj.menuOptionActivated == null) {
-      obj.menuOptionActivated = function(his_self, stage, player, faction) { return 0; }
+      obj.menuOptionActivated = function(paths_self, stage, player, faction) { return 0; }
     }
 
     return obj;
@@ -9928,6 +9971,18 @@ spaces['crbox'] = {
     state.central_total_war_cards_added = false;
     state.allies_total_war_cards_added = false;
 
+    //
+    // countries get marked when they enter the war...
+    //
+    state.events.belgium = 1;
+    state.events.montenegro = 1;
+    state.events.serbia = 1;
+    state.events.austria = 1;
+    state.events.germany = 1;
+    state.events.france = 1;
+    state.events.england = 1;
+    state.events.russia = 1;
+
     state.events.war_in_africa_vp = 0;
     state.events.blockade = 0;
     state.events.great_retreat = 0;
@@ -10043,11 +10098,40 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 
 	  if (this.game.state.turn === 1) {
             this.game.queue.push("guns_of_august");
-	  }
+            this.game.queue.push("show_overlay\twelcome\tallies");
+            this.game.queue.push("show_overlay\twelcome\tcentral");
+          }
 
 	  return 1;
 
 	}
+
+
+        if (mv[0] === "show_overlay") {
+
+          this.game.queue.splice(qe, 1);
+
+          //
+          // hide any cardbox
+          //
+          this.cardbox.hide();
+
+          if (mv[1] === "welcome") {
+            let faction = mv[2];
+            let player = this.returnPlayerOfFaction(faction);
+            if (faction === "central") { player = this.returnPlayerOfFaction("central"); }
+            if (faction === "allies") { player = this.returnPlayerOfFaction("allies"); }
+            if (this.game.player === player) {
+              this.welcome_overlay.render(faction);
+              this.game.queue.push("hide_overlay\twelcome");
+              if (faction === "central") { this.game.queue.push("ACKNOWLEDGE\tYou are the Central Powers"); }
+              if (faction === "allies") { this.game.queue.push("ACKNOWLEDGE\tYou are the Allied Powers"); }
+            }
+          }
+
+	  return 1;
+	}
+
 
 	if (mv[0] === "guns_of_august") {
 
@@ -12097,8 +12181,10 @@ console.log("caa 3");
       for (let i = 0; i < this.game.deck[0].hand.length; i++) {
 	if (cards[this.game.deck[0].hand[i]].cc) { 
 	  if (!this.game.state.cc_central_active.includes(this.game.deck[0].hand[i])) {
-	    num++;
-	    ccs.push(this.game.deck[0].hand[i]);
+	    if (cards[this.game.deck[0].hand[i]].canEvent(this, "attacker")) {
+	      num++;
+	      ccs.push(this.game.deck[0].hand[i]);
+	    }
 	  }
 	}
       }
@@ -12106,8 +12192,10 @@ console.log("caa 3");
 	let c = this.game.state.cc_central_active[i];
 	if (!this.game.state.cc_central_played_this_round.includes(c)) {
 	  if (!this.game.state.cc_central_active.includes(c)) {
-	    num++;
-	    ccs.push(c);
+	    if (cards[this.game.deck[0].hand[i]].canEvent(this, "attacker")) {
+	      num++;
+	      ccs.push(c);
+            }
           }
         }
       }
@@ -12126,8 +12214,10 @@ console.log("caa 3");
       for (let i = 0; i < this.game.deck[1].hand.length; i++) {
 	if (cards[this.game.deck[1].hand[i]].cc) { 
 	  if (!this.game.state.cc_allies_active.includes(this.game.deck[1].hand[i])) {
-	    num++;
-	    ccs.push(this.game.deck[1].hand[i]);
+	    if (cards[this.game.deck[1].hand[i]].canEvent(this, "attacker")) {
+	      num++;
+	      ccs.push(this.game.deck[1].hand[i]);
+	    }
 	  }
 	}
       }
@@ -12135,8 +12225,10 @@ console.log("caa 3");
 	let c = this.game.state.cc_allies_active[i];
 	if (!this.game.state.cc_allies_played_this_round.includes(c)) {
 	  if (!this.game.state.cc_allies_active.includes(c)) {
-	    num++;
-	    ccs.push(c);
+	    if (cards[this.game.deck[1].hand[i]].canEvent(this, "attacker")) {
+	      num++;
+	      ccs.push(c);
+            }
           }
         }
       }
@@ -12202,8 +12294,10 @@ console.log("caa 3");
       for (let i = 0; i < this.game.deck[0].hand.length; i++) {
 	if (cards[this.game.deck[0].hand[i]].cc) { 
 	  if (!this.game.state.cc_central_active.includes(this.game.deck[0].hand[i])) {
-	    num++;
-	    ccs.push(this.game.deck[0].hand[i]);
+	    if (cards[this.game.deck[0].hand[i]].canEvent(this, "defender")) {
+	      num++;
+	      ccs.push(this.game.deck[0].hand[i]);
+            }
 	  }
 	}
       }
@@ -12211,8 +12305,10 @@ console.log("caa 3");
 	let c = this.game.state.cc_central_active[i];
 	if (!this.game.state.cc_central_played_this_round.includes(c)) {
 	  if (!this.game.state.cc_central_active.includes(c)) {
-	    num++;
-	    ccs.push(c);
+	    if (cards[this.game.deck[0].hand[i]].canEvent(this, "defender")) {
+	      num++;
+	      ccs.push(c);
+            }
           }
         }
       }
@@ -12221,8 +12317,10 @@ console.log("caa 3");
       for (let i = 0; i < this.game.deck[1].hand.length; i++) {
 	if (cards[this.game.deck[1].hand[i]].cc) { 
 	  if (!this.game.state.cc_allies_active.includes(this.game.deck[1].hand[i])) {
-	    num++;
-	    ccs.push(this.game.deck[1].hand[i]);
+	    if (cards[this.game.deck[1].hand[i]].canEvent(this, "defender")) {
+	      num++;
+	      ccs.push(this.game.deck[1].hand[i]);
+	    }
 	  }
 	}
       }
@@ -12230,8 +12328,10 @@ console.log("caa 3");
 	let c = this.game.state.cc_allies_active[i];
 	if (!this.game.state.cc_allies_played_this_round.includes(c)) {
 	  if (!this.game.state.cc_allies_active.includes(c)) {
-	    num++;
-	    ccs.push(c);
+	    if (cards[this.game.deck[1].hand[i]].canEvent(this, "defender")) {
+	      num++;
+	      ccs.push(c);
+            }
           }
         }
       }
@@ -13297,22 +13397,25 @@ console.log(JSON.stringify(spaces_within_hops));
 
     let html = `<ul>`;
     html    += `<li class="card movement" id="ops">ops (movement / combat)</li>`;
-    if (c.sr) {
+    if (c.sr && this.canPlayStrategicRedeployment(faction)) {
       html    += `<li class="card redeployment" id="sr">strategic redeployment</li>`;
     }
-    if (c.rp) {
-      html    += `<li class="card replacement" id="rp">replacement points</li>`;
+    if (c.rp && this.canPlayReinforcementPoints(faction)) {
+      html    += `<li class="card reinforcement" id="rp">reinforcement points</li>`;
     }
-    if (c.canEvent(this, faction)) {
+    let can_event_card = false;
+    try { can_event_card = c.canEvent(this, faction); } catch (err) {}
+
+    if (can_event_card) {
       html    += `<li class="card event" id="event">trigger event</li>`;
     }
     html    += `</ul>`;
 
+    this.bindBackButtonFunction(() => { this.playerTurn(faction); });
 
     this.updateStatusWithOptions(`${this.returnFactionName(faction)} - playing ${this.popup(card)}`, html, true);
 
-    this.menu_overlay.render(this.game.player, faction);
-    this.bindBackButtonFunction(() => { this.playerTurn(faction); });
+    this.menu_overlay.render(this.game.player, faction, card);
 
     this.attachCardboxEvents((action) => {
 
@@ -13666,6 +13769,13 @@ console.log(JSON.stringify(spaces_within_hops));
 		if (destination == "ostend") { return 0; }
 		if (destination == "calais") { return 0; }
 	      }
+
+	      //
+	      // you cannot move into neutral countries
+	      //
+	      let country = paths_self.game.spaces[destination].country;
+	      if (paths_self.game.state.events[country] != 1) { return 0; }
+
 	      if (spaces_within_hops.includes(destination)) {
 	        return 1;
 	      }
@@ -13900,11 +14010,15 @@ console.log(JSON.stringify(spaces_within_hops));
     if (targets > 0) {
       html    += `<li class="card" id="combat">activate for combat</li>`;
     }
-    html    += `<li class="card" id="end">continue without activation</li>`;
+    html    += `<li class="card" id="end">skip remaining ops...</li>`;
     html    += `</ul>`;
 
     this.updateStatusWithOptions(`You have ${cost} OPS remaining`, html, true);
-    this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayCard(faction, card); });
+    this.bindBackButtonFunction(() => { 
+      for (let key in this.game.spaces) { this.game.spaces[key].activated_for_movement = 0; this.game.spaces[key].activated_for_combat = 0; } 
+      this.moves = [];
+      this.playerPlayCard(faction, card);
+    });
     this.attachCardboxEvents((action) => {
 
       if (action === "end") {
@@ -13940,8 +14054,8 @@ console.log(JSON.stringify(spaces_within_hops));
 	    }
 	    if (cost > 0) {
 	      this.removeSelectable();
-	      this.playerPlayOps(faction, card, cost, 1);
 	      movement_fnct(movement_fnct);
+	      this.playerPlayOps(faction, card, cost, 1);
 	      return;
 	    }
 	  },

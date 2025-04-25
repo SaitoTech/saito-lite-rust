@@ -2,6 +2,7 @@ const WelcomeTemplate = require('./welcome.template');
 const SaitoOverlay = require('./../../../../../lib/saito/ui/saito-overlay/saito-overlay');
 
 class WelcomeOverlay {
+
 	constructor(app, mod) {
 		this.app = app;
 		this.mod = mod;
@@ -46,6 +47,7 @@ class WelcomeOverlay {
 		this.pushHudUnderOverlay();
 		this.overlay.pullOverlayToFront();
 
+
 		if (obj.title) { document.querySelector('.welcome-title').innerHTML = obj.title; }
 		if (obj.text)  { document.querySelector('.welcome-text').innerHTML  = obj.text; }
 		if (obj.img)   { document.querySelector('.welcome').style.backgroundImage = `url(${obj.img})`; }
@@ -71,101 +73,22 @@ class WelcomeOverlay {
 		this.overlay.show(WelcomeTemplate(faction));
 		this.pushHudUnderOverlay();
 
-		// COMBOS
-		if (faction === 'hapsburg_papacy') {
+		if (faction === 'central') {
 			document.querySelector(
 				'.welcome-title'
-			).innerHTML = `Hapsburgs and Papacy`;
+			).innerHTML = `Central Powers`;
 			document.querySelector(
 				'.welcome-text'
-			).innerHTML = `You are playing as both Hapsburg and Papacy this game.`;
+			).innerHTML = `You are playing as Germany and the Axis Powers this game.`;
 		}
-		if (faction === 'france_ottoman') {
+
+		if (faction === 'allies') {
 			document.querySelector(
 				'.welcome-title'
-			).innerHTML = `France and Ottoman Empire`;
+			).innerHTML = `Allied Powers`;
 			document.querySelector(
 				'.welcome-text'
-			).innerHTML = `You are playing as both France and the Ottoman Empire.`;
-		}
-		if (faction === 'protestant_england') {
-			document.querySelector(
-				'.welcome-title'
-			).innerHTML = `Protestants and England`;
-			document.querySelector(
-				'.welcome-text'
-			).innerHTML = `You are playing as both the Protestants and the English.`;
-		}
-
-
-
-		// PAPACY
-		if (faction === 'papacy') {
-			document.querySelector(
-				'.welcome-title'
-			).innerHTML = `You are the Papacy`;
-			document.querySelector(
-				'.welcome-text'
-			).innerHTML = `Since God has given us the Papacy, let us enjoy it.`;
-		}
-
-		// PROTESTANT
-		if (faction === 'protestant') {
-			document.querySelector(
-				'.welcome-title'
-			).innerHTML = `You are the Protestants`;
-			document.querySelector('.welcome-text').innerHTML = `
-			  The Saxon princes are weak and divided.
-			  <p></p>
-			  But from their gentle shelter,
-			  <p></p>
-			  Great Oaks may yet spread across Europe...
-			`;
-		}
-
-		// OTTOMAN
-		if (faction === 'ottoman') {
-			document.querySelector(
-				'.welcome-title'
-			).innerHTML = `You are the Turks`;
-			document.querySelector('.welcome-text').innerHTML = `
-			  "If we will not learn out of the Scriptures, we must learn out of the Turk’s scabbard..."
-			  </br>-- <i>Martin Luther</i>
-			`;
-		}
-
-		// ENGLAND
-		if (faction === 'england') {
-			document.querySelector(
-				'.welcome-title'
-			).innerHTML = `You are England`;
-			document.querySelector('.welcome-text').innerHTML = `
-			  This fortress built by Nature for herself </br> Against infection and the hand of war, 
-			`;
-		}
-
-
-		// FRANCE
-		if (faction === 'france') {
-			document.querySelector(
-				'.welcome-title'
-			).innerHTML = `You are the French`;
-			document.querySelector('.welcome-text').innerHTML = `
-			  The French are wiser than they seem...
-			  </br>
-			  <i>-- Francis Bacon</i>
-			`;
-		}
-
-
-		// HAPSBURG
-		if (faction === 'hapsburg') {
-			document.querySelector(
-				'.welcome-title'
-			).innerHTML = `You are the Hapsburg Dynasty`;
-			document.querySelector('.welcome-text').innerHTML = `
-			  El imperio donde nunca se pone el sol...
-			`;
+			).innerHTML = `You are playing as Britain, France and the Allied Powers.`;
 		}
 
 		this.attachEvents();

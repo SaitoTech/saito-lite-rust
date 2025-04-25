@@ -277,6 +277,18 @@
     state.central_total_war_cards_added = false;
     state.allies_total_war_cards_added = false;
 
+    //
+    // countries get marked when they enter the war...
+    //
+    state.events.belgium = 1;
+    state.events.montenegro = 1;
+    state.events.serbia = 1;
+    state.events.austria = 1;
+    state.events.germany = 1;
+    state.events.france = 1;
+    state.events.england = 1;
+    state.events.russia = 1;
+
     state.events.war_in_africa_vp = 0;
     state.events.blockade = 0;
     state.events.great_retreat = 0;

@@ -230,7 +230,7 @@ class PathsOfGlory extends GameTemplate {
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
         //this.hammer.render();
       } else {
-	let his_self = this;
+	let paths_self = this;
         this.sizer.render();
         this.sizer.attachEvents('#gameboard');
       }

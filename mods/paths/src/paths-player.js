@@ -37,8 +37,10 @@
       for (let i = 0; i < this.game.deck[0].hand.length; i++) {
 	if (cards[this.game.deck[0].hand[i]].cc) { 
 	  if (!this.game.state.cc_central_active.includes(this.game.deck[0].hand[i])) {
-	    num++;
-	    ccs.push(this.game.deck[0].hand[i]);
+	    if (cards[this.game.deck[0].hand[i]].canEvent(this, "attacker")) {
+	      num++;
+	      ccs.push(this.game.deck[0].hand[i]);
+	    }
 	  }
 	}
       }
@@ -46,8 +48,10 @@
 	let c = this.game.state.cc_central_active[i];
 	if (!this.game.state.cc_central_played_this_round.includes(c)) {
 	  if (!this.game.state.cc_central_active.includes(c)) {
-	    num++;
-	    ccs.push(c);
+	    if (cards[this.game.deck[0].hand[i]].canEvent(this, "attacker")) {
+	      num++;
+	      ccs.push(c);
+            }
           }
         }
       }
@@ -66,8 +70,10 @@
       for (let i = 0; i < this.game.deck[1].hand.length; i++) {
 	if (cards[this.game.deck[1].hand[i]].cc) { 
 	  if (!this.game.state.cc_allies_active.includes(this.game.deck[1].hand[i])) {
-	    num++;
-	    ccs.push(this.game.deck[1].hand[i]);
+	    if (cards[this.game.deck[1].hand[i]].canEvent(this, "attacker")) {
+	      num++;
+	      ccs.push(this.game.deck[1].hand[i]);
+	    }
 	  }
 	}
       }
@@ -75,8 +81,10 @@
 	let c = this.game.state.cc_allies_active[i];
 	if (!this.game.state.cc_allies_played_this_round.includes(c)) {
 	  if (!this.game.state.cc_allies_active.includes(c)) {
-	    num++;
-	    ccs.push(c);
+	    if (cards[this.game.deck[1].hand[i]].canEvent(this, "attacker")) {
+	      num++;
+	      ccs.push(c);
+            }
           }
         }
       }
@@ -142,8 +150,10 @@
       for (let i = 0; i < this.game.deck[0].hand.length; i++) {
 	if (cards[this.game.deck[0].hand[i]].cc) { 
 	  if (!this.game.state.cc_central_active.includes(this.game.deck[0].hand[i])) {
-	    num++;
-	    ccs.push(this.game.deck[0].hand[i]);
+	    if (cards[this.game.deck[0].hand[i]].canEvent(this, "defender")) {
+	      num++;
+	      ccs.push(this.game.deck[0].hand[i]);
+            }
 	  }
 	}
       }
@@ -151,8 +161,10 @@
 	let c = this.game.state.cc_central_active[i];
 	if (!this.game.state.cc_central_played_this_round.includes(c)) {
 	  if (!this.game.state.cc_central_active.includes(c)) {
-	    num++;
-	    ccs.push(c);
+	    if (cards[this.game.deck[0].hand[i]].canEvent(this, "defender")) {
+	      num++;
+	      ccs.push(c);
+            }
           }
         }
       }
@@ -161,8 +173,10 @@
       for (let i = 0; i < this.game.deck[1].hand.length; i++) {
 	if (cards[this.game.deck[1].hand[i]].cc) { 
 	  if (!this.game.state.cc_allies_active.includes(this.game.deck[1].hand[i])) {
-	    num++;
-	    ccs.push(this.game.deck[1].hand[i]);
+	    if (cards[this.game.deck[1].hand[i]].canEvent(this, "defender")) {
+	      num++;
+	      ccs.push(this.game.deck[1].hand[i]);
+	    }
 	  }
 	}
       }
@@ -170,8 +184,10 @@
 	let c = this.game.state.cc_allies_active[i];
 	if (!this.game.state.cc_allies_played_this_round.includes(c)) {
 	  if (!this.game.state.cc_allies_active.includes(c)) {
-	    num++;
-	    ccs.push(c);
+	    if (cards[this.game.deck[1].hand[i]].canEvent(this, "defender")) {
+	      num++;
+	      ccs.push(c);
+            }
           }
         }
       }
@@ -1237,22 +1253,25 @@ console.log(JSON.stringify(spaces_within_hops));
 
     let html = `<ul>`;
     html    += `<li class="card movement" id="ops">ops (movement / combat)</li>`;
-    if (c.sr) {
+    if (c.sr && this.canPlayStrategicRedeployment(faction)) {
       html    += `<li class="card redeployment" id="sr">strategic redeployment</li>`;
     }
-    if (c.rp) {
-      html    += `<li class="card replacement" id="rp">replacement points</li>`;
+    if (c.rp && this.canPlayReinforcementPoints(faction)) {
+      html    += `<li class="card reinforcement" id="rp">reinforcement points</li>`;
     }
-    if (c.canEvent(this, faction)) {
+    let can_event_card = false;
+    try { can_event_card = c.canEvent(this, faction); } catch (err) {}
+
+    if (can_event_card) {
       html    += `<li class="card event" id="event">trigger event</li>`;
     }
     html    += `</ul>`;
 
+    this.bindBackButtonFunction(() => { this.playerTurn(faction); });
 
     this.updateStatusWithOptions(`${this.returnFactionName(faction)} - playing ${this.popup(card)}`, html, true);
 
-    this.menu_overlay.render(this.game.player, faction);
-    this.bindBackButtonFunction(() => { this.playerTurn(faction); });
+    this.menu_overlay.render(this.game.player, faction, card);
 
     this.attachCardboxEvents((action) => {
 
@@ -1606,6 +1625,13 @@ console.log(JSON.stringify(spaces_within_hops));
 		if (destination == "ostend") { return 0; }
 		if (destination == "calais") { return 0; }
 	      }
+
+	      //
+	      // you cannot move into neutral countries
+	      //
+	      let country = paths_self.game.spaces[destination].country;
+	      if (paths_self.game.state.events[country] != 1) { return 0; }
+
 	      if (spaces_within_hops.includes(destination)) {
 	        return 1;
 	      }
@@ -1840,11 +1866,15 @@ console.log(JSON.stringify(spaces_within_hops));
     if (targets > 0) {
       html    += `<li class="card" id="combat">activate for combat</li>`;
     }
-    html    += `<li class="card" id="end">continue without activation</li>`;
+    html    += `<li class="card" id="end">skip remaining ops...</li>`;
     html    += `</ul>`;
 
     this.updateStatusWithOptions(`You have ${cost} OPS remaining`, html, true);
-    this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayCard(faction, card); });
+    this.bindBackButtonFunction(() => { 
+      for (let key in this.game.spaces) { this.game.spaces[key].activated_for_movement = 0; this.game.spaces[key].activated_for_combat = 0; } 
+      this.moves = [];
+      this.playerPlayCard(faction, card);
+    });
     this.attachCardboxEvents((action) => {
 
       if (action === "end") {
@@ -1880,8 +1910,8 @@ console.log(JSON.stringify(spaces_within_hops));
 	    }
 	    if (cost > 0) {
 	      this.removeSelectable();
-	      this.playerPlayOps(faction, card, cost, 1);
 	      movement_fnct(movement_fnct);
+	      this.playerPlayOps(faction, card, cost, 1);
 	      return;
 	    }
 	  },

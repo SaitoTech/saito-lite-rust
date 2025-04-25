@@ -81,11 +81,40 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 
 	  if (this.game.state.turn === 1) {
             this.game.queue.push("guns_of_august");
-	  }
+            this.game.queue.push("show_overlay\twelcome\tallies");
+            this.game.queue.push("show_overlay\twelcome\tcentral");
+          }
 
 	  return 1;
 
 	}
+
+
+        if (mv[0] === "show_overlay") {
+
+          this.game.queue.splice(qe, 1);
+
+          //
+          // hide any cardbox
+          //
+          this.cardbox.hide();
+
+          if (mv[1] === "welcome") {
+            let faction = mv[2];
+            let player = this.returnPlayerOfFaction(faction);
+            if (faction === "central") { player = this.returnPlayerOfFaction("central"); }
+            if (faction === "allies") { player = this.returnPlayerOfFaction("allies"); }
+            if (this.game.player === player) {
+              this.welcome_overlay.render(faction);
+              this.game.queue.push("hide_overlay\twelcome");
+              if (faction === "central") { this.game.queue.push("ACKNOWLEDGE\tYou are the Central Powers"); }
+              if (faction === "allies") { this.game.queue.push("ACKNOWLEDGE\tYou are the Allied Powers"); }
+            }
+          }
+
+	  return 1;
+	}
+
 
 	if (mv[0] === "guns_of_august") {
 
