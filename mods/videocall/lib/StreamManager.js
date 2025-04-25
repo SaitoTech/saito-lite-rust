@@ -315,7 +315,18 @@ class StreamManager {
         this.localStream.getTracks().forEach((track) => {
           peerConnection.senders.push(peerConnection.addTrack(track, this.localStream));
         });
-      }
+
+        if (this.presentationStream){
+          console.log('Share screen with new connection');
+          setTimeout(async ()=> {
+            await this.mod.sendOffChainMessage('screen-share-start', {});
+            this.presentationStream.getTracks().forEach((track) => {
+              peerConnection.addTrack(track, this.presentationStream);
+            });
+
+          }, 1500);
+        }
+       }
     });
 
     app.connection.on('stun-disconnect', () => {
@@ -462,7 +473,7 @@ class StreamManager {
       setTimeout(()=>{this.app.connection.emit('stun-disconnect');}, 1500);
     } else {
       siteMessage(`${this.app.keychain.returnUsername(peer)} ${message}`, 2500);
-      this.app.connection.emit("stun-switch-view");
+      //this.app.connection.emit("stun-switch-view");
     }
 
     let sound = new Audio('/saito/sound/Sharp.mp3');
@@ -544,14 +555,14 @@ class StreamManager {
   }
 
   endPresentation() {
-    if (this.mod.screen_share) {
+    if (this.mod.screen_share === true) {
       console.log('Screen sharing stopped by user');
       this.app.connection.emit('remove-peer-box', 'presentation');
       this.app.connection.emit(
         'stun-switch-view',
         this.app.options.stun.settings?.layout || this.mod.layout
       );
-      this.mod.screen_share = false;
+      this.mod.screen_share = null;
 
       this.mod.sendOffChainMessage('screen-share-stop');
     }

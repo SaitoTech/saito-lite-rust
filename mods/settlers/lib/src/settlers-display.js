@@ -51,7 +51,6 @@ class SettlersDisplay {
 
   displayScore() {
     try {
-
       let score_change = false;
 
       for (let i = 0; i < this.game.state.players.length; i++) {
@@ -97,32 +96,43 @@ class SettlersDisplay {
 
       if (this.game.players.length == 2 && score_change) {
         if (Math.abs(this.game.state.players[0].vp - this.game.state.players[1].vp) > 1) {
-          
           let player = this.game.state.players[0].vp > this.game.state.players[1].vp ? 1 : 2;
 
           if (score_change == player) {
             // Newly entering state
             if (!this.game.state.robinhood) {
               $('.main').addClass('robinhood');
-              this.game.state.robinhood = 3-player;
-              this.updateLog(`Robinhood will be friendly to ${this.formatPlayer(this.game.state.robinhood)}`);
+              this.game.state.robinhood = 3 - player;
+              this.updateLog(
+                `Robinhood will be friendly to ${this.formatPlayer(this.game.state.robinhood)}`
+              );
             }
-  
+
+            if (!this.game.state.robinhood_overlay) {
+              this.game.state.robinhood_overlay = 1;
+              this.game_help.render({
+                title: 'Robin Hood',
+                text: 'Robin Hood is a friendly bandit (in 1v1 games) that helps the losing player, who will be immune to Robin Hood raiding their hand or blocking their resource production',
+                img: '/settlers/img/robinhood_background.jpg',
+                line1: 'who is',
+                line2: 'robin hood?'
+              });
+            }
+
             // Only move Robinhood if bandit is threatening losing player
-            if (this.game.state.threatened.includes(this.game.state.robinhood)){
-              this.card_overlay.render({ player: this.game.state.robinhood , card : "Robin Hood"});
+            if (this.game.state.threatened.includes(this.game.state.robinhood)) {
+              this.card_overlay.render({ player: this.game.state.robinhood, card: 'Robin Hood' });
               this.game.queue.push(`roll_bandit\t${player}`);
             }
           }
         } else {
           if (this.game.state.robinhood) {
-            this.updateLog("The bandit is neutral again");
+            this.updateLog('The bandit is neutral again');
           }
           $('.main').removeClass('robinhood');
           this.game.state.robinhood = 0;
         }
       }
-
     } catch (err) {
       console.error(err);
     }
@@ -146,7 +156,6 @@ class SettlersDisplay {
       } else {
         this.cardfan.hide();
       }
-      
     } catch (err) {
       console.error(err);
     }
@@ -258,28 +267,28 @@ class SettlersDisplay {
 
       if (!this.game.over) {
         if (this.game.state.ads[i - 1].offer || this.game.state.ads[i - 1].ask) {
-            let offer = this.wishListToImage(this.game.state.ads[i - 1].offer);
-            let ask = this.wishListToImage(this.game.state.ads[i - 1].ask);
-            let id = `trade_${i}`;
-            let html = `<div class="trade" id="${id}">
+          let offer = this.wishListToImage(this.game.state.ads[i - 1].offer);
+          let ask = this.wishListToImage(this.game.state.ads[i - 1].ask);
+          let id = `trade_${i}`;
+          let html = `<div class="trade" id="${id}">
             <img src="${this.back}"/>
             <i class="fa-solid fa-money-bill-transfer"></i>
             </div>
             `;
 
-            this.playerbox.updateGraphics(html, i);
-            id = '#' + id;
-            let settlers_self = this;
-            $(id).off();
-            $(id).on('click', function () {
-              //  Launch overlay window for private trade
-              settlers_self.showTradeOverlay(
-                i,
-                settlers_self.game.state.ads[i - 1].ask,
-                settlers_self.game.state.ads[i - 1].offer
-              );
-            });
-        }else{
+          this.playerbox.updateGraphics(html, i);
+          id = '#' + id;
+          let settlers_self = this;
+          $(id).off();
+          $(id).on('click', function () {
+            //  Launch overlay window for private trade
+            settlers_self.showTradeOverlay(
+              i,
+              settlers_self.game.state.ads[i - 1].ask,
+              settlers_self.game.state.ads[i - 1].offer
+            );
+          });
+        } else {
           //this.playerbox.updateGraphics('', i);
         }
       }
@@ -289,8 +298,8 @@ class SettlersDisplay {
       this.game.deck[0].hand.length == 0 &&
       this.game.state.players[this.game.player - 1].devcards.length == 0
     ) {
-      $(".controls #playcard").removeClass('enabled');
-    } 
+      $('.controls #playcard').removeClass('enabled');
+    }
 
     if (this.game.player == 0) {
       this.showPlayerResources();
@@ -308,21 +317,19 @@ class SettlersDisplay {
   @param tradeType (integer) the player number of the targeted player, 0 for all players, -1 for advertisement
   */
   showTradeOverlay(offering_player = -1, i_should_give = null, i_should_accept = null) {
-
     if (offering_player) {
       this.trade_overlay.offering_player = offering_player;
     }
 
     if (i_should_give || i_should_accept) {
-
       i_should_give = i_should_give || {};
       i_should_accept = i_should_accept || {};
 
-      if (this.game.player === offering_player){
+      if (this.game.player === offering_player) {
         this.trade_overlay.get = i_should_give;
         this.trade_overlay.give = i_should_accept;
         this.trade_overlay.accepting_trade = 0;
-      }else{
+      } else {
         this.trade_overlay.get = i_should_accept;
         this.trade_overlay.give = i_should_give;
         this.trade_overlay.accepting_trade = 1;
@@ -376,42 +383,37 @@ class SettlersDisplay {
     });
   }
 
-
-  animateDevCard(player){
+  animateDevCard(player) {
     let destination = '#game-playerbox-' + player;
 
-    if (player == this.game.player){
-
+    if (player == this.game.player) {
       let elm = this.createGameElement(
-          `<div class="card_holder"><img src="${this.card.back}"/></div>`,
-          "#game-hexgrid",
-          ".hex.dummy"
-        );
+        `<div class="card_holder"><img src="${this.card.back}"/></div>`,
+        '#game-hexgrid',
+        '.hex.dummy'
+      );
 
       this.moveGameElement(elm, destination);
-    }else{
+    } else {
       this.animationSequence.push({
         callback: this.moveGameElement,
         params: [
           this.createGameElement(
             `<div class="card_holder"><img src="${this.card.back}"/></div>`,
-            "#game-hexgrid",
-            ".hex.dummy"
+            '#game-hexgrid',
+            '.hex.dummy'
           ),
           destination,
           null,
           () => {
             $('.animated_elem').remove();
             this.restartQueue();
-
           }
         ]
       });
       this.runAnimationQueue(250);
     }
-
   }
-
 
   /*
   Briefly animate the longest road and update log if there is a change in ownership
@@ -493,10 +495,9 @@ class SettlersDisplay {
       .addClass('rolled')
       .delay(600)
       .queue(function () {
-        $(this).removeAttr("style").dequeue();
+        $(this).removeAttr('style').dequeue();
       });
   }
-
 
   updateStatus(str, preserve = 0) {
     try {
@@ -508,9 +509,9 @@ class SettlersDisplay {
 
       this.game.status = str;
 
-      if (this.status.length > 0){
+      if (this.status.length > 0) {
         let last = this.status.pop();
-        if (last[1]){
+        if (last[1]) {
           this.status.push(last);
         }
       }
@@ -523,13 +524,11 @@ class SettlersDisplay {
       }
 
       if (this.game.players.includes(this.publicKey)) {
-
         if (this.gameBrowserActive()) {
-    
           let status_obj = document.querySelector('.hud-body .status');
-    
+
           let complex_str = '';
-          for (let ud of this.status){
+          for (let ud of this.status) {
             let s = ud[0];
             if (!s.includes('<div')) {
               s = `<div class="player-notice">${s}</div>`;
@@ -544,10 +543,9 @@ class SettlersDisplay {
         }
       }
     } catch (err) {
-      console.error("ERR: " + err);
+      console.error('ERR: ' + err);
     }
   }
-
 }
 
 module.exports = SettlersDisplay;

@@ -1,7 +1,9 @@
 module.exports = () => {
 	return `
-    <div id="welcome_overlay" class="welcome_overlay splash_overlay">
-      <img src="/settlers/img/welcome.jpg"/>
-    </div>
+        <div class="welcome welcome-overlay">
+          <div class="welcome-title"></div>
+            <div class="welcome-text"></div>
+        </div>
   `;
 };
+

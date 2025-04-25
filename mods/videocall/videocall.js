@@ -530,8 +530,10 @@ class Videocall extends ModTemplate {
 					}
 
 					if (txmsg.request === 'screen-share-start') {
-						this.screen_share = tx.from[0].publicKey;
-						this.app.connection.emit('add-remote-stream-request', 'presentation', null);
+						if (this.screen_share !== tx.from[0].publicKey){
+							this.screen_share = tx.from[0].publicKey;
+							this.app.connection.emit('add-remote-stream-request', 'presentation', null);
+						}
 					}
 
 					if (txmsg.request === 'screen-share-stop') {
