@@ -198,8 +198,8 @@
     if (faction == "france") { sources = ["london"]; }
     if (faction == "ap" || faction == "allies") { sources = ["london"]; }
     if (faction == "ru" || faction == "russia") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
-    if (faction == "ro") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
-    if (faction == "sb") { 
+    if (faction == "ro" || faction == "romania") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
+    if (faction == "sb" || faction == "serbia") { 
       sources = ["moscow","petrograd","kharkov","caucasus","london"]; 
       if (this.returnControlOfSpace("salonika") == "allies") { sources["sb"].push("salonika"); }
     }

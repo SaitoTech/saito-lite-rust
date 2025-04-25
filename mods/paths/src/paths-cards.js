@@ -629,38 +629,38 @@ deck['ap14'] = {
 
             paths_self.game.queue.splice(qe, 1);
             let p1 = paths_self.returnPlayerOfFaction("central");
-	    if (paths_self.game.player == p1) {
 
-	      let units_to_restore = 2;
+	    let units_to_restore = 2;
 
-	      let loop_fnct = () => {
-        	paths_self.removeSelectable();
-    		if (units_to_restore > 0) {
-    	          //
-    	          // players can flip 2 damaged armies back to full strength
-    	          //
-		  units_to_restore--;
-                  paths_self.playerSelectUnitWithFilter(
+	    let loop_fnct = () => {
+              paths_self.removeSelectable();
+    	      if (units_to_restore > 0) {
+    	        //
+    	        // players can flip 2 damaged armies back to full strength
+    	        //
+		units_to_restore--;
+                paths_self.playerSelectUnitWithFilter(
             	    "Select Unit to Repair / Deploy" ,
           	    filter_fnct ,
           	    execute_fnct ,
           	    null ,
           	    true ,
           	    [{ key : "pass" , value : "pass" }]
-                  );
-	        } else {
-        	  paths_self.removeSelectable();
-        	  paths_self.endTurn();
-		  return 0;
-		}
-	      }
-
-    	      let filter_fnct = (spacekey, unit) => {
-        	if (unit.damaged == 1 && unit.destroyed != 1) { return 1; }
+                );
+	      } else {
+        	paths_self.removeSelectable();
+        	paths_self.endTurn();
 		return 0;
-      	      }
+	      }
+	    }
 
-	      let execute_fnct = (spacekey, unit_idx) => {
+    	    let filter_fnct = (spacekey, unit) => {
+	       if (paths_self.returnPowerOfUnit(unit) == "allies") { return 0; }
+               if (unit.damaged == 1 && unit.destroyed != 1 && unit.army) { return 1; }
+	       return 0;
+      	    }
+
+	    let execute_fnct = (spacekey, unit_idx) => {
       		paths_self.updateStatus("processing...");
 	        if (spacekey === "pass") {
         	  paths_self.removeSelectable();
@@ -674,29 +674,29 @@ deck['ap14'] = {
         	paths_self.displaySpace(spacekey);
 		units_to_repair--;
 		loop_fnct();
-	      } 
+	    } 
 
-	      let count = paths_self.countUnitsWithFilter(filter_fnct);
+	    let count = paths_self.countUnitsWithFilter(filter_fnct);
 
-              if (count == 0) {
-		paths_self.addMove("NOTIFY\tNo eligible units for "+paths_self.popup("cp05"));
-		paths_self.endTurn();
-		return 0;
+            if (count == 0) {
+	      paths_self.game.queue.push("NOTIFY\tNo eligible units for "+paths_self.popup("cp05"));
+	      return 1;
+	    }
+
+            if (count == 1 || count == 2) {
+    	      let update_filter_fnct = (spacekey, unit) => {
+	        if (paths_self.returnPowerOfUnit(unit) == "allies") { return 0; }
+                if (unit.damaged == 1 && unit.destroyed != 1) { unit.damaged = 0; paths_self.displaySpace(spacekey); }
+	        return 1;
 	      }
+	      // filter function will update now
+	      paths_self.countUnitsWithFilter(update_filter_fnct);
+	      paths_self.game.queue.push("NOTIFY\tAll eligible units upgraded ("+paths_self.popup("cp05")+")");
+	      return 1;
+	    }
 
-              if (count == 1 || count == 2) {
-    	        let update_filter_fnct = (spacekey, unit) => {
-        	  if (unit.damaged == 1 && unit.destroyed != 1) { unit.damaged = 0; paths_self.displaySpace(spacekey); }
-		  return 0;
-	        }
-	        paths_self.countUnitsWithFilter(filter_fnct);
-		paths_self.addMove("NOTIFY\tAll eligible units upgraded ("+paths_self.popup("cp05")+")");
-		paths_self.endTurn();
-		return 0;
-	      }
-
+	    if (paths_self.game.player == p1) {
 	      loop_fnct();
-
 	    } else {
 	      paths_self.updateStatus("Central Powers playing " + paths_self.popup("cp05"));
 	    }
@@ -976,6 +976,7 @@ deck['ap16'] = {
         canEvent : function(paths_self, faction) { if (paths_self.game.state.neutral_entry == 0) { return 1; } return 0; } ,
         onEvent : function(paths_self, faction) {
 	  paths_self.game.state.events.romania = true;
+	  paths_self.game.state.events.neutral_entry = 1;
 	  paths_self.addUnitToSpace("ro_corps", "bucharest");
 	  paths_self.addUnitToSpace("ro_corps", "bucharest");
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
@@ -2077,6 +2078,7 @@ deck['cp33'] = {
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
         canEvent : function(paths_self, faction) { if (paths_self.game.state.neutral_entry == 0) { return 1; } return 0; } ,
         onEvent : function(paths_self, faction) {
+	  paths_self.game.state.events.neutral_entry = 1;
 	  paths_self.game.state.events.romania = true;
 	  paths_self.addUnitToSpace("bu_corps", "sofia");
 	  paths_self.addUnitToSpace("bu_corps", "sofia");

@@ -7698,6 +7698,13 @@ try {
 	  let spacekey = mv[2];
 	  let unit_type = mv[3];
 
+
+	  //
+	  // keep track that we have destroyed one -- cannot be rebuilt until next turn
+	  //
+	  if (!this.game.state.ships_destroyed[faction]) { this.game.state.ships_destroyed[faction] = 0; }
+	  this.game.state.ships_destroyed[faction]++;
+
           this.game.queue.splice(qe, 1);
 
 	  let space;
@@ -9223,6 +9230,8 @@ try {
 	  if (attacker_hits > defender_hits) {
 	    winner = attacker_faction;
 	  }
+
+	  his_self.game.state.naval_battle.winner = winner;
 
 	  his_self.updateLog("Winner: " + winner);
 	  his_self.updateLog("Attacker Hits: " + attacker_hits);

@@ -21907,6 +21907,18 @@ if (transit_seas == 3 && sourcekey == "malta") {
     this.game.state.cards_issued['papacy'] = 0;
     this.game.state.cards_issued['protestant'] = 0;
 
+    this.game.state.ships_destroyed = {};
+    this.game.state.ships_destroyed['ottoman'] = 0;
+    this.game.state.ships_destroyed['hapsburg'] = 0;
+    this.game.state.ships_destroyed['england'] = 0;
+    this.game.state.ships_destroyed['france'] = 0;
+    this.game.state.ships_destroyed['papacy'] = 0;
+    this.game.state.ships_destroyed['protestant'] = 0;
+    this.game.state.ships_destroyed['scotland'] = 0;
+    this.game.state.ships_destroyed['venice'] = 0;
+    this.game.state.ships_destroyed['hungary'] = 0;
+    this.game.state.ships_destroyed['genoa'] = 0;
+
     this.game.state.naval_avoid_battle_bonus = 0;
     this.game.state.naval_intercept_bonus = 0;
 
@@ -22655,6 +22667,17 @@ if (this.game.state.scenario != "is_testing") {
     state.england_card_bonus = 0;
     state.hapsburg_card_bonus = 0;
 
+    state.ships_destroyed = {};
+    state.ships_destroyed['ottoman'] = 0;
+    state.ships_destroyed['hapsburg'] = 0;
+    state.ships_destroyed['england'] = 0;
+    state.ships_destroyed['france'] = 0;
+    state.ships_destroyed['papacy'] = 0;
+    state.ships_destroyed['protestant'] = 0;
+    state.ships_destroyed['scotland'] = 0;
+    state.ships_destroyed['venice'] = 0;
+    state.ships_destroyed['hungary'] = 0;
+    state.ships_destroyed['genoa'] = 0;
 
     state.protestant_war_winner_vp = 0;
     state.papacy_war_winner_vp = 0;
@@ -31721,6 +31744,13 @@ try {
 	  let spacekey = mv[2];
 	  let unit_type = mv[3];
 
+
+	  //
+	  // keep track that we have destroyed one -- cannot be rebuilt until next turn
+	  //
+	  if (!this.game.state.ships_destroyed[faction]) { this.game.state.ships_destroyed[faction] = 0; }
+	  this.game.state.ships_destroyed[faction]++;
+
           this.game.queue.splice(qe, 1);
 
 	  let space;
@@ -33246,6 +33276,8 @@ try {
 	  if (attacker_hits > defender_hits) {
 	    winner = attacker_faction;
 	  }
+
+	  his_self.game.state.naval_battle.winner = winner;
 
 	  his_self.updateLog("Winner: " + winner);
 	  his_self.updateLog("Attacker Hits: " + attacker_hits);
@@ -51635,6 +51667,18 @@ console.log("checking if squadrons are protecting!");
     if (res.available[unittype]['4'] > 0) { x += (4 * res.available[unittype]['4']); }
     if (res.available[unittype]['5'] > 0) { x += (5 * res.available[unittype]['5']); }
     if (res.available[unittype]['6'] > 0) { x += (6 * res.available[unittype]['6']); }
+
+    //
+    // squadrons and corsairs have construction limits
+    //
+    if (unittype == "squadron") {
+      if (this.game.state.ships_destroyed[faction]) {
+        if (this.game.state.ships_destroyed[faction] > 0) {
+	  x -= this.game.state.ships_destroyed[faction];
+	  if (x < 0) { x = 0; }
+	}
+      }
+    }
 
     return x;
 

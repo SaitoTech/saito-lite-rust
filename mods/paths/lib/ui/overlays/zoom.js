@@ -2,6 +2,7 @@ const ZoomTemplate = require('./zoom.template');
 const SaitoOverlay = require('./../../../../../lib/saito/ui/saito-overlay/saito-overlay');
 
 class ZoomOverlay {
+
 	constructor(app, mod) {
 		this.app = app;
 		this.mod = mod;
@@ -25,6 +26,29 @@ class ZoomOverlay {
 			document.querySelector('.hud').style.zIndex = overlay_zindex - 2;
 			this.mod.hud.zIndex = overlay_zindex - 2;
 		}
+	}
+
+	scrollTo(spacekey="") {
+
+		if (spacekey != "") {
+
+			let top = this.mod.game.spaces[spacekey].top;
+			let left = this.mod.game.spaces[spacekey].left;
+
+			let zoomOverlay = document.querySelector(".zoom-overlay");	
+			const zoomWidth = zoomOverlay.clientWidth;
+			const zoomHeight = zoomOverlay.clientHeight;
+
+  			const scrollLeft = left - zoomWidth / 2;
+  			const scrollTop = top - zoomHeight / 2;
+
+			let board = document.querySelector(".zoom-overlay .gameboard");	
+			// funky slide
+			board.style.transition = "transform 0.5s ease";
+			board.style.transform = `translate(-${scrollLeft}px, -${scrollTop}px)`;
+
+		}
+
 	}
 
 	showControls() {

@@ -1526,6 +1526,8 @@ console.log(JSON.stringify(spaces_within_hops));
       }
     );
 
+    let rendered_at = options[0];
+
     paths_self.zoom_overlay.renderAtSpacekey(options[0]);
     paths_self.zoom_overlay.showControls();
 
@@ -1560,6 +1562,9 @@ console.log(JSON.stringify(spaces_within_hops));
 	paths_self.endTurn();
       }
 
+
+alert("options: " + JSON.stringify(options));
+
       paths_self.playerSelectSpaceWithFilter(
 	"Execute Movement (Awaiting Orders): ",
 	(key) => {
@@ -1580,6 +1585,9 @@ console.log(JSON.stringify(spaces_within_hops));
 	  return 0;
 	},
 	(key) => {
+
+          paths_self.zoom_overlay.scrollTo(key);
+
 	  for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
 	    paths_self.game.spaces[key].units[z].moved = 0;
 	  }
@@ -1646,7 +1654,7 @@ console.log(JSON.stringify(spaces_within_hops));
 	      //
 	      let is_the_unit_an_army = false;
 	      let is_the_destination_a_fort = false;
-	      if (paths_self.game.spaces[key].fort > 1) { is_the_destination_a_fort = true; }
+	      if (paths_self.game.spaces[key].fort > 1 && paths_self.game.spaces[key].control != paths_self.returnFactionOfPlayer()) { is_the_destination_a_fort = true; }
 	      if (paths_self.game.spaces[sourcekey].units[idx].army == 1) { is_the_unit_an_army = true; }
 
 	      let units_remaining = 2;
@@ -2458,17 +2466,24 @@ console.log(JSON.stringify(spaces_within_hops));
     let unit_idx = 0;
     let countries = [];
 
-console.log("####");
-console.log("####");
-console.log("####");
-console.log("####");
-
     if (country == "russia") {
       countries = this.returnSpacekeysByCountry("russia");
       filter_func = (spacekey) => { 
 	if (countries.includes(spacekey)) {
 	  if (this.game.spaces[spacekey].control == "allies") { 
 	    if (this.checkSupplyStatus("russia", spacekey)) { return 1; }
+	  }
+	}
+	return 0;
+      }
+    }
+
+    if (country == "romania") {
+      countries = this.returnSpacekeysByCountry("romania");
+      filter_func = (spacekey) => { 
+	if (countries.includes(spacekey)) {
+	  if (this.game.spaces[spacekey].control == "allies") { 
+	    if (this.checkSupplyStatus("romania", spacekey)) { return 1; }
 	  }
 	}
 	return 0;

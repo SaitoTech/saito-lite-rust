@@ -146,6 +146,18 @@
     this.game.state.cards_issued['papacy'] = 0;
     this.game.state.cards_issued['protestant'] = 0;
 
+    this.game.state.ships_destroyed = {};
+    this.game.state.ships_destroyed['ottoman'] = 0;
+    this.game.state.ships_destroyed['hapsburg'] = 0;
+    this.game.state.ships_destroyed['england'] = 0;
+    this.game.state.ships_destroyed['france'] = 0;
+    this.game.state.ships_destroyed['papacy'] = 0;
+    this.game.state.ships_destroyed['protestant'] = 0;
+    this.game.state.ships_destroyed['scotland'] = 0;
+    this.game.state.ships_destroyed['venice'] = 0;
+    this.game.state.ships_destroyed['hungary'] = 0;
+    this.game.state.ships_destroyed['genoa'] = 0;
+
     this.game.state.naval_avoid_battle_bonus = 0;
     this.game.state.naval_intercept_bonus = 0;
 
@@ -894,6 +906,17 @@ if (this.game.state.scenario != "is_testing") {
     state.england_card_bonus = 0;
     state.hapsburg_card_bonus = 0;
 
+    state.ships_destroyed = {};
+    state.ships_destroyed['ottoman'] = 0;
+    state.ships_destroyed['hapsburg'] = 0;
+    state.ships_destroyed['england'] = 0;
+    state.ships_destroyed['france'] = 0;
+    state.ships_destroyed['papacy'] = 0;
+    state.ships_destroyed['protestant'] = 0;
+    state.ships_destroyed['scotland'] = 0;
+    state.ships_destroyed['venice'] = 0;
+    state.ships_destroyed['hungary'] = 0;
+    state.ships_destroyed['genoa'] = 0;
 
     state.protestant_war_winner_vp = 0;
     state.papacy_war_winner_vp = 0;
