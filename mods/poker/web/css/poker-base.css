@@ -50,12 +50,12 @@ body {
 
 .mystuff {
   position: absolute;
-  width: 250px;
+  width: 100vw;
   height: 275px;
   max-height: 36vh;
-  left: calc(50% - 125px);
+  /*left: calc(50% - 125px);*/  
   bottom: 10px;
-  max-width: min(250px, 66vw);
+  /*max-width: min(250px, 66vw);*/
 }
 
 
@@ -117,8 +117,9 @@ body {
   .gameboard {
     padding: 2rem;
   }
-
+  /*
   .mystuff {
     left: calc(50vw - min(125px, 33vw));
   }
+  */
 }
