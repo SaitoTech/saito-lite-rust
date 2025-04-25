@@ -666,6 +666,9 @@
   padding: 0rem 1rem;
   color: var(--saito-red);
   display: none;
+  position: absolute;
+  right: 3rem;
+  background: var(--background-color-alert-box);
 }
 
 .withdraw-submit.disabled {

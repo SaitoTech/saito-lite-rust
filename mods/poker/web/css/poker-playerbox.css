@@ -27,6 +27,7 @@
 .game-playerbox.game-playerbox-seat-1 {
 	height: 250px;
 	max-width: unset;
+	bottom: unset;
 }
 
 .game-playerbox-icons {

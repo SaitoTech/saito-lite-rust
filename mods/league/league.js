@@ -1252,8 +1252,8 @@ class League extends ModTemplate {
 			//shouldTweet = true;
 
 			for (let key of players) {
-				// Only care if at least one player has a registered username
-				if (this.app.keychain.returnIdentifierByPublicKey(key, false)) {
+				// Only care if at least one player has a registered username or money is on the line!
+				if (this.app.keychain.returnIdentifierByPublicKey(key, false) || txmsg.options?.stake) {
 					shouldTweet = true;
 				}
 			}
@@ -1338,6 +1338,9 @@ class League extends ModTemplate {
 
 			for (let player of playerStats){
 				tweetContent += ` | ${this.app.keychain.returnUsername(player.publicKey)}`;
+				if (player.publicKey == txmsg.winner || txmsg.winner.includes(player.publicKey)){
+					tweetContent += "👑";
+				}
 			}
 
 			let space = ':----:|';
@@ -1369,6 +1372,19 @@ class League extends ModTemplate {
 				}else{
 					tweetContent += ` ${points2} (${points2-points1}) ⬇️ |`;
 				}
+			}
+
+			// Add stake info if any
+			if (txmsg.options?.stake){
+				if (typeof txmsg.options['stake'] === 'object'){
+					tweetContent += ` \n| $${txmsg.options.crypto} |`;
+					for (let player of playerStats) {
+						tweetContent += ` ${txmsg.options.stake[player.publicKey]} |`;
+					}
+				}else{
+					tweetContent += `\n\n ${txmsg.options.stake} ${txmsg.options.crypto} were staked on the game!`	
+				}
+				
 			}
 
 			//console.log(tweetContent);
