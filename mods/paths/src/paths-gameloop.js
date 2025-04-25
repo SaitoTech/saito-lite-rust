@@ -657,16 +657,16 @@ try {
           this.addUnitToSpace("ah_army03", "tarnopol");
 
 	  // italy
-	  this.addTrench("trent", 1);
-	  this.addTrench("asiago", 1);
-	  this.addTrench("maggiore", 1);
-          this.addUnitToSpace("it_corps", "taranto");
-          this.addUnitToSpace("it_corps", "rome");
-          this.addUnitToSpace("it_corps", "turin");
-          this.addUnitToSpace("it_army01", "verona");
-          this.addUnitToSpace("it_army02", "udine");
-          this.addUnitToSpace("it_army03", "maggiore");
-          this.addUnitToSpace("it_army04", "asiago");
+	  //this.addTrench("trent", 1);
+	  //this.addTrench("asiago", 1);
+	  //this.addTrench("maggiore", 1);
+          //this.addUnitToSpace("it_corps", "taranto");
+          //this.addUnitToSpace("it_corps", "rome");
+          //this.addUnitToSpace("it_corps", "turin");
+          //this.addUnitToSpace("it_army01", "verona");
+          //this.addUnitToSpace("it_army02", "udine");
+          //this.addUnitToSpace("it_army03", "maggiore");
+          //this.addUnitToSpace("it_army04", "asiago");
 
 	  // reserves boxes
     	  this.addUnitToSpace("ge_army04", "crbox");
