@@ -281,6 +281,11 @@ class Tweet {
 			return -1;
 		}
 
+		for (let peer of this.mod.peers) {
+			if (this.tx.isFrom(peer.publicKey)){
+				this.force_long_tweet = true;	
+			}
+		}
 
 		//
 		// create link preview if link
