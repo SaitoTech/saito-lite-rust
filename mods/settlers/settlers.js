@@ -1,6 +1,5 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
 const SettlersRules = require('./lib/ui/overlays/rules');
-const SettlersWelcome = require('./lib/ui/overlays/welcome');
 const SettlersStats = require('./lib/ui/overlays/stats');
 const SettlersGameOptionsTemplate = require('./lib/ui/settlers-game-options.template');
 const htmlTemplate = require('./lib/ui/game-html.template');
@@ -13,6 +12,7 @@ const SettlersActions = require('./lib/src/settlers-actions');
 const SettlersDisplay = require('./lib/src/settlers-display');
 const SettlersState = require('./lib/src/settlers-state');
 
+const GameHelp = require('./lib/ui/overlays/game-help');
 const TradeOverlay = require('./lib/ui/overlays/trade');
 const BuildOverlay = require('./lib/ui/overlays/build');
 const BankOverlay = require('./lib/ui/overlays/bank');
@@ -52,10 +52,10 @@ class Settlers extends GameTemplate {
 		// UI components
 		//
 		this.rules_overlay = new SettlersRules(this.app, this);
-		this.welcome_overlay = new SettlersWelcome(this.app, this);
 		this.stats_overlay = new SettlersStats(this.app, this);
 		this.trade_overlay = new TradeOverlay(this.app, this);
 		this.card_overlay = new CardOverlay(this.app, this);
+		this.game_help = new GameHelp(this.app, this);
 
 		this.build = new BuildOverlay(this.app, this);
 		this.bank = new BankOverlay(this.app, this);
@@ -555,6 +555,8 @@ class Settlers extends GameTemplate {
 			this.game.queue.push(`player_build_city\t${i}\t0`);
 		}
 
+		this.game.queue.push('initial_placement');
+
 		this.game.queue.push('READY');
 		this.saveGame(this.game.id);
 
@@ -618,6 +620,7 @@ class Settlers extends GameTemplate {
 				this.game.queue.push(`player_build_city\t${i}\t0`);
 			}
 
+			this.game.queue.push('initial_placement');
 			this.game.queue.push('READY');
 			// this is BAD -- do we force a save here in generate map so as not to lose POOL data
 			this.game.queue.push('generate_map');
@@ -669,9 +672,9 @@ class Settlers extends GameTemplate {
 		state.ports = {};
 		state.lastroll = [];
 		state.placedCity = 'hello world'; //a slight hack for game iniitalization
-		state.welcome = 0;
 		state.hasRolled = false;
 		state.threatened = [];
+		state.robinhood_overlay = 0;
 
 		for (let i = 0; i < this.game.players.length; i++) {
 			state.ads.push({});

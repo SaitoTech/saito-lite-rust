@@ -416,11 +416,6 @@ stats overlay
 	max-height: 4rem;
 }
 
-.welcome_overlay {
-	padding: 0 !important;
-	display: flex;
-}
-
 .stats-table {
 	font-size: 1.25em;
 	width: 100%;

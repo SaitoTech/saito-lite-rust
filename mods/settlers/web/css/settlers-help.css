@@ -1,0 +1,86 @@
+
+.game-help-triangle {
+    cursor: pointer;
+    position: absolute;
+    display: block;
+    width: 30rem;
+    height: 20rem;
+    background: #ff7700;
+    overflow: hidden;
+    color: #fff;
+    padding-left: 30px;
+    line-height: 22px;
+    bottom: 0px;
+    left: 0px;
+    transform: skew(+55deg);
+    margin-left: -24rem;
+    z-index: 999;
+}
+
+.game-help-triangle:hover {
+    background: #ee6600;
+}
+
+.game-help-hidden {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s 1s, opacity 1s linear;
+}
+
+.game-help-visible {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 1s linear;
+}
+
+.game-help-text {
+    font-size: 2.6rem;
+    padding-top: 13.5rem;
+    margin-left: 22.5rem;
+    transform: skew(-55deg);
+    min-width: 16rem;
+    overflow: visible;
+    line-height: 3rem;
+    font-weight: bold;
+    text-shadow: 1px 1px 3px black;
+}
+
+
+.welcome-overlay {
+    width: 80vw;
+    height: 80vh;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    user-select: none;
+}
+
+.welcome-overlay > div {
+    position: absolute;
+    background: #0009;
+    left: 3rem;
+    padding: 1rem;
+    color: white;
+    max-width:50%;
+    border-radius: 1rem;
+}
+
+.welcome-title {
+    top: 3rem;
+    font-size: 4.6rem;
+    letter-spacing: 0.1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.welcome-text {
+    bottom: 0px;
+    line-height: 4rem;
+    font-size: 2.7rem;
+    bottom: 3rem;
+}
+
+.welcome-text em {
+    font-weight: bold;
+    text-decoration: underline;
+}
