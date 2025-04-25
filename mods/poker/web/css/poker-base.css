@@ -51,7 +51,7 @@ body {
 .mystuff {
   position: absolute;
   width: 250px;
-  height: 250px;
+  height: 275px;
   max-height: 36vh;
   left: calc(50% - 125px);
   bottom: 10px;

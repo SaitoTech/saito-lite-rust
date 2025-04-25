@@ -6,6 +6,7 @@
     position: absolute;
     top: 6rem;
     right: 3rem;
+    user-select: none;
 }
 
 .game-playerbox-manager.reverse{
@@ -20,6 +21,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
+    user-select: none;
 }
 
 .game-playerbox.active {
