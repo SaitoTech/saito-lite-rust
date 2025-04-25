@@ -58,7 +58,7 @@
 }
 
 .game-playerbox {
-	width: 100%;
+	/*width: 100%;*/
 	max-width: min(280px, 50vw);
 	border: 1px solid #fff3;
 	min-height: 12rem;
@@ -154,5 +154,15 @@
 @media screen and (max-width: 600px) {
   .game-playerbox-manager {
     gap: 1rem;
+  }
+
+  .game-playerbox.game-playerbox-seat-1 {
+	width: 100vw;
+	transform: none;
+	bottom: 0px;
+  }
+  .dealer-button {
+	left: 1rem;
+	top: -4rem !important;
   }
 }
