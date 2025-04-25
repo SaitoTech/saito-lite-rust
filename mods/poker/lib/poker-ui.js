@@ -70,6 +70,13 @@ class PokerUI {
     }
   }
 
+  displayChipsIn(){
+    for (let i = 1; i <= this.game.players.length; i++) {
+        this.playerbox.updateGraphics(`<div class="chips-in-pot" title="chips in pot"></div>`, i); 
+    }
+  }
+
+
   displayHand() {
     if (this.game.player == 0) {
       this.updateStatus(`You are observing the game`, -1);
@@ -125,9 +132,9 @@ class PokerUI {
     }else{
       amount = this.game.state.player_credit[player - 1];
 
-      //let html = `<div class="poker-player-stake">${this.game.state.player_pot[player - 1]}</div>`;
+      let html = `<div class="poker-player-stake">${this.game.state.player_pot[player - 1]}</div>`;
       // If we show player-pot outside the player box
-      //this.playerbox.replaceGraphics(html, ".poker-player-stake", player); 
+      this.playerbox.replaceGraphics(html, ".poker-player-stake", player); 
     }
 
     let chips = 'CHIP';

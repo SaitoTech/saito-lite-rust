@@ -115,25 +115,25 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-size: 14px;
+	font-size: 2.5rem;
 	position: absolute;
-	top: calc(100% + 2px);
+	top: calc(100% + 2rem);
 	left: 50%;
 	transform: translateX(-50%);
 	border-radius: 100%;
 	color: #fff;
-	background-color: #dd5500;
-	text-shadow: 1px 1px 3px black;
-	height: 4rem;
-	width: 4rem;
-	display: none;
+	height: 7rem;
+	width: 7rem;
+	background-image: url(/poker/img/simple-chip.svg);
+	background-size: contain;
+	filter: drop-shadow(5px 5px 3px black);
 }
 
 .game-playerbox-seat-1 .poker-player-stake{
 	left: unset;
 	transform: unset;
 	top: unset;
-	bottom: calc(100% + 2px);
+	bottom: calc(100% + 1rem);
 	right: 2px;
 }
 
