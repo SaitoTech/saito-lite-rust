@@ -670,9 +670,9 @@ deck['ap14'] = {
         	  return 1;
       	        }
         	paths_self.game.spaces[spacekey].units[unit_idx].damaged = 0;
-        	paths_self.addMove(`repair\t${faction}\t${spacekey}\t${unit_idx}`);
+        	paths_self.addMove(`repair\tcentral\t${spacekey}\t${unit_idx}`);
         	paths_self.displaySpace(spacekey);
-		units_to_repair--;
+		units_to_restore--;
 		loop_fnct();
 	    } 
 

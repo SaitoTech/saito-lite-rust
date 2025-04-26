@@ -33,6 +33,12 @@
     let faction = this.returnFactionOfPlayer(this.game.player);
     let name = this.returnPlayerName(faction);
 
+    //
+    // cards can come from our hand, or the list which is active (on_table) and
+    // eligible for use. when a card is selected for a battle, it is moved into
+    // the "active" storage section, which makes it eligible for loss if the 
+    // player loses the battle...
+    //
     if (faction == "central") {
       for (let i = 0; i < this.game.deck[0].hand.length; i++) {
 	if (cards[this.game.deck[0].hand[i]].cc) { 
@@ -44,18 +50,35 @@
 	  }
 	}
       }
-      for (let i = 0; i < this.game.state.cc_central_active.length; i++) {
-	let c = this.game.state.cc_central_active[i];
-	if (!this.game.state.cc_central_played_this_round.includes(c)) {
-	  if (!this.game.state.cc_central_active.includes(c)) {
-	    if (cards[this.game.deck[0].hand[i]].canEvent(this, "attacker")) {
-	      num++;
-	      ccs.push(c);
-            }
-          }
+      for (let i = 0; i < this.game.state.cc_central_on_table.length; i++) {
+	let c = this.game.state.cc_central_on_table[i];
+	if (!this.game.state.cc_central_on_table.includes(c)) {
+	  ccs.push(c);
         }
       }
     }
+    if (faction == "allies") {
+      for (let i = 0; i < this.game.deck[1].hand.length; i++) {
+	if (cards[this.game.deck[1].hand[i]].cc) { 
+	  if (!this.game.state.cc_allies_on_table.includes(this.game.deck[1].hand[i])) {
+	    ccs.push(this.game.deck[1].hand[i]);
+	  }
+	}
+      }
+      for (let i = 0; i < this.game.state.cc_allies_on_table.length; i++) {
+	let c = this.game.state.cc_allies_active[i];
+	if (!this.game.state.cc_allies_on_table.includes(c)) {
+	  ccs.push(c);
+        }
+      }
+    }
+
+    //
+    // these two cards are combat cards, but they are played prior to the 
+    // flank attempt stage, so they cannot be selected at this stage of the 
+    // combat card selection. So we will remove them from our list of eligible
+    // combat cards...
+    //
     if (ccs.includes("cp44")) {
       for (let i = 0; i < ccs.length; i++) {
 	if (ccs[i] == "cp44") { ccs.splice(i, 1); }
@@ -66,40 +89,44 @@
 	if (ccs[i] == "cp02") { ccs.splice(i, 1); }
       }
     }
-    if (faction == "allies") {
-      for (let i = 0; i < this.game.deck[1].hand.length; i++) {
-	if (cards[this.game.deck[1].hand[i]].cc) { 
-	  if (!this.game.state.cc_allies_active.includes(this.game.deck[1].hand[i])) {
-	    if (cards[this.game.deck[1].hand[i]].canEvent(this, "attacker")) {
-	      num++;
-	      ccs.push(this.game.deck[1].hand[i]);
-	    }
-	  }
-	}
+
+    //
+    // some cards can only be used once per turn, so check to see if they have
+    // already been played and remove them from our list of playable cards if
+    // they have already been played this turn...
+    //
+    // Mine Attack, Royal Tank Corps, Kemal...
+    //
+    if (ccs.includes("ap36") && this.game.state.cc_allies_played_this_round.includes("ap36")) {
+      for (let i = 0; i < ccs.length; i++) {
+	if (ccs[i] == "ap36") { ccs.splice(i, 1); }
       }
-      for (let i = 0; i < this.game.state.cc_allies_active.length; i++) {
-	let c = this.game.state.cc_allies_active[i];
-	if (!this.game.state.cc_allies_played_this_round.includes(c)) {
-	  if (!this.game.state.cc_allies_active.includes(c)) {
-	    if (cards[this.game.deck[1].hand[i]].canEvent(this, "attacker")) {
-	      num++;
-	      ccs.push(c);
-            }
-          }
-        }
+    }
+    if (ccs.includes("ap48") && this.game.state.cc_allies_played_this_round.includes("ap48")) {
+      for (let i = 0; i < ccs.length; i++) {
+	if (ccs[i] == "ap48") { ccs.splice(i, 1); }
+      }
+    }
+    if (ccs.includes("cp31") && this.game.state.cc_central_played_this_round.includes("cp31")) {
+      for (let i = 0; i < ccs.length; i++) {
+	if (ccs[i] == "cp31") { ccs.splice(i, 1); }
       }
     }
 
     //
-    // Mine Attack can only be used once per turn
+    // we only want to show the players the cards that they are 
+    // capable of eventing...
     //
-    if (this.game.state.events.mine_attack == 1) {
-      for (let i = 0; i < ccs.length; i++) {
-	if (ccs[i] === "ap36") {
-	  ccs.splice(i, 1);
-	}
+    for (let z = 0; z < ccs.length; z++) {
+      if (cards[ccs[z]].canEvent(faction, "attacker")) {
+	num++;
       }
     }
+
+    //
+    // some cards create pseudo-bonuses, in which case we add them as fake
+    // combat cards...
+    //
 
     //
     // Kerensky Offensive +2 bonus / one
@@ -146,51 +173,106 @@
     let faction = this.returnFactionOfPlayer(this.game.player);
     let name = this.returnPlayerName(faction);
 
+    //
+    // cards can come from our hand, or the list which is active (on_table) and
+    // eligible for use. when a card is selected for a battle, it is moved into
+    // the "active" storage section, which makes it eligible for loss if the 
+    // player loses the battle...
+    //
     if (faction == "central") {
       for (let i = 0; i < this.game.deck[0].hand.length; i++) {
 	if (cards[this.game.deck[0].hand[i]].cc) { 
 	  if (!this.game.state.cc_central_active.includes(this.game.deck[0].hand[i])) {
-	    if (cards[this.game.deck[0].hand[i]].canEvent(this, "defender")) {
+	    if (cards[this.game.deck[0].hand[i]].canEvent(this, "attacker")) {
 	      num++;
 	      ccs.push(this.game.deck[0].hand[i]);
-            }
+	    }
 	  }
 	}
       }
-      for (let i = 0; i < this.game.state.cc_central_active.length; i++) {
-	let c = this.game.state.cc_central_active[i];
-	if (!this.game.state.cc_central_played_this_round.includes(c)) {
-	  if (!this.game.state.cc_central_active.includes(c)) {
-	    if (cards[this.game.deck[0].hand[i]].canEvent(this, "defender")) {
-	      num++;
-	      ccs.push(c);
-            }
-          }
+      for (let i = 0; i < this.game.state.cc_central_on_table.length; i++) {
+	let c = this.game.state.cc_central_on_table[i];
+	if (!this.game.state.cc_central_on_table.includes(c)) {
+	  ccs.push(c);
         }
       }
     }
     if (faction == "allies") {
       for (let i = 0; i < this.game.deck[1].hand.length; i++) {
 	if (cards[this.game.deck[1].hand[i]].cc) { 
-	  if (!this.game.state.cc_allies_active.includes(this.game.deck[1].hand[i])) {
-	    if (cards[this.game.deck[1].hand[i]].canEvent(this, "defender")) {
-	      num++;
-	      ccs.push(this.game.deck[1].hand[i]);
-	    }
+	  if (!this.game.state.cc_allies_on_table.includes(this.game.deck[1].hand[i])) {
+	    ccs.push(this.game.deck[1].hand[i]);
 	  }
 	}
       }
-      for (let i = 0; i < this.game.state.cc_allies_active.length; i++) {
+      for (let i = 0; i < this.game.state.cc_allies_on_table.length; i++) {
 	let c = this.game.state.cc_allies_active[i];
-	if (!this.game.state.cc_allies_played_this_round.includes(c)) {
-	  if (!this.game.state.cc_allies_active.includes(c)) {
-	    if (cards[this.game.deck[1].hand[i]].canEvent(this, "defender")) {
-	      num++;
-	      ccs.push(c);
-            }
-          }
+	if (!this.game.state.cc_allies_on_table.includes(c)) {
+	  ccs.push(c);
         }
       }
+    }
+
+    //
+    // these two cards are combat cards, but they are played prior to the 
+    // flank attempt stage, so they cannot be selected at this stage of the 
+    // combat card selection. So we will remove them from our list of eligible
+    // combat cards...
+    //
+    if (ccs.includes("cp44")) {
+      for (let i = 0; i < ccs.length; i++) {
+	if (ccs[i] == "cp44") { ccs.splice(i, 1); }
+      }
+    }
+    if (ccs.includes("cp02")) {
+      for (let i = 0; i < ccs.length; i++) {
+	if (ccs[i] == "cp02") { ccs.splice(i, 1); }
+      }
+    }
+
+    //
+    // some cards can only be used once per turn, so check to see if they have
+    // already been played and remove them from our list of playable cards if
+    // they have already been played this turn...
+    //
+    // Mine Attack, Royal Tank Corps, Kemal...
+    //
+    if (ccs.includes("ap36") && this.game.state.cc_allies_played_this_round.includes("ap36")) {
+      for (let i = 0; i < ccs.length; i++) {
+	if (ccs[i] == "ap36") { ccs.splice(i, 1); }
+      }
+    }
+    if (ccs.includes("ap48") && this.game.state.cc_allies_played_this_round.includes("ap48")) {
+      for (let i = 0; i < ccs.length; i++) {
+	if (ccs[i] == "ap48") { ccs.splice(i, 1); }
+      }
+    }
+    if (ccs.includes("cp31") && this.game.state.cc_central_played_this_round.includes("cp31")) {
+      for (let i = 0; i < ccs.length; i++) {
+	if (ccs[i] == "cp31") { ccs.splice(i, 1); }
+      }
+    }
+
+    //
+    // we only want to show the players the cards that they are 
+    // capable of eventing...
+    //
+    for (let z = 0; z < ccs.length; z++) {
+      if (cards[ccs[z]].canEvent(faction, "attacker")) {
+	num++;
+      }
+    }
+
+    //
+    // some cards create pseudo-bonuses, in which case we add them as fake
+    // combat cards...
+    //
+
+    //
+    // Kerensky Offensive +2 bonus / one
+    //
+    if (faction == "allies" && this.game.state.events.kerensky_offensive == 1) {
+      if (!ccs.includes("ap45")) { ccs.push("ap45"); }
     }
 
     if (num == 0) {
