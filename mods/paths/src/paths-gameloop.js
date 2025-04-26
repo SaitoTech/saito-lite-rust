@@ -1010,16 +1010,17 @@ try {
 	  //
 	  // mandated offensive tracking
 	  //
-	  if (selected == "central") {
+	  if (this.game.state.combat.attacking_faction == "central") {
 	    for (let i = 0; i < this.game.spaces[this.game.state.combat.key].units.length; i++) {
 	      this.game.state.mo["central"].push(this.game.spaces[this.game.state.combat.key].units[i].ckey);
 	    }
 	  }
-	  if (selected == "allies") {
+	  if (this.game.state.combat.attacking_faction == "allies") {
 	    for (let i = 0; i < this.game.spaces[this.game.state.combat.key].units.length; i++) {
 	      this.game.state.mo["allies"].push(this.game.spaces[this.game.state.combat.key].units[i].ckey);
 	    }
 	  }
+
 
 	  //
 	  // everything has cleared out, so attackers may advance 
@@ -1313,6 +1314,19 @@ console.log(JSON.stringify(this.game.state.cc_allies_active));
 
 	  let attacker_table = "corps";
 	  let defender_table = "corps";
+
+	  //
+	  // record which spaces have attacked where, to prevent double-attacks
+	  //
+	  let attacker_units = this.returnAttackerUnits();
+	  for (let i = 0; i < attacker_units.length; i++) {
+	    let spacekey = attacker_units[i].spacekey;
+	    if (!this.game.state.attacks[spacekey]) {
+	      this.game.state.attacks[spacekey] = [];
+	    }
+	    this.game.state.attacks[spacekey].push(this.game.state.combat.key);
+	  }
+
 
 	  //
 	  // trenches and row shifts
@@ -1840,6 +1854,7 @@ console.log("caa 3");
 	  }
 
 	  this.displaySpace(spacekey);
+          this.shakeSpacekey(spacekey);
 	  this.game.queue.splice(qe, 1);
 	  return 1;
 
@@ -1905,6 +1920,7 @@ console.log("caa 3");
 	  this.displaySpace("ceubox");
 	  this.displaySpace("aeubox");
 	  this.displaySpace(spacekey);
+          this.shakeSpacekey(spacekey);
 
 	  return 1;
 

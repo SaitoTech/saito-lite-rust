@@ -13,6 +13,8 @@
     this.game.state.events.withdrawal_bonus_used = 0;
     this.game.state.events.brusilov_offensive = 0;
 
+    this.game.state.attacks = {};
+
     if (this.game.state.events.high_seas_fleet > 1) { this.game.state.events.high_seas_fleet--; }
 
     for (let key in this.game.spaces) {
@@ -66,6 +68,7 @@
     this.game.state.mo = {};
     this.game.state.mo.allies = [];
     this.game.state.mo.central = [];
+    this.game.state.mo.vp_bonus = 0;
 
     this.game.state.rp = {};
     this.game.state.rp['central'] = {};
@@ -171,7 +174,7 @@
     if (this.game.state.events.zimmerman_telegram) { vp--; }
     if (this.game.state.events.blockade > 1) { vp -= (this.game.state.events.blockade-1); }
 
-    if (this.game.state.mo.vp_bonus != 0) { vp += this.game.state.mo.vp_bonus; }
+    if (this.game.state.mo.vp_bonus > 0) { vp += this.game.state.mo.vp_bonus; }
 
     this.game.state.general_records_track.vp = vp;
   
@@ -274,14 +277,15 @@
     state.mo.allies = [];
     state.mo.central = [];
     state.mo.vp_bonus = 0;
+    state.attacks = {};
 
     state.active_player = -1;
 
     state.ccs = {};
-    this.game.state.cc_central_active = [];
-    this.game.state.cc_central_played_this_round = [];
-    this.game.state.cc_allies_active = [];
-    this.game.state.cc_allies_played_this_round = [];
+    state.cc_central_active = [];
+    state.cc_central_played_this_round = [];
+    state.cc_allies_active = [];
+    state.cc_allies_played_this_round = [];
 
 
     state.central_limited_war_cards_added = false;

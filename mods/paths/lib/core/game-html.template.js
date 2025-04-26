@@ -178,7 +178,7 @@ export default (app, mod) => {
                         <div class="space zhitomir" id="zhitomir"></div>
                         <div class="space kiev" id="kiev"></div>
                         <div class="space kharkov" id="kharkov"></div>
-                        <div class="space kamenetspodolsky" id="kamenetspodolski"></div>
+                        <div class="space kamenetspodolski" id="kamenetspodolski"></div>
                         <div class="space vinnitsa" id="vinnitsa"></div>
                         <div class="space belayatserkov" id="belayatserkov"></div>
                         <div class="space zhmerinka" id="zhmerinka"></div>

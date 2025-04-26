@@ -389,7 +389,6 @@
 	// neighbours since we cannot route through it.
 	//
 	if (passthrough) {
-
           for (let z = 0; z < paths_self.game.spaces[news[i]].neighbours.length; z++) {
             let n = paths_self.game.spaces[news[i]].neighbours[z];
             if (!old.includes(n)) {
@@ -411,11 +410,9 @@
             }
           }
         }
-
       }
 
-
-      if (hop < limit) {
+      if (hop <= limit) {
 	  return addHop(newer, hop);
       } else {
 	  return old;
