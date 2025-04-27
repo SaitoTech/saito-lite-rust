@@ -18,7 +18,7 @@
   border: 1px solid #aaa8;
   background-color: #2224;
   padding: 1rem 1rem 1rem 8rem;
-  filter: drop-shadow(5px 5px 3px black);
+  box-shadow: 5px 5px 3px #0008;
 }
 
 .pot::after {
