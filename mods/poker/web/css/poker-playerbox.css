@@ -112,21 +112,25 @@
 
 
 .poker-player-stake {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 2.5rem;
-	position: absolute;
-	top: calc(100% + 2rem);
-	left: 50%;
-	transform: translateX(-50%);
-	border-radius: 100%;
-	color: #fff;
-	height: 7rem;
-	width: 7rem;
-	background-image: url(/poker/img/simple-chip.svg);
-	background-size: contain;
-	filter: drop-shadow(5px 5px 3px black);
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    font-size: 2.5rem;
+    position: absolute;
+    top: calc(100% + 2rem);
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 10rem;
+    color: #fff;
+    height: 4rem;
+    width: 10rem;
+    background-image: url(/poker/img/simple-chip.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+    padding: 2px 2rem 0;
+    border: 1px solid #aaa8;
+    background-color: #2224;
+    filter: drop-shadow(5px 5px 3px black);
 }
 
 .game-playerbox-seat-1 .poker-player-stake{

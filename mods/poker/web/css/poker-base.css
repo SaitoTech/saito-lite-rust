@@ -44,7 +44,7 @@ body {
 .deal {
   display: flex;
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin: 8rem 0 0;
   height: 230px;
 }
 
