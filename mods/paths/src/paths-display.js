@@ -4,18 +4,19 @@
   }
 
   shakeSpacekey(spacekey) {
+
     let qs = `.space.${spacekey}`;
-    let element = document.querySelector(qs);
+    let element = document.querySelectorAll(qs).forEach((element) => {
 
-    if (!element) { return; }
+      if (element.classList.contains("shake")) { return; }
+      element.classList.add("shake");
 
-    if (element.classList.contains("shake")) return;
-
-    element.classList.add("shake");
-
-    setTimeout(() => { 
-      element.classList.remove("shake");
-    }, 1500);
+      setTimeout(() => { 
+        document.querySelectorAll(qs).forEach((element) => {
+          element.classList.remove("shake");
+        }); 
+      }, 1500);
+    });
   }
 
   shakeUnit(skey, ukey) {
@@ -23,11 +24,13 @@
     let qs = `.${ukey}`;
     document.querySelectorAll(qs).forEach((element) => {
 
-      if (element.classList.contains("shake")) return;
+      if (element.classList.contains("shake")) { return; }
       element.classList.add("shake");
 
       setTimeout(() => { 
-        element.classList.remove("shake");
+        document.querySelectorAll(qs).forEach((element) => {
+          element.classList.remove("shake");
+	}); 
       }, 1500);
     });
 
@@ -426,6 +429,13 @@ console.log(err);
       if (this.game.state.turn == 20) { document.querySelector(".turn-track-20").classList.add("active"); }
 
     } catch (err) {
+
+console.log("*");
+console.log("*");
+console.log("*");
+console.log("*");
+console.log("*");
+console.log(JSON.stringify(err));
 
     }
 

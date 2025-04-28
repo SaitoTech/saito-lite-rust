@@ -30,12 +30,22 @@ class ZoomOverlay {
 
 	scrollTo(spacekey="") {
 
+console.log("spacekey: " + spacekey);
+
 		if (spacekey != "") {
 
 			let top = this.mod.game.spaces[spacekey].top;
 			let left = this.mod.game.spaces[spacekey].left;
 
 			let zoomOverlay = document.querySelector(".zoom-overlay");	
+if (!zoomOverlay) { 
+	try {
+		this.render(spacekey);
+		zoomOverlay = document.querySelector(".zoom-overlay");	
+	} catch (err) {
+		return 0;
+	}
+}
 			const zoomWidth = zoomOverlay.clientWidth;
 			const zoomHeight = zoomOverlay.clientHeight;
 

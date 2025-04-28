@@ -438,7 +438,12 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 	  // look unit-by-unit for units that are out-of-supply
 	  //
 	  for (let key in this.game.spaces) {
-	    if (this.game.spaces[key].units.length > 0) {
+	    if (this.game.spaces[key].units.length > 0 &&
+		key != "arbox" && 
+		key != "crbox" && 
+		key != "aeubox" && 
+		key != "ceubox"
+	    ) {
 	      let power = this.returnPowerOfUnit(this.game.spaces[key].units[0]);
 	      if (power == "central" || power == "allies") {
 		if (!this.checkSupplyStatus(power, key)) {
@@ -560,7 +565,8 @@ console.log(JSON.stringify(this.game.deck[1].hand));
  	  if (allies == 5)  { this.game.state.mandated_offensives.allies = "IT"; }
  	  if (allies == 6)  { this.game.state.mandated_offensives.allies = "RU"; }
 
-	  this.mandates_overlay.render({ central : central, allies : allies });
+	  //this.mandates_overlay.render({ central : central, allies : allies });
+	  this.displayMandatedOffensiveTracks();
           this.game.queue.splice(qe, 1);
 
 	  return 1;
@@ -584,13 +590,25 @@ console.log("central_passed: " + this.game.state.central_passed);
 console.log("allies_passed: " + this.game.state.allies_passed);
 
 	  if (faction == "central") { this.game.state.round++; }
-	  if (faction === "central" && parseInt(this.game.state.central_passed) == 1) { this.game.queue.splice(qe, 1); return 1; }
-	  if (faction === "allies" && parseInt(this.game.state.allies_passed) == 1) { this.game.queue.splice(qe, 1); return 1; }
+
+	  if (faction === "central" && parseInt(this.game.state.central_passed) == 1) {
+	    for (let z = 0; z < this.game.deck[0].hand.length; z++) { if (this.game.deck[0].hand[z] == "pass") { this.game.deck[0].hand.splice(z, 1); } }
+	    this.game.queue.splice(qe, 1); 
+	    this.updateStatusAndListCards(`Opponent Turn`, hand);
+	    return 1; 
+	  }
+	  if (faction === "allies" && parseInt(this.game.state.allies_passed) == 1) {
+	    for (let z = 0; z < this.game.deck[1].hand.length; z++) { if (this.game.deck[1].hand[z] == "pass") { this.game.deck[0].hand.splice(z, 1); } }
+	    this.updateStatusAndListCards(`Opponent Turn`, hand);
+	    this.game.queue.splice(qe, 1);
+	    return 1; 
+	  }
 
 	  this.onNewRound();
 
 console.log("PLAY: " + this.game.player);
 console.log("player: " + player);
+console.log("HAND: " + JSON.stringify(hand));
 
 	  if (this.game.player == player) {
 	    this.playerTurn(faction);
@@ -2105,7 +2123,7 @@ console.log("caa 3");
 	  //
 	  if (idx) {
 	    if (loss_factor) {
-	      this.game.state.entrenchment.push({ spacekey : key , loss_factor : loss_factor});
+	      this.game.state.entrenchments.push({ spacekey : key , loss_factor : loss_factor});
 	    }
 	    this.game.spaces[key].units[idx].moved = 1;
 	  } else {
@@ -2123,11 +2141,11 @@ console.log("caa 3");
 
 	if (mv[0] === "dig_trenches") {
 
-	  if (this.game.state.entrenchment) {
-	    for (let i = 0; i < this.game.state.entrenchment.length; i++) {
-	      let e = this.game.state.entrenchment[i];
+	  if (this.game.state.entrenchments) {
+	    for (let i = 0; i < this.game.state.entrenchments.length; i++) {
+	      let e = this.game.state.entrenchments[i];
 	      let roll = this.rollDice(6);
-	      if (this.game.state.entrenchment[i].loss_factor >= roll) {
+	      if (this.game.state.entrenchments[i].loss_factor >= roll) {
 	        this.updateLog("Trench Success: " + this.game.spaces[e.spacekey].name + " ("+roll+")");
 	        this.addTrench(e.spacekey);
 	      } else {
