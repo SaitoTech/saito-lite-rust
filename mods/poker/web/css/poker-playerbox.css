@@ -25,7 +25,7 @@
 }
 
 .game-playerbox.game-playerbox-seat-1 {
-	height: 250px;
+	height: 190px;
 	max-width: unset;
 	bottom: unset;
 }
@@ -63,7 +63,7 @@
 	border: 1px solid #fff3;
 	min-height: 12rem;
 	color: white;
-	background-color: #020E;
+	background-color: #0008;
 	position: relative;
 	border-radius: 1.5rem;
 	transition: all 0.5s;
@@ -74,6 +74,7 @@
     padding: 2rem;
     max-width: 350px;
     transform: scale(1.1);
+	box-shadow: 5px 5px 3px #0008;
 }
 
 .game-playerbox.folded {
@@ -132,6 +133,16 @@
     background-color: #0006;
     box-shadow: 5px 5px 3px #0008;
 }
+
+.poker-player-stake::after {
+	content: "BET";
+	position: absolute;
+	top: 2.1rem;
+	left: 1.99rem;
+	font-size: 1.2rem;
+	font-weight: bolder;
+	transform: translate(-50%, -50%);
+  }
 
 .game-playerbox-seat-1 .poker-player-stake{
 	left: unset;

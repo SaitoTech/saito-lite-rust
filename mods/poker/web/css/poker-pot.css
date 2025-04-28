@@ -24,7 +24,7 @@
 .pot::after {
   content: "POT";
   position: absolute;
-  top: 3.5rem;
+  top: 3.7rem;
   left: 3.5rem;
   font-size: 2rem;
   font-weight: bolder;
@@ -86,6 +86,7 @@
     font-size: 2.6rem;    
 }
 
+/*
 @media screen and (max-width: 1000px) {
   .pot {
     width: 27rem;
@@ -120,7 +121,7 @@
   }
 
 
-}
+} */
 
 .pulse {
   animation: pulse 0.6s ease-in-out;

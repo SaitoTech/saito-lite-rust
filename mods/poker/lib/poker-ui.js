@@ -302,16 +302,16 @@ class PokerUI {
     }
 
     let html = '<ul>';
-    html += '<li class="option" id="fold">fold</li>';
+    html += '<li class="option" id="fold"><img src="/poker/img/fold_icon.svg" alt="fold"><span>fold</span></li>';
 
     if (match_required > 0) {
-      html += `<li class="option" id="call">call - ${this.formatWager(match_required)}</li>`;
+      html += `<li class="option" id="call"><img src="/poker/img/call_icon.svg" alt="call"><span>call: <span class="call-wager">${this.formatWager(match_required)}</span></span></li>`;
     } else {
       // we don't NEED to match
-      html += '<li class="option" id="check">check</li>';
+      html += '<li class="option" id="check"><img src="/poker/img/check_icon.svg" alt="check"><span>check</span></li>';
     }
     if (can_raise) {
-      html += `<li class="option" id="raise">raise</li>`;
+      html += `<li class="option" id="raise"><img src="/poker/img/raise_icon.svg" alt="raise"><span>raise</span></li>`;
     }
     html += '</ul>';
 

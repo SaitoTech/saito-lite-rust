@@ -1,15 +1,24 @@
 
-.status ul li,
-.option {
-	height: 5.5rem;
-	border-top: 1px solid var(--saito-border-color);
-	width: 100%;
-	font-size: 1.8rem;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	list-style: none;
-	cursor: pointer;
+.status ul li, .option {
+    height: 10rem;
+    width: 9rem;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    list-style: none;
+    cursor: pointer;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.status ul {
+    margin-left: auto;
+    margin-right: auto;
+    overflow-y: auto;
+    font-size: 1.6rem;
+    display: flex;
+    justify-content: space-around;
 }
 
 .status ul li:hover,
@@ -17,5 +26,33 @@ option:hover {
 	background-color: #0005;
 }
 
+li.option img {
+    width: 7rem;
+    height: 7rem;
+    display: block;
+    border-radius: 10rem;
+    padding: 11px;
+    background: #c43f3f;
+    overflow: visible;
+    box-shadow: 5px 5px 3px #0008;
+    transform: scale(0.8);
+}
 
+.call-wager {
+    font-size: 1.3rem;
+}
 
+#call img {
+    background-color: #036;
+}
+#fold img {
+    background-color: #333;
+}
+
+#raise img {
+    background-color: #c43f3f;
+}
+
+#check img {
+    background-color: #063;
+}
