@@ -1,4 +1,5 @@
 
+
   returnArrayOfSpacekeysForPlacingReinforcements(country="") {
 
     let options = [];
@@ -124,6 +125,15 @@
     return 0;
   }
 
+  returnFriendlyControlledPorts(faction) {
+    let ports = [];
+    for (let key in this.game.spaces) {
+      if (faction == "allies" && this.game.spaces[key].port == 1 && this.game.spaces[key].control == "allies") { ports.push(key); }
+      if (faction == "central" && this.game.spaces[key].port == 2 && this.game.spaces[key].control == "central") { ports.push(key); }
+    }
+    return ports;
+  }
+
   returnSpacesConnectedToSpaceForStrategicRedeployment(faction, spacekey) {
 
     let spaces = [];
@@ -187,6 +197,7 @@
 
     this.game.spaces[spacekey].supply = {};
 
+    let ports_added = false;
     let pending = [spacekey];
     let examined = {};
     let sources = [];
@@ -197,11 +208,12 @@
     if (faction == "france") { sources = ["london"]; }
     if (faction == "ap" || faction == "allies") { sources = ["london"]; }
     if (faction == "ru" || faction == "russia") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
-    if (faction == "ro") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
-    if (faction == "sb") { 
+    if (faction == "ro" || faction == "romania") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
+    if (faction == "sb" || faction == "serbia") { 
       sources = ["moscow","petrograd","kharkov","caucasus","london"]; 
       if (this.returnControlOfSpace("salonika") == "allies") { sources["sb"].push("salonika"); }
     }
+    let ports = this.returnFriendlyControlledPorts(controlling_faction);
 
     while (pending.length > 0) {
 
@@ -229,6 +241,26 @@
 
 	}
       }
+
+      if (ports_added == false) {
+	if (controlling_faction == "allies" && this.game.spaces[current].port == 1 && this.game.spaces[current].control == "allies") {
+ 	  for (let i = 0; i < ports.length; i++) {
+	    if (this.game.spaces[ports[i]].control == "central") {
+	      pending.push(ports[i]);
+	    }
+	  }
+	  ports_added = true;
+	}
+	if (controlling_faction == "central" && this.game.spaces[current].port == 2 && this.game.spaces[current].control == "central") {
+ 	  for (let i = 0; i < ports.length; i++) {
+	    if (this.game.spaces[ports[i]].control == "allies") {
+	      pending.push(ports[i]);
+	    }
+	  }
+	  ports_added = true;
+	}
+      }
+
     }
 
     return 0;
@@ -357,7 +389,6 @@
 	// neighbours since we cannot route through it.
 	//
 	if (passthrough) {
-
           for (let z = 0; z < paths_self.game.spaces[news[i]].neighbours.length; z++) {
             let n = paths_self.game.spaces[news[i]].neighbours[z];
             if (!old.includes(n)) {
@@ -379,11 +410,9 @@
             }
           }
         }
-
       }
 
-
-      if (hop < limit) {
+      if (hop <= limit) {
 	  return addHop(newer, hop);
       } else {
 	  return old;
@@ -486,6 +515,7 @@ spaces['london'] = {
     neighbours: ["cherbourg", "lehavre", "calais"] ,
     terrain : "normal" ,
     vp : false ,
+    port : 1 ,
     country : "england" ,
    }
 
@@ -500,6 +530,7 @@ spaces['calais'] = {
     neighbours: ["ostend", "cambrai", "amiens", "london"] ,
     terrain : "swamp" ,
     vp : true ,
+    port : 1 ,
     country : "france" ,
    }
 
@@ -511,6 +542,7 @@ spaces['amiens'] = {
     neighbours: ["calais", "cambrai", "paris", "rouen"] ,
     terrain : "normal" ,
     vp : true ,
+    port : 0 ,
     country : "france" ,
    }
 
@@ -522,6 +554,7 @@ spaces['cambrai'] = {
     neighbours: ["amiens", "calais", "brussels", "sedan", "chateauthierry"] ,
     terrain : "normal" ,
     vp : true , 
+    port : 0 ,
     country : "france" ,
    }
 
@@ -533,6 +566,7 @@ spaces['sedan'] = {
     neighbours: ["cambrai", "koblenz", "brussels", "liege", "chateauthierry", "verdun", "metz"] ,
     terrain : "forest" ,
     vp : true , 
+    port : 0 ,
     country : "france" ,
    }
 
@@ -545,6 +579,7 @@ spaces['verdun'] = {
     neighbours: ["sedan", "chateauthierry", "barleduc", "nancy", "metz"] ,
     terrain : "normal" ,
     vp : true , 
+    port : 0 ,
     country : "france" ,
    }
 
@@ -556,6 +591,7 @@ spaces['chateauthierry'] = {
     neighbours: ["cambrai", "sedan", "paris", "verdun", "barleduc", "melun"] ,
     terrain : "normal" ,
     vp : false , 
+    port : 0 ,
     country : "france" ,
    }
 
@@ -593,6 +629,7 @@ spaces['lehavre'] = {
     neighbours: ["rouen", "london"] ,
     terrain : "normal" ,
     vp : true , 
+    port : 1 ,
     country : "france" ,
    }
 
@@ -604,6 +641,7 @@ spaces['cherbourg'] = {
     neighbours: ["caen", "london"] ,
     terrain : "normal" ,
     vp : false , 
+    port : 1 ,
     country : "france" ,
    }
 
@@ -693,6 +731,7 @@ spaces['nantes'] = {
     neighbours: ["rennes","lemans","tours","larochelle"] ,
     terrain : "normal" ,
     vp : false ,
+    port : 1 ,
     country : "france" ,
    }
 
@@ -715,6 +754,7 @@ spaces['larochelle'] = {
     neighbours: ["nantes", "poitiers", "bordeaux"] ,
     terrain : "normal" ,
     vp : false , 
+    port : 1 ,
     country : "france" ,
    }
 
@@ -726,6 +766,7 @@ spaces['bordeaux'] = {
     neighbours: ["larochelle"] ,
     terrain : "normal" ,
     vp : false , 
+    port : 1 ,
     country : "france" ,
    }
 
@@ -803,6 +844,7 @@ spaces['marseilles'] = {
     neighbours: ["avignon", "nice"] ,
     terrain : "normal" ,
     vp : false , 
+    port : 1 ,
     country : "france" ,
    }
 
@@ -851,6 +893,7 @@ spaces['ostend'] = {
     neighbours: ["calais", "brussels", "antwerp"] ,
     terrain : "swamp" ,
     vp : true , 
+    port : 1 ,
     country : "belgium" ,
    }
 
@@ -901,6 +944,7 @@ spaces['wilhelmshaven'] = {
     neighbours: ["bremen"] ,
     terrain : "normal" ,
     vp : false , 
+      port : 2 ,
     country : "germany" ,
    }
 
@@ -1036,6 +1080,7 @@ spaces['kiel'] = {
     neighbours: ["hamburg"] ,
     terrain : "normal" ,
     vp : false , 
+      port : 2 ,
     country : "germany" ,
    }
 
@@ -1157,6 +1202,7 @@ spaces['stettin'] = {
     neighbours: ["rostock", "kolberg", "berlin"] ,
     terrain : "normal" ,
     vp : false , 
+      port : 2 ,
     country : "germany" ,
    }
 
@@ -1225,6 +1271,7 @@ spaces['kolberg'] = {
     neighbours: ["stettin", "danzig"] ,
     terrain : "normal" ,
     vp : false , 
+      port : 2 ,
     country : "germany" ,
    }
 
@@ -1249,6 +1296,7 @@ spaces['danzig'] = {
     neighbours: ["kolberg", "tannenberg", "thorn"] ,
     terrain : "normal" ,
     vp : true , 
+      port : 2 ,
     country : "germany" ,
    }
 
@@ -1261,6 +1309,7 @@ spaces['konigsberg'] = {
     neighbours: ["insterberg", "tannenberg"] ,
     terrain : "normal" ,
     vp : true , 
+      port : 2 ,
     country : "germany" ,
    }
 
@@ -1294,6 +1343,7 @@ spaces['memel'] = {
     neighbours: ["libau", "szawli", "insterberg"] ,
     terrain : "normal" ,
     vp : false , 
+      port : 2 ,
     country : "germany" ,
    }
 
@@ -1342,6 +1392,7 @@ spaces['genoa'] = {
     neighbours: ["turin", "milan", "bologna"] ,
     terrain : "normal" ,
     vp : true , 
+    port : 1 ,
     country : "italy" ,
    }
 
@@ -1485,6 +1536,7 @@ spaces['naples'] = {
     neighbours: ["rome", "foggia"] ,
     terrain : "normal" ,
     vp : true , 
+    port : 1 ,
     country : "italy" ,
    }
 
@@ -1507,6 +1559,7 @@ spaces['taranto'] = {
     neighbours: ["foggia", "valona"] ,
     terrain : "normal" ,
     vp : false , 
+    port : 1 ,
     country : "italy" ,
    }
 
@@ -1980,6 +2033,7 @@ spaces['riga'] = {
       neighbours: ["dvinsk", "szawli", "reval"] ,
       terrain : "normal" ,
       vp : true ,
+      port : 2 ,
       country : "russia" ,
 }
 
@@ -1991,6 +2045,7 @@ spaces['libau'] = {
       neighbours: ["memel", "szawli"] ,
       terrain : "normal" ,
       vp : false ,
+      port : 2 ,
       country : "russia" ,
 }
 
@@ -2710,6 +2765,7 @@ spaces['basra'] = {
       neighbours: ["ahwaz", "qurna"] ,
       terrain : "normal" ,
       vp : true ,
+    port : 1 ,
       country : "persia" ,
 }
 
@@ -3197,6 +3253,7 @@ spaces['alexandria'] = {
        neighbours: [ "libya", "cairo", "portsaid"] ,
       terrain : "normal" ,
       vp : true ,
+    port : 1 ,
       country : "egypt" ,
 }
 
@@ -3208,6 +3265,7 @@ spaces['portsaid'] = {
       neighbours: [ "alexandria", "cairo", "sinai"] ,
       terrain : "normal" ,
       vp : true ,
+    port : 1 ,
       country : "egypt" ,
 }
 
@@ -3283,6 +3341,7 @@ spaces['salonika'] = {
       neighbours: [ "strumitsa", "florina", "kavala", "monastir"] ,
       terrain : "mountain" ,
       vp : false ,
+      port : 1 ,
       country : "greece" ,
 }
 
@@ -3310,12 +3369,13 @@ spaces['larisa'] = {
 
 spaces['athens'] = {
       name: "Athens" ,
-    control: "neutral" ,
+      control: "neutral" ,
       top: 3017 ,
       left: 2888 ,
       neighbours: ["larisa"] ,
       terrain : "normal" ,
       vp : false ,
+      port : 1 ,
       country : "greece" ,
 }
 
@@ -3598,6 +3658,7 @@ spaces['constantinople'] = {
       left: 3465 ,
       neighbours: ["adrianople","gallipoli","bursa","eskidor","adapazari"] ,
       terrain : "normal" ,
+    port : 1 ,
       vp : true ,
 }
 
@@ -3679,6 +3740,7 @@ spaces['crbox'] = {
       if (!spaces[key].control) { spaces[key].control = ""; }
       spaces[key].activated_for_movement = 0;
       spaces[key].activated_for_combat = 0;
+      spaces[key].port = 0; // no port
       spaces[key].key = key;
       spaces[key].type = "normal";
     }

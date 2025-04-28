@@ -597,7 +597,7 @@ class Arcade extends ModTemplate {
 		}
 
 		if (type === 'saito-link') {
-			const urlParams = new URLSearchParams(obj?.link);
+			const urlParams = new URL(obj?.link).searchParams;
 			const entries = urlParams.entries();
 			for (const pair of entries) {
 				if (pair[0] == 'game_id') {

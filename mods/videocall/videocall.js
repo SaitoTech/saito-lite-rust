@@ -332,6 +332,19 @@ class Videocall extends ModTemplate {
 			}
 		}
 
+		if (type === 'saito-link') {
+			const urlParams = new URL(obj?.link).searchParams;
+			const entries = urlParams.entries();
+			for (const pair of entries) {
+				if (pair[0] == 'stun_video_chat') {
+					return { processLink: (link) => { 
+						this.room_obj = JSON.parse(this.app.crypto.base64ToString(pair[1]));
+						this.renderInto('.saito-overlay');
+					}}
+				}
+			}
+		}
+
 		if (type === 'chat-actions') {
 			if (obj?.publicKey) {
 				if (obj.publicKey !== this.publicKey) {
@@ -969,6 +982,12 @@ class Videocall extends ModTemplate {
 
 		return call_link;
 	}
+
+	copyInviteLink() {
+		navigator.clipboard.writeText(this.generateCallLink());
+		siteMessage('Invite link copied to clipboard', 1500);
+	}
+
 
 	webServer(app, expressapp, express) {
 		let webdir = `${__dirname}/../../mods/${this.dirname}/web`;

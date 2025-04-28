@@ -6631,8 +6631,8 @@ try {
 //
 // TEST / HACK -- control hits / adjust hits here
 //
-//attacker_hits = 2;
-//defender_hits = 2;
+attacker_hits = 2;
+defender_hits = 2;
 
 	  //
 	  // we have now rolled all of the dice that we need to roll at this stage
@@ -7698,6 +7698,13 @@ try {
 	  let spacekey = mv[2];
 	  let unit_type = mv[3];
 
+
+	  //
+	  // keep track that we have destroyed one -- cannot be rebuilt until next turn
+	  //
+	  if (!this.game.state.ships_destroyed[faction]) { this.game.state.ships_destroyed[faction] = 0; }
+	  this.game.state.ships_destroyed[faction]++;
+
           this.game.queue.splice(qe, 1);
 
 	  let space;
@@ -8005,19 +8012,37 @@ try {
 	      // tie, attackers can fortify before retreat
 	      //
 	      if (his_self.game.state.field_battle.attacker_hits == his_self.game.state.field_battle.defender_hits) {
+
+	        if (his_self.game.state.field_battle.defender_land_units_remaining < his_self.game.state.field_battle.attacker_land_units_remaining) {
+                  his_self.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+this.game.state.field_battle.defender_faction+"\t"+this.game.state.field_battle.attacker_faction+"\t"+space.key);
+                  his_self.game.queue.push("break_siege");
+		}
+
 	        if (do_any_attacker_units_remain) {
-                  this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+f+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
+                  for (let f in his_self.game.state.field_battle.faction_map) {
+                    if (his_self.game.state.field_battle.faction_map[f] == his_self.game.state.field_battle.attacker_faction) {
+                      this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+f+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
+		    }
+		  }
                   this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
 		  this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.defender_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.attacker_faction)+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key+"\trelief_siege_tie");
 	        }
 	      }
+
+
+//
+//
+//
+              his_self.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+attacker_faction+"\t"+defender_faction+"\t"+space.key);
+              his_self.game.queue.push("break_siege");
+
 
 	      //
 	      // attackers lose
 	      //
 	      if (his_self.game.state.field_battle.attacker_hits < his_self.game.state.field_battle.defender_hits) {
                 this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+f+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
-                this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
+                this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+his_self.game.state.field_battleattacker_faction+"\t"+space.key);
 		this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.defender_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.attacker_faction)+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key+"\trelief_siege");
 	      }
 
@@ -9223,6 +9248,8 @@ try {
 	  if (attacker_hits > defender_hits) {
 	    winner = attacker_faction;
 	  }
+
+	  his_self.game.state.naval_battle.winner = winner;
 
 	  his_self.updateLog("Winner: " + winner);
 	  his_self.updateLog("Attacker Hits: " + attacker_hits);

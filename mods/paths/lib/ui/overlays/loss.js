@@ -53,6 +53,7 @@ class LossOverlay {
 	}
 
 	returnMaxLossPossible() {
+
 		//
 		// associative array with all stepwise losses
 		//
@@ -214,7 +215,7 @@ class LossOverlay {
 console.log(JSON.stringify(this.mod.game.state.combat));
 console.log("DEFENDER UNITS: " + JSON.stringify(defender_units));
 console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
-
+ 
 		this.units = defender_units;
 
 		if (
@@ -282,6 +283,7 @@ console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
 		document.querySelector(".defender_column_shift").innerHTML = this.mod.game.state.combat.defender_column_shift;
 		document.querySelector(".attacker_damage").innerHTML = this.mod.game.state.combat.defender_loss_factor;
 		document.querySelector(".defender_damage").innerHTML = this.mod.game.state.combat.attacker_loss_factor;
+
 
 		//
 		// show terrain effects

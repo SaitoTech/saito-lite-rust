@@ -998,6 +998,18 @@
     if (res.available[unittype]['5'] > 0) { x += (5 * res.available[unittype]['5']); }
     if (res.available[unittype]['6'] > 0) { x += (6 * res.available[unittype]['6']); }
 
+    //
+    // squadrons and corsairs have construction limits
+    //
+    if (unittype == "squadron") {
+      if (this.game.state.ships_destroyed[faction]) {
+        if (this.game.state.ships_destroyed[faction] > 0) {
+	  x -= this.game.state.ships_destroyed[faction];
+	  if (x < 0) { x = 0; }
+	}
+      }
+    }
+
     return x;
 
   }

@@ -49,6 +49,13 @@
 	background: #0009;
 }
 
+.welcome-central {
+	background-image: url('/paths/img/backgrounds/german-m17-3.jpg');
+}
+
+.welcome-allies {
+	background-image: url('/paths/img/backgrounds/poppies.png');
+}
 
 @media screen and (max-width: 900px) {
   .welcome-card { 

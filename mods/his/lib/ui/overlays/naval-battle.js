@@ -101,6 +101,11 @@ class NavalBattleOverlay {
 			hitstext = ' Hit';
 		}
 
+		let did_i_lose_and_need_to_assign_last_hit = false;
+		if (this.mod.game.state.naval_battle.attacker_hits > this.mod.game.state.naval_battle.defender_hits && this.mod.returnControllingPower(faction) == this.mod.returnControllingPower(this.mod.game.state.naval_battle.defender_faction)) { did_i_lose_and_need_to_assign_last_hit = true; }
+		if (this.mod.game.state.naval_battle.attacker_hits <= this.mod.game.state.naval_battle.defender_hits && this.mod.returnControllingPower(faction) == this.mod.returnControllingPower(this.mod.game.state.naval_battle.attacker_faction)) { did_i_lose_and_need_to_assign_last_hit = true; }
+
+
 		this.updateInstructions(
 			`Assign <span class="hits_to_assign">${hits_to_assign}</span> ${hitstext} (squadrons take 2 hits)`
 		);
@@ -163,12 +168,29 @@ try {
 				el.onclick = (e) => {
 
 					let hits_left = hits_to_assign - hits_assigned;
+
+					//
+					// loser needs to assign the last hit
+					//
+					if (undestroyed_corsairs == 0 && undestroyed_squadrons > 0 && did_i_lose_and_need_to_assign_last_hit == true) {
+						if (hits_left == 1) {
+							hits_left = 2;
+						}
+					}
+
+
 					let this_unit_type = e.currentTarget.getAttribute('data-unit-type');
+
+					if (hits_left > 1 && this_unit_type == "corsair" && undestroyed_squadrons > 0) {
+						alert("You must assign hits to Squadrons before Corsairs...");
+						return;
+					}
 
 					if (hits_left == 1 && this_unit_type == "squadron") {
 						alert("You must assign your last hit to a Corsair...");
 						return;
 					}
+
 					if (hits_left == 2 && this_unit_type == "corsair") {
 						if (undestroyed_corsairs <= 1 && undestroyed_squadrons > 0) {
 							alert("You must assign your last two hits to a Squadron...");
@@ -208,6 +230,18 @@ try {
 							'\t' +
 							unit_type
 					);
+
+
+					//
+					// loser needs to assign the last hit if squadron remains
+					//
+					if (undestroyed_squadrons > 1 && did_i_lose_and_need_to_assign_last_hit == true) {
+						if (hits_left == 1) {
+							hits_left = 2;
+						}
+					}
+
+
 					//
 					// Ottoman may have corsairs which can be destroyed in 1 hit
 					//

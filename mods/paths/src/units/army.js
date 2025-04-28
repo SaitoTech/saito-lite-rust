@@ -218,7 +218,7 @@
     //
     // Belgian Corps
     //
-    this.importUnit('aus_corps', {
+    this.importUnit('be_corps', {
       ckey		:       "BE" ,
       country           :       "Belgium" ,
       name		:	"BE Corps" ,
