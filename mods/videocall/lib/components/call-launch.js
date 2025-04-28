@@ -194,6 +194,11 @@ class CallLaunch {
 
 		this.app.connection.emit('stun-init-call-interface', this.callSetting.returnSettings());
 
+		// Copy link here!
+		if (this.mod.room_obj.host_public_key == this.mod.publicKey) {
+			this.mod.copyInviteLink();
+		}
+
 		//
 		//Close this component
 		//

@@ -41,10 +41,6 @@ class CallInterfaceVideo {
 				console.log("FULL SCREEN");
 				window.history.pushState({}, '', this.room_link);
 				document.title = 'Saito Talk';
-
-				if (this.mod.room_obj.host_public_key == this.mod.publicKey) {
-					this.copyInviteLink();
-				}
 			}
 
 		});
@@ -182,9 +178,9 @@ class CallInterfaceVideo {
 				if (document.querySelector('.stun-overlay-container')) {
 					document.querySelector('.stun-overlay-container').remove();
 
-					let am = this.app.modules.returnActiveModule();
-					window.history.back();
-					//window.history.replaceState({}, '', am.returnSlug());
+					if (this.full_screen){
+						window.history.back();
+					}
 				}
 			}
 		});
@@ -334,7 +330,7 @@ class CallInterfaceVideo {
 		let add_users = document.querySelector('.add-users-container');
 		if (add_users) {
 			add_users.addEventListener('click', (e) => {
-				this.copyInviteLink();
+				this.mod.copyInviteLink();
 			});
 		}
 
@@ -481,11 +477,6 @@ class CallInterfaceVideo {
 
 		this.video_boxes[stream_id].video_box.containerClass = this.local_container;
 		this.video_boxes[stream_id].video_box.rerender();
-	}
-
-	copyInviteLink() {
-		navigator.clipboard.writeText(this.room_link);
-		siteMessage('Invite link copied to clipboard', 1500);
 	}
 
 	addRemoteStream(peer, remoteStream) {

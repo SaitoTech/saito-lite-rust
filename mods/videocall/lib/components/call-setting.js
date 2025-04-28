@@ -319,16 +319,18 @@ class CallSetting {
 
 	returnSettings(){
 		//Use defaults if unopened...
+		let ui = this.mod.browser_active ? 'large' : 'video';
+
 		if (!this.videoInput){
 			return {
-				ui: "large",
+				ui,
 				video: true,
 				audio: true,
 			};
 		}
 
 		return {
-			ui: "large",
+			ui,
 			video: (this.videoEnabled) ? this.videoInput.value : false,
 			audio: (this.audioEnabled) ? this.audioInput.value : false,
 		};
