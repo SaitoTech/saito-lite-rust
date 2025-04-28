@@ -9,10 +9,6 @@
 
     if (this.is_first_loop == undefined) {
       this.is_first_loop = 1;
-
-console.log("FIRST LOOP: confs_needed: " + JSON.stringify(this.game.confirms_needed));
-
-
     } else {
       this.is_first_loop = 0;
     }
@@ -3978,10 +3974,26 @@ console.log("----------------------------");
 
 	  this.game.queue.splice(qe, 1);
 
-	  let faction_map      = his_self.game.state.assault.faction_map;
-	  let attacker_faction = his_self.game.state.assault.attacker_faction;
-	  let defender_faction = his_self.game.state.assault.defender_faction;
-	  let spacekey         = his_self.game.state.assault.spacekey;
+	  let faction_map;
+	  let attacker_faction;
+	  let defender_faction;
+	  let spacekey;
+
+	  if (his_self.game.state.assulat) {
+	    faction_map      = his_self.game.state.assault.faction_map;
+	    attacker_faction = his_self.game.state.assault.attacker_faction;
+	    defender_faction = his_self.game.state.assault.defender_faction;
+	    spacekey         = his_self.game.state.assault.spacekey;
+	  } else {
+	    //
+	    // relief sieges can trigger this, which is why attackers/defenders reversed here
+	    //
+	    faction_map      = his_self.game.state.field_battle.faction_map;
+	    defender_faction = his_self.game.state.field_battle.attacker_faction;
+	    attacker_faction = his_self.game.state.field_battle.defender_faction;
+	    spacekey         = his_self.game.state.field_battle.spacekey;
+	  }
+
 	  let space 	       = his_self.game.spaces[spacekey];
 	  let neighbours       = space.neighbours;
 
@@ -6631,8 +6643,8 @@ try {
 //
 // TEST / HACK -- control hits / adjust hits here
 //
-attacker_hits = 2;
-defender_hits = 2;
+//attacker_hits = 2;
+//defender_hits = 2;
 
 	  //
 	  // we have now rolled all of the dice that we need to roll at this stage
@@ -8013,8 +8025,11 @@ defender_hits = 2;
 	      //
 	      if (his_self.game.state.field_battle.attacker_hits == his_self.game.state.field_battle.defender_hits) {
 
-	        if (his_self.game.state.field_battle.defender_land_units_remaining < his_self.game.state.field_battle.attacker_land_units_remaining) {
-                  his_self.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+this.game.state.field_battle.defender_faction+"\t"+this.game.state.field_battle.attacker_faction+"\t"+space.key);
+		//
+		// this condition makes it impossible to maintain the siege
+		//
+	        if (his_self.game.state.field_battle.defender_land_units_remaining <= his_self.game.state.field_battle.attacker_land_units_remaining) {
+                  his_self.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+his_self.game.state.field_battle.defender_faction+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
                   his_self.game.queue.push("break_siege");
 		}
 
@@ -8028,14 +8043,6 @@ defender_hits = 2;
 		  this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.defender_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.attacker_faction)+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key+"\trelief_siege_tie");
 	        }
 	      }
-
-
-//
-//
-//
-              his_self.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+attacker_faction+"\t"+defender_faction+"\t"+space.key);
-              his_self.game.queue.push("break_siege");
-
 
 	      //
 	      // attackers lose
@@ -10201,8 +10208,23 @@ defender_hits = 2;
           let loser = mv[1];
           let winner = mv[2];
           let spacekey = mv[3];
+	  let anyone_but_loser_here = false;
 
 	  let space = this.game.spaces[spacekey];
+
+	  for (let f in space.units) {
+	    if (this.returnPlayerCommandingFaction(f) != this.returnPlayerCommandingFaction(loser)) {
+	      if (space.units[f].type == "regular" || space.units[f].type == "cavalry" || space.units[f].type == "mercenary") {
+		anyone_but_loser_here = true;
+	      }
+	    }
+	  }
+
+	  //	
+	  // skip the purge if no-one else is here...	
+	  //	
+	  if (anyone_but_loser_here == false) { return 1; }
+
 
 	  if (space.units[loser].length > 0) {
 	    for (let z = 0; z < space.units[loser].length; z++) {
@@ -11733,7 +11755,6 @@ defender_hits - attacker_hits;
 	  let no_need_for_resolve = false;
 
 	  if (mv[1] && (mv[0] === "check_interventions" || mv[0] === "check_intervention")) { 
-console.log("splicing out check_interventions...");
 	    this.game.queue.splice(qe, 1);
 	    faction = mv[1];
 	    no_need_for_resolve = true;
@@ -11746,10 +11767,6 @@ console.log("splicing out check_interventions...");
 	  if (faction != "" && this.game.player == this.returnPlayerCommandingFaction(faction)) { should_i_check = true; resolve_required = true; }
 	  if (this.game.confirms_needed[this.game.player-1] == 1) { resolve_required = true; }
 	  if (should_i_check == false && this.game.confirms_needed[this.game.player-1] == 1) { should_i_check = true; }
-
-console.log("SHOULD I CHECK: " + should_i_check);
-console.log("RESOLVE REQUIRED: " + resolve_required);
-console.log("NO NEED FOR RESOLVE...: " + no_need_for_resolve);
 
 	  if (should_i_check) {
 
@@ -11810,7 +11827,6 @@ console.log("NO NEED FOR RESOLVE...: " + no_need_for_resolve);
 	      }
 	    }
 
-console.log("SENDING CHECK_INTERVENTION ENDTURN()");
 	    this.endTurn();
 
 	  }

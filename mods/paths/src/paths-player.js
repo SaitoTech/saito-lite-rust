@@ -763,6 +763,8 @@ console.log("UNIT: " + JSON.stringify(unit));
     let do_upgradeable_units_remain = false;
     let just_stop = 0;
 
+
+    
     //
     // players can spend their replacement points to:
     //
@@ -770,8 +772,87 @@ console.log("UNIT: " + JSON.stringify(unit));
     // 2. flip damaged units in the RB
     // 3. return eliminated units to RB 
     //
+    let do_replacement_points_exist_for_unit = (unit) => {
+      if (rp[unit.ckey] > 0) { return 1; }
+      return 0;
+    }
+
     let loop_fnct = () => {
       if (continue_fnct()) {
+
+	let can_uneliminate_unit = false;
+	let can_uneliminate_unit_array = [];	
+	let can_repair_unit_on_board = false;	
+	let can_repair_unit_on_board_array = [];
+	let can_repair_unit_in_reserves = false;	
+	let can_repair_unit_in_reserves_array = [];
+	let can_deploy_unit_in_reserves = false;	
+	let can_deploy_unit_in_reserves_array = [];
+
+        for (let key in paths_self.game.spaces) {
+	  for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
+	    if (key == "arbox" && faction == "allies") { 
+	      if (do_replacement_points_exist_for_unit(paths_self.game.spaces[key].units[z])) {
+	        can_deploy_unit_in_reserves = true;
+	        can_deploy_unit_in_reserves_array.push({ key : key , idx : z , name : paths_self.game.spaces[key].units[z].name });
+	        if (paths_self.game.spaces[key].units[z].damaged) {
+	  	  can_repair_unit_in_reserves = true;
+	          can_repair_unit_in_reserves_array.push({ key : key , idx : z , name : paths_self.game.spaces[key].units[z].name });
+	        }
+	      }
+	    }
+	    if (key == "aeubox" && faction == "allies") { 
+	      if (do_replacement_points_exist_for_unit(paths_self.game.spaces[key].units[z])) {
+	        can_uneliminate_unit = true;
+	        can_uneliminate_unit_array.push({ key : key , idx : z , name : paths_self.game.spaces[key].units[z].name });
+	      }
+	    }
+	    if (key == "crbox" && faction == "central") { 
+	      if (do_replacement_points_exist_for_unit(paths_self.game.spaces[key].units[z])) {
+	        can_deploy_unit_in_reserves = true;
+	        can_deploy_unit_in_reserves_array.push({ key : key , idx : z , name : paths_self.game.spaces[key].units[z].name });
+	        if (paths_self.game.spaces[key].units[z].damaged) {
+		  can_repair_unit_in_reserves = true;
+	          can_repair_unit_in_reserves_array.push({ key : key , idx : z , name : paths_self.game.spaces[key].units[z].name });
+	        }
+	      }
+	    }
+	    if (key == "ceubox" && faction == "central") { 
+	      if (do_replacement_points_exist_for_unit(paths_self.game.spaces[key].units[z])) {
+	        can_uneliminate_unit = true;
+	        can_uneliminate_unit_array.push({ key : key , idx : z , name : paths_self.game.spaces[key].units[z].name });
+	      }
+	    }
+	    if (key != "ceubox" && key != "crbox" && key != "arbox" && key != "aeubox" && faction == "central") {
+	      if (do_replacement_points_exist_for_unit(paths_self.game.spaces[key].units[z])) {
+	        if (paths_self.game.spaces[key].units[z].damaged && paths_self.returnPowerOfUnit(paths_self.game.spaces[key].units[z]) == "central") {
+		  can_repair_unit_on_board = true;
+	          can_repair_unit_on_board_array.push({ key : key , idx : z , name : paths_self.game.spaces[key].units[z].name });
+	        }
+	      }
+	    }
+	    if (key != "ceubox" && key != "crbox" && key != "arbox" && key != "aeubox" && faction == "allies") {
+	      if (do_replacement_points_exist_for_unit(paths_self.game.spaces[key].units[z])) {
+	        if (paths_self.game.spaces[key].units[z].damaged && paths_self.returnPowerOfUnit(paths_self.game.spaces[key].units[z]) == "allies") {
+		  can_repair_unit_on_board = true;
+	          can_repair_unit_on_board_array.push({ key : key , idx : z , name : paths_self.game.spaces[key].units[z].name });
+	        }
+	      }
+	    }
+	  }
+	}
+
+	let options = [];
+	if (can_uneliminate_unit) { options.push(`<li class="option" id="uneliminate">rebuild eliminated unit</li>`); }
+	if (can_repair_unit_on_board) { options.push(`<li class="option" id="repair_board">repair unit on board</li>`); }
+	if (can_repair_unit_in_reserves) { options.push(`<li class="option" id="repair_reserves">repair unit in reserves</li>`); }
+	if (can_deploy_unit_in_reserves) { options.push(`<li class="option" id="deploy">deploy unit from reserves</li>`); }
+        options.push(`<li class="option" id="skip">finish</li>`);
+
+	paths_self.replacements_overlay.render(options);
+
+	
+
         paths_self.playerSelectUnitWithFilter(
  	  "Select Unit to Repair / Deploy" ,
 	  filter_fnct ,
