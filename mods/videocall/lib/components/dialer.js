@@ -29,7 +29,7 @@ class Dialer {
 					);
 				} 
 			}
-		}else{
+		}else if (call_receiver) {
 			if (!this.receiver[call_receiver]) {
 				this.receiver[call_receiver] = new SaitoUser(
 					this.app,
