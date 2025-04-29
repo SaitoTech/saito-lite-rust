@@ -963,6 +963,11 @@ try {
 	if (mv[0] === "player_play_combat") {
 
 	  //
+	  // movement has happened, so we...
+	  //
+	  this.removeOverstackedUnits();
+
+	  //
 	  // we do not splice, because combat involves multiple
 	  // returns to this, so we only want to clear this once
 	  // it is not possible to execute any more combat.
