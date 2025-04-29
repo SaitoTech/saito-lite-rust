@@ -301,7 +301,7 @@ class PokerUI {
       return;
     }
 
-    let html = '<ul>';
+    let html = '<div class="status-menu">Your turn:</div><ul>';
     html += '<li class="option" id="fold"><img src="/poker/img/fold_icon.svg" alt="fold"><span>fold</span></li>';
 
     if (match_required > 0) {
@@ -330,31 +330,37 @@ class PokerUI {
           html += `match ${poker_self.formatWager(match_required)} and raise `;
         } else {
         }
-        html += `</div><ul><li class="option" id="0">${
-          mobileToggle ? 'nope' : 'cancel raise'
-        }</li>`;
+        html += `</div><div class="raise_options_title">Raise <span class="option raise_option" id="0"><img src="/poker/img/cancel_raise_icon.svg" alt="cancel"></span></div><ul>`;
+        
         let max_raise = Math.min(credit_remaining, smallest_stack);
 
         for (let i = 0; i < 4; i++) {
           let this_raise = poker_self.game.state.last_raise + i * poker_self.game.state.last_raise;
 
           if (max_raise > this_raise) {
-            html += `<li class="option" id="${this_raise + match_required}">${
-              mobileToggle ? ' ' : 'raise '
-            }${poker_self.formatWager(this_raise)}</li>`;
+            html += `<li class="option raise_option" id="${this_raise + match_required}"><img src="/poker/img/raise_value_icon.svg" alt="raise"><span>${
+              mobileToggle ? ' ' : ''
+            }${poker_self.formatWager(this_raise)}</span></li>`;
           } else {
             break;
           }
         }
 
+        //html += '</ul><ul>';
+
         //Always give option for all in
-        html += `<li class="option" id="${max_raise + match_required}">
-                  raise ${poker_self.formatWager(max_raise)}
-                  (all in${
+        html += `<li class="option raise_option" id="${max_raise + match_required}"><img src="/poker/img/raise_allin_icon.svg" alt="raise"><span>
+                  ${poker_self.formatWager(max_raise)}
+                  <div class="raise_allin_text">(all in${
                     smallest_stack_player !== poker_self.game.player - 1
                       ? ` for ${poker_self.game.state.player_names[smallest_stack_player]}`
                       : ''
-                  })</li>`;
+                  })</div></li>`;
+/*
+        html += `<li class="option raise_option" id="0"><img src="/poker/img/cancel_raise_icon.svg" alt="cancel"><span>${
+                  mobileToggle ? '' : ''
+                }</span></li>`;
+*/          
 
         html += '</ul>';
         poker_self.updateStatus(html);

@@ -1,6 +1,5 @@
-
-.status ul li, .option {
-    height: 10rem;
+.status ul li.option {
+    /*height: 10rem;*/
     width: 9rem;
     font-size: 1.8rem;
     display: flex;
@@ -10,6 +9,7 @@
     cursor: pointer;
     flex-direction: column;
     gap: 0.1rem;
+    list-style: none;
 }
 
 .status ul {
@@ -23,7 +23,7 @@
 
 .status ul li:hover,
 option:hover {
-	background-color: #0005;
+    background-color: #0005;
 }
 
 li.option img {
@@ -45,6 +45,7 @@ li.option img {
 #call img {
     background-color: #036;
 }
+
 #fold img {
     background-color: #333;
 }
@@ -55,4 +56,51 @@ li.option img {
 
 #check img {
     background-color: #063;
+}
+
+li.raise_option span span {
+    display: block;
+    line-height: 1.5rem;
+}
+
+li.raise_option>span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+li.option.raise_option {
+    height: 5rem;
+}
+
+li.option.raise_option img {
+    height: 6rem;
+    width: 6rem;
+}
+
+
+.raise_option .wager-ticker {
+    font-size: 1.2rem;
+}
+
+.raise_allin_text {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 32px;
+    width: 200%;
+    transform: translateY(-50%);
+}
+
+li:hover .raise_allin_text {
+    display: block;
+}
+
+span.raise_option img {
+    height: 1.3rem !important;
+    width: 1.3rem !important;
+    border-radius: 10rem;
+    border: 1px solid #fff;
+    cursor: pointer;
 }

@@ -74,10 +74,10 @@ class PokerStake {
       }
     }
 
-    let wager = numChips; //this.convertChipsToCrypto(numChips);
+    let wager = '<span class="wager-num">' + numChips + '</span>'; //this.convertChipsToCrypto(numChips);
 
     if (includeTicker) {
-      wager += ' ' + chips;
+      wager += ' <span class="wager-ticker">' + chips + '</span>';
     }
 
     return wager;
