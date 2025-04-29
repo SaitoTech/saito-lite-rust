@@ -12,8 +12,8 @@ class Spam extends ModTemplate {
 		this.categories = 'Core Utilities Messaging';
 		this.class = 'utility';
 		this.to = '';
-		this.payment = 0;
-		this.fee = 0;
+		this.payment = 1;
+		this.fee = 1;
 		this.nodeLoopDelay = 13000; // 13 seconds to guarantee block production
 		this.loop_start = 0;
 		this.frequency = 1; //no of tx per period
@@ -181,10 +181,11 @@ class Spam extends ModTemplate {
 	}
 
 	async sendSpamTransaction(app, mod, data) {
-		let obj = {
-			module: this.name,
-			request: 'send spam tx',
-			data: {}
+		try {
+			let obj = {
+				module: this.name,
+				request: 'send spam tx',
+				data: {}
 		};
 		for (let key in data) {
 			obj.data[key] = data[key];
@@ -201,7 +202,10 @@ class Spam extends ModTemplate {
 		// console.log(newtx);
 		await this.app.network.propagateTransaction(newtx);
 
-		return newtx;
+			return newtx;
+		} catch (err) {
+			console.log('SPAM ERROR: ' + err);
+		}
 	}
 
 	async receiveSpamTransaction(blk, tx, conf) {
