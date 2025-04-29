@@ -10,7 +10,7 @@ class GameSelector {
 		this.app = app;
 		this.mod = mod;
 		this.name = 'GameSelector';
-		this.overlay = new SaitoOverlay(app, mod, true, true);
+		this.overlay = new SaitoOverlay(app, mod, true, false);
 		this.obj = obj;
 
 		this.app.connection.on('arcade-launch-game-selector', (obj = {}) => {
@@ -27,8 +27,12 @@ class GameSelector {
 	}
 
 	render() {
-		this.overlay.show(GameSelectorTemplate(this.app, this.mod, this));
-		this.attachEvents();
+		if (document.querySelector(".game-selector-overlay")){
+			this.overlay.show();
+		}else{
+			this.overlay.show(GameSelectorTemplate(this.app, this.mod, this));
+			this.attachEvents();
+		}		
 	}
 
 	attachEvents() {
@@ -39,7 +43,7 @@ class GameSelector {
 				e.stopPropagation();
 				let modname = e.currentTarget.getAttribute('data-id');
 				this.obj.game = modname;
-				this.overlay.remove();
+				this.overlay.close();
 
 				if (this.obj.callback != null) {
 					this.obj.callback(this.obj);
@@ -59,7 +63,7 @@ class GameSelector {
 
 		if (document.querySelector('.arcade-game-selector')) {
 			document.querySelector('.arcade-game-selector').onclick = (e) => {
-				this.overlay.remove();
+				this.overlay.close();
 			};
 		}
 	}

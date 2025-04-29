@@ -2,6 +2,7 @@ var saito = require('../../lib/saito/saito');
 var ModTemplate = require('../../lib/templates/modtemplate');
 const SettingsAppspace = require('./lib/appspace/main');
 const SettingsThemeSwitcherOverlay = require('./lib/theme-switcher-overlay');
+const AppSettings = require('./lib/settings-settings');
 
 class Settings extends ModTemplate {
 	constructor(app) {
@@ -60,6 +61,10 @@ class Settings extends ModTemplate {
 				this.main.render();
 			}, 50);
 		});
+
+		if (!app.options.settings){
+			app.options.settings = { debug: false };
+		}
 	}
 
 	canRenderInto(qs) {
@@ -129,6 +134,16 @@ class Settings extends ModTemplate {
 		}
 		return null;
 	}
+
+  hasSettings() {
+    return true;
+  }
+
+  loadSettings(container) {
+    let as = new AppSettings(this.app, this, container);
+    as.render();
+  }
+
 }
 
 module.exports = Settings;
