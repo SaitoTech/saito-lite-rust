@@ -336,7 +336,7 @@ class ATR extends ModTemplate {
             let data = await response.text();
             let utxo = null;
 
-            // console.log("utxo: ", data);
+            console.log("utxo: ", data);
 
             let split_data = data.split(' ');
 
