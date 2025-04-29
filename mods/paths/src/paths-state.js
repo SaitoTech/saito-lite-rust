@@ -98,6 +98,15 @@
 
   }
 
+  removeOverstackedUnits() {
+    for (let key in this.game.spaces) {
+      if (key != "ceubox" && key != "aeubox" && key != "arbox" && key != "crbox") {
+        while (this.game.spaces[key].units.length > 3) {
+	  this.game.spaces[key].units.splice(3, 1);
+        }
+      }
+    }
+  }
 
   calculateRussianCapitulationTrack() {
 

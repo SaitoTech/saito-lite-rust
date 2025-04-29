@@ -175,7 +175,16 @@ class PathsOfGlory extends GameTemplate {
         game_mod.handleStatsMenu();
       }
     });
-
+/***
+    this.menu.addSubMenuOption("game-game", {
+      text : "Replacements",
+      id : "game-replacements",
+      class : "game-replacements",
+      callback : function(app, game_mod) {
+	game_mod.playerSpendReplacementPoints(game_mod.returnFactionOfPlayer());
+      }
+    });
+***/
 
 /****
     this.menu.addMenuOption("game-info", "Info");
