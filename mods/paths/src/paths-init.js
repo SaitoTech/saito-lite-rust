@@ -4,6 +4,7 @@ const CombatOverlay = require('./lib/ui/overlays/combat');
 const SpaceOverlay = require('./lib/ui/overlays/space');
 const LossOverlay = require('./lib/ui/overlays/loss');
 const GunsOverlay = require('./lib/ui/overlays/guns');
+const ReplacementsOverlay = require('./lib/ui/overlays/replacements');
 const FlankOverlay = require('./lib/ui/overlays/flank');
 const ReservesOverlay = require('./lib/ui/overlays/reserves');
 const MandatesOverlay = require('./lib/ui/overlays/mandates');
@@ -47,6 +48,7 @@ class PathsOfGlory extends GameTemplate {
     this.combat_overlay = new CombatOverlay(this.app, this); 
     this.loss_overlay = new LossOverlay(this.app, this); 
     this.guns_overlay = new GunsOverlay(this.app, this); 
+    this.replacements_overlay = new ReplacementsOverlay(this.app, this); 
     this.reserves_overlay = new ReservesOverlay(this.app, this); 
     this.mandates_overlay = new MandatesOverlay(this.app, this); 
     this.welcome_overlay = new WelcomeOverlay(this.app, this); 
