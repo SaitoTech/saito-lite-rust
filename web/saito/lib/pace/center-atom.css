@@ -16,8 +16,8 @@
 
 	z-index: 2000;
 	position: fixed;
-	height: 60px;
-	width: 100px;
+	height: 120px;
+	width: 120px;
 	margin: auto;
 	top: 0;
 	left: 0;
@@ -28,9 +28,10 @@
 .pace .pace-progress {
 	z-index: 2000;
 	position: absolute;
-	height: 60px;
-	width: 100px;
+	height: 100%;
+	width: 100%;
 
+	/* Override default meter incrementation*/
 	box-sizing: content-box !important;
 	-webkit-transform: translate3d(0, 0, 0) !important;
 	-ms-transform: translate3d(0, 0, 0) !important;
@@ -38,39 +39,43 @@
 }
 
 .pace .pace-progress:before {
-	content: attr(data-progress-text);
-	text-align: center;
-	color: #fff;
+	content: "";
 	background: var(--pace-color);
+	opacity: 33%;
 	border-radius: 50%;
-	font-family: "Helvetica Neue", sans-serif;
-	font-size: 14px;
-	font-weight: 100;
-	line-height: 1;
-	padding: 20% 0 7px;
-	width: 50%;
-	height: 40%;
-	margin: 10px 0 0 30px;
-	display: block;
-	z-index: 999;
+	width: 4.5rem;
+	height: 4.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 950;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
 	position: absolute;
 	box-sizing: content-box !important;
 }
 
-.pace .pace-activity {
-	font-size: 15px;
-	line-height: 1;
-	z-index: 2000;
+.pace .pace-progress:after {
+	content: attr(data-progress-text);
+	text-align: center;
+	color: #fff;
+	border-radius: 50%;
+	font-family: "Helvetica Neue", sans-serif;
+	font-size: 16px;
+	font-weight: bolder;
+	text-shadow: 1px 1px 1px black;
+	width: 4.5rem;
+	height: 4.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 999;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
 	position: absolute;
-	height: 60px;
-	width: 100px;
-
 	box-sizing: content-box !important;
-	display: block;
-	-webkit-animation: pace-theme-center-atom-spin 2s linear infinite;
-	-moz-animation: pace-theme-center-atom-spin 2s linear infinite;
-	-o-animation: pace-theme-center-atom-spin 2s linear infinite;
-	animation: pace-theme-center-atom-spin 2s linear infinite;
 }
 
 .pace .pace-activity {
@@ -81,12 +86,23 @@
 	position: absolute;
 	top: 0;
 	left: 0;
-	height: 60px;
-	width: 100px;
+	height: 115px;
+	width: 115px;
 	box-sizing: content-box !important;
+  background-color: var(--pace-color);
+  background-image: url(/saito/img/saito-loader.svg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+
+	-webkit-animation: pace-theme-center-atom-spin 4s linear infinite;
+	-moz-animation: pace-theme-center-atom-spin 4s linear infinite;
+	-o-animation: pace-theme-center-atom-spin 4s linear infinite;
+	animation: pace-theme-center-atom-spin 4s linear infinite;
+
 }
 
-.pace .pace-activity:after {
+/*.pace .pace-activity:after {
 	border-radius: 50%;
 	border: 5px solid var(--pace-color);
 	content: ' ';
@@ -120,7 +136,7 @@
 	-moz-transform: rotate(120deg);
 	-o-transform: rotate(120deg);
 	transform: rotate(120deg);
-}
+}*/
 
 @-webkit-keyframes pace-theme-center-atom-spin {
 	0%   { -webkit-transform: rotate(0deg) }

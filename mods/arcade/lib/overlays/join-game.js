@@ -185,6 +185,14 @@ class JoinGameOverlay {
 			};
 		}
 
+		if (document.getElementById('arcade-game-controls-clear-game')){
+			document.getElementById('arcade-game-controls-clear-game').onclick = (e) => {
+				this.mod.removeGameFromWallet(this.invite.game_id);
+				this.overlay.remove();
+			}
+		}
+		
+
 		/*Array.from(document.querySelectorAll('.available_slot')).forEach((emptySlot) => {
 			emptySlot.onclick = () => {
 				this.mod.showShareLink(this.invite.game_id, false);
