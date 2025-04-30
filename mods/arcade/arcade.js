@@ -1925,6 +1925,20 @@ class Arcade extends ModTemplate {
 	}
 
 
+	removeGameFromWallet(game_id){
+		this.removeGame(game_id);
+		if (this.app.options.games) {
+			for (let i = 0; i < this.app.options.games.length; i++) {
+				if (this.app.options.games[i].id){
+					this.app.options.games.splice(i, 1);
+					break;
+				}
+			}
+		}
+		this.app.storage.saveOptions();
+		this.app.connection.emit('arcade-invite-manager-render-request');
+	}
+
 	isAvailableGame(game_tx, additional_status = '') {
 		if (game_tx.msg.request == 'open' || game_tx.msg.request == 'private') {
 			return true;

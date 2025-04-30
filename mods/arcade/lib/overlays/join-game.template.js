@@ -148,6 +148,9 @@ module.exports = (app, mod, invite) => {
 			}else if (invite.game_mod.enable_observer) {
 				//Observer mode -- ongoing
 				html += `<div id="arcade-game-controls-watch-game" class="saito-button saito-button-primary">watch game</div>`;
+				if (invite.game_mod.doesGameExistLocally(invite.game_id)){
+					html += `<div id="arcade-game-controls-clear-game" class="saito-button saito-button-secondary">clear</div>`;
+				}
 			}
 		} else {
 			if (invite.players.includes(mod.publicKey)) {
