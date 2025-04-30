@@ -80,13 +80,14 @@
 
 .pace .pace-activity {
 	border-radius: 50%;
+	border: 5px solid var(--pace-color);
 	content: ' ';
 	display: block;
 	position: absolute;
 	top: 0;
 	left: 0;
-	height: 120px;
-	width: 120px;
+	height: 115px;
+	width: 115px;
 	box-sizing: content-box !important;
   background-color: var(--pace-color);
   background-image: url(/saito/img/saito-loader.svg);
