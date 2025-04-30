@@ -426,7 +426,7 @@ class StreamManager {
 
     let c = this.returnConstraints();
 
-    console.log(c);
+    console.log(c, "================");
 
     //Get my local media
     try {

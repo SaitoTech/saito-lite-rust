@@ -23,6 +23,8 @@ class InviteManager {
 
 		this.game_filter = null;
 
+		this.show_carousel = true;
+		
 		this.loader_overlay = new SaitoOverlay(app, mod, false, true);
 
 		//
@@ -190,7 +192,7 @@ class InviteManager {
 			}
 		}
 
-		if (!rendered_content && !this.game_filter) {
+		if (!rendered_content && !this.game_filter && this.show_carousel) {
 			this.slider.render();
 		}
 

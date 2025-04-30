@@ -1,13 +1,15 @@
 module.exports = () => {
 	let html = `
-      <div class="naval-movement-overlay" id="naval-movement-overlay">
+      <div class="replacements-overlay" id="replacements-overlay">
 	<div class="mainmenu">
-          <div class="sstatus"></div>
-          <div class="scontrols"></div>
+          <div class="status"></div>
+          <div class="controls"></div>
 	</div>
 	<div class="submenu">
-          <div class="dcontrols"></div>
+          <div class="controls"></div>
         </div>
+	<div class="points">
+	</div>
       </div>
   `;
 	return html;

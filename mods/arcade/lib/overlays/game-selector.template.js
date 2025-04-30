@@ -18,6 +18,7 @@ module.exports = (app, mod, game_selector = null) => {
 	return `
        <div class="game-selector-overlay">
 	       <h2>Select a game:</h2>
+	       	 <div id="overlay-invite-manager" class="overlay-invite-manager"></div>
 		     <div class="arcade-game-selector">
     		   ${games_menu}
 		     </div>

@@ -774,7 +774,7 @@ console.log("UNIT: " + JSON.stringify(unit));
       }
 
       if (action === "finish") {
-	this.endTurn();
+	alert("FINISH - unimplemented");
 	return;
       }
 
@@ -867,7 +867,7 @@ console.log("UNIT: " + JSON.stringify(unit));
 	if (can_repair_unit_on_board) { options.push(`<li class="option" id="repair_board">repair unit on board</li>`); }
 	if (can_repair_unit_in_reserves) { options.push(`<li class="option" id="repair_reserves">repair unit in reserves</li>`); }
 	if (can_deploy_unit_in_reserves) { options.push(`<li class="option" id="deploy">deploy unit from reserves</li>`); }
-        options.push(`<li class="option" id="finish">finish</li>`);
+        options.push(`<li class="option" id="skip">finish</li>`);
 
 	this.game.state.replacements = {};
 	this.game.state.replacements.options = options;

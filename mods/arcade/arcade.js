@@ -120,6 +120,18 @@ class Arcade extends ModTemplate {
 			}
 		});
 
+
+		app.connection.on('arcade-launch-game-selector', (obj = {}) => {
+			if (!this.invite_manager){
+				setTimeout(()=> {
+					this.invite_manager = new InviteManager(app, this, '.overlay-invite-manager');
+					this.invite_manager.type = 'long';
+					this.invite_manager.show_carousel = false;
+					this.invite_manager.render();
+				}, 50);
+			}
+		});
+
 	}
 
 	//////////////////////////////
@@ -466,9 +478,9 @@ class Arcade extends ModTemplate {
 			if (!this.renderIntos[qs]) {
 				this.styles = ['/arcade/style.css'];
 				this.renderIntos[qs] = [];
-				let obj = new InviteManager(this.app, this, qs);
-				obj.type = 'short';
-				this.renderIntos[qs].push(obj);
+				this.invite_manager = new InviteManager(this.app, this, qs);
+				this.invite_manager.type = 'short';
+				this.renderIntos[qs].push(this.invite_manager);
 				this.attachStyleSheets();
 			}
 		}
@@ -477,9 +489,9 @@ class Arcade extends ModTemplate {
 			if (!this.renderIntos[qs]) {
 				this.styles = ['/arcade/style.css'];
 				this.renderIntos[qs] = [];
-				let obj = new InviteManager(this.app, this, '.arcade-invites-box');
-				obj.type = 'long';
-				this.renderIntos[qs].push(obj);
+				this.invite_manager = new InviteManager(this.app, this, '.arcade-invites-box');
+				this.invite_manager.type = 'long';
+				this.renderIntos[qs].push(this.invite_manager);
 				this.attachStyleSheets();
 			}
 		}
@@ -488,9 +500,9 @@ class Arcade extends ModTemplate {
 			if (!this.renderIntos[qs]) {
 				this.styles = ['/arcade/style.css'];
 				this.renderIntos[qs] = [];
-				let obj = new InviteManager(this.app, this, '.arcade-invites-box');
-				obj.type = 'long';
-				this.renderIntos[qs].push(obj);
+				this.invite_manager = new InviteManager(this.app, this, '.arcade-invites-box');
+				this.invite_manager.type = 'long';
+				this.renderIntos[qs].push(this.invite_manager);
 				this.attachStyleSheets();
 			}
 		}
@@ -561,6 +573,7 @@ class Arcade extends ModTemplate {
 		if (type === 'saito-header') {
 			let x = [];
 			if (!this.browser_active) {
+				this.attachStyleSheets();
 				x.push({
 					text: 'Arcade',
 					icon: 'fa-solid fa-building-columns',
@@ -1911,6 +1924,20 @@ class Arcade extends ModTemplate {
 		}
 	}
 
+
+	removeGameFromWallet(game_id){
+		this.removeGame(game_id);
+		if (this.app.options.games) {
+			for (let i = 0; i < this.app.options.games.length; i++) {
+				if (this.app.options.games[i].id){
+					this.app.options.games.splice(i, 1);
+					break;
+				}
+			}
+		}
+		this.app.storage.saveOptions();
+		this.app.connection.emit('arcade-invite-manager-render-request');
+	}
 
 	isAvailableGame(game_tx, additional_status = '') {
 		if (game_tx.msg.request == 'open' || game_tx.msg.request == 'private') {
