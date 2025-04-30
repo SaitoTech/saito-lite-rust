@@ -6643,8 +6643,8 @@ try {
 //
 // TEST / HACK -- control hits / adjust hits here
 //
-//attacker_hits = 2;
-//defender_hits = 2;
+attacker_hits = 4;
+defender_hits = 4;
 
 	  //
 	  // we have now rolled all of the dice that we need to roll at this stage
@@ -7820,6 +7820,7 @@ try {
 
 	if (mv[0] === "field_battle_continue") {
 
+
           this.game.queue.splice(qe, 1);
 
 	  let his_self = this;
@@ -7862,7 +7863,6 @@ try {
 	    }
 	  }
 
-
 	  //
 	  // calculate units remaining
 	  //
@@ -7890,16 +7890,30 @@ try {
 	  // capture stranded leaders
 	  //
 	  if (his_self.game.state.field_battle.attacker_land_units_remaining == 0) {
-	    for (let f in his_self.game.state.field_battle.faction_map) {
-	      if (his_self.game.state.field_battle.faction_map[f] == his_self.game.state.field_battle.attacker_faction) {
-	        for (let i = 0; i < space.units[f].length; i++) {
-	          his_self.captureLeader(his_self.game.state.field_battle.defender_faction, his_self.game.state.field_battle.attacker_faction, mv[1], space.units[f][i]);
-		  space.units[f].splice(i, 1);
-		  i--;
+	    let purge_attacking_leaders = true;
+	    // unless relief siege and "defenders" are all destroyed...
+	    if (his_self.game.state.field_battle.defender_land_units_remaining == 0) {
+	      for (let key in space.units) {
+		if (space.units[key].length > 0) {
+	          if (his_self.returnPlayerCommandingFaction(his_self.returnFactionControllingSpace(his_self.game.state.field_battle.spacekey)) == his_self.returnPlayerCommandingFaction(key)) {
+		    purge_attacking_leaders = false;
+		  }
 		}
 	      }
 	    }
+	    if (purge_attacking_leaders == true) {
+	      for (let f in his_self.game.state.field_battle.faction_map) {
+	        if (his_self.game.state.field_battle.faction_map[f] == his_self.game.state.field_battle.attacker_faction) {
+	          for (let i = 0; i < space.units[f].length; i++) {
+	            his_self.captureLeader(his_self.game.state.field_battle.defender_faction, his_self.game.state.field_battle.attacker_faction, mv[1], space.units[f][i]);
+		    space.units[f].splice(i, 1);
+		    i--;
+		  }
+	        }
+	      }
+	    }
 	  }
+
 	  if (his_self.game.state.field_battle.defender_land_units_remaining == 0) {
 	    for (let f in his_self.game.state.field_battle.faction_map) {
 	      if (his_self.game.state.field_battle.faction_map[f] == his_self.game.state.field_battle.defender_faction) {
@@ -8048,9 +8062,14 @@ try {
 	      // attackers lose
 	      //
 	      if (his_self.game.state.field_battle.attacker_hits < his_self.game.state.field_battle.defender_hits) {
-                this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+f+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
-                this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+his_self.game.state.field_battleattacker_faction+"\t"+space.key);
-		this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.defender_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.attacker_faction)+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key+"\trelief_siege");
+		//
+		// if they murdered everyone else, no need to retreat...
+		//
+	  	if (do_any_defender_units_remain) {
+                  this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+f+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
+                  this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
+		  this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.defender_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.attacker_faction)+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key+"\trelief_siege");
+	        }
 	      }
 
             } else {
@@ -8089,7 +8108,6 @@ try {
 	      }
 	    }
           }
-
 
           if (winner === his_self.game.state.field_battle.attacker_faction) {
 
@@ -10209,6 +10227,7 @@ try {
           let winner = mv[2];
           let spacekey = mv[3];
 	  let anyone_but_loser_here = false;
+	  let any_winners_survive = false;
 
 	  let space = this.game.spaces[spacekey];
 
@@ -10223,7 +10242,9 @@ try {
 	  //	
 	  // skip the purge if no-one else is here...	
 	  //	
-	  if (anyone_but_loser_here == false) { return 1; }
+	  if (anyone_but_loser_here == false) {
+		return 1;
+	  }
 
 
 	  if (space.units[loser].length > 0) {
@@ -10392,18 +10413,29 @@ try {
 
           let loser = mv[1];
           let spacekey = mv[2];
+	  let unfortified_units = 0;
+	  let fortified_units = 0;
 
+try {
 	  //
 	  // auto-skip if there are < 4 loser units and they are fortified
 	  //
-	  let unfortified_units = 0;
-	  let fortified_units = 0;
 	  for (let i = 0; i < this.game.spaces[spacekey].units[loser].length; i++) {
 	    let u = this.game.spaces[spacekey].units[loser][i];
 	    if (u.besieged == 0 && (u.type == "regular" || u.type == "cavalry" || u.type == "mercenary")) {
 	      unfortified_units++;
 	    }
 	  }
+} catch (err) {
+  // exit if loser or spacekey "unidentified"
+  console.log("#");
+  console.log("#");
+  console.log("# PLEASE REPORT");
+  console.log("#");
+  console.log("#");
+  console.log("edge case in post_field_battle_player_evaluate_retreat hit...");
+  return 1;
+}
 
 	  if (unfortified_units == 0) {
 	    return 1;
@@ -14597,8 +14629,9 @@ try {
 	  //
 	  if (faction_controlling_space == his_self.returnControllingPower(faction)) { return 1; }
 
-	  let luis = this.returnFactionLandUnitsInSpace(faction, spacekey, 1);
-	  if (luis == 0) {
+	  let fluis = this.returnFactionLandUnitsInSpace(faction, spacekey, 1);
+
+	  if (fluis == 0) {
 	    for (let f in space.units) {
 	      let cf = his_self.returnControllingPower(f);
 	      if (cf == faction) {

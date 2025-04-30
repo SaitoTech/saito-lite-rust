@@ -284,7 +284,7 @@ class HereIStand extends GameTemplate {
 	if (game_mod.game.state.henry_viii_sickly_edward == 1 || game_mod.game.state.henry_viii_edward_added == 1 || game_mod.game.state.henry_viii_healthy_edward == 1) {
  	  base += 5;
         } else {
-	  if (game_mod.game.state.henry_viii_elizabeth_added == 1) {
+	  if (game_mod.game.state.henry_viii_elizabeth_added == 1 || game_mod.game.state.henry_viii_add_elizabeth == 1) {
 	    base += 2;
 	  }
 	}
@@ -12619,13 +12619,12 @@ if (space.key == "milan") {
 	  }
 
 	  if (!anything_left) {
-            for (let i = 0; i < space.units[f].length; i++) {
-              his_self.captureLeader(faction, respondent, spacekey, space.units[f][i]);
-              space.units[f].splice(i, 1);
+            for (let i = 0; i < space.units[faction].length; i++) {
+              his_self.captureLeader(faction, respondent, spacekey, space.units[faction][i]);
+              space.units[faction].splice(i, 1);
               i--;
             }
 
-	    //let who_gets_control = his_self.returnAllyOfMinorPower(space.home);
 	    let who_gets_control = space.home;
 
 	    //
@@ -13577,7 +13576,7 @@ if (space.key == "milan") {
 	  let space = his_self.game.spaces[his_self.game.state.knights_of_st_john];
 
 	  let connected = false;
-	  if (!his_self.isBesieged(space)) {
+	  if (!space.besieged) {
             for (let i = 0; i < space.ports.length; i++) {
               let sea = his_self.game.navalspaces[space.ports[i]];
               for (let z = 0; z < sea.ports.length; z++) {
@@ -15800,6 +15799,7 @@ if (space.key == "milan") {
 		  // we can switch if we want now
 		  if (action == "switch") { sswf_function(); return; }
 
+                  his_self.addMove("maybe_evacuate_or_capture_leaders\t"+action+"\t"+spacekey);
 		  his_self.addMove(`unbesiege_if_empty\t${spacekey}\t${action}`);
 		  for (let z = 0; z < his_self.game.spaces[spacekey].units[action].length; z++) {
 		    if (his_self.game.spaces[spacekey].units[action][z].type === "mercenary") {
@@ -15811,6 +15811,7 @@ if (space.key == "milan") {
 		});
 
 	      } else {
+                his_self.addMove("maybe_evacuate_or_capture_leaders\t"+factions[0]+"\t"+spacekey);
 		his_self.addMove(`unbesiege_if_empty\t${spacekey}\t${factions[0]}`);
 		for (let z = 0; z < his_self.game.spaces[spacekey].units[factions[0]].length; z++) {
 		  if (his_self.game.spaces[spacekey].units[factions[0]][z].type === "mercenary") {
@@ -17152,7 +17153,7 @@ console.log("DELETING Z: " + z);
     if (this.returnFactionLandUnitsInSpace(faction, space, 1) > 0) { return 1; }
 
     //
-    // we can move into spaces controlled by powers we are at war with
+    // we can move into spaces controlled by minor powers we control
     //
     if (this.isMinorPower(cf)) { cf = this.returnControllingPower(cf); }
     if (cf == faction) { return 1; }
@@ -17164,9 +17165,29 @@ console.log("DELETING Z: " + z);
 
       //
       // ... we can normally move into this space, unless there are besieging units
-      // with whom we are not allied. so check with each faction
+      // with whom we are not allied, or other powers with whom we are not at war?
+      //
+      // so check with each faction
       //
       for (let f in space.units) {
+
+	//
+	// if this faction is an ally of the controlling space
+	//
+	if (this.areAllies(f, cf)) {
+
+	  //
+	  // ... and it has units in the space
+	  //
+	  let fluis = this.returnFactionLandUnitsInSpace(f, space.key);
+	  if (fluis > 0) {
+
+	    //
+	    // ... then we need to be enemies with them to move in
+	    //
+	    if (!this.areEnemies(f, faction)) { return 0; }
+	  }
+	}
 
 	//
 	// ... if this faction is an enemy of the controlling space
@@ -17178,7 +17199,6 @@ console.log("DELETING Z: " + z);
 	  //
 	  let fluis = this.returnFactionLandUnitsInSpace(f, space.key);
 	  if (fluis > 0) {
-
 
 	    //
 	    // ... then we need to be allies with them to move in
@@ -30689,8 +30709,8 @@ try {
 //
 // TEST / HACK -- control hits / adjust hits here
 //
-//attacker_hits = 2;
-//defender_hits = 2;
+attacker_hits = 4;
+defender_hits = 4;
 
 	  //
 	  // we have now rolled all of the dice that we need to roll at this stage
@@ -31866,6 +31886,7 @@ try {
 
 	if (mv[0] === "field_battle_continue") {
 
+
           this.game.queue.splice(qe, 1);
 
 	  let his_self = this;
@@ -31908,7 +31929,6 @@ try {
 	    }
 	  }
 
-
 	  //
 	  // calculate units remaining
 	  //
@@ -31936,16 +31956,30 @@ try {
 	  // capture stranded leaders
 	  //
 	  if (his_self.game.state.field_battle.attacker_land_units_remaining == 0) {
-	    for (let f in his_self.game.state.field_battle.faction_map) {
-	      if (his_self.game.state.field_battle.faction_map[f] == his_self.game.state.field_battle.attacker_faction) {
-	        for (let i = 0; i < space.units[f].length; i++) {
-	          his_self.captureLeader(his_self.game.state.field_battle.defender_faction, his_self.game.state.field_battle.attacker_faction, mv[1], space.units[f][i]);
-		  space.units[f].splice(i, 1);
-		  i--;
+	    let purge_attacking_leaders = true;
+	    // unless relief siege and "defenders" are all destroyed...
+	    if (his_self.game.state.field_battle.defender_land_units_remaining == 0) {
+	      for (let key in space.units) {
+		if (space.units[key].length > 0) {
+	          if (his_self.returnPlayerCommandingFaction(his_self.returnFactionControllingSpace(his_self.game.state.field_battle.spacekey)) == his_self.returnPlayerCommandingFaction(key)) {
+		    purge_attacking_leaders = false;
+		  }
 		}
 	      }
 	    }
+	    if (purge_attacking_leaders == true) {
+	      for (let f in his_self.game.state.field_battle.faction_map) {
+	        if (his_self.game.state.field_battle.faction_map[f] == his_self.game.state.field_battle.attacker_faction) {
+	          for (let i = 0; i < space.units[f].length; i++) {
+	            his_self.captureLeader(his_self.game.state.field_battle.defender_faction, his_self.game.state.field_battle.attacker_faction, mv[1], space.units[f][i]);
+		    space.units[f].splice(i, 1);
+		    i--;
+		  }
+	        }
+	      }
+	    }
 	  }
+
 	  if (his_self.game.state.field_battle.defender_land_units_remaining == 0) {
 	    for (let f in his_self.game.state.field_battle.faction_map) {
 	      if (his_self.game.state.field_battle.faction_map[f] == his_self.game.state.field_battle.defender_faction) {
@@ -32094,9 +32128,14 @@ try {
 	      // attackers lose
 	      //
 	      if (his_self.game.state.field_battle.attacker_hits < his_self.game.state.field_battle.defender_hits) {
-                this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+f+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
-                this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+his_self.game.state.field_battleattacker_faction+"\t"+space.key);
-		this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.defender_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.attacker_faction)+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key+"\trelief_siege");
+		//
+		// if they murdered everyone else, no need to retreat...
+		//
+	  	if (do_any_defender_units_remain) {
+                  this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+f+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
+                  this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
+		  this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.defender_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.attacker_faction)+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key+"\trelief_siege");
+	        }
 	      }
 
             } else {
@@ -32135,7 +32174,6 @@ try {
 	      }
 	    }
           }
-
 
           if (winner === his_self.game.state.field_battle.attacker_faction) {
 
@@ -34255,6 +34293,7 @@ try {
           let winner = mv[2];
           let spacekey = mv[3];
 	  let anyone_but_loser_here = false;
+	  let any_winners_survive = false;
 
 	  let space = this.game.spaces[spacekey];
 
@@ -34269,7 +34308,9 @@ try {
 	  //	
 	  // skip the purge if no-one else is here...	
 	  //	
-	  if (anyone_but_loser_here == false) { return 1; }
+	  if (anyone_but_loser_here == false) {
+		return 1;
+	  }
 
 
 	  if (space.units[loser].length > 0) {
@@ -34438,18 +34479,29 @@ try {
 
           let loser = mv[1];
           let spacekey = mv[2];
+	  let unfortified_units = 0;
+	  let fortified_units = 0;
 
+try {
 	  //
 	  // auto-skip if there are < 4 loser units and they are fortified
 	  //
-	  let unfortified_units = 0;
-	  let fortified_units = 0;
 	  for (let i = 0; i < this.game.spaces[spacekey].units[loser].length; i++) {
 	    let u = this.game.spaces[spacekey].units[loser][i];
 	    if (u.besieged == 0 && (u.type == "regular" || u.type == "cavalry" || u.type == "mercenary")) {
 	      unfortified_units++;
 	    }
 	  }
+} catch (err) {
+  // exit if loser or spacekey "unidentified"
+  console.log("#");
+  console.log("#");
+  console.log("# PLEASE REPORT");
+  console.log("#");
+  console.log("#");
+  console.log("edge case in post_field_battle_player_evaluate_retreat hit...");
+  return 1;
+}
 
 	  if (unfortified_units == 0) {
 	    return 1;
@@ -38643,8 +38695,9 @@ try {
 	  //
 	  if (faction_controlling_space == his_self.returnControllingPower(faction)) { return 1; }
 
-	  let luis = this.returnFactionLandUnitsInSpace(faction, spacekey, 1);
-	  if (luis == 0) {
+	  let fluis = this.returnFactionLandUnitsInSpace(faction, spacekey, 1);
+
+	  if (fluis == 0) {
 	    for (let f in space.units) {
 	      let cf = his_self.returnControllingPower(f);
 	      if (cf == faction) {
