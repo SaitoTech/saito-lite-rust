@@ -8733,13 +8733,12 @@ if (space.key == "milan") {
 	  }
 
 	  if (!anything_left) {
-            for (let i = 0; i < space.units[f].length; i++) {
-              his_self.captureLeader(faction, respondent, spacekey, space.units[f][i]);
-              space.units[f].splice(i, 1);
+            for (let i = 0; i < space.units[faction].length; i++) {
+              his_self.captureLeader(faction, respondent, spacekey, space.units[faction][i]);
+              space.units[faction].splice(i, 1);
               i--;
             }
 
-	    //let who_gets_control = his_self.returnAllyOfMinorPower(space.home);
 	    let who_gets_control = space.home;
 
 	    //
@@ -9691,7 +9690,7 @@ if (space.key == "milan") {
 	  let space = his_self.game.spaces[his_self.game.state.knights_of_st_john];
 
 	  let connected = false;
-	  if (!his_self.isBesieged(space)) {
+	  if (!space.besieged) {
             for (let i = 0; i < space.ports.length; i++) {
               let sea = his_self.game.navalspaces[space.ports[i]];
               for (let z = 0; z < sea.ports.length; z++) {
@@ -11914,6 +11913,7 @@ if (space.key == "milan") {
 		  // we can switch if we want now
 		  if (action == "switch") { sswf_function(); return; }
 
+                  his_self.addMove("maybe_evacuate_or_capture_leaders\t"+action+"\t"+spacekey);
 		  his_self.addMove(`unbesiege_if_empty\t${spacekey}\t${action}`);
 		  for (let z = 0; z < his_self.game.spaces[spacekey].units[action].length; z++) {
 		    if (his_self.game.spaces[spacekey].units[action][z].type === "mercenary") {
@@ -11925,6 +11925,7 @@ if (space.key == "milan") {
 		});
 
 	      } else {
+                his_self.addMove("maybe_evacuate_or_capture_leaders\t"+factions[0]+"\t"+spacekey);
 		his_self.addMove(`unbesiege_if_empty\t${spacekey}\t${factions[0]}`);
 		for (let z = 0; z < his_self.game.spaces[spacekey].units[factions[0]].length; z++) {
 		  if (his_self.game.spaces[spacekey].units[factions[0]][z].type === "mercenary") {
