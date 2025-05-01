@@ -65,7 +65,9 @@ class Main {
 				document.querySelector(`.blocktable .utxo .blockslot${blockslot}`).innerHTML = (block.utxo).toLocaleString();
 			}
 
-			document.querySelector(`.blocktable .total_supply .blockslot${blockslot}`).innerHTML = (block.total_supply).toLocaleString();
+			if (typeof block.total_supply != 'undefined' && block.total_supply != null){
+				document.querySelector(`.blocktable .total_supply .blockslot${blockslot}`).innerHTML = (block.total_supply).toLocaleString();
+			}
 		}
 
 		await this.renderBalance();
