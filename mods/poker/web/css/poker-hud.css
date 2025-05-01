@@ -1,6 +1,6 @@
 .status ul li.option {
     /*height: 10rem;*/
-    width: 9rem;
+    max-width: 9rem;
     font-size: 1.8rem;
     display: flex;
     align-items: center;
@@ -10,6 +10,7 @@
     flex-direction: column;
     gap: 0.1rem;
     list-style: none;
+    border-radius: 1rem;
 }
 
 .status ul {
@@ -104,3 +105,9 @@ span.raise_option img {
     border: 1px solid #fff;
     cursor: pointer;
 }
+
+.textchoice {
+    list-style: none;
+    padding: 1rem 2rem;
+    cursor: pointer;
+  }

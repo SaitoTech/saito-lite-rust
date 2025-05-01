@@ -16,7 +16,7 @@
   background-size: contain;
   background-repeat: no-repeat;
   border: 1px solid #aaa8;
-  background-color: #2224;
+  background-color: #0008;
   padding: 1rem 1rem 1rem 8rem;
   box-shadow: 5px 5px 3px #0008;
 }
@@ -24,11 +24,11 @@
 .pot::after {
   content: "POT";
   position: absolute;
-  top: 3.7rem;
+  top: 50%;
   left: 3.5rem;
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: bolder;
-  transform: translate(-50%, -50%);
+  transform: translate(-53%, -48%);
 }
 
 .potholder {
