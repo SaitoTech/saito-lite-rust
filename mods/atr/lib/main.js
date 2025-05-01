@@ -60,7 +60,11 @@ class Main {
 			document.querySelector(`.blocktable .hasGoldenTicket .blockslot${blockslot}`).innerHTML = (block.hasGoldenTicket).toLocaleString();
 			document.querySelector(`.blocktable .treasury .blockslot${blockslot}`).innerHTML = (block.treasury).toLocaleString();
 			document.querySelector(`.blocktable .graveyard .blockslot${blockslot}`).innerHTML = (block.graveyard).toLocaleString();
-			document.querySelector(`.blocktable .utxo .blockslot${blockslot}`).innerHTML = (block.utxo).toLocaleString();
+			
+			if (typeof block.utxo != 'undefined' && block.utxo != null){
+				document.querySelector(`.blocktable .utxo .blockslot${blockslot}`).innerHTML = (block.utxo).toLocaleString();
+			}
+
 			document.querySelector(`.blocktable .total_supply .blockslot${blockslot}`).innerHTML = (block.total_supply).toLocaleString();
 		}
 
