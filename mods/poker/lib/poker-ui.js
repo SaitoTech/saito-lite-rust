@@ -112,7 +112,7 @@ class PokerUI {
       return;
     }
     if (player == this.game.player) {
-      this.playerbox.updateBody(`<div class="status"></div>`, player);
+      this.playerbox.updateBody(`<div class="status" id="status"></div><div class="controls" id="controls"></div>`, player);
       this.updateStatus(msg);
     } else {
       this.playerbox.updateBody(msg, player);
@@ -301,21 +301,21 @@ class PokerUI {
       return;
     }
 
-    let html = '<div class="status-menu">Your turn:</div><ul>';
-    html += '<li class="option" id="fold"><img src="/poker/img/fold_icon.svg" alt="fold"><span>fold</span></li>';
+    this.displayPlayerNotice(`Your turn:`, this.game.player);
+
+    let html = '<div class="option" id="fold"><img src="/poker/img/fold_icon.svg" alt="fold"><span>fold</span></div>';
 
     if (match_required > 0) {
-      html += `<li class="option" id="call"><img src="/poker/img/call_icon.svg" alt="call"><span>call: <span class="call-wager">${this.formatWager(match_required)}</span></span></li>`;
+      html += `<div class="option" id="call"><img src="/poker/img/call_icon.svg" alt="call"><span>call: <span class="call-wager">${this.formatWager(match_required)}</span></span></div>`;
     } else {
       // we don't NEED to match
-      html += '<li class="option" id="check"><img src="/poker/img/check_icon.svg" alt="check"><span>check</span></li>';
+      html += '<div class="option" id="check"><img src="/poker/img/check_icon.svg" alt="check"><span>check</span></div>';
     }
     if (can_raise) {
-      html += `<li class="option" id="raise"><img src="/poker/img/raise_icon.svg" alt="raise"><span>raise</span></li>`;
+      html += `<div class="option" id="raise"><img src="/poker/img/raise_icon.svg" alt="raise"><span>raise</span></div>`;
     }
-    html += '</ul>';
 
-    this.updateStatus(html);
+    this.updateControls(html);
 
     $('.option').off();
     $('.option').on('click', async function () {
@@ -325,22 +325,25 @@ class PokerUI {
         let credit_remaining =
           poker_self.game.state.player_credit[poker_self.game.player - 1] - match_required;
 
-        html = `<div class="menu-player">`;
+        html = `<div class="option raise_option" id="0"><img src="/poker/img/cancel_raise_icon.svg" alt="cancel"></div>`;
         if (match_required > 0) {
-          html += `match ${poker_self.formatWager(match_required)} and raise `;
-        } else {
-        }
-        html += `</div><div class="raise_options_title">Raise <span class="option raise_option" id="0"><img src="/poker/img/cancel_raise_icon.svg" alt="cancel"></span></div><ul>`;
+          html += `match ${poker_self.formatWager(match_required)} and  `;
+        } 
+        html += `raise: `;
         
+        poker_self.updateStatus(html);
+
         let max_raise = Math.min(credit_remaining, smallest_stack);
+
+        html = "";
 
         for (let i = 0; i < 4; i++) {
           let this_raise = poker_self.game.state.last_raise + i * poker_self.game.state.last_raise;
 
           if (max_raise > this_raise) {
-            html += `<li class="option raise_option" id="${this_raise + match_required}"><img src="/poker/img/raise_value_icon.svg" alt="raise"><span>${
+            html += `<div class="option raise_option" id="${this_raise + match_required}"><img src="/poker/img/raise_value_icon.svg" alt="raise"><span>${
               mobileToggle ? ' ' : ''
-            }${poker_self.formatWager(this_raise)}</span></li>`;
+            }${poker_self.formatWager(this_raise, false)}</span></div>`;
           } else {
             break;
           }
@@ -349,21 +352,12 @@ class PokerUI {
         //html += '</ul><ul>';
 
         //Always give option for all in
-        html += `<li class="option raise_option" id="${max_raise + match_required}"><img src="/poker/img/raise_allin_icon.svg" alt="raise"><span>
-                  ${poker_self.formatWager(max_raise)}
-                  <div class="raise_allin_text">(all in${
-                    smallest_stack_player !== poker_self.game.player - 1
-                      ? ` for ${poker_self.game.state.player_names[smallest_stack_player]}`
-                      : ''
-                  })</div></li>`;
-/*
-        html += `<li class="option raise_option" id="0"><img src="/poker/img/cancel_raise_icon.svg" alt="cancel"><span>${
-                  mobileToggle ? '' : ''
-                }</span></li>`;
-*/          
+        html += `<div class="option raise_option all-in" id="${max_raise + match_required}"><img src="/poker/img/raise_allin_icon.svg" alt="raise">
+                  ${poker_self.formatWager(max_raise, false)}</span>
+                  </div>`;
 
-        html += '</ul>';
-        poker_self.updateStatus(html);
+
+        poker_self.updateControls(html);
 
         $('.option').off();
         $('.option').on('click', function () {
