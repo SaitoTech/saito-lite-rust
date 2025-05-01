@@ -84,12 +84,6 @@ class Stun extends ModTemplate {
 		app.connection.on('stun-connection-failed', async (peerId, callback) => {
 			let c = await sconfirm(`STUN: connection failed -- ${app.keychain.returnUsername(peerId)}. Keep trying?`);
 			if (c) {
-				for (let i = 0; i < this.noloop.length; i++) {
-					if (this.noloop[i] == peerId){
-						this.noloop.splice(i, 1);
-						break;
-					}
-				}
 				this.createPeerConnection(peerId, callback);
 			} else {
 				// Notify the module UI that we have given up connecting
@@ -102,12 +96,6 @@ class Stun extends ModTemplate {
 			console.log('STUN: connection timeout', peerId);
 			let c = await sconfirm(`STUN: connection timed out -- ${app.keychain.returnUsername(peerId)}. Keep trying?`);
 			if (c) {
-				for (let i = 0; i < this.noloop.length; i++) {
-					if (this.noloop[i] == peerId){
-						this.noloop.splice(i, 1);
-						break;
-					}
-				}
 				this.createPeerConnection(peerId, callback);
 			} else {
 				// Notify the module UI that we have given up connecting
@@ -427,6 +415,13 @@ class Stun extends ModTemplate {
 			} else {
 				console.log('STUN reconnection attempt failed after two tries, give up!');
 				this.app.connection.emit(pathway, peerId, callback);
+			
+				for (let i = 0; i < this.noloop.length; i++) {
+					if (this.noloop[i] == peerId){
+						this.noloop.splice(i, 1);
+						break;
+					}
+				}
 			}
 	}
 
@@ -437,11 +432,6 @@ class Stun extends ModTemplate {
 
 		if (peerId === this.publicKey) {
 			console.log('STUN: Attempting to create a peer Connection with myself!');
-			return 0;
-		}
-
-		if (this.noloop.includes(peerId)){
-			console.warn("STUN: refuse to create connection with " + peerId);
 			return 0;
 		}
 
@@ -516,7 +506,7 @@ class Stun extends ModTemplate {
 		// Handle ICE candidates
 		peerConnection.onicecandidate = async (event) => {
 			if (event.candidate) {
-				console.log('receiving ice candidate for ', peerId, event.candidate);
+				console.log('receiving ice candidate for ', peerId/*, event.candidate*/);
 
 				let data = {
 					module: 'Stun',
