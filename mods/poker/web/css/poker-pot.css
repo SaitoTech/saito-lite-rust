@@ -70,8 +70,13 @@
 .pot-details-overlay .saito-table-row {
     grid-template-columns: 1fr 1fr min-content;
     margin: 1rem 0;
+    grid-gap: 2rem;
     align-items: center;
     background: #CCCB;
+}
+
+.pot-details-overlay.crypto-stake .saito-table-row {
+  grid-template-columns: 1fr 1fr min-content 1fr;
 }
 
 .pot-details-overlay .saito-table-row:hover{

@@ -132,7 +132,7 @@ class PokerUI {
     }else{
       amount = this.game.state.player_credit[player - 1];
 
-      let html = `<div class="poker-player-stake">${this.game.state.player_pot[player - 1]}</div>`;
+      let html = `<div class="poker-player-stake"><span class="stake-in-chips">${this.game.state.player_pot[player - 1]}</span></div>`;
       // If we show player-pot outside the player box
       this.playerbox.replaceGraphics(html, ".poker-player-stake", player); 
     }
@@ -244,8 +244,6 @@ class PokerUI {
     }
 
     let poker_self = this;
-    let mobileToggle =
-      window.matchMedia('(orientation: landscape)').matches && window.innerHeight <= 600;
 
     //
     // cancel raise kicks us back
@@ -306,7 +304,7 @@ class PokerUI {
     let html = '<div class="option" id="fold"><img src="/poker/img/fold_icon.svg" alt="fold"><span>fold</span></div>';
 
     if (match_required > 0) {
-      html += `<div class="option" id="call"><img src="/poker/img/call_icon.svg" alt="call"><span>call: <span class="call-wager">${this.formatWager(match_required)}</span></span></div>`;
+      html += `<div class="option" id="call"><img src="/poker/img/call_icon.svg" alt="call"><span>call <span class="call-wager">(${this.formatWager(match_required, false)})</span></span></div>`;
     } else {
       // we don't NEED to match
       html += '<div class="option" id="check"><img src="/poker/img/check_icon.svg" alt="check"><span>check</span></div>';
@@ -341,9 +339,12 @@ class PokerUI {
           let this_raise = poker_self.game.state.last_raise + i * poker_self.game.state.last_raise;
 
           if (max_raise > this_raise) {
-            html += `<div class="option raise_option" id="${this_raise + match_required}"><img src="/poker/img/raise_value_icon.svg" alt="raise"><span>${
-              mobileToggle ? ' ' : ''
-            }${poker_self.formatWager(this_raise, false)}</span></div>`;
+            html += `<div class="option raise_option" id="${this_raise + match_required}"><img src="/poker/img/raise_value_icon.svg" alt="raise">`;
+            html += poker_self.formatWager(this_raise, false);
+            if (poker_self.game.stake){
+              html += `<div class="crypto-hover-raise">${poker_self.convertChipsToCrypto(this_raise)} <span class="smaller-font"> ${poker_self.game.crypto}</span></div>`
+            }
+            html += "</div>";
           } else {
             break;
           }
@@ -352,9 +353,12 @@ class PokerUI {
         //html += '</ul><ul>';
 
         //Always give option for all in
-        html += `<div class="option raise_option all-in" id="${max_raise + match_required}"><img src="/poker/img/raise_allin_icon.svg" alt="raise">
-                  ${poker_self.formatWager(max_raise, false)}</span>
-                  </div>`;
+        html += `<div class="option raise_option all-in" id="${max_raise + match_required}"><img src="/poker/img/raise_allin_icon.svg" alt="raise">`;
+        html += poker_self.formatWager(max_raise, false);
+        if (poker_self.game.stake){
+          html += `<div class="crypto-hover-raise">${poker_self.convertChipsToCrypto(max_raise)} <span class="smaller-font"> ${poker_self.game.crypto}</span></div>`
+        }
+        html += `</div>`;
 
 
         poker_self.updateControls(html);

@@ -21,7 +21,7 @@
 .controls {
   position: absolute;
   top: 100%;
-  width: 100%;
+  min-width: 100%;
   left: 50%;
   transform: translateX(-50%);
   overflow: visible;
@@ -31,7 +31,13 @@
   width: unset;
 }
 
-.controls div.option:hover {
+.controls ul li {
+    background-color: unset;
+    border-top: unset;
+    height: 6rem;
+}
+
+.controls div.option:hover, .controls ul li:hover {
   background-color: #0005;
 }
 
@@ -61,6 +67,7 @@
   top: 50%;
   left: -0.35rem;
   transform: translateY(-50%);
+  cursor: pointer;
 }
 
 .status .option.raise_option img {
