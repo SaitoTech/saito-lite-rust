@@ -346,6 +346,7 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 	    //
 	    // Turkey enters the war on the side of the Central Powers
 	    //
+	    paths_self.convertCountryToPower("turkey", "central");
 	    this.game.state.events.turkey = 1;
 	    this.addTrench("giresun", 1);
 	    this.addTrench("baghdad", 1);
@@ -445,8 +446,12 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 		key != "ceubox"
 	    ) {
 	      let power = this.returnPowerOfUnit(this.game.spaces[key].units[0]);
+	      let ckey = this.game.spaces[key].units[0].ckey.toLowerCase();
+
 	      if (power == "central" || power == "allies") {
-		if (!this.checkSupplyStatus(power, key)) {
+
+		if (!this.checkSupplyStatus(ckey, key)) {
+
 		  //
 		  // eliminate armies and corps
 		  //
@@ -582,6 +587,10 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 	  let player = this.returnPlayerOfFaction(faction);
 	  let name = this.returnPlayerName(faction);
 	  let hand = this.returnPlayerHand();
+
+
+	  this.removeOverstackedUnits();
+	  this.checkSupplyStatus();
 
 	  this.unbindBackButtonFunction();
 
@@ -1017,6 +1026,11 @@ try {
 	  if (this.game.spaces[key].units.length == 0 && this.game.spaces[key].fort > 0) { this.game.state.combat.unoccupied_fort = 1; }
 
 	  //
+	  // update log
+	  //
+	  this.updateLog(this.returnFactionName(this.game.state.combat.attacking_faction) + " attacks " + this.game.spaces[key].name);
+
+	  //
 	  // Great Retreat allows RU units to retreat
 	  //
 	  if (this.game.state.events.great_retreat == 1 && this.game.state.events.great_retreat_used != 1) {
@@ -1205,6 +1219,8 @@ console.log(JSON.stringify(this.game.state.cc_allies_active));
 
 	  if (this.game.player != this.returnPlayerOfFaction(this.game.state.combat.attacking_faction)) {
 	    this.playerSelectDefenderCombatCards();
+	  } else {
+	    this.updateStatus("Defender Selecting Combat Cards...");
 	  }
 
 	  return 0;
@@ -1218,6 +1234,8 @@ console.log(JSON.stringify(this.game.state.cc_allies_active));
 
 	  if (this.game.player == this.returnPlayerOfFaction(this.game.state.combat.attacking_faction)) {
 	    this.playerSelectAttackerCombatCards();
+	  } else {
+	    this.updateStatus("Attacker Selecting Combat Cards...");
 	  }
 
 	  return 0;
@@ -1661,18 +1679,20 @@ alert("Fort Survives Assault");
 	  }
 
 	  if (this.game.state.combat.winner == "defender") {
-	    this.updateLog("Defender Wins, no retreat...");
+	    //this.updateLog("Defender Wins, no retreat...");
 	    return 1;
 	  }
 
 	  if (this.game.state.combat.winner == "none") {
-	    this.updateLog("Mutual Loss, no retreat...");
+	    //this.updateLog("Mutual Loss, no retreat...");
 	    return 1;
 	  }
 
 	  for (let i = 0; i < attacker_units.length; i++) {
-	    if (attacker_units[i].key.indexOf("army") > 0 && attacker_units[i].damaged == false) {
-	      does_defender_retreat = true;
+	    if (attacker_units[i]) {
+	      if (attacker_units[i].type == "army" && attacker_units[i].damaged == false) {
+	        does_defender_retreat = true;
+	      }
 	    }
 	  }
 
@@ -1708,16 +1728,15 @@ alert("Fort Survives Assault");
 	  }
 
 	  if (this.game.state.combat.winner == "defender") {
-	    this.updateLog("Defender Wins, no advance...");
+	    //this.updateLog("Defender Wins, no advance...");
 	    return 1;
 	  }
 
 	  if (this.game.state.combat.winner == "none") {
-	    this.updateLog("Mutual Loss, no advance...");
+	    //this.updateLog("Mutual Loss, no advance...");
 	    return 1;
 	  }
 
-console.log("caa 3");
 	  //
 	  // retreat was cancelled for some reason...
 	  //
@@ -2133,6 +2152,11 @@ console.log("caa 3");
 	    this.game.spaces[key].units[idx].moved = 1;
 	  } else {
 	    if (!this.game.spaces[key].trench) { this.game.spaces[key].trench = 0; }
+	    if (this.game.spaces[key].trench == 0) { 
+	      this.updateLog(this.returnName(faction) + " entrenches in " + this.game.spaces[key].name);
+	    } else {
+	      this.updateLog(this.returnName(faction) + " entrenches deeper in " + this.game.spaces[key].name);
+	    }
 	    this.game.spaces[key].trench++;
 	    if (this.game.spaces[key].trench > 2) { this.game.spaces[key].trench = 2; }
 	  }

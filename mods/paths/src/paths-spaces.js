@@ -1,4 +1,11 @@
 
+  convertCountryToPower(country="", power="allies") {
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].country == country) {
+	this.game.spaces[key].control = power;
+      }
+    }
+  }
 
   returnArrayOfSpacekeysForPlacingReinforcements(country="") {
 
@@ -188,14 +195,63 @@
 
 
 
-  checkReverseSupplyStatus(faction, spacekey) {
-    return this.checkSupplyStatus(faction, spacekey);
-  }
+
+  checkSupplyStatus(faction="", spacekey="") {
+
+let trace_supply = 0;
+if (spacekey == "antwerp") {
+  console.log("^");
+  console.log("^");
+  console.log("^");
+  console.log("^");
+  console.log("^");
+  console.log("^");
+  console.log("^");
+  console.log("^");
+  trace_supply = 1;
+}
 
 
-  checkSupplyStatus(faction, spacekey) {
+    //
+    // if we call this function generically, it means we want
+    // to check the supply status of every unit on the board
+    // and update their visuals.
+    //
+    if (faction == "" && spacekey == "") {
+      for (let key in this.game.spaces) {
+	if (this.game.spaces[key].oos == 1) {
+	  this.game.spaces[key].oss = 0;
+	  this.displaySpace(key);
+	}
+      }
+
+      for (let key in this.game.spaces) {
+	if (key == "crbox" || key == "arbox" || key == "ceubox" || key == "aeubox") { continue; }
+	if (this.game.spaces[key].units.length > 0) {
+	  let space = this.game.spaces[key];
+	  let supplied = false;
+	  for (let z = 0; z < space.units.length; z++) {
+	    let u = space.units[z];
+	    if (this.checkSupplyStatus(u.ckey.toLowerCase(), key)) {
+	      z = space.units.length+1;
+	      supplied = true;
+	    }
+	  }
+	  if (supplied == false) {
+	    let obj = document.querySelector(`.${key}`);
+	    if (!obj.classList.contains("oos-highlight")) { 
+	      obj.classList.add("oos-highlight");
+	      this.game.spaces[key].oos = 1;
+	      this.displaySpace(key);
+	    }
+	  }
+	}
+      }
+      return;
+    }
 
     this.game.spaces[spacekey].supply = {};
+    this.game.spaces[spacekey].oos = 0;
 
     let ports_added = false;
     let pending = [spacekey];
@@ -203,9 +259,9 @@
     let sources = [];
     let controlling_faction = "allies";
 
-    if (faction == "germany") { sources = ["essen", "breslau"]; controlling_faction = "central"; }
-    if (faction == "cp" || faction == "central") { sources = ["essen","breslau","sofia","constantinople"]; controlling_faction = "central"; }
-    if (faction == "france") { sources = ["london"]; }
+    if (faction == "cp" || faction == "ge" || faction == "austria" || faction == "germany" || faction == "ah" || faction == "central") { sources = ["essen","breslau","sofia","constantinople"]; controlling_faction = "central"; }
+    if (faction == "be" || faction == "belgium") { sources = ["london"]; }
+    if (faction == "fr" || faction == "france") { sources = ["london"]; }
     if (faction == "ap" || faction == "allies") { sources = ["london"]; }
     if (faction == "ru" || faction == "russia") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
     if (faction == "ro" || faction == "romania") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
@@ -213,7 +269,15 @@
       sources = ["moscow","petrograd","kharkov","caucasus","london"]; 
       if (this.returnControlOfSpace("salonika") == "allies") { sources["sb"].push("salonika"); }
     }
+    if (sources.length == 0) {
+      sources = ["london"];
+    }
     let ports = this.returnFriendlyControlledPorts(controlling_faction);
+
+if (trace_supply) {
+console.log("supply sources: " + JSON.stringify(sources));
+console.log("controlling faction: " + controlling_faction);
+}
 
     while (pending.length > 0) {
 
@@ -222,7 +286,10 @@
       //
       // if spacekey is a source we have a supply-line
       //
-      if (sources.includes(current)) { return 1; }
+      if (sources.includes(current)) {
+	this.displaySpace(spacekey);
+	return 1;
+      }
 
       //
       // mark space as examined
@@ -234,11 +301,46 @@
       //
       for (let n in this.game.spaces[current].neighbours) {
         let s = this.game.spaces[current].neighbours[n];
+if (trace_supply) {
+console.log("neighbour: " + s);
+}
         if (!examined[s]) {
 	  if (this.returnControlOfSpace(s) == controlling_faction) {
-	    pending.push(s); 
+	    //
+	    // only if not besieged
+	    //
+	    if (this.game.spaces[s].fort > 0) {
+	      if (this.game.spaces[s].units.length > 0) {
+		if (this.returnPowerOfUnit(this.game.spaces[s].units[0]) != controlling_faction) {
+console.log("bad: " + JSON.stringify(this.game.spaces[s].units[0]));
+		  //
+		  // besieging unit blocking supply channel
+		  //
+		} else {
+if (trace_supply) { console.log("adding 1 " + s); }
+	          pending.push(s); 
+		}
+	      } else {
+if (trace_supply) { console.log("adding 2 " + s); }
+	        pending.push(s); 
+	      }
+	    } else {
+if (trace_supply) { console.log("adding 3 " + s); }
+	      pending.push(s); 
+	    }
+	  } else {
+	    if (this.game.spaces[s].fort > 0) {
+	      if (this.game.spaces[s].units.length > 0) {
+		//
+		// we can still trace supply through besieged spaces with our units
+		//
+		if (this.returnPowerOfUnit(this.game.spaces[s].units[0]) == controlling_faction) {
+if (trace_supply) { console.log("adding 4 " + s); }
+	    	  pending.push(s); 
+		}
+	      }
+	    }
 	  }
-
 	}
       }
 
@@ -262,6 +364,18 @@
       }
 
     }
+
+
+    //
+    // exiting means no supply
+    //
+    if (this.game.spaces[spacekey].units.length > 0) {
+      let obj = document.querySelector(`.${spacekey}`);
+      obj.classList.add("oos-highlight");
+      this.game.spaces[spacekey].oos = 1;
+      this.displaySpace(spacekey);
+    }
+
 
     return 0;
   }
@@ -363,7 +477,7 @@
     return count;
   }
 
-  returnSpacesWithinHops(source, limit=0, passthrough_func=null) {
+  returnSpacesWithinHops(source, limit=0, passthrough_func=null, unit=null) {
 
     let paths_self = this;
 
@@ -391,11 +505,31 @@
 	if (passthrough) {
           for (let z = 0; z < paths_self.game.spaces[news[i]].neighbours.length; z++) {
             let n = paths_self.game.spaces[news[i]].neighbours[z];
-            if (!old.includes(n)) {
-              if (!news.includes(n)) {
-                if (!newer.includes(n)) {
-                  if (n !== source.key) {
-	            newer.push(n);
+
+	    //
+	    // we submit unit when calculating movement, so that we can 
+	    // determine if units can move between depots etc.
+	    //
+	    let restricted_movement = false;
+	    if (unit != null) {
+	      let lim = paths_self.game.spaces[news[i]].limits;
+	      if (lim) {
+	        for (let z = 0; z < lim.length; z++) {
+		  if (lim[z][n]) {
+		    restricted_movement = true;
+		    if (lim[z][n] == unit.ckey) { restricted_movement = false; }
+		  }
+		}
+	      }
+	    }
+
+	    if (restricted_movement == false) {
+              if (!old.includes(n)) {
+                if (!news.includes(n)) {
+                  if (!newer.includes(n)) {
+                    if (n !== source.key) {
+	              newer.push(n);
+	            }
 	          }
 	        }
 	      }
@@ -528,6 +662,7 @@ spaces['calais'] = {
     top: 1135 ,
     left: 542 ,
     neighbours: ["ostend", "cambrai", "amiens", "london"] ,
+    limits : [ { "london" : ["BR"] } ] ,
     terrain : "swamp" ,
     vp : true ,
     port : 1 ,
@@ -627,6 +762,7 @@ spaces['lehavre'] = {
     top: 1311 ,
     left: 363 , 
     neighbours: ["rouen", "london"] ,
+    limits : [ { "london" : ["BR"] } ] ,
     terrain : "normal" ,
     vp : true , 
     port : 1 ,
@@ -639,6 +775,7 @@ spaces['cherbourg'] = {
     top: 1304 ,
     left: 159 , 
     neighbours: ["caen", "london"] ,
+    limits : [ { "london" : ["BR"] } ] ,
     terrain : "normal" ,
     vp : false , 
     port : 1 ,
@@ -1557,6 +1694,7 @@ spaces['taranto'] = {
     top: 2646 ,
     left: 2179 , 
     neighbours: ["foggia", "valona"] ,
+    limits : [ { "valona" : ["IT"] } ] ,
     terrain : "normal" ,
     vp : false , 
     port : 1 ,
@@ -2008,6 +2146,7 @@ spaces['pskov'] = {
       top: 119 ,
       left: 3395 ,
       neighbours: ["opochka", "petrograd"] ,
+      limits : [ { "petrograd" : ["RU"] } ] ,
       terrain : "normal" ,
       vp : false ,
       country : "russia" ,
@@ -2019,6 +2158,7 @@ spaces['petrograd'] = {
       top: 82 ,
       left: 3610 ,
       neighbours: ["velikiyeluki", "pskov", "reval"] ,
+      limits : [ { "reval" : ["RU"] } ] ,
       terrain : "normal" ,
       vp : false ,
       country : "russia" ,
@@ -2031,6 +2171,7 @@ spaces['riga'] = {
       top: 240 ,
       left: 2921 ,
       neighbours: ["dvinsk", "szawli", "reval"] ,
+      limits : [ { "reval" : ["RU"] } ] ,
       terrain : "normal" ,
       vp : true ,
       port : 2 ,
@@ -2088,6 +2229,7 @@ spaces['velikiyeluki'] = {
       top: 298 ,
       left: 3592 ,
       neighbours: ["petrograd", "opochka", "vitebsk", "moscow"] ,
+      limits : [ { "petrograd" : ["RU"] } , { "moscow" : ["RU"] } ] ,
       terrain : "normal" ,
       vp : false ,
       country : "russia" ,
@@ -2200,6 +2342,7 @@ spaces['smolensk'] = {
       top: 563 ,
       left: 3788 ,
       neighbours: ["orsha", "moscow", "vitebsk", "roslavl"] ,
+      limits: [ { "moscow" : ["RU"] } ] ,
       terrain : "normal" ,
       vp : false ,
       country : "russia" ,
@@ -2471,6 +2614,7 @@ spaces['kiev'] = {
       top: 1188 ,
       left: 3614 ,
       neighbours: ["zhitomir", "chernigov", "kharkov", "belayatserkov"] ,
+      limits : [ { "kharkov" : ["RU"] } ] ,
       terrain : "normal" ,
       vp : true ,
       country : "russia" ,
@@ -2537,6 +2681,7 @@ spaces['uman'] = {
       top: 1546 ,
       left: 3646 ,
       neighbours: ["odessa", "vinnitsa", "belayatserkov", "caucasus"] ,
+      limits : [ { "caucasus" : ["RU"] } ] ,
       terrain : "normal" ,
       vp : false ,
       country : "russia" ,
@@ -2582,6 +2727,7 @@ spaces['odessa'] = {
       top: 1756 ,
       left: 3644 ,
       neighbours: ["caucasus", "uman", "ismail"] ,
+      limits : [ { "caucasus" : ["RU"] } ] ,
       terrain : "normal" ,
       vp : true ,
       country : "russia" ,
@@ -2593,6 +2739,7 @@ spaces['poti'] = {
       top: 1871 ,
       left: 4377 ,
       neighbours: ["caucasus", "batum"] ,
+      limits : [ { "caucasus" : ["RU"] } ] ,
       terrain : "mountain" ,
       vp : false ,
       country : "russia" ,
@@ -2604,6 +2751,7 @@ spaces['grozny'] = {
       top: 1882 ,
       left: 4594 ,
       neighbours: ["caucasus", "petrovsk", "tbilisi"] ,
+      limits : [ { "caucasus" : ["RU"] } ] ,
       terrain : "mountain" ,
       vp : false ,
       country : "russia" ,
@@ -3088,6 +3236,7 @@ spaces['amman'] = {
       top: 2745 ,
       left: 4166 ,
       neighbours: ["arabia", "damascus", "jerusalem"] ,
+      limits: [ { "arabia" : ["ANA"] } ] ,
       terrain : "normal" ,
       vp : false ,
       country : "turkey" ,
@@ -3133,6 +3282,7 @@ spaces['jerusalem'] = {
       top: 2840 ,
       left: 4116 ,
       neighbours: ["nablus", "amman", "beersheba", "arabia"] ,
+      limits : [ { "arabia" : ["ANA"] } ] ,
       terrain : "normal" ,
       vp : false ,
       country : "turkey" ,
@@ -3191,6 +3341,7 @@ spaces['aqaba'] = {
       top: 3077 ,
       left: 4016 ,
       neighbours: ["medina", "beersheba", "arabia"] ,
+      limits : [ { "arabia" : ["ANA"] } ] ,
       terrain : "desert" ,
       vp : false ,
       country : "turkey" ,
@@ -3214,6 +3365,7 @@ spaces['medina'] = {
       top: 3155 ,
       left: 4167 ,
       neighbours: [ "aqaba", "arabia"] ,
+      limits : [ { "arabia" : ["ANA"] } ] ,
       terrain : "desert" ,
       vp : true ,
       country : "turkey" ,

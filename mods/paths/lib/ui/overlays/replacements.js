@@ -166,7 +166,13 @@ class ReplacementsOverlay {
 				if (id == "deploy") {
 					paths_self.playerSelectSpaceWithFilter(
               					`Destination for ${unit.name}` ,
-              					(spacekey) => { if (paths_self.game.spaces[spacekey].control == faction) { return 1; } return 0; } ,
+              					(spacekey) => { 
+							if (paths_self.game.spaces[spacekey].control == faction) {
+								if (paths_self.checkSupplyStatus(unit.ckey.toLowerCase(), spacekey) == 1) {
+									return 1;
+								}
+ 							} return 0;
+						} ,
               					(spacekey) => {
 					              	paths_self.updateStatus("moving...");
               						paths_self.moveUnit(eu[z].key, eu[z].idx, spacekey);
