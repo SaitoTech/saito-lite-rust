@@ -341,7 +341,7 @@ class PokerUI {
           if (max_raise > this_raise) {
             html += `<div class="option raise_option" id="${this_raise + match_required}"><img src="/poker/img/raise_value_icon.svg" alt="raise">`;
             html += poker_self.formatWager(this_raise, false);
-            if (poker_self.game.stake){
+            if (poker_self.game.stake && poker_self.game.crypto !== "CHIPS"){
               html += `<div class="crypto-hover-raise">${poker_self.convertChipsToCrypto(this_raise)} <span class="smaller-font"> ${poker_self.game.crypto}</span></div>`
             }
             html += "</div>";
@@ -355,7 +355,7 @@ class PokerUI {
         //Always give option for all in
         html += `<div class="option raise_option all-in" id="${max_raise + match_required}"><img src="/poker/img/raise_allin_icon.svg" alt="raise">`;
         html += poker_self.formatWager(max_raise, false);
-        if (poker_self.game.stake){
+        if (poker_self.game.stake && poker_self.game.crypto !== "CHIPS"){
           html += `<div class="crypto-hover-raise">${poker_self.convertChipsToCrypto(max_raise)} <span class="smaller-font"> ${poker_self.game.crypto}</span></div>`
         }
         html += `</div>`;
