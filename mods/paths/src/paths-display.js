@@ -224,6 +224,20 @@ console.log("!");
       }
 
       //
+      // add central control
+      //
+      if (space.country == "germany" || space.country == "austria" || space.country == "bulgaria" || space.country == "turkey") {
+	if (space.control == "allies") {
+          html += `<img src="/paths/img/tiles/control_ap.png" class="trench-tile control-tile" />`;
+	}
+      } else {
+	if (space.control == "central") {
+          html += `<img src="/paths/img/tiles/control_cp.png" class="trench-tile control-tile" />`;
+	}
+      }
+
+
+      //
       // trenches
       //
       if (space.trench == 1) {
@@ -249,6 +263,18 @@ console.log("!");
       if (space.fort == -1) {
         html += `<img src="/paths/img/tiles/fort_destroyed.png" class="trench-tile fort-destroyed" />`;
       }
+
+      //
+      // out of supply
+      //
+      if (space.oos == 1 && space.units.length > 0) { 
+	if (this.returnPowerOfUnit(space.units[0]) == "central") {
+          html += `<img src="/paths/img/tiles/oos_central.png" class="trench-tile oos-tile" />`;
+	} else {
+          html += `<img src="/paths/img/tiles/oos_allies.png" class="trench-tile oos-tile" />`;
+	}
+      }
+
 
       document.querySelectorAll(`.${key}`).forEach((el) => { 
 //        if (control == "allies") { el.classList.add("allies-highlight"); }

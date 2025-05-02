@@ -15,6 +15,7 @@
     return "Allies";
   }
 
+  returnPowerOfPlayer() { return returnFactionOfPlayer(); }
   returnFactionOfPlayer() {
     if (this.game.player == 1) { return "central"; }
     return "allies";
@@ -758,13 +759,34 @@ console.log("UNIT: " + JSON.stringify(unit));
 
   playerSpendReplacementPoints(faction="central") {
 
+    this.removeSelectable();
+
+    let html = `<ul>`;
+    html    += `<li class="card" id="overlay">show overlay</li>`;
+    html    += `<li class="card" id="finish">finish</li>`;
+    html    += `</ul>`;
+
+    this.updateStatusWithOptions(`Replacements Stage`, html);
+    this.attachCardboxEvents((action) => {
+
+      if (action === "overlay") {
+	this.playerSpendReplacementPoints(faction);
+	return;
+      }
+
+      if (action === "finish") {
+	this.endTurn();
+	return;
+      }
+
+    });
+
+
     let paths_self = this;
     let rp = this.game.state.rp[faction];
     let do_upgradeable_units_remain = false;
     let just_stop = 0;
 
-
-    
     //
     // players can spend their replacement points to:
     //
@@ -777,8 +799,7 @@ console.log("UNIT: " + JSON.stringify(unit));
       return 0;
     }
 
-    let loop_fnct = () => {
-      if (continue_fnct()) {
+    let continue_fnct = () => {
 
 	let can_uneliminate_unit = false;
 	let can_uneliminate_unit_array = [];	
@@ -847,49 +868,33 @@ console.log("UNIT: " + JSON.stringify(unit));
 	if (can_repair_unit_on_board) { options.push(`<li class="option" id="repair_board">repair unit on board</li>`); }
 	if (can_repair_unit_in_reserves) { options.push(`<li class="option" id="repair_reserves">repair unit in reserves</li>`); }
 	if (can_deploy_unit_in_reserves) { options.push(`<li class="option" id="deploy">deploy unit from reserves</li>`); }
-        options.push(`<li class="option" id="skip">finish</li>`);
+        options.push(`<li class="option" id="finish">finish</li>`);
 
-	paths_self.replacements_overlay.render(options);
+	this.game.state.replacements = {};
+	this.game.state.replacements.options = options;
+	this.game.state.replacements.can_uneliminate_unit = can_uneliminate_unit;
+	this.game.state.replacements.can_uneliminate_unit_array = can_uneliminate_unit_array;
+	this.game.state.replacements.can_repair_unit_on_board = can_repair_unit_on_board;
+	this.game.state.replacements.can_repair_unit_on_board_array = can_repair_unit_on_board_array;
+	this.game.state.replacements.can_repair_unit_in_reserves = can_repair_unit_in_reserves;
+	this.game.state.replacements.can_repair_unit_in_reserves_array = can_repair_unit_in_reserves_array;
+	this.game.state.replacements.can_deploy_unit_in_reserves = can_deploy_unit_in_reserves;
+	this.game.state.replacements.can_deploy_unit_in_reserves_array = can_deploy_unit_in_reserves_array;
 
-	
+console.log("HERE; " + JSON.stringify(this.game.state.replacements));
 
-        paths_self.playerSelectUnitWithFilter(
- 	  "Select Unit to Repair / Deploy" ,
-	  filter_fnct ,
-	  execute_fnct ,
-	  null , 
-	  true ,
-	  [{ key : "pass" , value : "pass" , rp : 1 }]
-        );
-      } else {
-	paths_self.removeSelectable();
-	paths_self.endTurn();
-      }
+	if (options.length > 1) { return 1; }
+
+	return 0;
+
     }    
 
-    let filter_fnct = (spacekey, unit) => {
-      if (faction == "central") { if (paths_self.game.state.rp["central"][unit.ckey] == 0) { return 0; } }
-      if (faction == "allies") { if (paths_self.game.state.rp["central"][unit.ckey] == 0) { return 0; } }
-      if (spacekey == "aeubox") { 
-        if (faction == "central") { return 0; }
-	if (unit.destroyed) { return 1; }
-      }
-      if (spacekey == "ceubox") { 
-        if (faction == "allies") { return 0; }
-        if (unit.destroyed) { return 1; }
-      }
-      if (spacekey == "arbox") { 
-        if (faction == "central") { return 0; }
-        return 1;
-      }
-      if (spacekey == "crbox") { 
-        if (faction == "allies") { return 0; }
-        return 1;
-      }
-      if (paths_self.game.spaces[spacekey].control == faction && unit.damaged) { return 1; }
-      return 0;
-    };
+    if (continue_fnct()) {
+      paths_self.replacements_overlay.render();
+    }
 
+
+/*****
     let execute_fnct = (spacekey, unit_idx) => {
 
       paths_self.updateStatus("processing...");
@@ -976,19 +981,7 @@ console.log("UNIT: " + JSON.stringify(unit));
       }
 
     };
- 
-
-    let continue_fnct = () => {
-      if (just_stop == 1) { return 0; }
-      let count = paths_self.countUnitsWithFilter(filter_fnct);
-      if (count == 0) { return 0; }
-      for (let key in paths_self.game.state.rp[faction]) {
-	if (parseInt(paths_self.game.state.rp[faction][key]) > 0) { return 1; }
-      }
-      return 0;
-    }
-
-    loop_fnct();
+****/ 
 
     return 1;
   }
@@ -1849,7 +1842,7 @@ console.log(JSON.stringify(spaces_within_hops));
 	      }
 	    }
 	    return 1;
-	  });
+	  }, unit);
 
 	  paths_self.playerSelectSpaceWithFilter(
 
@@ -1925,6 +1918,14 @@ console.log(JSON.stringify(spaces_within_hops));
 		    }
 		  }
 		}
+	        for (let z = 0; z < this.game.spaces[key2].units.length; z++) {
+		  let u = this.game.spaces[key2].units[z];
+		  if (this.returnPowerOfUnit(u) == this.returnPowerOfPlayer()) {
+		    if (u.army) { count++; }
+		  }
+		}
+
+
 
 	        if (count == 0) {
 		  salert("Besieging a Fort Requires an Army: pick again");
@@ -2032,6 +2033,7 @@ console.log(JSON.stringify(spaces_within_hops));
 	  return;
         }
 
+
         if (action === "skip") {
 	  paths_self.game.spaces[key].units[idx].moved = 1;
 	  let mint = false;
@@ -2061,9 +2063,6 @@ console.log("SPACES: " + JSON.stringify(paths_self.game.spaces[key].units));
 	  units.push(z);
 	}
       }
-
-
-console.log("UNITS: " +JSON.stringify(units));
 
       if (units.length == 1) {
 
@@ -2786,6 +2785,7 @@ console.log("in supply!");
 	return 0;
       }
     }
+
 
 
     let finish_fnct = (spacekey) => {

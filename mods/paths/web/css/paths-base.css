@@ -6,11 +6,13 @@
 
 
 .fort-besieged {
-    top: +80px;
+    top: +80px !important;
+    right: 0px !important;
     transform: scale(0.5);
 }
 .fort-destroyed {
-    top: +80px;
+    top: +80px !important;
+    right: 0px !important;
     transform: scale(0.5);
 }
 .oos-highlight::before {
@@ -64,6 +66,10 @@
 	position: absolute;
 }
 
+.control-tile {
+	right: 0rem !important;
+	top: 0rem !important;
+}
 .trench-tile {
 	width: 100%;
 	height: 100%;

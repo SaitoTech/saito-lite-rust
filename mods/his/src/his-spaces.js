@@ -282,7 +282,7 @@
     if (this.returnFactionLandUnitsInSpace(faction, space, 1) > 0) { return 1; }
 
     //
-    // we can move into spaces controlled by powers we are at war with
+    // we can move into spaces controlled by minor powers we control
     //
     if (this.isMinorPower(cf)) { cf = this.returnControllingPower(cf); }
     if (cf == faction) { return 1; }
@@ -294,9 +294,29 @@
 
       //
       // ... we can normally move into this space, unless there are besieging units
-      // with whom we are not allied. so check with each faction
+      // with whom we are not allied, or other powers with whom we are not at war?
+      //
+      // so check with each faction
       //
       for (let f in space.units) {
+
+	//
+	// if this faction is an ally of the controlling space
+	//
+	if (this.areAllies(f, cf)) {
+
+	  //
+	  // ... and it has units in the space
+	  //
+	  let fluis = this.returnFactionLandUnitsInSpace(f, space.key);
+	  if (fluis > 0) {
+
+	    //
+	    // ... then we need to be enemies with them to move in
+	    //
+	    if (!this.areEnemies(f, faction)) { return 0; }
+	  }
+	}
 
 	//
 	// ... if this faction is an enemy of the controlling space
@@ -308,7 +328,6 @@
 	  //
 	  let fluis = this.returnFactionLandUnitsInSpace(f, space.key);
 	  if (fluis > 0) {
-
 
 	    //
 	    // ... then we need to be allies with them to move in

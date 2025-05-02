@@ -50,6 +50,11 @@ console.log("\n\n\n\n");
       this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnMobilizationDeck("central")));
       this.game.queue.push("DECK\t2\t"+JSON.stringify(this.returnMobilizationDeck("allies")));
 
+      //
+      // belgium joins the allies
+      //
+      this.convertCountryToPower("belgium", "allies");
+
     }
 
     //

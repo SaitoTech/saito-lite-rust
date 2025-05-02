@@ -58,17 +58,17 @@
 .arcade-main .arcade-initializer {
 	height: calc(100vh - var(--saito-header-height) - 3rem);
 	padding-top: 2rem;
-	gap: 5rem;
+	gap: min(5rem, 7vh);
 }
 
 .arcade-game-initializer-success-title {
 	text-align: center;
 	font-size: 3rem;
-	margin: 10rem auto 5rem;
+	margin: min(10rem, 16vh) auto min(5rem, 8vh);
 }
 
 .arcade-game-initializer-success-button {
-	margin: 3rem auto;
+	margin: min(3rem, 5vh) auto;
 	width: calc(100% - 2rem);
 	max-width: 35rem;
 }
@@ -148,6 +148,10 @@
 
 .arcade-container.initializing-game .saito-sidebar.right {
 	display: none;
+}
+
+.arcade-container.initializing-game .arcade-main {
+	grid-column: span 2;
 }
 
 /*************************************

@@ -98,6 +98,19 @@
 
   }
 
+  removeOverstackedUnits() {
+    for (let key in this.game.spaces) {
+      if (key != "ceubox" && key != "aeubox" && key != "arbox" && key != "crbox") {
+        while (this.game.spaces[key].units.length > 3) {
+	  this.updateLog(this.game.spaces[key].units[3].name + " removed from game (over-stacked)");
+	  this.game.spaces[key].units.splice(3, 1);
+	  this.displaySpace(key);
+	  this.shakeSpacekey(key);
+        }
+      }
+    }
+    return 1;
+  }
 
   calculateRussianCapitulationTrack() {
 

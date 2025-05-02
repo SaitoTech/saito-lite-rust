@@ -670,6 +670,7 @@ deck['ap14'] = {
         	  return 1;
       	        }
         	paths_self.game.spaces[spacekey].units[unit_idx].damaged = 0;
+		paths_self.addMove(`NOTIFY\t${paths_self.game.spaces[spacekey].units[unit_idx].name} repaired in ${paths_self.game.spaces[spacekey].name}`);
         	paths_self.addMove(`repair\tcentral\t${spacekey}\t${unit_idx}`);
         	paths_self.displaySpace(spacekey);
 		units_to_restore--;
@@ -686,12 +687,14 @@ deck['ap14'] = {
             if (count == 1 || count == 2) {
     	      let update_filter_fnct = (spacekey, unit) => {
 	        if (paths_self.returnPowerOfUnit(unit) == "allies") { return 0; }
-                if (unit.damaged == 1 && unit.destroyed != 1) { unit.damaged = 0; paths_self.displaySpace(spacekey); }
+                if (unit.damaged == 1 && unit.destroyed != 1) {
+		  unit.damaged = 0; paths_self.displaySpace(spacekey);
+		  paths_self.updateLog(`${unit.name} repaired in ${paths_self.game.spaces[spacekey].name}`);
+		}
 	        return 1;
 	      }
 	      // filter function will update now
 	      paths_self.countUnitsWithFilter(update_filter_fnct);
-	      paths_self.game.queue.push("NOTIFY\tAll eligible units upgraded ("+paths_self.popup("cp05")+")");
 	      return 1;
 	    }
 
@@ -975,6 +978,7 @@ deck['ap16'] = {
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
         canEvent : function(paths_self, faction) { if (paths_self.game.state.neutral_entry == 0) { return 1; } return 0; } ,
         onEvent : function(paths_self, faction) {
+	  paths_self.convertCountryToPower("romania", "allies");
 	  paths_self.game.state.events.romania = true;
 	  paths_self.game.state.events.neutral_entry = 1;
 	  paths_self.addUnitToSpace("ro_corps", "bucharest");
@@ -1005,6 +1009,7 @@ deck['ap17'] = {
         canEvent : function(paths_self, faction) { if (paths_self.game.state.neutral_entry == 0) { return 1; } return 0; } ,
         onEvent : function(paths_self, faction) {
 
+	  paths_self.convertCountryToPower("italy", "allies");
           paths_self.addTrench("trent", 1);
           paths_self.addTrench("asiago", 1);
           paths_self.addTrench("maggiore", 1);
@@ -2078,6 +2083,7 @@ deck['cp33'] = {
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
         canEvent : function(paths_self, faction) { if (paths_self.game.state.neutral_entry == 0) { return 1; } return 0; } ,
         onEvent : function(paths_self, faction) {
+	  paths_self.convertCountryToPower("bulgaria", "central");
 	  paths_self.game.state.events.neutral_entry = 1;
 	  paths_self.game.state.events.romania = true;
 	  paths_self.addUnitToSpace("bu_corps", "sofia");
@@ -2312,6 +2318,7 @@ deck['ap44'] = {
         canEvent : function(paths_self, faction) { if (paths_self.game.state.neutral_entry == 0) { return 1; } return 0; } ,
         onEvent : function(paths_self, faction) {
 
+	  paths_self.convertCountryToPower("greece", "allies");
 	  paths_self.game.state.events.greece = true;
 	  paths_self.game.state.neutral_entry = 1;
 

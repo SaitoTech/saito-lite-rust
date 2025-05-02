@@ -232,7 +232,7 @@ class StreamManager {
         this.remoteStreams.set(id, remoteStream);
       }
 
-      console.log('STUN: remote stream added for', id, event.track, event.streams);
+      console.log(' ***************** STUN: remote stream added for', id, event.track, event.streams);
 
       if (event.streams.length === 0) {
         console.log('Use track');
@@ -307,7 +307,7 @@ class StreamManager {
       if (this.mod.room_obj.call_peers.includes(publicKey)) {
         peerConnection.firstConnect = true;
 
-        console.log('Attach my audio/video!');
+        console.log(' *************  Attach my audio/video! ************* ');
         if (!peerConnection?.senders){
           peerConnection.senders = [];
         }
@@ -426,7 +426,7 @@ class StreamManager {
 
     let c = this.returnConstraints();
 
-    console.log(c);
+    console.log(c, "================");
 
     //Get my local media
     try {
