@@ -326,7 +326,9 @@ class Arcade extends ModTemplate {
 					let status = game_tx.msg.request;
 					let game_added = arcade_self.addGame(game_tx);
 
-					console.log(game_tx, status, game_added);
+					if (arcade_self?.debug && arcade_self.browser_active) {
+						console.log("Available arcade game:", status, game_added, game_tx);	
+					}
 
 					//Game is marked as "active" but we didn't already add it from our app.options file...
 					if (status == 'active' && game_added && arcade_self.isMyGame(game_tx)) {
@@ -640,7 +642,6 @@ class Arcade extends ModTemplate {
 			if (conf == 0) {
 				if (txmsg.module === 'Arcade') {
 					if (this.hasSeenTransaction(tx)) {
-						console.log("Don't double process transactions in Arcade");
 						return;
 					}
 
@@ -768,7 +769,6 @@ class Arcade extends ModTemplate {
 				// public & private invites processed the same way
 				//
 				if (txmsg.request === 'open' || txmsg.request === 'private') {
-					console.log("!!!!!!!!");
 					await this.receiveOpenTransaction(tx);
 				}
 
@@ -849,12 +849,9 @@ class Arcade extends ModTemplate {
 			return;
 		}
 
-		console.log(this.games);
-
 		// Only care about open, public invites
 		for (let g of this.games["open"]){
 			if (publicKey == g.from[0].publicKey){
-				console.log("Mark offline", g);
 				let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 				newtx.msg = {
 					module: "Arcade",
@@ -1061,7 +1058,10 @@ class Arcade extends ModTemplate {
 
 		//Move game to different list
 		if (game) {
-			console.log(`Change game status from ${game.msg.request} to ${newStatus}`);
+
+			if (this.debug){
+				console.log(`Change game status from ${game.msg.request} to ${newStatus}`);	
+			}
 
 			if (game?.msg?.request == 'over') {
 				return;
@@ -1088,7 +1088,6 @@ class Arcade extends ModTemplate {
 		this.changeGameStatus(txmsg.game_id, 'over');
 
 		let winner = txmsg.winner || null;
-		console.log('Winner:', winner);
 
 		if (game?.msg) {
 			//Store the results locally
@@ -1100,7 +1099,7 @@ class Arcade extends ModTemplate {
 		}
 
 		if (this.debug) {
-			console.log('Winner updated in arcade');
+			console.log('Winner updated in arcade', winner);
 			console.log(this.games);
 		}
 	}
@@ -1131,7 +1130,6 @@ class Arcade extends ModTemplate {
 	// unsure
 	//
 	async createInviteTransaction(orig_tx) {
-		// console.log("createInviteTransaction", orig_tx);
 		let txmsg = orig_tx.returnMessage();
 
 		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
@@ -1248,8 +1246,6 @@ class Arcade extends ModTemplate {
 			return;
 		}
 
-
-		console.log("=============",JSON.parse(JSON.stringify(game)), "=============");
 
 		//
 		// Don't add the same player twice!
