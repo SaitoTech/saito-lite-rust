@@ -735,8 +735,40 @@ export default (app, mod) => {
                                 id="central-mandated-offensive-track-1"
                         ></div>
                         <div
+                                class="central-mandated-offensive-track central-mandated-offensive-track-2"
+                                id="central-mandated-offensive-track-2"
+                        ></div>
+                        <div
+                                class="central-mandated-offensive-track central-mandated-offensive-track-3"
+                                id="central-mandated-offensive-track-3"
+                        ></div>
+                        <div
+                                class="central-mandated-offensive-track central-mandated-offensive-track-4"
+                                id="central-mandated-offensive-track-4"
+                        ></div>
+                        <div
+                                class="central-mandated-offensive-track central-mandated-offensive-track-5"
+                                id="central-mandated-offensive-track-5"
+                        ></div>
+                        <div
                                 class="allies-mandated-offensive-track allies-mandated-offensive-track-1"
                                 id="allies-mandated-offensive-track-1"
+                        ></div>
+                        <div
+                                class="allies-mandated-offensive-track allies-mandated-offensive-track-2"
+                                id="allies-mandated-offensive-track-2"
+                        ></div>
+                        <div
+                                class="allies-mandated-offensive-track allies-mandated-offensive-track-3"
+                                id="allies-mandated-offensive-track-3"
+                        ></div>
+                        <div
+                                class="allies-mandated-offensive-track allies-mandated-offensive-track-4"
+                                id="allies-mandated-offensive-track-4"
+                        ></div>
+                        <div
+                                class="allies-mandated-offensive-track allies-mandated-offensive-track-5"
+                                id="allies-mandated-offensive-track-5"
                         ></div>
 
                         <!--- US COMMITMENT TRACK --->

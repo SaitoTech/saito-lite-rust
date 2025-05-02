@@ -120,6 +120,13 @@
     }
   }
 
+  doesSpaceHaveUnit(spacekey, unitkey) {
+    let space = this.game.spaces[spacekey];
+    for (let z = 0; z < space.units.length; z++) {
+      if (space.units[z].key == unitkey) { return 1; }
+    }
+    return 0;
+  }
   doesSpaceHaveEnemyUnits(faction, spacekey) { return this.doesSpaceContainEnemyUnits(faction, spacekey); }
   doesSpaceContainEnemyUnits(faction, spacekey) {
     if (this.game.spaces[spacekey].control != faction) {

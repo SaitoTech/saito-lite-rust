@@ -473,8 +473,11 @@
 
 
 
-.central-mandated-offensive-track {
-
+.central-mandated-offensive-track.active:hover {
+  opacity: 0;
+}
+.central-mandated-offensive-track.active {
+  background-image: url('/paths/img/tiles/mandoffensive_cp.png');
 }
 .central-mandated-offensive-track-1 {
   top: 136px;
@@ -498,10 +501,11 @@
 }
 
 
-
-
-.allies-mandated-offensive-track {
-
+.allies-mandated-offensive-track.active:hover { 
+  opacity: 0;
+}
+.allies-mandated-offensive-track.active {
+  background-image: url('/paths/img/tiles/mandoffensive_ap.png');
 }
 .allies-mandated-offensive-track-1 {
   top: 3078px;

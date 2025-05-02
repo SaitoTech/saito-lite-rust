@@ -798,13 +798,41 @@ try {
           //this.addUnitToSpace("it_army04", "asiago");
 
 	  // reserves boxes
-    	  this.addUnitToSpace("ge_army04", "crbox");
-    	  this.addUnitToSpace("ge_army06", "crbox");
-    	  this.addUnitToSpace("ge_army08", "crbox");
-    	  this.addUnitToSpace("fr_army01", "arbox");
-    	  this.addUnitToSpace("ru_army09", "arbox");
-    	  this.addUnitToSpace("ru_army10", "arbox");
+    	  this.addUnitToSpace("ah_corps", "crbox");
+    	  this.addUnitToSpace("ah_corps", "crbox");
+    	  this.addUnitToSpace("ah_corps", "crbox");
+    	  this.addUnitToSpace("ah_corps", "crbox");
+
+    	  this.addUnitToSpace("ge_corps", "crbox");
+    	  this.addUnitToSpace("ge_corps", "crbox");
+    	  this.addUnitToSpace("ge_corps", "crbox");
+    	  this.addUnitToSpace("ge_corps", "crbox");
+    	  this.addUnitToSpace("ge_corps", "crbox");
+    	  this.addUnitToSpace("ge_corps", "crbox");
+    	  this.addUnitToSpace("ge_corps", "crbox");
+    	  this.addUnitToSpace("ge_corps", "crbox");
+
+    	  this.addUnitToSpace("be_corps", "arbox");
+
+    	  this.addUnitToSpace("sb_corps", "arbox");
+    	  this.addUnitToSpace("sb_corps", "arbox");
+
+    	  this.addUnitToSpace("ru_corps", "arbox");
+    	  this.addUnitToSpace("ru_corps", "arbox");
+    	  this.addUnitToSpace("ru_corps", "arbox");
+    	  this.addUnitToSpace("ru_corps", "arbox");
+    	  this.addUnitToSpace("ru_corps", "arbox");
+
+    	  this.addUnitToSpace("fr_corps", "arbox");
+    	  this.addUnitToSpace("fr_corps", "arbox");
+    	  this.addUnitToSpace("fr_corps", "arbox");
+    	  this.addUnitToSpace("fr_corps", "arbox");
+    	  this.addUnitToSpace("fr_corps", "arbox");
+    	  this.addUnitToSpace("fr_corps", "arbox");
+    	  this.addUnitToSpace("fr_corps", "arbox");
+
     	  this.addUnitToSpace("br_corps", "arbox");
+    	  this.addUnitToSpace("bef_corps", "arbox");
 
 } catch(err) {console.log("error initing:" + JSON.stringify(err));}
 
@@ -1968,6 +1996,31 @@ alert("Fort Survives Assault");
 
 	}
 
+
+	if (mv[0] === "remove") {
+
+	  let spacekey = mv[1];
+	  let unitkey = mv[2];
+	  let player_to_ignore = 0;
+	  if (mv[3]) { player_to_ignore = parseInt(mv[3]); }
+
+	  if (player_to_ignore != this.game.player) {
+	    for (let z = 0; z < this.game.spaces[spacekey].units.length; z++) {
+	      if (this.game.spaces[spacekey].units[z].key === unitkey) {
+		this.game.spaces[spacekey].units.splice(z, 1);
+		z = this.game.spaces[spacekey].units.length + 2;
+	      }
+	    }
+	  }
+
+	  this.displaySpace(spacekey);
+	  this.shakeSpacekey(spacekey);
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
 	if (mv[0] === "add") {
 
 	  let spacekey = mv[1];
@@ -2286,6 +2339,13 @@ alert("Fort Survives Assault");
 	      }
 	    } else {
 	      this.game.spaces[sourcekey].besieged = 0;
+	      if (this.game.spaces[sourcekey].fort > 0) {
+		//
+		// control switches back to original owner of fort
+		//
+		let spc = this.returnSpaces();
+		this.game.spaces[sourcekey].control = spc[sourcekey].control;
+	      }
 	    }
 	  }
 

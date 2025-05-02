@@ -605,19 +605,42 @@ console.log("X");
   }
 
   displayMandatedOffensiveTracks() {
-/****
-          if (central == 2) { this.game.state.mandated_offensives.central = "AH IT"; }
-          if (central == 3) { this.game.state.mandated_offensives.central = "TU"; }
-          if (central == 4) { this.game.state.mandated_offensives.central = "GE"; }
-          if (central == 5) { this.game.state.mandated_offensives.central = ""; }
-          if (central == 6) { this.game.state.mandated_offensives.central = ""; }
-          if (allies == 1)  { this.game.state.mandated_offensives.allies = "FR"; }
-          if (allies == 2)  { this.game.state.mandated_offensives.allies = "FR"; }
-          if (allies == 3)  { this.game.state.mandated_offensives.allies = "BR"; }
-          if (allies == 4)  { this.game.state.mandated_offensives.allies = "IT"; }
-          if (allies == 5)  { this.game.state.mandated_offensives.allies = "IT"; }
-          if (allies == 6)  { this.game.state.mandated_offensives.allies = "RU"; }
-****/
+
+    document.querySelectorAll(".central-mandated-offensive-track").forEach((el) => { el.classList.remove("active"); });
+    document.querySelectorAll(".allies-mandated-offensive-track").forEach((el) => { el.classList.remove("active"); });
+
+    if (this.game.state.mandated_offensives.central === "AH") {
+      document.querySelector(".central-mandated-offensive-track-1").classList.add("active");
+    }
+    if (this.game.state.mandated_offensives.central === "AH IT") {
+      document.querySelector(".central-mandated-offensive-track-1").classList.add("active");
+    }
+    if (this.game.state.mandated_offensives.central === "TU") {
+      document.querySelector(".central-mandated-offensive-track-1").classList.add("active");
+    }
+    if (this.game.state.mandated_offensives.central === "GE") {
+      document.querySelector(".central-mandated-offensive-track-1").classList.add("active");
+    }
+
+    if (this.game.state.mandated_offensives.allies === "FR") {
+      document.querySelector(".allies-mandated-offensive-track-1").classList.add("active");
+    }
+    if (this.game.state.mandated_offensives.allies === "FR") {
+      document.querySelector(".allies-mandated-offensive-track-2").classList.add("active");
+    }
+    if (this.game.state.mandated_offensives.allies === "BR") {
+      document.querySelector(".allies-mandated-offensive-track-3").classList.add("active");
+    }
+    if (this.game.state.mandated_offensives.allies === "IT") {
+      document.querySelector(".allies-mandated-offensive-track-4").classList.add("active");
+    }
+    if (this.game.state.mandated_offensives.allies === "IT") {
+      document.querySelector(".allies-mandated-offensive-track-5").classList.add("active");
+    }
+    if (this.game.state.mandated_offensives.allies === "RU") {
+      document.querySelector(".allies-mandated-offensive-track-5").classList.add("active");
+    }
+
   }
 
   displayUSCommitmentTrack() {

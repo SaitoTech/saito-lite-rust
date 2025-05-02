@@ -465,10 +465,6 @@ console.log("C ACTIVE CARDS: " + JSON.stringify(this.mod.game.state.cc_central_a
 				}
 				let lmv = this.mod.game.queue[this.mod.game.queue.length-1].split("\t")[0];
 				this.mod.endTurn();
-				//this.updateInstructions(`<div class="continue_btn">Click to Continue</div>`);
-				//document.querySelector(".continue_btn").onclick = (e) => {
-				//  this.hide();
-				//}
 				return;
 		}
 
@@ -519,13 +515,21 @@ console.log("C ACTIVE CARDS: " + JSON.stringify(this.mod.game.state.cc_central_a
 					//
 					if (unit.key.indexOf('army') > 0) {
 
+						let corpsbox = "arbox";
+						if (this.mod.returnFactionOfPlayer() == "central") { corpsbox = "crbox"; }
 						let corpskey = unit.key.split('_')[0] + '_corps';
 						let corpsunit = this.mod.cloneUnit(corpskey);
 						corpsunit.spacekey = unit.spacekey;
+//
+// replacing unit pulls corps from reserves
+//
+if (this.mod.doesSpaceHaveUnit(corpsbox, corpsunit)) {
 						this.units.push(corpsunit);
 						this.moves.push(`add\t${unit.spacekey}\t${corpskey}\t${this.mod.game.player}`);
+						this.moves.push(`remove\t${corpsbox}\t${corpskey}\t${this.mod.game.player}`);
 						let html = `<div class="loss-overlay-unit" data-spacekey="${corpsunit.spacekey}" data-key="${corpskey}" data-damaged="0" id="${this.units.length - 1}">${this.mod.returnUnitImageWithMouseoverOfStepwiseLoss(this.units[this.units.length - 1], false, true)}</div>`;
 						this.app.browser.addElementToSelector(html, my_qs);
+}
 		  				this.attachEvents(am_i_the_attacker, my_qs, faction);
 
 					//
