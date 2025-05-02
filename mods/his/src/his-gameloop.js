@@ -6643,8 +6643,8 @@ try {
 //
 // TEST / HACK -- control hits / adjust hits here
 //
-attacker_hits = 4;
-defender_hits = 4;
+//attacker_hits = 4;
+//defender_hits = 4;
 
 	  //
 	  // we have now rolled all of the dice that we need to roll at this stage
@@ -7710,6 +7710,12 @@ defender_hits = 4;
 	  let spacekey = mv[2];
 	  let unit_type = mv[3];
 
+	  //
+	  // sanity check "france / scotland" etc.
+	  //
+	  if (faction.indexOf(" / ") > 0) {
+	    faction = faction.split(" / ")[0];
+	  }
 
 	  //
 	  // keep track that we have destroyed one -- cannot be rebuilt until next turn

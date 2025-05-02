@@ -16017,7 +16017,7 @@ if (space.key == "milan") {
 	  his_self.activateMinorPower("papacy", "venice");
 	} else {
 	  if (faction === "papacy" || faction === "ottoman") {
-	    his_self.deactivateMinorPower("hapsburg", "venice");
+	    his_self.deactivateMinorPower(ally, "venice");
 	  }
 	}
 	his_self.displayWarBox();
@@ -30709,8 +30709,8 @@ try {
 //
 // TEST / HACK -- control hits / adjust hits here
 //
-attacker_hits = 4;
-defender_hits = 4;
+//attacker_hits = 4;
+//defender_hits = 4;
 
 	  //
 	  // we have now rolled all of the dice that we need to roll at this stage
@@ -31776,6 +31776,12 @@ defender_hits = 4;
 	  let spacekey = mv[2];
 	  let unit_type = mv[3];
 
+	  //
+	  // sanity check "france / scotland" etc.
+	  //
+	  if (faction.indexOf(" / ") > 0) {
+	    faction = faction.split(" / ")[0];
+	  }
 
 	  //
 	  // keep track that we have destroyed one -- cannot be rebuilt until next turn
@@ -47656,6 +47662,12 @@ console.log("checking if squadrons are protecting!");
       "Select Destination for Cavalry",
 
       function(space) {
+	if (faction === "ottoman" && his_self.game.state.events.barbary_pirates == 1) {
+	  // can only build corsairs in a pirate haven
+	  if (space.key == "algiers" || space.pirate_haven == 1) { 
+	    if (his_self.game.state.events.foreign_recruits != "ottoman") { return 0; }
+	  }
+	}
 	if (faction === "ottoman" && his_self.game.state.events.war_in_persia == 1) {
 	  if (his_self.returnFactionLandUnitsInSpace("ottoman", "persia") < 5) {
 	    if (space.key == "persia") { return 1; }

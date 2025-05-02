@@ -795,17 +795,29 @@
   flex-direction: column;
 }
 
-.arbox {
+.crbox {
     top: 851px;
     left: 4250px;
     width: 730px;
     height: 380px;
+    padding: 3rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    row-gap: 1rem;
+    column-gap: 1rem;
 }
-.crbox {
+.arbox {
     top: 1280px;
     left: 4250px;
     width: 730px;
     height: 380px;
+    padding: 3rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    row-gap: 1rem;
+    column-gap: 1rem;
 }
 .reserve-box.selectable::before {
     width: inherit;

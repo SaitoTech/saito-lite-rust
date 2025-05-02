@@ -14130,7 +14130,7 @@ console.log(JSON.stringify(spaces_within_hops));
 
 	//
 	// computer-aided simulation, so we will-auto pin
-	// in the most advantageous possible... HACK
+	// in the most advantageous possible...
 	//
 
         //
@@ -14704,6 +14704,14 @@ console.log(JSON.stringify(spaces_within_hops));
 	    (key2) => {
 
 	      //
+	      // end turn
+	      //
+	      if (key2 === "skip") {
+		paths_self.endTurn();
+		return 1;
+	      }
+
+	      //
 	      // if this is a fort, we need to move enough units into the fort in order
 	      // to besiege it, which is at least 1 army, or a number of Corps equal to 
 	      // the fort’s LF 
@@ -14921,8 +14929,9 @@ console.log("updating to: " + spc[currentkey].control);
 	        }
 	      }
 	    },
-	    null,
-	    true
+	    null ,
+	    true ,
+	    [{ key : "skip" , value : "finish movement" }] ,
 	  );
       
 

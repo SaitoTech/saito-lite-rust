@@ -12131,7 +12131,7 @@ if (space.key == "milan") {
 	  his_self.activateMinorPower("papacy", "venice");
 	} else {
 	  if (faction === "papacy" || faction === "ottoman") {
-	    his_self.deactivateMinorPower("hapsburg", "venice");
+	    his_self.deactivateMinorPower(ally, "venice");
 	  }
 	}
 	his_self.displayWarBox();
