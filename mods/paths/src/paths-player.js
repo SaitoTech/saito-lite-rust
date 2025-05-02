@@ -15,6 +15,7 @@
     return "Allies";
   }
 
+  returnPowerOfPlayer() { return returnFactionOfPlayer(); }
   returnFactionOfPlayer() {
     if (this.game.player == 1) { return "central"; }
     return "allies";
@@ -1841,7 +1842,7 @@ console.log(JSON.stringify(spaces_within_hops));
 	      }
 	    }
 	    return 1;
-	  });
+	  }, unit);
 
 	  paths_self.playerSelectSpaceWithFilter(
 
@@ -1917,6 +1918,14 @@ console.log(JSON.stringify(spaces_within_hops));
 		    }
 		  }
 		}
+	        for (let z = 0; z < this.game.spaces[key2].units.length; z++) {
+		  let u = this.game.spaces[key2].units[z];
+		  if (this.returnPowerOfUnit(u) == this.returnPowerOfPlayer()) {
+		    if (u.army) { count++; }
+		  }
+		}
+
+
 
 	        if (count == 0) {
 		  salert("Besieging a Fort Requires an Army: pick again");
@@ -2024,6 +2033,7 @@ console.log(JSON.stringify(spaces_within_hops));
 	  return;
         }
 
+
         if (action === "skip") {
 	  paths_self.game.spaces[key].units[idx].moved = 1;
 	  let mint = false;
@@ -2053,9 +2063,6 @@ console.log("SPACES: " + JSON.stringify(paths_self.game.spaces[key].units));
 	  units.push(z);
 	}
       }
-
-
-console.log("UNITS: " +JSON.stringify(units));
 
       if (units.length == 1) {
 
@@ -2778,6 +2785,7 @@ console.log("in supply!");
 	return 0;
       }
     }
+
 
 
     let finish_fnct = (spacekey) => {

@@ -1,4 +1,6 @@
 
+
+
 .turn-track {
   position: absolute;
   height: 100px;
@@ -728,7 +730,9 @@
 }
 
 
-
+.oos-tile {
+  z-index: 9999;
+}
 
 .allies-reserve-box {
   top: 1310px;
