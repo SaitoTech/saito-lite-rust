@@ -574,6 +574,7 @@ console.log("\n\n\n\n");
 
       if (this.game.options.scenario === "is_testing") {
 
+
 	  this.game.state.starting_round = 4;
 	  this.game.state.round = 3; // the one before 4
 
@@ -581,8 +582,13 @@ console.log("\n\n\n\n");
 	  // 1532 wars and allies / diplomatic situation
 	  //
 	  this.setEnemies("hapsburg", "ottoman");
+	  this.setAllies("hapsburg", "genoa");
 	  this.setAllies("hapsburg", "hungary");
 	  this.setActivatedPower("hapsburg", "hungary");
+
+
+	  this.addNavalSquadron("hapsburg", "gibraltar", 1);
+	  this.addNavalSquadron("hapsburg", "gibraltar", 1);
 
 	  // OTTOMAN
           this.addArmyLeader("ottoman", "istanbul", "suleiman");

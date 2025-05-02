@@ -2918,6 +2918,7 @@ console.log("\n\n\n\n");
 
       if (this.game.options.scenario === "is_testing") {
 
+
 	  this.game.state.starting_round = 4;
 	  this.game.state.round = 3; // the one before 4
 
@@ -2925,8 +2926,13 @@ console.log("\n\n\n\n");
 	  // 1532 wars and allies / diplomatic situation
 	  //
 	  this.setEnemies("hapsburg", "ottoman");
+	  this.setAllies("hapsburg", "genoa");
 	  this.setAllies("hapsburg", "hungary");
 	  this.setActivatedPower("hapsburg", "hungary");
+
+
+	  this.addNavalSquadron("hapsburg", "gibraltar", 1);
+	  this.addNavalSquadron("hapsburg", "gibraltar", 1);
 
 	  // OTTOMAN
           this.addArmyLeader("ottoman", "istanbul", "suleiman");
@@ -26981,7 +26987,9 @@ console.log("----------------------------");
 	    //
 	    let current_destination = destination;
 	    let current_faction = faction;
+
             if (qe > 0 && is_this_an_interception != 1) {
+
               let lmv2 = this.game.queue[qe-1].split("\t");
               if (lmv2[0] == "naval_interception_check") {
 	  
@@ -27002,22 +27010,38 @@ console.log("----------------------------");
 	              cdest = this.game.navalspaces[current_destination];
 	            }
 
+//console.log("CHECK");
+//console.log("CHECK");
+//console.log("CHECK");
+//console.log("CHECK " + faction);
+//console.log("CHECK " + current_faction);
+//console.log("CHECK " + current_destination);
+
+//
+// if we have issues with sea battles, it is because current_faction was set as faction below everywhere except naval-retreat-check 
+//
+//
+
 		    // refresh for each new destination
 		    who_wants_a_fight = [];
 
+// change faction to current faction
+
                     for (let f in cdest.units) {
-                      if (cdest.units[f].length > 0 && f != faction) {
+                      if (cdest.units[f].length > 0 && f != current_faction) {
                         anyone_else_here = 1;
                       }
-                      if (f !== faction && cdest.units[f].length > 0 && this.areEnemies(f, faction)) {
+                      if (f !== current_faction && cdest.units[f].length > 0 && this.areEnemies(f, current_faction)) {
 			let cp = this.returnControllingPower(f);
+//console.log("FOUND " + cp + " " + f);
 			if (!who_wants_a_fight.includes(cp)) {
 			  who_wants_a_fight.push(cp);
                           if (lqe-1 >= 0) {
                             if (skip_avoid_battle != 1) {
                               this.game.queue.splice(lqe, 0, "naval_retreat_check\t"+current_faction+"\t"+current_destination+"\t"+current_source);
                             }
-                            this.game.queue.splice(lqe, 0, "naval_battle\t"+current_destination+"\t"+faction+"\t"+cp);
+//alert("adding sea battle between: " + faction + " / " + cp);
+                            this.game.queue.splice(lqe, 0, "naval_battle\t"+current_destination+"\t"+current_faction+"\t"+cp);
                           }
                         }
                       }
@@ -27025,6 +27049,9 @@ console.log("----------------------------");
                   }
 	        }
 	      }
+
+//console.log("AFTER LOOP: " + JSON.stringify(this.game.queue));
+
 	    }
 	  }
 
