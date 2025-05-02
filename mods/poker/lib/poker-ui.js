@@ -1,18 +1,11 @@
 class PokerUI {
   returnPlayerRole(player) {
     
-    if (this.game.state.winners.length > 0){
+    if (this.game.state.winners.length > 0) {
       if (this.game.state.winners.includes(player)) {
         return 'Winner!';
-      }else{
-        return `Lost ${this.formatWager(this.game.state.player_pot[player-1])}`;
       }
     }
-
-    if (this.game.state.flipped){
-      return `${this.formatWager(this.game.state.player_pot[player-1])} in pot`;
-    }
-
 
     if (player == this.game.state.button_player && player == this.game.state.small_blind_player) {
       return 'dealer / small blind';
