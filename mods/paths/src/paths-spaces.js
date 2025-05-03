@@ -122,8 +122,10 @@
 
   doesSpaceHaveUnit(spacekey, unitkey) {
     let space = this.game.spaces[spacekey];
-    for (let z = 0; z < space.units.length; z++) {
-      if (space.units[z].key == unitkey) { return 1; }
+    if (space) {
+      for (let z = 0; z < space.units.length; z++) {
+        if (space.units[z].key == unitkey) { return 1; }
+      }
     }
     return 0;
   }
@@ -206,7 +208,7 @@
   checkSupplyStatus(faction="", spacekey="") {
 
 let trace_supply = 0;
-if (spacekey == "antwerp") {
+if (spacekey == "insterberg" || spacekey == "konigsberg") {
   console.log("^");
   console.log("^");
   console.log("^");
@@ -215,6 +217,7 @@ if (spacekey == "antwerp") {
   console.log("^");
   console.log("^");
   console.log("^");
+  console.log("examining INSTERBERG");
   trace_supply = 1;
 }
 
@@ -351,18 +354,38 @@ if (trace_supply) { console.log("adding 4 " + s); }
 	}
       }
 
+
+if (trace_supply == 1) {
+  console.log("ports_added? " + ports_added);
+}
+
       if (ports_added == false) {
+if (trace_supply == 1) {
+  console.log("current: " + current);
+  console.log("port: " + this.game.spaces[current].port);
+  console.log("control: " + this.game.spaces[current].control);
+  console.log("controlling_faction: " + controlling_faction);
+}
 	if (controlling_faction == "allies" && this.game.spaces[current].port == 1 && this.game.spaces[current].control == "allies") {
  	  for (let i = 0; i < ports.length; i++) {
-	    if (this.game.spaces[ports[i]].control == "central") {
+	    if (this.game.spaces[ports[i]].control == "allies") {
+if (trace_supply == 1) {
+  console.log("pushing allies port: " + ports[i]);
+}
 	      pending.push(ports[i]);
 	    }
 	  }
 	  ports_added = true;
 	}
 	if (controlling_faction == "central" && this.game.spaces[current].port == 2 && this.game.spaces[current].control == "central") {
+if (trace_supply == 1) {
+  console.log("examining ports for central players...");
+}
  	  for (let i = 0; i < ports.length; i++) {
-	    if (this.game.spaces[ports[i]].control == "allies") {
+	    if (this.game.spaces[ports[i]].control == "central") {
+if (trace_supply == 1) {
+  console.log("pushing central port: " + ports[i]);
+}
 	      pending.push(ports[i]);
 	    }
 	  }
@@ -1453,7 +1476,7 @@ spaces['konigsberg'] = {
     neighbours: ["insterberg", "tannenberg"] ,
     terrain : "normal" ,
     vp : true , 
-      port : 2 ,
+    port : 2 ,
     country : "germany" ,
    }
 
@@ -3899,7 +3922,7 @@ spaces['crbox'] = {
       if (!spaces[key].control) { spaces[key].control = ""; }
       spaces[key].activated_for_movement = 0;
       spaces[key].activated_for_combat = 0;
-      spaces[key].port = 0; // no port
+      if (!spaces[key].port) { spaces[key].port = 0; } // no port
       spaces[key].key = key;
       spaces[key].type = "normal";
     }

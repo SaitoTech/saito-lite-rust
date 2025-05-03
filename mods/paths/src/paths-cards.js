@@ -130,7 +130,7 @@
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.allies_reinforcements_br > 0) { return 0; } return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_br\t"+paths_self.game.state.round);
@@ -168,7 +168,7 @@
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.allies_reinforcements_ru > 0) { return 0; } return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_ru\t"+paths_self.game.state.round);
@@ -314,7 +314,7 @@
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.allies_reinforcements_ru > 0) { return 0; } return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_ru\t"+paths_self.game.state.round);
@@ -351,7 +351,7 @@
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.allies_reinforcements_fr > 0) { return 0; } return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_fr\t"+paths_self.game.state.round);
@@ -371,7 +371,7 @@
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.allies_reinforcements_ru > 0) { return 0; } return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_ru\t"+paths_self.game.state.round);
@@ -475,7 +475,7 @@ deck['ap14'] = {
         rp : { 'A' : 1 , 'BR' : 2 , 'FR' : 2 , 'IT' : 1 , 'RU' : 3 } ,       
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.allies_reinforcements_br > 0) { return 0; } return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_br\t"+paths_self.game.state.round);
@@ -786,7 +786,7 @@ deck['ap14'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.central_reinforcements_ge > 0) { return 0; } return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t"+paths_self.game.state.round);
@@ -877,7 +877,7 @@ deck['ap14'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.central_reinforcements_ge > 0) { return 0; } return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t"+paths_self.game.state.round);
@@ -919,7 +919,7 @@ deck['ap14'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.central_reinforcements_ah > 0) { return 0; } return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ah\t"+paths_self.game.state.round);
@@ -955,7 +955,7 @@ deck['ap15'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.allies_reinforcements_br > 0) { return 0; } return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_br\t"+paths_self.game.state.round);
@@ -991,6 +991,14 @@ deck['ap16'] = {
 	  } else {
 	    paths_self.updateStatus("Romania entering war...");
 	  }
+
+          paths_self.displayCustomOverlay({
+                text : "Romania joins the Allies" ,
+                title : "Romania joins the War!",
+                img : "/paths/img/backgrounds/entry/romania-enters-the-war.png",
+                msg : "Romanian units added to board...",
+                styles : [{ key : "backgroundPosition" , val : "bottom" }],
+          });
 	  return 0;
 	} ,
       }
@@ -1029,6 +1037,14 @@ deck['ap17'] = {
 	  paths_self.addUnitToSpace("it_army02", "udine");
 	  paths_self.addUnitToSpace("it_corps", "rome");
 	  paths_self.addUnitToSpace("it_corps", "taranto");
+
+          paths_self.displayCustomOverlay({
+                text : "Italy joins the Allied Powers" ,
+                title : "Italy joins the War!",
+                img : "/paths/img/backgrounds/entry/italy-enters-the-war.png",
+                msg : "Italian units added to board...",
+                styles : [{ key : "backgroundPosition" , val : "bottom" }],
+          });
 
 	  return 1;
 	} ,
@@ -1097,7 +1113,7 @@ deck['ap20'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.allies_reinforcements_br > 0) { return 0; } return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_br\t"+paths_self.game.state.round);
@@ -1144,7 +1160,7 @@ deck['ap22'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { if (paths_self.game.state.events.italy) { return 1; } return 0; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.events.italy && paths_self.game.state.allies_reinforcements_it == 0) { return 1; } return 0; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_it\t"+paths_self.game.state.round);
@@ -1214,7 +1230,7 @@ deck['ap24'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.allies_reinforcements_fr == 0) { return 1; } return 0; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_fr\t"+paths_self.game.state.round);
@@ -1234,7 +1250,7 @@ deck['ap25'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.allies_reinforcements_ru == 0) { return 1; } return 0; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_ru\t"+paths_self.game.state.round);
@@ -1502,7 +1518,7 @@ deck['ap32'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'RU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.allies_reinforcements_ru == 0) { return 1; } return 0; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_ru\t"+paths_self.game.state.round);
@@ -1542,7 +1558,7 @@ deck['ap34'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.allies_reinforcements_br > 0) { return 0; } return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_br\t"+paths_self.game.state.round);
@@ -1731,7 +1747,7 @@ deck['ap34'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.central_reinforcements_ah > 0) { return 0; } return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ah\t"+paths_self.game.state.round);
@@ -1751,7 +1767,7 @@ deck['ap34'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.central_reinforcements_ge > 0) { return 0; } return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t"+paths_self.game.state.round);
@@ -1771,7 +1787,7 @@ deck['ap34'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.central_reinforcements_ge > 0) { return 0; } return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t"+paths_self.game.state.round);
@@ -1792,7 +1808,7 @@ deck['ap34'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.central_reinforcements_ah > 0) { return 0; } return 1; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ah\t"+paths_self.game.state.round);
@@ -2096,6 +2112,15 @@ deck['cp33'] = {
 	  } else {
 	    paths_self.updateStatus("Bulgaria entering war...");
 	  }
+
+          paths_self.displayCustomOverlay({
+                text : "Bulgaria joins the Central Powers" ,
+                title : "Bulgaria joins the War!",
+                img : "/paths/img/backgrounds/entry/bulgaria-enters-the-war.png",
+                msg : "Bulgarian units added to board...",
+                styles : [{ key : "backgroundPosition" , val : "bottom" }],
+          });
+
 	  return 0;
 	} ,
       }
@@ -2274,7 +2299,7 @@ deck['ap42'] = {
         rp : { 'BR' : 1 , 'FR' : 1 , 'IT' : 1 , 'RU' : 2 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.allies_reinforcements_br > 0) { return 1; } return 0; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tallies_reinforcements_br\t"+paths_self.game.state.round);
@@ -2756,7 +2781,7 @@ deck['ap65'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.central_reinforcements_ge > 0) { return 1; } return 0; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t"+paths_self.game.state.round);
@@ -2776,7 +2801,7 @@ deck['ap65'] = {
         rp : { 'GE' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.central_reinforcements_ge > 0) { return 1; } return 0; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t"+paths_self.game.state.round);
@@ -2823,7 +2848,7 @@ deck['ap65'] = {
         rp : { 'AH' : 1 , 'GE' : 2 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.central_reinforcements_ge > 0) { return 1; } return 0; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t"+paths_self.game.state.round);
@@ -2949,7 +2974,7 @@ deck['ap65'] = {
         rp : { 'AH' : 2 , 'BU' : 1 , 'GE' : 3 , 'TU' : 1 } ,        
         type : "normal" ,
         removeFromDeckAfterPlay : function(paths_self, faction) { return 1; } ,
-        canEvent : function(paths_self, faction) { return 1; } ,
+        canEvent : function(paths_self, faction) { if (paths_self.game.state.central_reinforcements_ge > 0) { return 1; } return 0; } ,
         onEvent : function(paths_self, faction) {
 	  if (paths_self.game.player == paths_self.returnPlayerOfFaction(faction)) {
 	    paths_self.addMove("SETVAR\tstate\tcentral_reinforcements_ge\t"+paths_self.game.state.round);

@@ -103,6 +103,9 @@
   position: absolute;
   z-index: 10;
 }
+.general-records-track-0 img {
+  display: none;
+}
 .general-records-track-1 img:nth-child(1) {
   top: -10px;
   left: -10px;

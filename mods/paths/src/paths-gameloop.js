@@ -364,6 +364,14 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 	    this.addUnitToSpace("tu_corps", "medina");
 	    this.displayBoard();
 
+	    this.displayCustomOverlay({
+          	text : "Turkey joins the Central Powers" ,
+          	title : "Limited War!",
+          	img : "/paths/img/backgrounds/entry/turkey-enters-the-war.png",
+          	msg : "Turkish units added to deck...",
+          	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+            });
+
 	  }
   	  if (this.game.state.general_records_track.allies_war_status >= 4 && this.game.state.allies_limited_war_cards_added == false) {
 	    if (this.game.player == this.returnPlayerOfFaction("allies")) {

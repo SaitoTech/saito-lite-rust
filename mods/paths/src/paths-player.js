@@ -1535,6 +1535,7 @@ console.log(JSON.stringify(spaces_within_hops));
 	  if (this.returnPowerOfUnit(this.game.spaces[key].units[0]) != faction) {
   	    for (let i = 0; i < this.game.spaces[key].neighbours.length; i++) {
 	      let n = this.game.spaces[key].neighbours[i];
+	      if (this.game.spaces[n].oos == 1) { return 0; } // cannot attack if OOS
 	      if (this.game.spaces[n].activated_for_combat == 1) { return 1; }
 	    }
 	  }
@@ -1778,7 +1779,6 @@ console.log(JSON.stringify(spaces_within_hops));
     let active_unit = null;
     let active_unit_moves = 0;
 
-
     let paths_self = this;
     let options = this.returnSpacesWithFilter(
       (key) => {
@@ -1854,6 +1854,7 @@ console.log(JSON.stringify(spaces_within_hops));
 
 
     let unitActionInterface = function(key, idx, options, mainInterface, moveInterface, unitActionInterface, continueMoveInterface) {
+
       let unit = paths_self.game.spaces[key].units[idx];
 
       active_unit = unit;
@@ -1862,7 +1863,9 @@ console.log(JSON.stringify(spaces_within_hops));
      
       let sourcekey = key;
       let html  = `<ul>`;
+      if (paths_self.game.spaces[key].oos != 1) {
           html += `<li class="option" id="move">move</li>`;
+      }
       if (paths_self.game.state.events.entrench == 1) {
           html += `<li class="option" id="entrench">entrench</li>`;
       }
@@ -1955,7 +1958,11 @@ console.log(JSON.stringify(spaces_within_hops));
 	      // end turn
 	      //
 	      if (key2 === "skip") {
-		paths_self.endTurn();
+		//
+		// we finish the movement of one unit, and move on to the next 
+		//
+	        mainInterface(options, mainInterface, moveInterface, unitActionInterface, continueMoveInterface);
+		//paths_self.endTurn();
 		return 1;
 	      }
 
@@ -2018,7 +2025,7 @@ console.log(JSON.stringify(spaces_within_hops));
 	        if (count == 0) {
 		  salert("Besieging a Fort Requires an Army: pick again");
 		  if (currentkey == sourcekey) {
-		    unitActionInterface(key, idx, options, mainInterface, moveInterface, unitActionInterface);
+		    unitActionInterface(currentkey, idx, options, mainInterface, moveInterface, unitActionInterface, continueMoveInterface);
 		  } else {
 	            continueMoveInterface(sourcekey, currentkey, idx, options, mainInterface, moveInterface, unitActionInterface, continueMoveInterface);
 		  }

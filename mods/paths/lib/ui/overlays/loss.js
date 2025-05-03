@@ -523,7 +523,10 @@ console.log("C ACTIVE CARDS: " + JSON.stringify(this.mod.game.state.cc_central_a
 //
 // replacing unit pulls corps from reserves
 //
-if (this.mod.doesSpaceHaveUnit(corpsbox, corpsunit)) {
+console.log("examining: " + corpsbox);
+console.log("for: " + corpskey);
+
+if (this.mod.doesSpaceHaveUnit(corpsbox, corpskey)) {
 						this.units.push(corpsunit);
 						this.moves.push(`add\t${unit.spacekey}\t${corpskey}\t${this.mod.game.player}`);
 						this.moves.push(`remove\t${corpsbox}\t${corpskey}\t${this.mod.game.player}`);

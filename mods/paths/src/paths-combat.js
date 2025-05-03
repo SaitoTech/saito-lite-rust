@@ -195,8 +195,6 @@
       if (attacker_units[i].type == "army") { is_one_army_attacking = true; }
     }
 
-
-
     //
     // no swamp or mountain or trench or unoccupied fort
     //
