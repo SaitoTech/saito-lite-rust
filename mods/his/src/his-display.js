@@ -2913,7 +2913,11 @@ console.log("ERROR DISPLAYING NEW WORLD STUFF: " + JSON.stringify(err));
 
   displayNavalSpace(key) {
 
-    if (this.game.spaces[key]) { this.displaySpace(key); return; }
+    if (this.game.spaces[key]) {
+      this.displaySpace(key);
+      return;
+    }
+
     if (!this.game.navalspaces[key]) { return; }
 
     let obj = document.getElementById(key);

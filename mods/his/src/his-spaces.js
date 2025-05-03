@@ -3599,7 +3599,7 @@ if (transit_seas == 3 && sourcekey == "malta") {
       home: "venice",
       political: "",
       religion: "catholic",
-      ports: ["adriatic"],
+      ports: ["ionian", "adriatic"],
       neighbours: [],
       language: "other",
       type: "fortress"
