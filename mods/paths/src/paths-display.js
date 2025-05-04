@@ -273,6 +273,14 @@ console.log("!");
 	} else {
           html += `<img src="/paths/img/tiles/oos_allies.png" class="trench-tile oos-tile" />`;
 	}
+      } else {
+
+	//
+	// remove any highlights
+	//
+        document.querySelectorAll(`.${key}`).forEach((el) => { 
+	  el.classList.remove("oos-highlight");
+	});
       }
 
 

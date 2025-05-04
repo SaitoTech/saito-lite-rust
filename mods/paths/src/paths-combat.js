@@ -5,6 +5,13 @@
 
   returnAttackerUnits() {
     let x = this.game.state.combat.attacker;
+
+    x.sort((a, b) => {
+      if (a.unit_idx < b.unit_idx) { return -1; }
+      if (a.unit_idx > b.unit_idx) { return 1; }   
+      return 0;
+    });
+
     let units = [];
     for (let z = 0; z < x.length; z++) {
       units.push(this.game.spaces[x[z].unit_sourcekey].units[x[z].unit_idx]);   
@@ -16,7 +23,11 @@
     let x = 0;
     for (let i = 0; i < this.game.spaces[this.game.state.combat.key].units.length; i++) {
       let unit = this.game.spaces[this.game.state.combat.key].units[i];
-      x += unit.combat;
+      if (unit.damaged) {
+        x += unit.rcombat;
+      } else {
+        x += unit.combat;
+      }
     }
     return x;
   }
@@ -25,7 +36,11 @@
     let x = 0;
     for (let i = 0; i < this.game.state.combat.attacker.length; i++) {
       let unit = this.game.spaces[this.game.state.combat.attacker[i].unit_sourcekey].units[this.game.state.combat.attacker[i].unit_idx];
-      x += unit.combat;
+      if (unit.damaged) {
+        x += unit.rcombat;
+      } else {
+        x += unit.combat;
+      }
     }
     return x;
   }
@@ -68,21 +83,34 @@
       cp += this.game.spaces[this.game.state.combat.key].fort;
     }
     
+console.log("CALCULATING ATTACKER LOSS FACTOR (defender hits): )");
+console.log("CP: " + cp);
 
     let hits = this.returnArmyFireTable();
     if (this.game.state.combat.defender_table === "corps") { hits = this.returnCorpsFireTable(); }
+
+console.log("table: " + JSON.stringify(hits));
+
     for (let i = hits.length-1; i >= 0; i--) {
       if (hits[i].max >= cp && hits[i].min <= cp) {
-	
+
 	//
-	// we haev found the right column and row, but we shift
+	// we have found the right column and row, but we shift
 	// based on combat modifiers...
 	//
+console.log("original col: " + (i) + " " + this.game.state.combat.defender_column_shift);
 	let col = i + this.game.state.combat.defender_column_shift;
+
+
 	if (col <= 0) { col = 1; }
 	if (col >= hits.length) { col = hits.length-1; }
 
+console.log("adjusted col: " + col);
+console.log("defender hits: " + hits[col][this.game.state.combat.defender_modified_roll]);
+console.log("dmr: " + this.game.state.combat.defender_modified_roll);
         return hits[col][this.game.state.combat.defender_modified_roll];
+
+
       }
     }
     return 0;
@@ -90,8 +118,11 @@
 
   returnDefenderLossFactor() {
     let cp = this.returnAttackerCombatPower();
+console.log("CALCULATING DEFENDER LOSS FACTOR (attacker hits): )");
+console.log("CP: " + cp);
     let hits = this.returnArmyFireTable();
     if (this.game.state.combat.attacker_table === "corps") { hits = this.returnCorpsFireTable(); }
+console.log("table: " + JSON.stringify(hits));
     for (let i = hits.length-1; i >= 0; i--) {
       if (hits[i].max >= cp && hits[i].min <= cp) {
 	
@@ -100,8 +131,11 @@
 	// based on combat modifiers...
 	//
 	let col = i + this.game.state.combat.attacker_column_shift;
+console.log("original col: " + i + " + " + this.game.state.combat.attacker_column_shift);
 	if (col <= 0) { col = 1; }
 	if (col >= hits.length) { col = hits.length-1; }
+console.log("adjusted col: " + col);
+console.log("calculating hits: " + hits[i][this.game.state.combat.attacker_modified_roll]);
 
         return hits[i][this.game.state.combat.attacker_modified_roll];
       }

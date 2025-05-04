@@ -209,16 +209,7 @@
 
 let trace_supply = 0;
 if (spacekey == "insterberg" || spacekey == "konigsberg") {
-  console.log("^");
-  console.log("^");
-  console.log("^");
-  console.log("^");
-  console.log("^");
-  console.log("^");
-  console.log("^");
-  console.log("^");
-  console.log("examining INSTERBERG");
-  trace_supply = 1;
+  //trace_supply = 1;
 }
 
 
@@ -284,11 +275,6 @@ if (spacekey == "insterberg" || spacekey == "konigsberg") {
     }
     let ports = this.returnFriendlyControlledPorts(controlling_faction);
 
-if (trace_supply) {
-console.log("supply sources: " + JSON.stringify(sources));
-console.log("controlling faction: " + controlling_faction);
-}
-
     while (pending.length > 0) {
 
       let current = pending.shift();
@@ -311,9 +297,6 @@ console.log("controlling faction: " + controlling_faction);
       //
       for (let n in this.game.spaces[current].neighbours) {
         let s = this.game.spaces[current].neighbours[n];
-if (trace_supply) {
-console.log("neighbour: " + s);
-}
         if (!examined[s]) {
 	  if (this.returnControlOfSpace(s) == controlling_faction) {
 	    //
@@ -322,20 +305,16 @@ console.log("neighbour: " + s);
 	    if (this.game.spaces[s].fort > 0) {
 	      if (this.game.spaces[s].units.length > 0) {
 		if (this.returnPowerOfUnit(this.game.spaces[s].units[0]) != controlling_faction) {
-console.log("bad: " + JSON.stringify(this.game.spaces[s].units[0]));
 		  //
 		  // besieging unit blocking supply channel
 		  //
 		} else {
-if (trace_supply) { console.log("adding 1 " + s); }
 	          pending.push(s); 
 		}
 	      } else {
-if (trace_supply) { console.log("adding 2 " + s); }
 	        pending.push(s); 
 	      }
 	    } else {
-if (trace_supply) { console.log("adding 3 " + s); }
 	      pending.push(s); 
 	    }
 	  } else {
@@ -345,7 +324,6 @@ if (trace_supply) { console.log("adding 3 " + s); }
 		// we can still trace supply through besieged spaces with our units
 		//
 		if (this.returnPowerOfUnit(this.game.spaces[s].units[0]) == controlling_faction) {
-if (trace_supply) { console.log("adding 4 " + s); }
 	    	  pending.push(s); 
 		}
 	      }
@@ -355,37 +333,18 @@ if (trace_supply) { console.log("adding 4 " + s); }
       }
 
 
-if (trace_supply == 1) {
-  console.log("ports_added? " + ports_added);
-}
-
       if (ports_added == false) {
-if (trace_supply == 1) {
-  console.log("current: " + current);
-  console.log("port: " + this.game.spaces[current].port);
-  console.log("control: " + this.game.spaces[current].control);
-  console.log("controlling_faction: " + controlling_faction);
-}
 	if (controlling_faction == "allies" && this.game.spaces[current].port == 1 && this.game.spaces[current].control == "allies") {
  	  for (let i = 0; i < ports.length; i++) {
 	    if (this.game.spaces[ports[i]].control == "allies") {
-if (trace_supply == 1) {
-  console.log("pushing allies port: " + ports[i]);
-}
 	      pending.push(ports[i]);
 	    }
 	  }
 	  ports_added = true;
 	}
 	if (controlling_faction == "central" && this.game.spaces[current].port == 2 && this.game.spaces[current].control == "central") {
-if (trace_supply == 1) {
-  console.log("examining ports for central players...");
-}
  	  for (let i = 0; i < ports.length; i++) {
 	    if (this.game.spaces[ports[i]].control == "central") {
-if (trace_supply == 1) {
-  console.log("pushing central port: " + ports[i]);
-}
 	      pending.push(ports[i]);
 	    }
 	  }

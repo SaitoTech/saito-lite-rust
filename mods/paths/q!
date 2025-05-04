@@ -291,7 +291,6 @@ console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
 		document.querySelectorAll(".effects_table .row").forEach((el) => { el.style.display = "none"; });
 		document.querySelectorAll(".firing_table .row .col").forEach((el) => { el.style.color = "black"; });
 		document.querySelectorAll(".firing_table .row .col").forEach((el) => { el.style.backgroundColor = "transparent"; });
-
 		if (space.terrain == "normal")   { document.querySelector(".effects_table .clear").style.display = "contents"; }
 		if (space.terrain == "mountain") { document.querySelector(".effects_table .mountain").style.display = "contents"; }
 		if (space.terrain == "swamp")    { document.querySelector(".effects_table .swamp").style.display = "contents"; }
@@ -367,14 +366,6 @@ console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
 		  this.highlightFiringTable("corps", attacker_color, attacker_color_highlight, attacker_modified_roll, attacker_column_number);
 		}
 		if (defender_table == "army")  {
-
-	          //
-    		  // forts lend their combat strength to the defense
-    		  //
-    		  if (this.mod.game.spaces[this.mod.game.state.combat.key].fort > 0) {
-      		    defender_strength += this.mod.game.spaces[this.mod.game.state.combat.key].fort; 
-		  }
-
 		  defender_column_number = this.mod.returnArmyColumnNumber(defender_strength);
 		  defender_column_number += this.mod.game.state.combat.defender_column_shift;
 		  if (defender_column_number < 0) { defender_column_number = 0; }
@@ -382,14 +373,6 @@ console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
 		  this.highlightFiringTable("army", defender_color, defender_color_highlight, defender_modified_roll, defender_column_number);
 		}
 		if (defender_table == "corps") {
-
-	          //
-    		  // forts lend their combat strength to the defense
-    		  //
-    		  if (this.mod.game.spaces[this.mod.game.state.combat.key].fort > 0) {
-      		    defender_strength += this.mod.game.spaces[this.mod.game.state.combat.key].fort; 
-		  }
-
 		  defender_column_number = this.mod.returnCorpsColumnNumber(defender_strength);
 		  defender_column_number += this.mod.game.state.combat.defender_column_shift;
 		  if (defender_column_number < 0) { defender_column_number = 0; }
@@ -456,20 +439,15 @@ console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
 	}
 
 	highlightFiringTable(ftable="corps", color="blue", highlight_color="blue", defender_modified_roll=0, defender_column_number=0) {
-console.log("highlight 1: " + defender_modified_roll);
-console.log("highlight 2: " + defender_column_number);
 		let qs = `.${ftable}_firing_table .firing_table `;
 	        for (let i = 0; i <= defender_column_number; i++) {
 			let obj = document.querySelector(`${qs} .row-${defender_modified_roll} .col-${i}`);
-console.log("what colour is col-" + i + " - row-" + defender_modified_roll + " ----> " + obj.style.color);
-			if (obj.style.color == "black") { obj.style.backgroundColor = color; }
+			if (obj.style.backgroundColor == "") { obj.style.backgroundColor = color; }
 		}
 	        for (let i = 0; i < defender_modified_roll; i++) {
 			let obj = document.querySelector(`${qs} .row-${i} .col-${defender_column_number}`);
-console.log("what colour is col-" + i + " - row-" + defender_modified_roll + " ----> " + obj.style.color);
-			if (obj.style.color == "black") { obj.style.backgroundColor = color; }
+			if (obj.style.backgroundColor == "") { obj.style.backgroundColor = color; }
 		}
-console.log("setting highlight at: row-" + defender_modified_roll + " col-" + defender_column_number);
 		document.querySelector(`${qs} .row-${defender_modified_roll} .col-${defender_column_number}`).style.backgroundColor = highlight_color;
 		document.querySelector(`${qs} .row-${defender_modified_roll} .col-${defender_column_number}`).style.color = "#FFFFFF";
 	}

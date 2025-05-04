@@ -22,7 +22,7 @@ module.exports = () => {
             <div class="col col-2">roll</div>
             <div class="col col-3">modifiers</div>
             <div class="col col-4">col-shift</div>
-            <div class="col col-5">damage</div>
+            <div class="col col-5">hits</div>
           </div>
           <div class="row row-1">
             <div class="col col-0 attacker_faction">central</div>

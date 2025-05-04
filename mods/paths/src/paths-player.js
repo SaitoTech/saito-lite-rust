@@ -121,7 +121,6 @@ console.log(JSON.stringify(ccs));
     //
     for (let z = 0; z < ccs.length; z++) {
       if (cards[ccs[z]].canEvent(this, "attacker")) {
-console.log("num from: " + ccs[z]);
 	num++;
       }
     }
@@ -589,7 +588,7 @@ console.log("UNIT: " + JSON.stringify(unit));
           this.unbindBackButtonFunction();
           this.updateStatus("advancing...");
 
-          for (let i = 0, j = 0; j < 2 && i < attacker_units.length; i++) {
+	  for (let i = 0, j = 0; j <= 2 && i < attacker_units.length; i++) {
             let x = attacker_units[i];
             let skey = x.spacekey;
             let ukey = x.key;
@@ -684,7 +683,7 @@ console.log("UNIT: " + JSON.stringify(unit));
 	this.updateStatus("advancing...");
 
 
-	for (let i = 0; i < attacker_units.length; i++) {
+	for (let i = 0, j = 0; j <= 2 && i < attacker_units.length; i++) {
           let x = attacker_units[i];
       	  let skey = x.spacekey;
       	  let ukey = x.key;
@@ -698,6 +697,7 @@ console.log("UNIT: " + JSON.stringify(unit));
 	  if (!attacker_units[i].damaged) {
             paths_self.moveUnit(skey, uidx, key);
 	    paths_self.addMove(`move\t${faction}\t${skey}\t${uidx}\t${key}\t${paths_self.game.player}`);
+	    j++;
 	  }
           paths_self.displaySpace(skey);
 	}
@@ -761,6 +761,8 @@ console.log("UNIT: " + JSON.stringify(unit));
 
     this.removeSelectable();
 
+    let continue_fnct = () => {};
+
     let html = `<ul>`;
     html    += `<li class="card" id="overlay">show overlay</li>`;
     html    += `<li class="card" id="finish">finish</li>`;
@@ -770,7 +772,11 @@ console.log("UNIT: " + JSON.stringify(unit));
     this.attachCardboxEvents((action) => {
 
       if (action === "overlay") {
-	this.playerSpendReplacementPoints(faction);
+        if (continue_fnct()) {
+	  this.playerSpendReplacementPoints(faction);
+	} else {
+	  this.endTurn();
+	}
 	return;
       }
 
@@ -799,7 +805,7 @@ console.log("UNIT: " + JSON.stringify(unit));
       return 0;
     }
 
-    let continue_fnct = () => {
+    continue_fnct = () => {
 
 	let can_uneliminate_unit = false;
 	let can_uneliminate_unit_array = [];	
@@ -1440,6 +1446,11 @@ console.log(JSON.stringify(spaces_within_hops));
   playerPlayCard(faction, card) {
 
     //
+    // avoid back-button select
+    //
+    this.removeSelectable();
+
+    //
     // pass is pass!
     //
     if (card == "pass") {
@@ -1447,7 +1458,6 @@ console.log(JSON.stringify(spaces_within_hops));
       this.endTurn();
       return;
     }
-
 
     let c = this.deck[card];
 
@@ -2272,12 +2282,15 @@ console.log("SPACES: " + JSON.stringify(paths_self.game.spaces[key].units));
     html    += `<li class="card" id="end">skip remaining ops...</li>`;
     html    += `</ul>`;
 
-    this.updateStatusWithOptions(`You have ${cost} OPS remaining`, html, true);
     this.bindBackButtonFunction(() => { 
-      for (let key in this.game.spaces) { this.game.spaces[key].activated_for_movement = 0; this.game.spaces[key].activated_for_combat = 0; } 
+      for (let key in this.game.spaces) { if (this.game.spaces[key].activated_for_movement == 1 || this.game.spaces[key].activated_for_combat == 1) { this.game.spaces[key].activated_for_movement = 0; this.game.spaces[key].activated_for_combat = 0; this.displaySpace(key)} } 
       this.moves = [];
+      if (this.game.queue[this.game.queue.length-1].split("\t")[0] == "play") {
+        this.addMove("resolve\tplay");
+      }
       this.playerPlayCard(faction, card);
     });
+    this.updateStatusWithOptions(`You have ${cost} OPS remaining`, html, true);
     this.attachCardboxEvents((action) => {
 
       if (action === "end") {
@@ -2613,7 +2626,6 @@ console.log("SPACES: " + JSON.stringify(paths_self.game.spaces[key].units));
 
       paths_self.updateStatus("selected...");
 
-
       //
       // and remove on-board clickability
       //
@@ -2681,13 +2693,23 @@ console.log("SPACES: " + JSON.stringify(paths_self.game.spaces[key].units));
 
     this.addMove(`record\t${faction}\t${this.game.state.round}\tsd`);
 
+    let msg = `Redeploy Army / Corps (${value} ops)`;
+    if (value < 4) { msg = `Redeploy Corps only (${value} ops)`; }
+
     //
     // select box with unit
     //
     this.playerSelectSpaceWithFilter(
-      `Redeploy Units (${value} ops)`,
+      msg ,
       (key) => {
-	if (spaces.includes(key)) { return 1; }
+	if (spaces.includes(key)) {
+	  if (value == 4) { return 1; }	
+	  for (let z = 0; z < spaces.units.length; z++) {
+	    if (space.units[z].corps) {
+	      return 1;
+	    }
+	  }
+	}
         return 0;
       },
       (key) => {
@@ -2807,6 +2829,17 @@ console.log("SPACES: " + JSON.stringify(paths_self.game.spaces[key].units));
     this.game.state.player_turn_card_select = true;
     this.updateStatusAndListCards(`${name} - select card`, hand);
     this.attachCardboxEvents((card) => {
+
+      //
+      // remove "pass"
+      //
+      for (let z = 0; z < this.game.deck[0].hand.length; z++) {
+        if (this.game.deck[0].hand[z] == "pass") { this.game.deck[0].hand.splice(z, 1); }
+      }
+      for (let z = 0; z < this.game.deck[1].hand.length; z++) {
+        if (this.game.deck[1].hand[z] == "pass") { this.game.deck[1].hand.splice(z, 1); }
+      }
+
       this.game.state.player_turn_card_select = false;
       this.playerPlayCard(faction, card);
     });

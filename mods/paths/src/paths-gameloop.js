@@ -426,6 +426,19 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 		    if (roll > space.fort) {
 		      space.fort = -1;
 		      this.updateStatus(this.returnSpaceName(space.key) + " fort destroyed (roll: " + roll + ")");
+
+	              //
+	              // switch control
+	              //
+	              space.control = this.returnPowerOfUnit(space.units[0]);
+
+ 	             //
+                     // degrade trenches
+                     //
+                     if (space.trench > 0) { space.trench--; }
+		     this.displaySpace(key);
+		     this.shakeSpacekey(key);
+
 		    } else {
 		      this.updateStatus(this.returnSpaceName(space.key) + " fort resists siege (roll: " + roll + ")");
 		    }
@@ -1048,6 +1061,16 @@ try {
 
 	if (mv[0] === "combat") {
 
+    	  //
+    	  // deprecated -- remove "pass"
+    	  //
+    	  for (let z = 0; z < this.game.deck[0].hand.length; z++) {
+    	    if (this.game.deck[0].hand[z] == "pass") { this.game.deck[0].hand.splice(z, 1); }
+          }
+    	  for (let z = 0; z < this.game.deck[1].hand.length; z++) {
+    	    if (this.game.deck[1].hand[z] == "pass") { this.game.deck[1].hand.splice(z, 1); }
+    	  }
+
 	  let key = mv[1];
 	  let selected = JSON.parse(mv[2]);
 
@@ -1094,7 +1117,6 @@ try {
 	    }
 	  }
 
-
 	  //
 	  // everything has cleared out, so attackers may advance 
 	  //
@@ -1115,7 +1137,6 @@ try {
 	    let u = this.game.spaces[this.game.state.combat.key].units[z];
 	    if (u.corps) { u.eligible_for_withdrawal_bonus = 1; }
 	  }
-
 
 	  //
 	  // remove this from the queue
@@ -1403,7 +1424,6 @@ console.log(JSON.stringify(this.game.state.cc_allies_active));
 	    }
 	    this.game.state.attacks[spacekey].push(this.game.state.combat.key);
 	  }
-
 
 	  //
 	  // trenches and row shifts
@@ -2318,11 +2338,16 @@ alert("Fort Survives Assault");
 	  //
 	  // note that this does not apply to units moving into a space they control...
 	  //
+console.log("are there units in " + destinationkey);
 	  if (this.game.spaces[destinationkey].units.length > 0) {
+console.log("yes!");
+
 	    if (this.returnPowerOfUnit(this.game.spaces[destinationkey].units[0]) != this.game.spaces[destinationkey].control) {
+console.log("space is not controlled by us...");
 	      if (this.game.spaces[destinationkey].fort > 0) {
 	        this.game.spaces[destinationkey].besieged = 1;
 	      } else {
+console.log("switching control!");
 	        //
 	        // switch control
 	        //
@@ -2331,6 +2356,7 @@ alert("Fort Survives Assault");
 	        //
 	        // degrade trenches
 	        //
+console.log("degrading trench!");
 	        if (this.game.spaces[destinationkey].trench > 0) { this.game.spaces[destinationkey].trench--; }
 	      }
 	    }
@@ -2363,6 +2389,7 @@ alert("Fort Survives Assault");
 	  //
 	  // shake the space
 	  //
+	  this.displaySpace(destinationkey);
 	  this.shakeSpacekey(destinationkey);
 
 	  return 1;

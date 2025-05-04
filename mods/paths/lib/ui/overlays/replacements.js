@@ -89,6 +89,11 @@ class ReplacementsOverlay {
 	}
 
 
+	hideSubMenu() {
+alert("hiding sub menu!");
+		document.querySelector('.replacements-overlay .submenu .controls').innerHTML = '';
+	}
+
 	showSubMenu(id="uneliminate") {
 
 		let paths_self = this.mod;
@@ -138,7 +143,7 @@ class ReplacementsOverlay {
 
 				if (id == "uneliminate") {
         				paths_self.game.spaces[eu[z].key].units[eu[z].idx].destroyed = 0;
-        				paths_self.game.spaces[spacekey].units[unit_idx].damaged = 1;
+        				paths_self.game.spaces[eu[z].key].units[eu[z].idx].damaged = 1;
         				if (paths_self.returnFactionOfPlayer() == "central") {
 						paths_self.moveUnit(eu[z].key, eu[z].idx, "crbox");
         				} else {
@@ -164,6 +169,9 @@ class ReplacementsOverlay {
 					paths_self.playerSpendReplacementPoints(paths_self.returnFactionOfPlayer());
 				}
 				if (id == "deploy") {
+
+					this.hideSubMenu();
+			
 					paths_self.playerSelectSpaceWithFilter(
               					`Destination for ${unit.name}` ,
               					(spacekey) => { 
@@ -174,6 +182,13 @@ class ReplacementsOverlay {
  							} return 0;
 						} ,
               					(spacekey) => {
+
+							if (spacekey == "mainmenu") {
+alert("back to main!");
+								this.render();
+								return 1;
+							}
+
 					              	paths_self.updateStatus("moving...");
               						paths_self.moveUnit(eu[z].key, eu[z].idx, spacekey);
               						paths_self.prependMove(`move\t${faction}\t${eu[z].key}\t${eu[z].idx}\t${spacekey}\t${paths_self.game.player}`);
@@ -182,7 +197,8 @@ class ReplacementsOverlay {
 							paths_self.playerSpendReplacementPoints(paths_self.returnFactionOfPlayer());
 						},
               					null ,
-              					true ,
+             					true ,
+						[{ key : "mainmenu" , value : "back to menu" }] ,
             				);
 				}
 			}
