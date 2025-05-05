@@ -11,7 +11,7 @@
   border-radius: 20rem;
   user-select: none;
   left: 50%;
-  transition: visbility 0.25s;
+  transition: opacity 0.75s;
   transform: translateX(-50%);
   background: url(/poker/img/simple-chip.svg);
   background-size: contain;
@@ -23,7 +23,7 @@
 }
 
 .pot.invisible {
-  visibility: hidden;
+  opacity: 0;
 }
 
 .pot::after {
@@ -53,8 +53,23 @@
   font-size: 3.4rem;
 }
 
+.potholder.squeeze {
+  justify-content: space-between;
+}
+
 .potholder.squeeze > div {
   text-align: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.potholder.squeeze .line2 {
+  font-size: unset;
+}
+
+.potholder.squeeze span {
+  font-weight: normal;
 }
 
 /*  Details overlay */
