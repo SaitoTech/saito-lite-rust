@@ -202,7 +202,7 @@ class ChatUserMenu {
 			      member.onclick = async (e) => {
 			        let person = e.currentTarget.dataset.id;
 			        if (person){
-			            await this.mod.sendRemoveMemberTransaction(
+			            await thisobj.mod.sendRemoveMemberTransaction(
 			            chat,
 			            person
 			          );
@@ -219,6 +219,14 @@ class ChatUserMenu {
 			      }
 			    });
 
+			}
+		}
+
+		if (document.getElementById('debug')){
+			document.getElementById('debug').onclick = (e) => {
+				console.log(JSON.parse(JSON.stringify(thisobj.chat_group)));
+				let message = thisobj.mod.createMessageBlocks(thisobj.chat_group);
+				console.log(JSON.parse(JSON.stringify(message)));
 			}
 		}
 

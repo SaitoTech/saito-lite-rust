@@ -808,7 +808,7 @@ class Chat extends ModTemplate {
 
       // We put chat message above because we actually have some logic in
       // the "double" processing of chat messages
-      if (this.hasSeenTransaction(tx)) {
+      if (this.hasSeenTransaction(tx) && this.app.BROWSER) {
         console.log('***************Already processed!');
         return;
       }
@@ -1920,7 +1920,7 @@ class Chat extends ModTemplate {
         }
         return 0;
       }
-      if (tx.timestamp < group.txs[i].timestamp) {
+      if (new_message.timestamp < group.txs[i].timestamp) {
         if (this.debug) {
           console.log('out of order ' + i);
           console.log(JSON.parse(JSON.stringify(new_message)));
@@ -1940,7 +1940,7 @@ class Chat extends ModTemplate {
 
     group.txs.splice(insertion_index, 0, new_message);
 
-    group.last_update = tx.timestamp;
+    group.last_update = new_message.timestamp;
 
     if (!this.app.BROWSER) {
       return 0;
