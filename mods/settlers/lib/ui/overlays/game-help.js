@@ -40,11 +40,15 @@ class GameHelp {
 			document.querySelector('.welcome').style.backgroundImage = `url(${obj.img})`;
 		}
 
-		// this will clear any ACKNOWLEDGE
-		this.attachEvents();
 	}
 
 	render(targs = {}) {
+
+		if (targs.id){
+			if (this.game_mod.loadGamePreference(`settlers_help_${targs.id}`)){
+				return;
+			}
+		}
 
 		let gh = document.querySelector('.game-help-triangle');
 		if (gh) {
@@ -68,6 +72,14 @@ class GameHelp {
 		gh.onclick = (e) => {
 			this.hide();
 			this.renderCustomOverlay(targs);
+
+			// Overlay events
+			if (document.querySelector(".welcome-optout")){
+				document.querySelector(".welcome-optout").onclick = (e) => {
+					this.game_mod.saveGamePreference(`settlers_help_${targs.id}`, 'noshow');
+					this.overlay.close();
+				}
+			}
 		};
 	}
 

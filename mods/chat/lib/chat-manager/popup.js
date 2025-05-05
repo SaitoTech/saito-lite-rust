@@ -860,10 +860,12 @@ class ChatPopup {
 				message,
 				this.input.getMentions()
 			);
-			if (newtx) {
-				mod.receiveChatTransaction(newtx);
-			}
 			this.input.clear();
+
+			if (newtx) {
+				await mod.receiveChatTransaction(newtx);
+			}
+
 			if (document.querySelector(popup_qs + ' .chat-body')) {
 				this.is_scrolling = null;
 				document

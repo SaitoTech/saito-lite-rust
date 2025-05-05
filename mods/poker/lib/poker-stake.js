@@ -54,7 +54,12 @@ class PokerStake {
     let numCrypto = (numChips * parseFloat(this.game.stake)) / this.game.chips;
 
     if (asString) {
-      return this.app.crypto.convertFloatToSmartPrecision(numCrypto);
+      let singleChipValue = String(parseFloat(this.game.stake / this.game.chips));  
+      let split_string = singleChipValue.split('.');
+      let fraction = split_string[1] || '';
+      let precision = fraction.length;
+  
+      return numCrypto.toFixed(precision);
     } else {
       return numCrypto;
     }
@@ -74,10 +79,10 @@ class PokerStake {
       }
     }
 
-    let wager = numChips; //this.convertChipsToCrypto(numChips);
+    let wager = '<span class="wager-num">' + numChips + '</span>'; //this.convertChipsToCrypto(numChips);
 
     if (includeTicker) {
-      wager += ' ' + chips;
+      wager += ' <span class="wager-ticker">' + chips + '</span>';
     }
 
     return wager;
