@@ -609,7 +609,7 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 	  let name = this.returnPlayerName(faction);
 	  let hand = this.returnPlayerHand();
 
-
+	  this.removeSelectable();
 	  this.removeOverstackedUnits();
 	  this.checkSupplyStatus();
 
@@ -1363,10 +1363,12 @@ console.log(JSON.stringify(this.game.state.cc_allies_active));
 	    let skey = this.game.state.combat.attacker[z].unit_sourcekey;
 	    let sidx = this.game.state.combat.attacker[z].unit_idx;
             let u = this.game.spaces[skey].units[sidx];
-	    if (!u.damaged) {
-              attacker_strength += u.combat;
-	    } else {
-              attacker_strength += u.rcombat;
+	    if (u) {
+	      if (!u.damaged) {
+                attacker_strength += u.combat;
+	      } else {
+                attacker_strength += u.rcombat;
+	      }
 	    }
           }
 

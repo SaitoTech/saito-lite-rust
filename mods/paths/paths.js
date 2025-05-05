@@ -2420,7 +2420,6 @@ deck['ap14'] = {
     	        //
     	        // players can flip 2 damaged armies back to full strength
     	        //
-		units_to_restore--;
                 paths_self.playerSelectUnitWithFilter(
             	    "Select Unit to Repair / Deploy" ,
           	    filter_fnct ,
@@ -6373,23 +6372,26 @@ if (spacekey == "insterberg" || spacekey == "konigsberg") {
       }
 
       for (let key in this.game.spaces) {
-	if (key == "crbox" || key == "arbox" || key == "ceubox" || key == "aeubox") { continue; }
-	if (this.game.spaces[key].units.length > 0) {
-	  let space = this.game.spaces[key];
-	  let supplied = false;
-	  for (let z = 0; z < space.units.length; z++) {
-	    let u = space.units[z];
-	    if (this.checkSupplyStatus(u.ckey.toLowerCase(), key)) {
-	      z = space.units.length+1;
-	      supplied = true;
+	if (key == "crbox" || key == "arbox" || key == "ceubox" || key == "aeubox") {
+
+	} else {
+	  if (this.game.spaces[key].units.length > 0) {
+	    let space = this.game.spaces[key];
+	    let supplied = false;
+	    for (let z = 0; z < space.units.length; z++) {
+	      let u = space.units[z];
+	      if (this.checkSupplyStatus(u.ckey.toLowerCase(), key)) {
+	        z = space.units.length+1;
+	        supplied = true;
+	      }
 	    }
-	  }
-	  if (supplied == false) {
-	    let obj = document.querySelector(`.${key}`);
-	    if (!obj.classList.contains("oos-highlight")) { 
-	      obj.classList.add("oos-highlight");
-	      this.game.spaces[key].oos = 1;
-	      this.displaySpace(key);
+	    if (supplied == false) {
+	      let obj = document.querySelector(`.${key}`);
+	      if (!obj.classList.contains("oos-highlight")) { 
+	        obj.classList.add("oos-highlight");
+	        this.game.spaces[key].oos = 1;
+	        this.displaySpace(key);
+	      }
 	    }
 	  }
 	}
@@ -6505,10 +6507,12 @@ if (spacekey == "insterberg" || spacekey == "konigsberg") {
     // exiting means no supply
     //
     if (this.game.spaces[spacekey].units.length > 0) {
-      let obj = document.querySelector(`.${spacekey}`);
-      obj.classList.add("oos-highlight");
-      this.game.spaces[spacekey].oos = 1;
-      this.displaySpace(spacekey);
+      if (spacekey != "crbox" && spacekey != "arbox" && spacekey != "ceubox" && spacekey != "aeubox") {
+        let obj = document.querySelector(`.${spacekey}`);
+        obj.classList.add("oos-highlight");
+        this.game.spaces[spacekey].oos = 1;
+        this.displaySpace(spacekey);
+      }
     }
 
 
@@ -11002,7 +11006,7 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 	  let name = this.returnPlayerName(faction);
 	  let hand = this.returnPlayerHand();
 
-
+	  this.removeSelectable();
 	  this.removeOverstackedUnits();
 	  this.checkSupplyStatus();
 
@@ -11756,10 +11760,12 @@ console.log(JSON.stringify(this.game.state.cc_allies_active));
 	    let skey = this.game.state.combat.attacker[z].unit_sourcekey;
 	    let sidx = this.game.state.combat.attacker[z].unit_idx;
             let u = this.game.spaces[skey].units[sidx];
-	    if (!u.damaged) {
-              attacker_strength += u.combat;
-	    } else {
-              attacker_strength += u.rcombat;
+	    if (u) {
+	      if (!u.damaged) {
+                attacker_strength += u.combat;
+	      } else {
+                attacker_strength += u.rcombat;
+	      }
 	    }
           }
 
@@ -13723,8 +13729,6 @@ console.log("UNIT: " + JSON.stringify(unit));
 	this.game.state.replacements.can_deploy_unit_in_reserves = can_deploy_unit_in_reserves;
 	this.game.state.replacements.can_deploy_unit_in_reserves_array = can_deploy_unit_in_reserves_array;
 
-console.log("HERE; " + JSON.stringify(this.game.state.replacements));
-
 	if (options.length > 1) { return 1; }
 
 	return 0;
@@ -13734,96 +13738,6 @@ console.log("HERE; " + JSON.stringify(this.game.state.replacements));
     if (continue_fnct()) {
       paths_self.replacements_overlay.render();
     }
-
-
-/*****
-    let execute_fnct = (spacekey, unit_idx) => {
-
-      paths_self.updateStatus("processing...");
-
-      if (spacekey === "pass") {
-	paths_self.removeSelectable();
-	paths_self.endTurn();
-        just_stop = 1;
-	return 1;
-      }
-
-      let unit = paths_self.game.spaces[spacekey].units[unit_idx];
-      let ckey = unit.ckey;
-
-      if (faction == "central") {
-        if (paths_self.game.state.rp["central"][ckey] > 0) { paths_self.game.state.rp["central"][ckey]--; }
-      }
-      if (faction == "allies") {
-        if (paths_self.game.state.rp["allies"][ckey] > 0) { paths_self.game.state.rp["allies"][ckey]--; }
-      }
-
-      let processed = false;
-
-      if (spacekey === "aeubox") {
-        paths_self.game.spaces[spacekey].units[unit_idx].destroyed = 0;
-        paths_self.game.spaces[spacekey].units[unit_idx].damaged = 1;
-        paths_self.moveUnit(spacekey, unit_idx, "arbox");
- 	paths_self.prependMove(`repair\t${faction}\t${spacekey}\t${unit_idx}`);
- 	paths_self.prependMove(`move\t${faction}\t${spacekey}\t${unit_idx}\tarbox\t${paths_self.game.player}`);
-	paths_self.displaySpace(spacekey);
-	paths_self.displaySpace("arbox");
-        processed = true;
-	loop_fnct();
-      }
-
-      if (spacekey === "ceubox") {
-        paths_self.game.spaces[spacekey].units[unit_idx].destroyed = 0;
-        paths_self.game.spaces[spacekey].units[unit_idx].damaged = 1;
-        paths_self.moveUnit(spacekey, unit_idx, "crbox");
- 	paths_self.prependMove(`repair\t${faction}\t${spacekey}\t${unit_idx}`);
- 	paths_self.prependMove(`move\t${faction}\t${spacekey}\t${unit_idx}\tcrbox\t${paths_self.game.player}`);
-	paths_self.displaySpace("crbox");
-	paths_self.displaySpace(spacekey);
-        processed = true;
-	loop_fnct();
-      }
-
-      if (spacekey === "arbox" || spacekey === "crbox") {
-	if (paths_self.game.spaces[spacekey].units[unit_idx].damaged) {
-          paths_self.game.spaces[spacekey].units[unit_idx].damaged = 0;
- 	  paths_self.prependMove(`repair\t${faction}\t${spacekey}\t${unit_idx}`);
-	  paths_self.displaySpace(spacekey);
-	  loop_fnct();
-        } else {
-      	  paths_self.playerSelectSpaceWithFilter(
-            `Deploy Unit Where?`,
-	    (destination) => {
-	      if (paths_self.game.spaces[destination].control == faction) { return 1; }
-	      return 0;
-	    },
-	    (key) => {
-	      paths_self.updateStatus("moving...");
-              paths_self.moveUnit(spacekey, unit_idx, key);
- 	      paths_self.prependMove(`move\t${faction}\t${spacekey}\t${unit_idx}\t${key}\t${paths_self.game.player}`);
-              paths_self.displaySpace(spacekey);
-              paths_self.displaySpace(key);
-	      loop_fnct();
-	    },
-	    null,
-    	    true
-	  );
-        }
-	processed = true;
-      }
-
-     
-      if (processed != true) {
-        paths_self.game.spaces[spacekey].units[unit_idx].destroyed = 0;
-        paths_self.game.spaces[spacekey].units[unit_idx].damaged = 0;
- 	paths_self.prependMove(`repair\t${faction}\t${spacekey}\t${unit_idx}`);
-	paths_self.displaySpace(spacekey);
-        processed = true;
-	loop_fnct();
-      }
-
-    };
-****/ 
 
     return 1;
   }
@@ -14713,7 +14627,13 @@ console.log(JSON.stringify(spaces_within_hops));
           html += `<li class="option" id="move">move</li>`;
       }
       if (paths_self.game.state.events.entrench == 1) {
+        let can_entrench_here = true;
+	for (let z = 0; z < paths_self.game.state.entrenchments.length; z++) {
+	  if (paths_self.game.state.entrenchments[z].spacekey == key) { can_entrench_here = false; }
+	}
+	if (can_entrench_here) {
           html += `<li class="option" id="entrench">entrench</li>`;
+	}
       }
           html += `<li class="option" id="skip">stand down</li>`;
           html += `</ul>`;
@@ -14774,6 +14694,15 @@ console.log(JSON.stringify(spaces_within_hops));
 	}
 	return 1;
       }, unit);
+
+      //
+      // remove any spaces activated for combat!
+      //
+      for (let z = spaces_within_hops.length-1; z >= 0; z--) {
+	if (paths_self.game.spaces[spaces_within_hops[z]].activated_for_combat == 1) { 
+	  spaces_within_hops.splice(z, 1);
+	}
+      }
 
       paths_self.playerSelectSpaceWithFilter(
 
@@ -15540,8 +15469,8 @@ console.log("SPACES: " + JSON.stringify(paths_self.game.spaces[key].units));
       (key) => {
 	if (spaces.includes(key)) {
 	  if (value == 4) { return 1; }	
-	  for (let z = 0; z < spaces.units.length; z++) {
-	    if (space.units[z].corps) {
+	  for (let z = 0; z < paths_self.game.spaces[key].units.length; z++) {
+	    if (paths_self.game.spaces[key].units[z].corps) {
 	      return 1;
 	    }
 	  }
@@ -15559,7 +15488,7 @@ console.log("SPACES: " + JSON.stringify(paths_self.game.spaces[key].units));
 
         if (key == "crbox") {
   	  paths_self.reserves_overlay.pickUnitAndTriggerCallback("central", (idx) => {
-	    let unit = paths_self.game.spaces[crbox].units[idx];
+	    let unit = paths_self.game.spaces["crbox"].units[idx];
             if (unit.type == "corps") { value -= 1; }
             if (unit.type == "army") { value -= 4; }
 	    paths_self.game.spaces[key].units[idx].moved = 1;
@@ -15569,7 +15498,7 @@ console.log("SPACES: " + JSON.stringify(paths_self.game.spaces[key].units));
 	}
         if (key == "arbox") {
   	  paths_self.reserves_overlay.pickUnitAndTriggerCallback("allies", (idx) => {
-	    let unit = paths_self.game.spaces[crbox].units[idx];
+	    let unit = paths_self.game.spaces["arbox"].units[idx];
             if (unit.type == "corps") { value -= 1; }
             if (unit.type == "army") { value -= 4; }
 	    paths_self.game.spaces[key].units[idx].moved = 1;
@@ -15630,13 +15559,24 @@ console.log("SPACES: " + JSON.stringify(paths_self.game.spaces[key].units));
 
     let paths_self = this;
     let unit = paths_self.game.spaces[spacekey].units[unit_idx];
+    let controlling_faction = paths_self.returnFactionOfPlayer();
 
     let destinations = paths_self.returnSpacesConnectedToSpaceForStrategicRedeployment(faction, spacekey);
 
     this.playerSelectSpaceWithFilter(
       `Redeploy ${paths_self.game.spaces[spacekey].units[unit_idx].name}?`,
       (key) => {
+	if (key == spacekey) { return 0; }
+	if (spacekey == "aeubox" && (key == "crbox" || key == "ceubox" || key == "arbox")) { return 0; }
+	if (spacekey == "ceubox" && (key == "crbox" || key == "arbox" || key == "aeubox")) { return 0; }
+	if (spacekey == "arbox" && (key == "crbox" || key == "ceubox" || key == "aeubox")) { return 0; }
+	if (spacekey == "crbox" && (key == "arbox" || key == "ceubox" || key == "aeubox")) { return 0; }
         if (key == "aeubox" || key == "ceubox" || key == "arbox" || key == "crbox") { return 1; }
+        if (paths_self.game.spaces[key].control == controlling_faction) {
+          if (paths_self.checkSupplyStatus(unit.ckey.toLowerCase(), key) == 1) {
+            return 1;
+          }
+        }
 	if (destinations.includes(key)) { return 1; }
         return 0;
       },
@@ -15895,7 +15835,13 @@ console.log("in supply!");
     this.game.spaces[sourcekey].units[sourceidx].moved = 1;
     this.game.spaces[sourcekey].units.splice(sourceidx, 1);
     if (!this.game.spaces[destinationkey].units) { this.game.spaces[destinationkey].units = []; }
-    this.updateLog(unit.name + " moves from " + this.game.spaces[sourcekey].name + " to " + this.game.spaces[destinationkey].name);
+
+    if (destinationkey == "aeubox" || destinationkey == "ceubox") {
+      this.updateLog(unit.name + " eliminated.");
+    } else {
+      this.updateLog(unit.name + " moves from " + this.game.spaces[sourcekey].name + " to " + this.game.spaces[destinationkey].name);
+    }
+
     unit.spacekey = destinationkey;
     this.game.spaces[destinationkey].units.push(unit);
     unit.spacekey = destinationkey;

@@ -478,12 +478,13 @@ console.log("setting highlight at: row-" + defender_modified_roll + " col-" + de
 
 	attachEvents(am_i_the_attacker, my_qs ,faction) {
 
+		let paths_self = this.mod;
+
 		if (!this.canTakeMoreLosses()) {
 				for (let i = this.moves.length - 1; i >= 0; i--) {
-					this.mod.addMove(this.moves[i]);
+					paths_self.addMove(this.moves[i]);
 				}
-				let lmv = this.mod.game.queue[this.mod.game.queue.length-1].split("\t")[0];
-				this.mod.endTurn();
+				paths_self.endTurn();
 				return;
 		}
 
@@ -503,22 +504,27 @@ console.log("setting highlight at: row-" + defender_modified_roll + " col-" + de
 				let didx = idx;
 				let unit_idx = didx;
 
+console.log("HERE 1");
 				//
 				// withdrawal
 				//
-				if (unit.corps && unit.eligible_for_withdrawal_bonus && this.game.state.events.withdrawal && this.game.state.events.withdrawal_bonus_used != 1) {
+				if (unit.corps && unit.eligible_for_withdrawal_bonus && paths_self.game.state.events.withdrawal && paths_self.game.state.events.withdrawal_bonus_used != 1) {
 				  try { salert("Withdrawal Negates 1 Corps Stepwise Loss..."); } catch (err) {}
 				  if (unit.damaged) {
 				    this.loss_factor -= unit.rloss;
 				  } else {
 				    this.loss_factor -= unit.loss;
 				  }
-				  this.game.state.events.withdrawal_bonus_used = 1;
+				  paths_self.game.state.events.withdrawal_bonus_used = 1;
 				}
 
-				if (unit.damaged) {
+console.log("HERE 2");
 
-					this.moves.push(`damage\t${unit_spacekey}\t${unit_key}\t1\t${this.mod.game.player}`);
+				if (unit.damaged) {
+console.log("HERE 3");
+
+					this.moves.push(`damage\t${unit_spacekey}\t${unit_key}\t1\t${paths_self.game.player}`);
+console.log("HERE 4");
 
 					this.loss_factor -= unit.rloss;
 
@@ -535,9 +541,9 @@ console.log("setting highlight at: row-" + defender_modified_roll + " col-" + de
 					if (unit.key.indexOf('army') > 0) {
 
 						let corpsbox = "arbox";
-						if (this.mod.returnFactionOfPlayer() == "central") { corpsbox = "crbox"; }
+						if (paths_self.returnFactionOfPlayer() == "central") { corpsbox = "crbox"; }
 						let corpskey = unit.key.split('_')[0] + '_corps';
-						let corpsunit = this.mod.cloneUnit(corpskey);
+						let corpsunit = paths_self.cloneUnit(corpskey);
 						corpsunit.spacekey = unit.spacekey;
 //
 // replacing unit pulls corps from reserves
@@ -545,7 +551,7 @@ console.log("setting highlight at: row-" + defender_modified_roll + " col-" + de
 console.log("examining: " + corpsbox);
 console.log("for: " + corpskey);
 
-if (this.mod.doesSpaceHaveUnit(corpsbox, corpskey)) {
+if (paths_self.doesSpaceHaveUnit(corpsbox, corpskey)) {
 						this.units.push(corpsunit);
 						this.moves.push(`add\t${unit.spacekey}\t${corpskey}\t${this.mod.game.player}`);
 						this.moves.push(`remove\t${corpsbox}\t${corpskey}\t${this.mod.game.player}`);

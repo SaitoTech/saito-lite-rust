@@ -638,7 +638,6 @@ deck['ap14'] = {
     	        //
     	        // players can flip 2 damaged armies back to full strength
     	        //
-		units_to_restore--;
                 paths_self.playerSelectUnitWithFilter(
             	    "Select Unit to Repair / Deploy" ,
           	    filter_fnct ,
