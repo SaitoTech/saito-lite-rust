@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# If invoked via npm without "--", adjust args
+if [ "$1" = "run" ] && [ "$2" = "nettest" ]; then
+    shift 2
+fi
+
+
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 LOG_FILE="${PROJECT_DIR}/nettest/nettest.log"
@@ -301,41 +307,41 @@ function display_issuance() {
 }
 
 function start_network() {
-    announce "Starting network..."
+    local node_num=$1
     if ! command -v pm2 &> /dev/null; then
         announce "Error: pm2 not found"
         exit 1
     fi
-
-    # Check for any stopped processes
-    local stopped_processes=$(pm2 jlist | grep -c '"status":"stopped"' || announce "0")
-    stopped_processes=$(announce "$stopped_processes" | tr -d '[:space:]')  # Remove any whitespace
-    
-    #announce "Stopped processes: $stopped_processes"
-    if [ "$stopped_processes" = "00" ]; then
-        announce "No stopped processes found. Nothing to start."
-        exit 0
+    if [ -n "$node_num" ]; then
+        announce "Starting node $node_num..."
+        pm2 start "node${node_num}"
+        announce "Node $node_num started"
+    else
+        announce "Starting network..."
+        announce "Starting node1..."
+        pm2 start node1
+        announce "Waiting 15 seconds for node1 to initialize..."
+        sleep 15
+        announce "Starting remaining nodes..."
+        pm2 start all
+        announce "Network started"
+        announce "----------------------------------------"
     fi
-
-    announce "Starting node1..."
-    pm2 start node1
-    
-    announce "Waiting 15 seconds for node1 to initialize..."
-    sleep 15
-    
-    announce "Starting remaining nodes..."
-    pm2 start all
-    
-    announce "Network started"
-    announce "----------------------------------------"
-    show_endpoints
 }
 
 function stop_network() {
+    local node_num=$1
     announce "Stopping network..."
     if command -v pm2 &> /dev/null; then
-        pm2 stop all
-        announce "All nodes stopped"
+        if [ -n "$node_num" ]; then
+            announce "Stopping node $node_num..."
+            pm2 stop "node${node_num}"
+            announce "Node $node_num stopped"
+        else
+            announce "Stopping all nodes..."
+            pm2 stop all
+            announce "All nodes stopped"
+        fi
     else
         announce "Error: pm2 not found"
         exit 1
@@ -439,11 +445,12 @@ function show_help() {
     announce "  Resets configuration for all nodes in a scenario"
     announce "  - scenario: Name of the scenario to reset"
     announce ""
-    announce "start"
-    announce "  Starts the network in sequence (node1 first, then others)"
+    announce "start [node_number]"
+    announce "  Starts the specified node (e.g. 'nettest start 1')"
+    announce "  If no node_number is given, starts all nodes (in sequence node1 first, then others)"
     announce ""
-    announce "stop"
-    announce "  Stops all running nodes"
+    announce "  Stops the specified node (e.g. 'nettest stop 1')"
+    announce "  If no node_number is given, stops all nodes"
     announce ""
     announce "status"
     announce "  Shows current pm2 process status"
@@ -645,10 +652,10 @@ case "$1" in
         reset_scenario "$2"
         ;;
     "start")
-        start_network
+        start_network "$2"
         ;;
     "stop")
-        stop_network
+        stop_network "$2"
         ;;
     "status")
         show_status
