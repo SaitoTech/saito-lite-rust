@@ -175,6 +175,13 @@ class LossOverlay {
 		let qs_defender = '.loss-overlay .units.defender';
 		let my_qs = '.loss-overlay .units.defender';
 		let defender_units = this.mod.returnDefenderUnits();
+		this.units = defender_units;
+
+console.log("%");
+console.log("%");
+console.log("% DEBZUGGING: ");
+console.log("%" + JSON.stringify(this.units));
+console.log("%");
 
 		this.overlay.show(LossTemplate());
 		this.updateInstructions("Defender - Take Additional Hit to Cancel Retreat");

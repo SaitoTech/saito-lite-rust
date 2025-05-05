@@ -90,7 +90,6 @@ class ReplacementsOverlay {
 
 
 	hideSubMenu() {
-alert("hiding sub menu!");
 		document.querySelector('.replacements-overlay .submenu .controls').innerHTML = '';
 	}
 
