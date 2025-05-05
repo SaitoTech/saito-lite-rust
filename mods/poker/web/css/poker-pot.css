@@ -2,33 +2,47 @@
   cursor: pointer;
   position: absolute;
   display: block;
-  width: 19rem;
-  height: 18rem;
-  background: #dd5500;
+  width: 25rem;
+  height: 7rem;
   overflow: hidden;
   color: #fff;
-  text-shadow: 2px 2px 6px black;
-  top: calc(50% - 100px);
-  left: 0px;
-  margin-left: -8rem;
+  top: calc(50% - 180px);
   z-index: 89;
-  border-radius: 0 8rem 8rem 0;
+  border-radius: 20rem;
   user-select: none;
+  left: 50%;
+  transition: visbility 0.25s;
+  transform: translateX(-50%);
+  background: url(/poker/img/simple-chip.svg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  border: 1px solid #aaa8;
+  background-color: #0008;
+  padding: 1rem 1rem 1rem 8rem;
+  box-shadow: 5px 5px 3px #0008;
 }
 
-.pot:hover {
-  background: #ee6600;
+.pot.invisible {
+  visibility: hidden;
+}
+
+.pot::after {
+  content: "POT";
+  position: absolute;
+  top: 50%;
+  left: 3.5rem;
+  font-size: 1.75rem;
+  font-weight: bolder;
+  transform: translate(-53%, -48%);
 }
 
 .potholder {
   font-size: 2.4rem;
-  margin-left: 7.5rem;
   padding: 1rem;
   height: 100%;
-  width: 11rem;
   overflow: visible;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
@@ -61,8 +75,13 @@
 .pot-details-overlay .saito-table-row {
     grid-template-columns: 1fr 1fr min-content;
     margin: 1rem 0;
+    grid-gap: 2rem;
     align-items: center;
     background: #CCCB;
+}
+
+.pot-details-overlay.crypto-stake .saito-table-row {
+  grid-template-columns: 1fr 1fr min-content 1fr;
 }
 
 .pot-details-overlay .saito-table-row:hover{
@@ -77,6 +96,7 @@
     font-size: 2.6rem;    
 }
 
+/*
 @media screen and (max-width: 1000px) {
   .pot {
     width: 27rem;
@@ -111,7 +131,7 @@
   }
 
 
-}
+} */
 
 .pulse {
   animation: pulse 0.6s ease-in-out;

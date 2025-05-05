@@ -44,14 +44,14 @@ body {
 .deal {
   display: flex;
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin: 8rem 0 0;
   height: 230px;
 }
 
 .mystuff {
   position: absolute;
   width: 100vw;
-  height: 275px;
+  height: 240px;
   max-height: 36vh;
   /*left: calc(50% - 125px);*/  
   bottom: 10px;
