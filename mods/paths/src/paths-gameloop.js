@@ -1944,13 +1944,17 @@ alert("Fort Survives Assault");
 	  let faction = mv[1];
 	  let spacekey = mv[2];
 	  let unit_idx = parseInt(mv[3]);
+	  let player_to_ignore = 0;
+	  if (mv[4]) { player_to_ignore = parseInt(mv[4]); }
 
-	  if (this.game.spaces[spacekey].units[unit_idx].destroyed) {
-	    this.game.spaces[spacekey].units[unit_idx].destroyed = 0;
-	    this.game.spaces[spacekey].units[unit_idx].damaged = 1;
-	  } else {
-	    this.game.spaces[spacekey].units[unit_idx].destroyed = 0;
-	    this.game.spaces[spacekey].units[unit_idx].damaged = 0;
+	  if (this.game.player != player_to_ignore) {
+	    if (this.game.spaces[spacekey].units[unit_idx].destroyed) {
+	      this.game.spaces[spacekey].units[unit_idx].destroyed = 0;
+	      this.game.spaces[spacekey].units[unit_idx].damaged = 1;
+	    } else {
+	      this.game.spaces[spacekey].units[unit_idx].destroyed = 0;
+	      this.game.spaces[spacekey].units[unit_idx].damaged = 0;
+	    }
 	  }
 
 	  this.displaySpace(spacekey);
