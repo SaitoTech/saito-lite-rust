@@ -11,6 +11,7 @@
   border-radius: 20rem;
   user-select: none;
   left: 50%;
+  transition: visbility 0.25s;
   transform: translateX(-50%);
   background: url(/poker/img/simple-chip.svg);
   background-size: contain;
@@ -19,6 +20,10 @@
   background-color: #0008;
   padding: 1rem 1rem 1rem 8rem;
   box-shadow: 5px 5px 3px #0008;
+}
+
+.pot.invisible {
+  visibility: hidden;
 }
 
 .pot::after {

@@ -34,7 +34,7 @@ class PokerUI {
       this.displayPlayerStack(i);
 
       if (!preserveLog) {
-        this.displayPlayerNotice('', i);
+        this.displayPlayerNotice(`<div class="plog-update"></div>`, i);
       }
     }
   }
@@ -110,6 +110,8 @@ class PokerUI {
     } else {
       this.playerbox.updateBody(msg, player);
     }
+
+    console.log("displayPlayerNotice:", msg);
   }
 
   // Update the player's role and wager...
@@ -292,7 +294,7 @@ class PokerUI {
       return;
     }
 
-    this.displayPlayerNotice(`Your turn:`, this.game.player);
+    this.displayPlayerNotice(`your turn:`, this.game.player);
 
     let html = '<div class="option" id="fold"><img src="/poker/img/fold_icon.svg" alt="fold"><span>fold</span></div>';
 
@@ -328,8 +330,8 @@ class PokerUI {
 
         html = "";
 
-        for (let i = 0; i < 4; i++) {
-          let this_raise = poker_self.game.state.last_raise + i * poker_self.game.state.last_raise;
+        for (let i = 0; i < 3; i++) {
+          let this_raise = poker_self.game.state.last_raise * 2**i;
 
           if (max_raise > this_raise) {
             html += `<div class="option raise_option" id="${this_raise + match_required}"><img src="/poker/img/raise_value_icon.svg" alt="raise">`;
@@ -343,7 +345,8 @@ class PokerUI {
           }
         }
 
-        //html += '</ul><ul>';
+        //Option for manual input...
+        html += `<div class="option raise_option" id="manual"><img src="/poker/img/raise_allin_icon.svg" alt="raise"><span>?</span></div>`;
 
         //Always give option for all in
         html += `<div class="option raise_option all-in" id="${max_raise + match_required}"><img src="/poker/img/raise_allin_icon.svg" alt="raise">`;
@@ -356,12 +359,28 @@ class PokerUI {
 
         poker_self.updateControls(html);
 
+        const enterRaise = async () => {
+          let c = await sprompt("How many chips would you like to raise?");
+          if (c){
+            let amt = parseInt(c);
+            if (amt >= poker_self.game.state.last_raise && amt <= max_raise){
+              poker_self.addMove(`raise\t${poker_self.game.player}\t${amt+match_required}`);
+              poker_self.endTurn();
+            }else{
+              await sconfirm("Invalid input");
+              enterRaise();
+            }
+          }
+        }
+
         $('.option').off();
-        $('.option').on('click', function () {
+        $('.option').on('click', async function () {
           let raise = $(this).attr('id');
 
           if (raise === '0') {
             poker_self.playerTurn();
+          } else if (raise === 'manual'){
+            enterRaise();
           } else {
             poker_self.addMove(`raise\t${poker_self.game.player}\t${raise}`);
             poker_self.endTurn();

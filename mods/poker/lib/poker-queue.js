@@ -302,6 +302,7 @@ class PokerQueue {
 						this.cardfan.hide();
 					}
 
+					this.playerbox.setActive(player_left_idx + 1);					
 					this.animateWin(total_pot, winners);
 					this.halted = 1;
 					this.playerAcknowledgeNotice(msg, async () => {
@@ -399,7 +400,7 @@ class PokerQueue {
 				this.game.queue.splice(qe, 1);
 
 				this.board.render();
-				this.displayPlayers();
+				this.displayPlayers(true);
 
 				if (this.game.state.flipped === 0) {
 					if (this.game.player > 0) {
@@ -532,10 +533,12 @@ class PokerQueue {
 				console.log('Showdown:', winlist);
 
 				// ... and anyone else who ties
+				this.playerbox.setInactive();
 				for (let p = 0; p < winlist.length; p++) {
 					if (this.pickWinner(topPlayer.player_hand, winlist[p].player_hand) == 3) {
 						winners.push(winlist[p].player - 1);
 						winner_keys.push(this.game.players[winlist[p].player - 1]);
+						this.playerbox.setActive(winlist[p].player, false);
 					}
 				}
 
@@ -660,7 +663,7 @@ class PokerQueue {
 					this.restartQueue();
 				});
 				this.saveGame(this.game.id);
-				this.setShotClock('.acknowledge');
+				this.setShotClock('.acknowledge', 4000);
 
 
 				return 0;
@@ -755,7 +758,7 @@ class PokerQueue {
 					this.game.state.all_in = true;
 					this.updateLog(this.game.state.player_names[player - 1] + ' goes all in to call');
 					if (this.game.player !== player) {
-						this.displayPlayerNotice(`<div class="plog-update">All in!</div>`, player);
+						this.displayPlayerNotice(`<div class="plog-update">all in!</div>`, player);
 					}
 				} else {
 					this.updateLog(this.game.state.player_names[player - 1] + ' calls to match ' + this.formatWager(this.game.state.required_pot));
@@ -826,16 +829,10 @@ class PokerQueue {
 
 				this.game.state.plays_since_last_raise = 1;
 
-				await this.animateBet(player, raise);
-
-				this.game.state.player_credit[player - 1] -= raise;
-				this.game.state.player_pot[player - 1] += raise;
-				this.game.state.last_raise = raise_portion;
-				this.game.state.required_pot += raise_portion;
-
+				// Update message before animation...
 				let raise_message = `raises ${this.formatWager(raise_portion)}`;
 
-				if (this.game.state.player_credit[player - 1] == 0) {
+				if (this.game.state.player_credit[player - 1] == raise) {
 					this.game.state.all_in = true;
 					raise_message = `goes all in`;
 				}
@@ -843,6 +840,13 @@ class PokerQueue {
 				if (this.game.player !== player){
 					this.displayPlayerNotice(`<div class="plog-update">${raise_message}</div>`, player);
 				}
+
+				await this.animateBet(player, raise);
+
+				this.game.state.player_credit[player - 1] -= raise;
+				this.game.state.player_pot[player - 1] += raise;
+				this.game.state.last_raise = raise_portion;
+				this.game.state.required_pot += raise_portion;
 
 				raise_message += ` to ${this.formatWager(this.game.state.player_pot[player - 1])}`;
 

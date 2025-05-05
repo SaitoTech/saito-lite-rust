@@ -11,11 +11,16 @@
   list-style: none;
   cursor: pointer;
   flex-direction: column;
-  gap: 0.1rem;
+  gap: 0.4rem;
   list-style: none;
   border-radius: 1rem;
   background-color: unset;
   position: relative;
+  padding: 0 5px;
+}
+
+.controls .option.raise_option {
+  padding: 5px;
 }
 
 .controls {
@@ -29,6 +34,7 @@
   flex-direction: row;
   justify-content: space-around;
   width: unset;
+  gap: 5px;
 }
 
 .controls ul li {
@@ -42,15 +48,15 @@
 }
 
 .option img {
-  width: 7rem;
-  height: 7rem;
+  width: 6.7rem;
+  height: 6.7rem;
   display: block;
   border-radius: 10rem;
   padding: 11px;
   background: #c43f3f;
   overflow: visible;
   box-shadow: 5px 5px 3px #0008;
-  transform: scale(0.8);
+  /*transform: scale(0.8);*/
 }
 
 .all-in {
