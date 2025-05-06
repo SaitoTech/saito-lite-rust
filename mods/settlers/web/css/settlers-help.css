@@ -71,6 +71,7 @@
     letter-spacing: 0.1rem;
     font-weight: bold;
     text-transform: uppercase;
+    max-width: 60%;
 }
 
 .welcome-text {
@@ -84,3 +85,21 @@
     font-weight: bold;
     text-decoration: underline;
 }
+
+.welcome-overlay > div.welcome-optout {
+    left: unset;
+    right: 1rem;
+    bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+}
+
+@media screen and (max-width: 768px) {
+    .welcome-overlay > div {
+        left: 1.5rem;
+        max-width: 65%;
+    }
+
+ }   

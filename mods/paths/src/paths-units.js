@@ -55,7 +55,13 @@
     this.game.spaces[sourcekey].units[sourceidx].moved = 1;
     this.game.spaces[sourcekey].units.splice(sourceidx, 1);
     if (!this.game.spaces[destinationkey].units) { this.game.spaces[destinationkey].units = []; }
-    this.updateLog(unit.name + " moves from " + this.game.spaces[sourcekey].name + " to " + this.game.spaces[destinationkey].name);
+
+    if (destinationkey == "aeubox" || destinationkey == "ceubox") {
+      this.updateLog(unit.name + " eliminated.");
+    } else {
+      this.updateLog(unit.name + " moves from " + this.game.spaces[sourcekey].name + " to " + this.game.spaces[destinationkey].name);
+    }
+
     unit.spacekey = destinationkey;
     this.game.spaces[destinationkey].units.push(unit);
     unit.spacekey = destinationkey;

@@ -4,7 +4,7 @@
 	max-height: 90vh;
 	max-width: 90vw;
 	border-radius: 2rem;
-	background-image: url('/paths/img/backgrounds/mark_iv_tank.jpg');
+	background-image: url('/paths/img/backgrounds/flank_attack.png');
 	background-size: cover;
 }
 
@@ -35,6 +35,7 @@
 }
 
 .flank-overlay .status {
+	display: none;
         position: relative;
         height: 4rem;
         line-height: 4rem;
@@ -58,4 +59,9 @@
         max-height: 80vh;
 }
 
+.flank-overlay .controls ul li {
+	border-radius: 1rem;
+	margin-bottom: 1rem;
+	border: 1px solid #000;
+}
 

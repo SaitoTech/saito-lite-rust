@@ -638,7 +638,6 @@ deck['ap14'] = {
     	        //
     	        // players can flip 2 damaged armies back to full strength
     	        //
-		units_to_restore--;
                 paths_self.playerSelectUnitWithFilter(
             	    "Select Unit to Repair / Deploy" ,
           	    filter_fnct ,
@@ -671,7 +670,7 @@ deck['ap14'] = {
       	        }
         	paths_self.game.spaces[spacekey].units[unit_idx].damaged = 0;
 		paths_self.addMove(`NOTIFY\t${paths_self.game.spaces[spacekey].units[unit_idx].name} repaired in ${paths_self.game.spaces[spacekey].name}`);
-        	paths_self.addMove(`repair\tcentral\t${spacekey}\t${unit_idx}`);
+        	paths_self.addMove(`repair\tcentral\t${spacekey}\t${unit_idx}\t${paths_self.game.player}`);
         	paths_self.displaySpace(spacekey);
         	paths_self.shakeSpacekey(spacekey);
 		units_to_restore--;

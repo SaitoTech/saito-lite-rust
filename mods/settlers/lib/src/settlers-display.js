@@ -115,7 +115,8 @@ class SettlersDisplay {
                 text: 'Robin Hood is a friendly bandit (in 1v1 games) that helps the losing player, who will be immune to Robin Hood raiding their hand or blocking their resource production',
                 img: '/settlers/img/robinhood_background.jpg',
                 line1: 'who is',
-                line2: 'robin hood?'
+                line2: 'robin hood?',
+                id: 'robinhood',
               });
             }
 

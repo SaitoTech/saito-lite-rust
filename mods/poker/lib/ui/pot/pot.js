@@ -29,11 +29,37 @@ class Pot {
 		}
 
 		if (!document.querySelector(".pot")) {
-		  this.app.browser.addElementToDom(PotTemplate(pot, this.game_mod));
-		} else {
-		  this.app.browser.replaceElementBySelector(PotTemplate(pot, this.game_mod), ".pot");
-		}
+			if (!this.ticker){
+				this.ticker = this.game_mod.returnTicker();
+			}
+		  	this.app.browser.addElementToDom(PotTemplate(this));
+		} 
 
+		try {
+			// Toggle opacity
+			if (!this.pot_active || pot == '0'){
+				document.querySelector(".pot").classList.add("invisible");
+			}else{
+				document.querySelector(".pot").classList.remove("invisible");
+			}
+
+			//Update values
+			const l2 = document.querySelector(".potholder .line2");
+			const l3 = document.querySelector(".potholder .line3");
+
+			let chip = pot === 1 ? "CHIP" : "CHIPS";
+
+			if (this.ticker === 'CHIPS') {
+				l2.innerHTML = this.game_mod.convertChipsToCrypto(pot, true);
+				l3.innerHTML = chip;
+			}else{
+				l2.innerHTML = `${pot} <span class="smaller-font">${chip}</span>`;
+				l3.innerHTML = `${this.game_mod.convertChipsToCrypto(pot, true)} <span class="smaller-font">${this.ticker}</span>`
+			}
+		} catch (err) {
+			console.error(err);
+		}
+		
 		if (pot && !this.game_mod.animating) {
 			this.attachEvents();	
 		}

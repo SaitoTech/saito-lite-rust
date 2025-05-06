@@ -609,7 +609,7 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 	  let name = this.returnPlayerName(faction);
 	  let hand = this.returnPlayerHand();
 
-
+	  this.removeSelectable();
 	  this.removeOverstackedUnits();
 	  this.checkSupplyStatus();
 
@@ -1363,10 +1363,12 @@ console.log(JSON.stringify(this.game.state.cc_allies_active));
 	    let skey = this.game.state.combat.attacker[z].unit_sourcekey;
 	    let sidx = this.game.state.combat.attacker[z].unit_idx;
             let u = this.game.spaces[skey].units[sidx];
-	    if (!u.damaged) {
-              attacker_strength += u.combat;
-	    } else {
-              attacker_strength += u.rcombat;
+	    if (u) {
+	      if (!u.damaged) {
+                attacker_strength += u.combat;
+	      } else {
+                attacker_strength += u.rcombat;
+	      }
 	    }
           }
 
@@ -1552,11 +1554,8 @@ console.log(JSON.stringify(this.game.state.cc_allies_active));
 	  if (this.game.state.combat.unoccupied_fort == 1) {
 
 	    if (this.game.state.combat.defender_loss_factor > this.game.spaces[this.game.state.combat.key].fort) {
-alert("Fort Breached");
 	      this.game.space[this.game.state.combat.key].fort = -1;
 	      this.displaySpace(this.game.state.combat.key);
-	    } else {
-alert("Fort Survives Assault");
 	    }
 
 	    this.game.queue.splice(qe, 1);
@@ -1643,6 +1642,7 @@ alert("Fort Survives Assault");
 	if (mv[0] === "combat_defender_retreat") {
 
 	  this.game.queue.splice(qe, 1);
+
 	  let attacker_units = this.returnAttackerUnits();
 	  let does_defender_retreat = false;
 	  let can_defender_cancel = false;
@@ -1722,7 +1722,7 @@ alert("Fort Survives Assault");
 	  //
 	  if (this.game.state.events.they_shall_not_pass == 1) {
 	    let space = this.game.spaces[this.game.state.combat.key];
-	    if (space.country == "france" && space.fort > 0) {
+	    	if (space.country == "france" && space.fort > 0) {
 	      for (let z = space.units.length-1; z >= 0; z--) {
 	        let u = space.units[z];
 	        if (u.ckey == "FR" && this.game.state.combat.winner == "attacker") {
@@ -1735,14 +1735,16 @@ alert("Fort Survives Assault");
 	  }
 
 	  if (this.game.state.combat.winner == "defender") {
-	    //this.updateLog("Defender Wins, no retreat...");
+	    this.updateLog("Defender Wins, no retreat...");
 	    return 1;
 	  }
 
 	  if (this.game.state.combat.winner == "none") {
-	    //this.updateLog("Mutual Loss, no retreat...");
+	    this.updateLog("Mutual Loss, no retreat...");
 	    return 1;
 	  }
+
+this.updateLog("Winner of the Combat: " + this.game.state.combat.winner);
 
 	  for (let i = 0; i < attacker_units.length; i++) {
 	    if (attacker_units[i]) {
@@ -1753,6 +1755,7 @@ alert("Fort Survives Assault");
 	  }
 
 	  if (does_defender_retreat) {
+this.updateLog("Defender Power handling retreat: " + this.game.state.combat.defender_power); 
 	    let player = this.returnPlayerOfFaction(this.game.state.combat.defender_power);
 	    if (this.game.player == player) {
 	      this.playerPlayPostCombatRetreat();
@@ -1942,13 +1945,17 @@ alert("Fort Survives Assault");
 	  let faction = mv[1];
 	  let spacekey = mv[2];
 	  let unit_idx = parseInt(mv[3]);
+	  let player_to_ignore = 0;
+	  if (mv[4]) { player_to_ignore = parseInt(mv[4]); }
 
-	  if (this.game.spaces[spacekey].units[unit_idx].destroyed) {
-	    this.game.spaces[spacekey].units[unit_idx].destroyed = 0;
-	    this.game.spaces[spacekey].units[unit_idx].damaged = 1;
-	  } else {
-	    this.game.spaces[spacekey].units[unit_idx].destroyed = 0;
-	    this.game.spaces[spacekey].units[unit_idx].damaged = 0;
+	  if (this.game.player != player_to_ignore) {
+	    if (this.game.spaces[spacekey].units[unit_idx].destroyed) {
+	      this.game.spaces[spacekey].units[unit_idx].destroyed = 0;
+	      this.game.spaces[spacekey].units[unit_idx].damaged = 1;
+	    } else {
+	      this.game.spaces[spacekey].units[unit_idx].destroyed = 0;
+	      this.game.spaces[spacekey].units[unit_idx].damaged = 0;
+	    }
 	  }
 
 	  this.displaySpace(spacekey);

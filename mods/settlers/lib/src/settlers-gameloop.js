@@ -52,7 +52,8 @@ class SettlersGameloop {
           text: 'A strong opening <em>maximizes</em> your chances of producing a <em>variety</em> of resources, the dots indicate the likelihood of a tile producing. 6/8/5/9 > 2/12/3/11',
           img: '/settlers/img/welcome3.png',
           line1: 'where',
-          line2: 'to place?'
+          line2: 'to place?',
+          id: 'welcome'
         });
 
         return 1;
@@ -1082,10 +1083,7 @@ class SettlersGameloop {
 
         for (let city of this.game.state.cities) {
           if (city.neighbours.includes(hexId)) {
-            if (
-              !this.game.state.threatened.includes(city.player) &&
-              city.player !== this.game.state.robinhood
-            ) {
+            if (!this.game.state.threatened.includes(city.player)) {
               this.game.state.threatened.push(city.player);
             }
           }

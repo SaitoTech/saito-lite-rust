@@ -227,23 +227,26 @@ if (spacekey == "insterberg" || spacekey == "konigsberg") {
       }
 
       for (let key in this.game.spaces) {
-	if (key == "crbox" || key == "arbox" || key == "ceubox" || key == "aeubox") { continue; }
-	if (this.game.spaces[key].units.length > 0) {
-	  let space = this.game.spaces[key];
-	  let supplied = false;
-	  for (let z = 0; z < space.units.length; z++) {
-	    let u = space.units[z];
-	    if (this.checkSupplyStatus(u.ckey.toLowerCase(), key)) {
-	      z = space.units.length+1;
-	      supplied = true;
+	if (key == "crbox" || key == "arbox" || key == "ceubox" || key == "aeubox") {
+
+	} else {
+	  if (this.game.spaces[key].units.length > 0) {
+	    let space = this.game.spaces[key];
+	    let supplied = false;
+	    for (let z = 0; z < space.units.length; z++) {
+	      let u = space.units[z];
+	      if (this.checkSupplyStatus(u.ckey.toLowerCase(), key)) {
+	        z = space.units.length+1;
+	        supplied = true;
+	      }
 	    }
-	  }
-	  if (supplied == false) {
-	    let obj = document.querySelector(`.${key}`);
-	    if (!obj.classList.contains("oos-highlight")) { 
-	      obj.classList.add("oos-highlight");
-	      this.game.spaces[key].oos = 1;
-	      this.displaySpace(key);
+	    if (supplied == false) {
+	      let obj = document.querySelector(`.${key}`);
+	      if (!obj.classList.contains("oos-highlight")) { 
+	        obj.classList.add("oos-highlight");
+	        this.game.spaces[key].oos = 1;
+	        this.displaySpace(key);
+	      }
 	    }
 	  }
 	}
@@ -359,10 +362,12 @@ if (spacekey == "insterberg" || spacekey == "konigsberg") {
     // exiting means no supply
     //
     if (this.game.spaces[spacekey].units.length > 0) {
-      let obj = document.querySelector(`.${spacekey}`);
-      obj.classList.add("oos-highlight");
-      this.game.spaces[spacekey].oos = 1;
-      this.displaySpace(spacekey);
+      if (spacekey != "crbox" && spacekey != "arbox" && spacekey != "ceubox" && spacekey != "aeubox") {
+        let obj = document.querySelector(`.${spacekey}`);
+        obj.classList.add("oos-highlight");
+        this.game.spaces[spacekey].oos = 1;
+        this.displaySpace(spacekey);
+      }
     }
 
 
