@@ -147,11 +147,17 @@ class ATR extends ModTemplate {
             }
             
         } else {
-            utxo = await this.fetchBalanceSnapshot('');
-            console.log('utxo : ', utxo);
-            if (!!utxo) {
-                atr_obj.utxo = utxo;
-                atr_obj.total_supply = utxo+blk.treasury+blk.graveyard+blk.totalFees+blk.previousBlockUnpaid;
+            snapshot = await this.fetchBalanceSnapshot('');
+            console.log('utxo : ', snapshot['utxo']);
+
+            if (blk.id != snapshot['latestBlockId']) {
+                console.warn("block id mistmatch");
+                console.log(`blk.id: ${blk.id}, latestBlockId: ${snapshot['latestBlockId']}`);
+            }
+
+            if (!!snapshot['utxo']) {
+                atr_obj.utxo = snapshot['utxo'];
+                atr_obj.total_supply = snapshot['utxo']+blk.treasury+blk.graveyard+blk.totalFees+blk.previousBlockUnpaid;
             }
             
         }
@@ -336,7 +342,7 @@ class ATR extends ModTemplate {
             let data = await response.text();
             let utxo = null;
 
-            // console.log("utxo: ", data);
+             console.log("utxo: ", data);
 
             let split_data = data.split(' ');
 
@@ -344,8 +350,18 @@ class ATR extends ModTemplate {
 			  return item.split('\n')[0];
             });
 
+            // get latest block id from snapshot
+            let latestBlockId = 0;
+            const firstLine = data.trim().split('\n')[0];
+            const match = firstLine.match(/-(\d+)-/);
+
+            if (match) {
+              latestBlockId = Number(match[1]);
+              console.log('Latest block id:', latestBlockId);
+            }
+            
             utxo = result.reduce((acc, num) => acc + BigInt(num), BigInt(0));
-        	return utxo;
+        	return {"utxo": utxo, "latestBlockId": latestBlockId};
         } catch (error) {
             console.error(error);
         }
