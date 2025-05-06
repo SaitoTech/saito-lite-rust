@@ -126,7 +126,7 @@ class ATR extends ModTemplate {
         atr_obj.treasury = blk.treasury;
         atr_obj.graveyard = blk.graveyard;
 
-        // console.log("blk: ", blk);
+        console.log("blk id at getBlockData(): ", blk.id);
 
         let utxo = null;
         if (type == 'old') {
