@@ -306,9 +306,9 @@ class TweetManager {
 		if (!this.numActivePeers) {
 			this.mod.tweets_earliest_ts--;
 			numActivePeers = this.mod.loadTweets('earlier', this.insertOlderTweets.bind(this));
-			if (!numActivePeers) {
+			if (numActivePeers == 0 || this.mod.tweets_earliest_ts <= 0) {
 				console.log('RS: Give up');
-				this.insertOlderTweets(0);
+				this.insertOlderTweets(-1);
 			}
 		}
 	}
@@ -316,14 +316,13 @@ class TweetManager {
 	insertOlderTweets(tx_count, peer = null) {
 
 		this.numActivePeers--;
+
 		if (this.mode !== 'tweets') {
 			if (this.mod.debug){
 				console.log('Not on main feed anymore, currently on: ' + this.mode);	
 			}
 			return;
 		}
-
-		this.hideLoader();
 
 		for (let tweet of this.mod.tweets) {
 			if (!tweet.isRendered()) {
@@ -338,13 +337,14 @@ class TweetManager {
 			} 
 		}
 
-		if (tx_count == 0) {
+		if (tx_count == -1) {
 			if (!document.querySelector('.saito-end-of-redsquare')) {
 				this.app.browser.addElementToSelector(
 					`<div class="saito-end-of-redsquare">no more tweets</div>`,
 					'.tweet-manager'
 				);
 			}
+			this.hideLoader();	
 			if (this.mod.debug){
 				console.log('REDSQUARE: Turn off IO before rendering end of feed message...');	
 			}
@@ -358,8 +358,10 @@ class TweetManager {
 			this.intersectionObserver.observe(document.getElementById('intersection-observer-trigger'));
 		}
 
-		return;
-
+		if (this.numActivePeers == 0 && tx_count > 0 ){
+			this.hideLoader();	
+		}
+		
 	}
 
 	renderProfile(publicKey) {
@@ -392,12 +394,13 @@ class TweetManager {
 				return;
 			}
 
-			this.hideLoader();
-
 			// Sort txs into posts/replies/retweets...
 			this.filterAndRenderProfile(txs);
 
 			this.profile.render();
+
+			this.hideLoader();
+
 		});
 
 	}
@@ -668,7 +671,7 @@ class TweetManager {
 		//
 		setTimeout(() => {
 			this.hideLoader();
-		}, 5);
+		}, 500);
 
 		let ob = document.getElementById('intersection-observer-trigger');
 
