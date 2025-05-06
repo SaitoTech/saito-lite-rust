@@ -39,6 +39,15 @@ class PokerUI {
     }
   }
 
+  clearPlayers(){
+    //
+    // clear displayed cards... / button / player-pots
+    //
+    for (let i = 1; i <= this.game.players.length; i++) {
+      this.playerbox.updateGraphics('', i);
+    }
+  }
+
   refreshPlayerboxes(){
       this.playerbox.removeBoxes();
       this.playerbox.render();
@@ -60,12 +69,11 @@ class PokerUI {
       }else{
         this.playerbox.updateGraphics('', i); 
       }
-    }
-  }
 
-  displayChipsIn(){
-    for (let i = 1; i <= this.game.players.length; i++) {
-        this.playerbox.updateGraphics(`<div class="chips-in-pot" title="chips in pot"></div>`, i); 
+      if (this.game.state.player_pot[i - 1] && !this.loadGamePreference("poker-hide-pot")){
+        let html = `<div class="poker-player-stake"><span class="stake-in-chips">${this.game.state.player_pot[i - 1]}</span></div>`;
+        this.playerbox.replaceGraphics(html, ".poker-player-stake", i); 
+      }
     }
   }
 
@@ -120,17 +128,14 @@ class PokerUI {
       return;
     }
 
-    let credit = this.convertChipsToCrypto(this.game.state.player_credit[player - 1]);
-
-    if (amount !== -1){
-      credit = this.convertChipsToCrypto(amount);
-    }else{
+    if (amount === -1){
       amount = this.game.state.player_credit[player - 1];
-
-      let html = `<div class="poker-player-stake"><span class="stake-in-chips">${this.game.state.player_pot[player - 1]}</span></div>`;
-      // If we show player-pot outside the player box
-      this.playerbox.replaceGraphics(html, ".poker-player-stake", player); 
     }
+    let credit = this.convertChipsToCrypto(amount);
+
+    //
+    // Amount = number of chips in player stack, credit = crypto value of chips in player stack
+    //
 
     let chips = 'CHIP';
     if (amount !== 1){
@@ -197,6 +202,8 @@ class PokerUI {
 
     let step_speed = Math.min(150, 550/amount);
 
+    let qs;
+
     for (let i = 1; i <= amount; i++){
 
       this.moveGameElement(this.createGameElement(`<div class="poker-chip"></div>`, `.game-playerbox-${better}`),
@@ -205,12 +212,20 @@ class PokerUI {
           callback: () => {
             this.pot.render(++initial_pot);
             this.displayPlayerStack(better, --initial_stack);
-            this.playerbox.replaceGraphics(`<div class="poker-player-stake">${this.game.state.player_pot[better - 1]+i}</div>`, ".poker-player-stake", better); 
+            // player_pot is update outside the animation...
+            qs = this.playerbox.replaceGraphics(`<div class="poker-player-stake"><span class="stake-in-chips">${this.game.state.player_pot[better - 1]+i}</span></div>`, ".poker-player-stake", better); 
             this.pot.addPulse();
           },
           run_all_callbacks: true
         },
         (item) => {
+
+          if (this.loadGamePreference("poker-hide-pot")){
+            setTimeout(()=> {
+              document.querySelector(qs).classList.add("invisible");
+            }, 500);
+          }
+
           if (!restartQueue){
             $(item).remove(); 
           }else{

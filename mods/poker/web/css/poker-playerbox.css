@@ -87,7 +87,7 @@
 	border: 1px solid #fff3;
 	min-height: 7.5rem;
 	color: white;
-	background-color: #0a1808dd;
+	background-color: #0a1808ee;
 	position: relative;
 	border-radius: 1.5rem;
 	transition: all 0.5s;
@@ -153,6 +153,7 @@
     color: #fff;
     height: 4rem;
     width: 10rem;
+    transition: opacity 0.75s;
     background-image: url(/poker/img/simple-chip.svg);
     background-size: contain;
     background-repeat: no-repeat;
@@ -161,6 +162,11 @@
     background-color: #0008;
     box-shadow: 5px 5px 3px #0008;
 }
+
+.poker-player-stake.invisible {
+  opacity: 0;
+}
+
 
 .poker-player-stake::after {
 	content: "BET";

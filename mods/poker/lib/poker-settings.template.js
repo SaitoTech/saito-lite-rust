@@ -6,6 +6,8 @@ module.exports = (app, mod) => {
 
     let felt = mod.loadGamePreference('poker-felt') || mod.felt;
 
+    let show_player_pot = !mod.loadGamePreference('poker-hide-pot');
+
 	return `
 			<fieldset class="saito-grid">
 			<legend class="settings-label">Board Display</legend>
@@ -35,5 +37,10 @@ module.exports = (app, mod) => {
             <label for="cool">Cooler</label>
 			</fieldset>
 
+			<fieldset class="saito-grid">
+			<legend class="settings-label">Game Options</legend>
+				<input type="checkbox" id="show-player-pot" ${show_player_pot ? "checked":"" }/>
+				<label for="show-player-pot">always show player pot</label>
+			</fieldset>
 			`;
 };
