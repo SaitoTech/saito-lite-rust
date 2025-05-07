@@ -277,7 +277,7 @@ export default (app, mod) => {
                         <div class="space nis" id="nis"></div>
                         <div class="space skopje" id="skopje"></div>
                         <div class="space monastir" id="monastir"></div>
-                        <div class="space centije" id="centije"></div>
+                        <div class="space cetinje" id="cetinje"></div>
                         <div class="space tirana" id="tirana"></div>
                         <div class="space valona" id="valona"></div>
                         <div class="space florina" id="florina"></div>

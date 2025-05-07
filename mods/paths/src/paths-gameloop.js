@@ -117,23 +117,30 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 	}
 
 
+	//
+	// now we just start everyone with Guns of August
+	//
 	if (mv[0] === "guns_of_august") {
 
 	  this.game.queue.splice(qe, 1);
 
 	  if (this.game.player === this.returnPlayerOfFaction("central")) {
-	    if (this.game.deck[0].hand.includes("cp01")) {
-	      this.addMove("NOTIFY\tCentral Powers start with Guns of August!");
-              this.addMove("DEAL\t1\t1\t1"); // deal random other card
-	      this.endTurn();
-	    } else {
-	      this.playerPlayGunsOfAugust();
-	    }
-	  } else {
-	    this.updateStatus("Central Powers considering Guns of August");
+	    this.game.deck[0].hand.push("cp01");
 	  }
 
-	  return 0;
+	  //if (this.game.player === this.returnPlayerOfFaction("central")) {
+	  //  if (this.game.deck[0].hand.includes("cp01")) {
+	  //    this.addMove("NOTIFY\tCentral Powers start with Guns of August!");
+          //    this.addMove("DEAL\t1\t1\t1"); // deal random other card
+	  //    this.endTurn();
+	  //  } else {
+	  //    this.playerPlayGunsOfAugust();
+	  //  }
+	  //} else {
+	  //  this.updateStatus("Central Powers considering Guns of August");
+	  //}
+	  //
+	  //return 0;
 
 	}
 
@@ -473,9 +480,15 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 
 		if (!this.checkSupplyStatus(ckey, key)) {
 
+		  let anyone_in_supply = false;
+		  for (let z = 0; z < this.game.spaces[key].units.length; z++) {
+		    if (this.game.units[this.game.spaces[key].units[z].key].checkSupplyStatus(this, key)) { anyone_in_supply = true; };
+		  }
+
 		  //
 		  // eliminate armies and corps
 		  //
+		  if (anyone_in_supply == false) {
 		  for (let z = this.game.spaces[key].units.length-1; z >= 0; z--) {
 		    let u = this.game.spaces[key].units[z];
 		    if (u.army) {
@@ -500,6 +513,7 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 			this.game.spaces[key].units.splice(z, 1);
 		      }
 		    }
+		  }
 		  }
 		}
 	      }
@@ -806,6 +820,15 @@ try {
           this.addUnitToSpace("ah_army04", "przemysl");
           this.addUnitToSpace("ah_army03", "tarnopol");
 
+	  // montenegro
+          this.addUnitToSpace("mn_corps", "cetinje");
+
+	  // serbia
+          this.addUnitToSpace("sb_corps", "arbox");
+          this.addUnitToSpace("sb_corps", "arbox");
+          this.addUnitToSpace("sb_army01", "belgrade");
+          this.addUnitToSpace("sb_army02", "valjevo");
+
 	  // italy
 	  //this.addTrench("trent", 1);
 	  //this.addTrench("asiago", 1);
@@ -890,6 +913,18 @@ try {
 	}
 
 
+	if (mv[0] === "control") {
+
+	  let faction = mv[1];
+	  let spacekey = mv[2];
+
+	  this.game.spaces[spacekey].control = faction;
+
+          this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
 
 	/////////////////////
 	// modifying state //
@@ -908,6 +943,8 @@ try {
 	  let unit = this.game.spaces[source].units[unit_idx];
 	  this.game.spaces[source].units.splice(unit_idx, 1);
 	  this.game.spaces[destination].units.push(unit);
+
+	  this.updateLog(unit.name + " redeploys to " + this.returnSpaceName(destination));
 
 	  this.displaySpace(source);
 	  this.displaySpace(destination);
@@ -1554,7 +1591,7 @@ console.log(JSON.stringify(this.game.state.cc_allies_active));
 	  if (this.game.state.combat.unoccupied_fort == 1) {
 
 	    if (this.game.state.combat.defender_loss_factor > this.game.spaces[this.game.state.combat.key].fort) {
-	      this.game.space[this.game.state.combat.key].fort = -1;
+	      this.game.spaces[this.game.state.combat.key].fort = -1;
 	      this.displaySpace(this.game.state.combat.key);
 	    }
 
@@ -1643,6 +1680,8 @@ console.log(JSON.stringify(this.game.state.cc_allies_active));
 
 	  this.game.queue.splice(qe, 1);
 
+console.log("CDR 1");
+
 	  let attacker_units = this.returnAttackerUnits();
 	  let does_defender_retreat = false;
 	  let can_defender_cancel = false;
@@ -1674,6 +1713,8 @@ console.log(JSON.stringify(this.game.state.cc_allies_active));
 	    } 
 	  }        
 
+console.log("CDR 2");
+
 	  //
 	  // can we take another stepwise loss to cancel the retreat?
 	  //
@@ -1689,6 +1730,7 @@ console.log(JSON.stringify(this.game.state.cc_allies_active));
 	  if (this.game.state.withdrawal == 1) { this.game.state.combat.can_defender_cancel = false; }
 	  this.game.state.combat.can_defender_cancel = can_defender_cancel;
 
+console.log("CDR 3");
 
 	  //
 	  // no retreating from unoccupied fort
@@ -1703,6 +1745,8 @@ console.log(JSON.stringify(this.game.state.cc_allies_active));
 	  //
 	  try { this.loss_overlay.showRetreatNotice(); } catch (err) {}
 
+console.log("CDR 4");
+
 	  //
 	  // remove all destroyed defender units
 	  //
@@ -1712,10 +1756,14 @@ console.log(JSON.stringify(this.game.state.cc_allies_active));
 	  }
 	  this.displaySpace(this.game.state.combat.key);
 
+console.log("CDR 5 - " + JSON.stringify(this.game.spaces[this.game.state.combat.key]));
+
 	  //
 	  // no need to retreat if nothing is left
 	  //
 	  if (this.game.spaces[this.game.state.combat.key].units.length <= 0) { return 1; } 
+
+console.log("CDR 6");
 
 	  //
 	  // no need to retreat if "they shall not pass"

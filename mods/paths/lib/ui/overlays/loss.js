@@ -463,20 +463,15 @@ console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
 	}
 
 	highlightFiringTable(ftable="corps", color="blue", highlight_color="blue", defender_modified_roll=0, defender_column_number=0) {
-console.log("highlight 1: " + defender_modified_roll);
-console.log("highlight 2: " + defender_column_number);
 		let qs = `.${ftable}_firing_table .firing_table `;
 	        for (let i = 0; i <= defender_column_number; i++) {
 			let obj = document.querySelector(`${qs} .row-${defender_modified_roll} .col-${i}`);
-console.log("what colour is col-" + i + " - row-" + defender_modified_roll + " ----> " + obj.style.color);
 			if (obj.style.color == "black") { obj.style.backgroundColor = color; }
 		}
 	        for (let i = 0; i < defender_modified_roll; i++) {
 			let obj = document.querySelector(`${qs} .row-${i} .col-${defender_column_number}`);
-console.log("what colour is col-" + i + " - row-" + defender_modified_roll + " ----> " + obj.style.color);
 			if (obj.style.color == "black") { obj.style.backgroundColor = color; }
 		}
-console.log("setting highlight at: row-" + defender_modified_roll + " col-" + defender_column_number);
 		document.querySelector(`${qs} .row-${defender_modified_roll} .col-${defender_column_number}`).style.backgroundColor = highlight_color;
 		document.querySelector(`${qs} .row-${defender_modified_roll} .col-${defender_column_number}`).style.color = "#FFFFFF";
 	}
@@ -511,7 +506,6 @@ console.log("setting highlight at: row-" + defender_modified_roll + " col-" + de
 				let didx = idx;
 				let unit_idx = didx;
 
-console.log("HERE 1");
 				//
 				// withdrawal
 				//
@@ -525,14 +519,11 @@ console.log("HERE 1");
 				  paths_self.game.state.events.withdrawal_bonus_used = 1;
 				}
 
-console.log("HERE 2");
-
 				if (unit.damaged) {
-console.log("HERE 3");
+
+console.log("assigning hits to damaged unit...");
 
 					this.moves.push(`damage\t${unit_spacekey}\t${unit_key}\t1\t${paths_self.game.player}`);
-console.log("HERE 4");
-
 					this.loss_factor -= unit.rloss;
 
 					unit.damaged = true;
@@ -552,12 +543,6 @@ console.log("HERE 4");
 						let corpskey = unit.key.split('_')[0] + '_corps';
 						let corpsunit = paths_self.cloneUnit(corpskey);
 						corpsunit.spacekey = unit.spacekey;
-//
-// replacing unit pulls corps from reserves
-//
-console.log("examining: " + corpsbox);
-console.log("for: " + corpskey);
-
 if (paths_self.doesSpaceHaveUnit(corpsbox, corpskey)) {
 						this.units.push(corpsunit);
 						this.moves.push(`add\t${unit.spacekey}\t${corpskey}\t${this.mod.game.player}`);
@@ -587,6 +572,8 @@ if (paths_self.doesSpaceHaveUnit(corpsbox, corpskey)) {
 		      			this.updateInstructions(`${this.mod.returnFactionName(this.mod.returnFactionOfPlayer(this.mod.game.player))} - Assign ${this.loss_factor} More Damage`);
 
 				} else {
+
+console.log("assigning hits to un-damaged unit...");
 
 					this.moves.push(`damage\t${unit_spacekey}\t${unit_key}\t0\t${this.mod.game.player}`);
 					unit.damaged = true;
@@ -631,6 +618,7 @@ if (paths_self.doesSpaceHaveUnit(corpsbox, corpskey)) {
 
 		});
 	}
+
 }
 
 module.exports = LossOverlay;

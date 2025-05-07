@@ -90,7 +90,7 @@ class ReplacementsOverlay {
 
 
 	hideSubMenu() {
-		document.querySelector('.replacements-overlay .submenu .controls').innerHTML = '';
+		document.querySelector('.replacements-overlay .submenu').style.visibility = "hidden";
 	}
 
 	showSubMenu(id="uneliminate") {
@@ -203,6 +203,8 @@ alert("back to main!");
 			}
 
 		});
+
+		document.querySelector('.replacements-overlay .submenu').style.visibility = "visible";
 
 	}
 

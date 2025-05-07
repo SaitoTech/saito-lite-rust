@@ -113,8 +113,6 @@
       }
     }
 
-console.log(JSON.stringify(ccs));
-
     //
     // we only want to show the players the cards that they are 
     // capable of eventing...
@@ -143,12 +141,6 @@ console.log(JSON.stringify(ccs));
     if (faction == "allies" && this.game.state.events.brusilov_offensive == 1) {
       if (!ccs.includes("ap46")) { ccs.push("ap46"); }
     }
-
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("cc: " + num);
-
 
     if (num == 0) {
       this.endTurn();
@@ -628,7 +620,7 @@ console.log("UNIT: " + JSON.stringify(unit));
     if (!sourcekey) {
       roptions.push(this.game.state.combat.key);
     //
-    // 
+    // someone retreated
     //
     } else {
 
@@ -696,6 +688,10 @@ console.log("UNIT: " + JSON.stringify(unit));
 	  }
 	  if (!attacker_units[i].damaged) {
             paths_self.moveUnit(skey, uidx, key);
+	    // if we are moving past, we control the intermediate space
+	    if (key != paths_self.game.state.combat.key) {
+	      paths_self.addMove(`control\t${faction}\t${paths_self.game.state.combat.key}`);
+	    }
 	    paths_self.addMove(`move\t${faction}\t${skey}\t${uidx}\t${key}\t${paths_self.game.player}`);
 	    j++;
 	  }
@@ -768,8 +764,12 @@ console.log("UNIT: " + JSON.stringify(unit));
     html    += `<li class="card" id="finish">finish</li>`;
     html    += `</ul>`;
 
+    this.replacements_overlay.hideSubMenu();
+
     this.updateStatusWithOptions(`Replacements Stage`, html);
     this.attachCardboxEvents((action) => {
+
+      this.updateStatus("continuing...");
 
       if (action === "overlay") {
         if (continue_fnct()) {
@@ -801,7 +801,31 @@ console.log("UNIT: " + JSON.stringify(unit));
     // 3. return eliminated units to RB 
     //
     let do_replacement_points_exist_for_unit = (unit) => {
+
+      //
+      // cannot spend replacement points if capital is besieged
+      //
+      let capitals = paths_self.returnCapital(unit.ckey);
+      let is_capital_besieged = false;
+      for (let z = 0; z < capitals.length; z++) {
+	let c = paths_self.game.spaces[capitals[z]];
+        let p = paths_self.returnPowerOfUnit(unit);
+	if (c.control != p) { is_capital_besieged = true; }
+	if (c.units.length > 0) {
+	  if (paths_self.returnPowerOfUnit(c.units[0]) != p) {
+	    is_capital_besieged = true;
+	  }
+	}
+	if ((z+1) < capitals.length) { is_capital_besieged = false; }
+      }
+
+      if (is_capital_besieged == false) { return 0; }
       if (rp[unit.ckey] > 0) { return 1; }
+      if (rp["A"] > 0) {
+	if (unit.ckey == "ANA" || unit.ckey == "AUS" || unit.ckey == "BE" || unit,ckey == "CND" || unit.ckey == "MN" || unit.ckey == "PT" || unit.ckey == "RO" || unit.ckey == "GR" || unit.ckey == "SB") {
+	  return 1;
+	}
+      }
       return 0;
     }
 
@@ -895,6 +919,7 @@ console.log("UNIT: " + JSON.stringify(unit));
 
     if (continue_fnct()) {
       paths_self.replacements_overlay.render();
+    } else {
     }
 
     return 1;
@@ -967,6 +992,8 @@ console.log("UNIT: " + JSON.stringify(unit));
 
 
   playerHandleRetreat() {
+
+console.log("into player handle retreat...");
 
     let paths_self = this;
 
@@ -1521,6 +1548,7 @@ console.log(JSON.stringify(spaces_within_hops));
       paths_self.playerSelectSpaceWithFilter(
 	"Execute Combat (Select Target): ",
 	(key) => {
+
 	  //
 	  // Austrian units can still attack...
 	  //
@@ -1528,7 +1556,6 @@ console.log(JSON.stringify(spaces_within_hops));
 	    if (faction == "central") {
 	      if (paths_self.game.spaces[key].country == "russia" && paths_self.game.spaces[key].fort > 0) {
             	if (non_german_units == false) { return 0; } else {
-
 		  let attack_ok = false;
 		  for (let z = 0; z < paths_self.game.spaces[key].neighbours.length; z++) {
 		    let n = paths_self.game.spaces[paths_self.game.spaces[key].neighbours[z]];
@@ -1538,9 +1565,7 @@ console.log(JSON.stringify(spaces_within_hops));
 		      }
 		    }
 		  }
-
 		  if (!attack_ok) { return 0; }
-
 		}
 	      }
 	    }
@@ -1558,7 +1583,7 @@ console.log(JSON.stringify(spaces_within_hops));
 	    if (power != faction) {
   	      for (let i = 0; i < paths_self.game.spaces[key].neighbours.length; i++) {
 	        let n = paths_self.game.spaces[key].neighbours[i];
-	        if (paths_self.game.spaces[n].activated_for_combat == 1) {
+	        if (paths_self.game.spaces[n].oos != 1 && paths_self.game.spaces[n].activated_for_combat == 1) {
 	  	  if (paths_self.game.state.attacks[n]) {
 	  	    if (paths_self.game.state.attacks[n] == key) { return 0; }
 		  }
@@ -1598,7 +1623,7 @@ console.log(JSON.stringify(spaces_within_hops));
       let original_key = key;
 
       let can_german_units_attack = true;
-      if (paths_self.game.spaces[key].fort > 0 && paths_self.game.spaces[key].units.length > 0 && paths_self.game.state.events.oberost != 1) {
+      if (paths_self.game.spaces[key].country == "russia" && paths_self.game.spaces[key].fort > 0 && paths_self.game.spaces[key].units.length > 0 && paths_self.game.state.events.oberost != 1) {
 	can_german_units_attack = false;
       }
 
@@ -1607,7 +1632,7 @@ console.log(JSON.stringify(spaces_within_hops));
 	if (paths_self.game.spaces[n].activated_for_combat == 1) {
 	  for (let k = 0; k < paths_self.game.spaces[n].units.length; k++) {
 	    let u = paths_self.game.spaces[n].units[k];
-	    if (u.attacked != 1) {
+	    if (u.attacked != 1 && paths_self.game.spaces[n].oos != 1) {
 	      if (!can_german_units_attack) {
 	        if (u.ckey != "GE") {
 		  units.push({ key : key , unit_sourcekey: n , unit_idx : k });

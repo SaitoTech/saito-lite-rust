@@ -212,7 +212,6 @@ if (spacekey == "insterberg" || spacekey == "konigsberg") {
   //trace_supply = 1;
 }
 
-
     //
     // if we call this function generically, it means we want
     // to check the supply status of every unit on the board
@@ -228,13 +227,19 @@ if (spacekey == "insterberg" || spacekey == "konigsberg") {
 
       for (let key in this.game.spaces) {
 	if (key == "crbox" || key == "arbox" || key == "ceubox" || key == "aeubox") {
-
 	} else {
 	  if (this.game.spaces[key].units.length > 0) {
 	    let space = this.game.spaces[key];
 	    let supplied = false;
 	    for (let z = 0; z < space.units.length; z++) {
 	      let u = space.units[z];
+	      //
+	      // some units manage their own supply
+	      //
+console.log("unit key: " + u.key);
+	      if (this.game.units[u.key].checkSupplyStatus(this, key) == 1) { 
+		supplied = true;
+	      }
 	      if (this.checkSupplyStatus(u.ckey.toLowerCase(), key)) {
 	        z = space.units.length+1;
 	        supplied = true;
@@ -3769,14 +3774,6 @@ spaces['targujiu'] = {
       country : "romania" ,
 }
 
-
-
-
-
-
-
-
-
 spaces['adrianople'] = {
       name: "Adrianople" ,
     control: "neutral" ,
@@ -3785,6 +3782,7 @@ spaces['adrianople'] = {
       neighbours: ["gallipoli","philippoli","burgas","constantinople"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['gallipoli'] = {
@@ -3795,6 +3793,7 @@ spaces['gallipoli'] = {
       neighbours: ["adrianople","constantinople"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['constantinople'] = {
@@ -3806,6 +3805,7 @@ spaces['constantinople'] = {
       terrain : "normal" ,
     port : 1 ,
       vp : true ,
+      country : "turkey" ,
 }
 
 spaces['balikesir'] = {
@@ -3816,6 +3816,7 @@ spaces['balikesir'] = {
       neighbours: ["bursa","canakale","izmir"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['canakale'] = {
@@ -3826,6 +3827,7 @@ spaces['canakale'] = {
       neighbours: ["balikesir"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['izmir'] = {
@@ -3836,6 +3838,7 @@ spaces['izmir'] = {
       neighbours: ["balikesir"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['aeubox'] = {

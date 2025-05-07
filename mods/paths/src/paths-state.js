@@ -146,6 +146,21 @@
 
   }
 
+  returnCapital(ckey="BR") {
+    if (ckey == "BR") { return ["london"]; }
+    if (ckey == "AH") { return ["vienna","budapest"]; }
+    if (ckey == "BE") { return ["brussels"]; }
+    if (ckey == "BU") { return ["sofia"]; }
+    if (ckey == "FR") { return ["paris"]; }
+    if (ckey == "GE") { return ["berlin"]; }
+    if (ckey == "GR") { return ["athens"]; }
+    if (ckey == "IT") { return ["rome"]; }
+    if (ckey == "MN") { return ["cetinje"]; }
+    if (ckey == "RO") { return ["bucharest"]; }
+    if (ckey == "SB") { return ["belgrade"]; }
+    if (ckey == "TU") { return ["constantinople"]; }
+    return [];
+  }
 
   calculateVictoryPoints() {
 

@@ -633,6 +633,7 @@ deck['ap14'] = {
 	    let units_to_restore = 2;
 
 	    let loop_fnct = () => {
+
               paths_self.removeSelectable();
     	      if (units_to_restore > 0) {
     	        //
@@ -684,7 +685,7 @@ deck['ap14'] = {
 	      return 1;
 	    }
 
-            if (count == 1 || count == 2) {
+            if ((count == 1 && units_to_restore >= 1) || (count == 2 && units_to_restore >= 2)) {
     	      let update_filter_fnct = (spacekey, unit) => {
 	        if (paths_self.returnPowerOfUnit(unit) == "allies") { return 0; }
                 if (unit.damaged == 1 && unit.destroyed != 1) {
