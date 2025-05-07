@@ -49,12 +49,6 @@ class PokerQueue {
 			}
 
 			if (mv[0] === 'newround') {
-				//
-				// clear displayed cards...
-				//
-				for (let i = 1; i <= this.game.players; i++) {
-					this.playerbox.updateGraphics('', i);
-				}
 
 				this.updateStatus("dealing new round...");
 
@@ -311,6 +305,7 @@ class PokerQueue {
 						this.pot.clearPot();
 						this.settleLastRound([this.game.players[player_left_idx]], 'fold');
 						this.board.clearTable();
+						this.clearPlayers();
 						await this.timeout(1000);
 						this.restartQueue();
 					});
@@ -659,6 +654,7 @@ class PokerQueue {
 					this.pot.clearPot();
 					this.settleLastRound(winner_keys, 'besthand');
 					this.board.clearTable();
+					this.clearPlayers();
 					await this.timeout(1000);
 					this.restartQueue();
 				});
@@ -718,6 +714,13 @@ class PokerQueue {
 					);
 					this.game.state.player_pot[sbpi] += this.game.state.small_blind;
 					this.game.state.player_credit[sbpi] -= this.game.state.small_blind;
+				}
+
+				if (!this.loadGamePreference("poker-hide-pot")){
+				    let html = `<div class="poker-player-stake"><span class="stake-in-chips">${this.game.state.player_pot[bbpi]}</span></div>`;
+				    this.playerbox.replaceGraphics(html, ".poker-player-stake", bbpi+1); 
+					html = `<div class="poker-player-stake"><span class="stake-in-chips">${this.game.state.player_pot[sbpi]}</span></div>`;
+				    this.playerbox.replaceGraphics(html, ".poker-player-stake", sbpi+1); 
 				}
 
 				this.game.queue.push('round'); //Start
@@ -816,6 +819,13 @@ class PokerQueue {
 					this.displayPlayerNotice(`<div class="plog-update">checks</div>`, player);
 				}
 				this.game.state.plays_since_last_raise++;
+
+				/*let qs = this.playerbox.replaceGraphics(`<div class="poker-player-stake"><span class="stake-in-chips">${this.game.state.player_pot[player - 1]}</span></div>`, ".poker-player-stake", player); 
+		        if (this.loadGamePreference("poker-hide-pot")){
+		            setTimeout(()=> {
+		              document.querySelector(qs).classList.add("invisible");
+		            }, 500);
+		        }*/
 
 				return 1;
 			}

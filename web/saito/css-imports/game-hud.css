@@ -217,6 +217,7 @@
 
 #controls ul li, ul li.option {
     position: relative;    
+    list-style-type: none;
 }
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
