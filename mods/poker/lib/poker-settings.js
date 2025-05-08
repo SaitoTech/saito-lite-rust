@@ -59,6 +59,18 @@ class Settings {
 			});
 		});
 
+		if (document.getElementById('show-player-pot')) {
+		document
+			.getElementById('show-player-pot')
+			.addEventListener('change', (e) => {
+				if (e.currentTarget.checked) {
+					this.mod.saveGamePreference('poker-hide-pot', false);
+				} else {
+					this.mod.saveGamePreference('poker-hide-pot', true);
+				}
+			});
+		}
+
 	}
 }
 

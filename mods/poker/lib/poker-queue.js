@@ -1,3 +1,5 @@
+const html2canvas = require('html2canvas');
+
 class PokerQueue {
 	initializeQueue() {
 		this.game.queue = [];
@@ -11,6 +13,7 @@ class PokerQueue {
 	startRound() {
 		this.updateLog('===============');
 		this.updateLog('Round: ' + this.game.state.round);
+		this.updateLog('===============');
 		console.log(JSON.parse(JSON.stringify(this.game.state)));
 
 		for (let i = 0; i < this.game.players.length; i++) {
@@ -49,12 +52,6 @@ class PokerQueue {
 			}
 
 			if (mv[0] === 'newround') {
-				//
-				// clear displayed cards...
-				//
-				for (let i = 1; i <= this.game.players; i++) {
-					this.playerbox.updateGraphics('', i);
-				}
 
 				this.updateStatus("dealing new round...");
 
@@ -302,6 +299,7 @@ class PokerQueue {
 						this.cardfan.hide();
 					}
 
+					this.playerbox.setActive(player_left_idx + 1);					
 					this.animateWin(total_pot, winners);
 					this.halted = 1;
 					this.playerAcknowledgeNotice(msg, async () => {
@@ -310,6 +308,7 @@ class PokerQueue {
 						this.pot.clearPot();
 						this.settleLastRound([this.game.players[player_left_idx]], 'fold');
 						this.board.clearTable();
+						this.clearPlayers();
 						await this.timeout(1000);
 						this.restartQueue();
 					});
@@ -399,12 +398,13 @@ class PokerQueue {
 				this.game.queue.splice(qe, 1);
 
 				this.board.render();
-				this.displayPlayers();
+				this.displayPlayers(true);
 
 				if (this.game.state.flipped === 0) {
 					if (this.game.player > 0) {
+						this.updateLog("** HOLE CARDS **");
 						this.updateLog(
-							`*** HOLE CARDS *** [${this.cardToHuman(
+							`[${this.cardToHuman(
 								this.game.deck[0].hand[0]
 							)} ${this.cardToHuman(this.game.deck[0].hand[1])}]`
 						);
@@ -413,15 +413,17 @@ class PokerQueue {
 				}
 
 				if (this.game.state.flipped === 3) {
+					this.updateLog("*** FLOP ***");
 					this.updateLog(
-						`*** FLOP *** [${this.cardToHuman(this.game.pool[0].hand[0])} ${this.cardToHuman(
+						`[${this.cardToHuman(this.game.pool[0].hand[0])} ${this.cardToHuman(
 							this.game.pool[0].hand[1]
 						)} ${this.cardToHuman(this.game.pool[0].hand[2])}]`
 					);
 				}
 				if (this.game.state.flipped === 4) {
+					this.updateLog("**** TURN ****");
 					this.updateLog(
-						`*** TURN *** [${this.cardToHuman(this.game.pool[0].hand[0])} ${this.cardToHuman(
+						`[${this.cardToHuman(this.game.pool[0].hand[0])} ${this.cardToHuman(
 							this.game.pool[0].hand[1]
 						)} ${this.cardToHuman(this.game.pool[0].hand[2])}] [${this.cardToHuman(
 							this.game.pool[0].hand[3]
@@ -429,8 +431,9 @@ class PokerQueue {
 					);
 				}
 				if (this.game.state.flipped === 5) {
+					this.updateLog("***** RIVER *****");
 					this.updateLog(
-						`*** RIVER *** [${this.cardToHuman(this.game.pool[0].hand[0])} ${this.cardToHuman(
+						`[${this.cardToHuman(this.game.pool[0].hand[0])} ${this.cardToHuman(
 							this.game.pool[0].hand[1]
 						)} ${this.cardToHuman(this.game.pool[0].hand[2])}] [${this.cardToHuman(
 							this.game.pool[0].hand[3]
@@ -454,6 +457,8 @@ class PokerQueue {
 
 				if (scorer != this.game.player) {
 					this.showPlayerHand(scorer, card1, card2);
+					this.updateLog(`* HOLE CARDS -- ${this.game.state.player_names[scorer-1]} *`);
+					this.updateLog(`[${this.cardToHuman(card1)} ${this.cardToHuman(card2)}]`);
 				}
 
 				//Everyone can use the pool
@@ -532,10 +537,12 @@ class PokerQueue {
 				console.log('Showdown:', winlist);
 
 				// ... and anyone else who ties
+				this.playerbox.setInactive();
 				for (let p = 0; p < winlist.length; p++) {
 					if (this.pickWinner(topPlayer.player_hand, winlist[p].player_hand) == 3) {
 						winners.push(winlist[p].player - 1);
 						winner_keys.push(this.game.players[winlist[p].player - 1]);
+						this.playerbox.setActive(winlist[p].player, false);
 					}
 				}
 
@@ -559,13 +566,14 @@ class PokerQueue {
 
 				// single winner gets everything
 
-				let logMsg =
-					winners.length > 1
-						? `split the pot for ${this.formatWager(pot_size)} each`
-						: `wins ${this.formatWager(pot_total)} (${this.formatWager(
+				let logMsg = ` split the pot for ${this.formatWager(pot_size)} each`;
+				if (winners.length == 1){
+					logMsg = (winners[0] == this.game.player - 1) ? " win" : " wins";
+					logMsg += ` ${this.formatWager(pot_total)} (${this.formatWager(
 								pot_total - this.game.state.player_pot[winners[0]],
 								false
 						  )} net)`;
+				}
 
 				for (let i = 0; i < winners.length; i++) {
 					if (i >= 1) {
@@ -592,9 +600,8 @@ class PokerQueue {
 				}
 
 				this.displayPlayers();
-
-				//update log
-				this.updateLog(winnerStr + logMsg);
+				
+				logMsg = winnerStr + logMsg
 
 				// update splash!
 				if (winners.length == 1) {
@@ -626,6 +633,10 @@ class PokerQueue {
 					}</div>${updateHTML}`;
 				});
 
+				//update log
+				this.updateLog(logMsg);
+
+
 				this.updateHTML = updateHTML;
 
 				//
@@ -649,19 +660,63 @@ class PokerQueue {
 
 				this.animateWin(pot_total, winObj);
 				this.halted = 1;
-				this.playerAcknowledgeNotice(winnerStr, async () => {
-					console.log("Continuing poker...");
-					this.animating = false;
-					this.cardfan.hide();
-					this.pot.clearPot();
-					this.settleLastRound(winner_keys, 'besthand');
-					this.board.clearTable();
-					await this.timeout(1000);
-					this.restartQueue();
-				});
-				this.saveGame(this.game.id);
-				this.setShotClock('.acknowledge');
+				this.updateStatus(winnerStr);
 
+				this.saveGame(this.game.id);
+
+                html2canvas(document.body, {
+                	/*scale: 0.8,
+                	width: 0.8*window.innerWidth,
+                	height: 0.8*window.innerHeight,*/
+                	ignoreElements: function (element) {
+                		if (element.classList.contains("cardBack")){
+                			return true;
+                		}
+                		if (element.classList.contains("pot")){
+                			return true;
+                		}
+                		if (element.classList.contains("poker-player-stake")){
+                			return true;
+                		}
+                		if (element.id === "log-wrapper"){
+                			return true;
+                		}
+                		if (element.id === "saito-header"){
+                			return true;
+                		}
+                	}
+                }).then((screenshot) => {
+					this.playerAcknowledgeNotice(winnerStr, async () => {
+						
+						console.log("Continuing poker...");
+						this.animating = false;
+						this.cardfan.hide();
+						this.pot.clearPot();
+						this.settleLastRound(winner_keys, 'besthand');
+						this.board.clearTable();
+						this.clearPlayers();
+
+						await this.timeout(800);
+						this.restartQueue();
+					});
+
+					this.setShotClock('.acknowledge', 3000, true, ()=> {
+							this.game_help.render({
+					          title: 'Showdown',
+					          text: `Tip: click anywhere on the screen to interrupt the 3 second countdown that keeps the game moving along`,
+					          //img: '/poker/img/poker_screenshot.jpg',
+					          line1: 'what',
+					          line2: 'happened?',
+					          id: 'showdown',
+					          callback: ()=> {
+								let ov = document.querySelector(".game-help-overlay");
+								if (ov){
+									ov.prepend(screenshot);
+								}
+							  }						
+							});						
+					});
+                });
 
 				return 0;
 			}
@@ -717,6 +772,13 @@ class PokerQueue {
 					this.game.state.player_credit[sbpi] -= this.game.state.small_blind;
 				}
 
+				if (!this.loadGamePreference("poker-hide-pot")){
+				    let html = `<div class="poker-player-stake"><span class="stake-in-chips">${this.game.state.player_pot[bbpi]}</span></div>`;
+				    this.playerbox.replaceGraphics(html, ".poker-player-stake", bbpi+1); 
+					html = `<div class="poker-player-stake"><span class="stake-in-chips">${this.game.state.player_pot[sbpi]}</span></div>`;
+				    this.playerbox.replaceGraphics(html, ".poker-player-stake", sbpi+1); 
+				}
+
 				this.game.queue.push('round'); //Start
 				this.game.queue.push('announce'); //Print Hole cards to Log
 			}
@@ -755,7 +817,7 @@ class PokerQueue {
 					this.game.state.all_in = true;
 					this.updateLog(this.game.state.player_names[player - 1] + ' goes all in to call');
 					if (this.game.player !== player) {
-						this.displayPlayerNotice(`<div class="plog-update">All in!</div>`, player);
+						this.displayPlayerNotice(`<div class="plog-update">all in!</div>`, player);
 					}
 				} else {
 					this.updateLog(this.game.state.player_names[player - 1] + ' calls to match ' + this.formatWager(this.game.state.required_pot));
@@ -814,6 +876,13 @@ class PokerQueue {
 				}
 				this.game.state.plays_since_last_raise++;
 
+				/*let qs = this.playerbox.replaceGraphics(`<div class="poker-player-stake"><span class="stake-in-chips">${this.game.state.player_pot[player - 1]}</span></div>`, ".poker-player-stake", player); 
+		        if (this.loadGamePreference("poker-hide-pot")){
+		            setTimeout(()=> {
+		              document.querySelector(qs).classList.add("invisible");
+		            }, 500);
+		        }*/
+
 				return 1;
 			}
 
@@ -826,16 +895,10 @@ class PokerQueue {
 
 				this.game.state.plays_since_last_raise = 1;
 
-				await this.animateBet(player, raise);
-
-				this.game.state.player_credit[player - 1] -= raise;
-				this.game.state.player_pot[player - 1] += raise;
-				this.game.state.last_raise = raise_portion;
-				this.game.state.required_pot += raise_portion;
-
+				// Update message before animation...
 				let raise_message = `raises ${this.formatWager(raise_portion)}`;
 
-				if (this.game.state.player_credit[player - 1] == 0) {
+				if (this.game.state.player_credit[player - 1] == raise) {
 					this.game.state.all_in = true;
 					raise_message = `goes all in`;
 				}
@@ -843,6 +906,13 @@ class PokerQueue {
 				if (this.game.player !== player){
 					this.displayPlayerNotice(`<div class="plog-update">${raise_message}</div>`, player);
 				}
+
+				await this.animateBet(player, raise);
+
+				this.game.state.player_credit[player - 1] -= raise;
+				this.game.state.player_pot[player - 1] += raise;
+				this.game.state.last_raise = raise_portion;
+				this.game.state.required_pot += raise_portion;
 
 				raise_message += ` to ${this.formatWager(this.game.state.player_pot[player - 1])}`;
 

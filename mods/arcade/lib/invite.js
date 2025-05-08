@@ -168,7 +168,7 @@ class Invite {
 		);
 			
 		if (!this.mod.isMyGame(tx)){
-			if (!this.invite_data.empty_slots && this.invite_data.max_players){
+			if (!this.invite_data.empty_slots && this.invite_data.max_players && !this.invite_data.time_finished){
 				this.invite_data.empty_slots = Math.max(0, this.invite_data.max_players - this.invite_data.players.length);
 				if (this.invite_data.empty_slots){
 					this.invite_data.empty_slots = 1;

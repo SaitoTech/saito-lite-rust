@@ -3793,11 +3793,11 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
 	his_self.game.queue.push("hide_overlay\ttheses");
         his_self.game.queue.push("ACKNOWLEDGE\tThe Reformation has begun!");
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
-//	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-//	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-//	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-//	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-//	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
 	his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	his_self.game.queue.push("STATUS\tProtestants selecting reformation targets...\t"+JSON.stringify(players_to_go));
 	his_self.game.queue.push("show_overlay\ttheses");
@@ -5941,6 +5941,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
             if (his_self.game.deck[0].fhand[i].includes('035')) {
 	      let assault_spacekey = his_self.game.state.assault.spacekey;
 	      let attacker_faction = his_self.game.state.assault.attacker_faction;
+	      if (his_self.game.spaces[assault_spacekey].neighbours.length == 0) { return 0; }
 	      for (let z = 0; z < his_self.game.state.players_info[his_self.game.player-1].factions.length; z++) {
 		if (attacker_faction == his_self.game.state.players_info[his_self.game.player-1].factions[z]) {
 	          if (4 >= his_self.returnHopsToFortifiedHomeSpace(assault_spacekey, attacker_faction)) {
@@ -8732,13 +8733,12 @@ if (space.key == "milan") {
 	  }
 
 	  if (!anything_left) {
-            for (let i = 0; i < space.units[f].length; i++) {
-              his_self.captureLeader(faction, respondent, spacekey, space.units[f][i]);
-              space.units[f].splice(i, 1);
+            for (let i = 0; i < space.units[faction].length; i++) {
+              his_self.captureLeader(faction, respondent, spacekey, space.units[faction][i]);
+              space.units[faction].splice(i, 1);
               i--;
             }
 
-	    //let who_gets_control = his_self.returnAllyOfMinorPower(space.home);
 	    let who_gets_control = space.home;
 
 	    //
@@ -9690,7 +9690,7 @@ if (space.key == "milan") {
 	  let space = his_self.game.spaces[his_self.game.state.knights_of_st_john];
 
 	  let connected = false;
-	  if (!his_self.isBesieged(space)) {
+	  if (!space.besieged) {
             for (let i = 0; i < space.ports.length; i++) {
               let sea = his_self.game.navalspaces[space.ports[i]];
               for (let z = 0; z < sea.ports.length; z++) {
@@ -11913,6 +11913,7 @@ if (space.key == "milan") {
 		  // we can switch if we want now
 		  if (action == "switch") { sswf_function(); return; }
 
+                  his_self.addMove("maybe_evacuate_or_capture_leaders\t"+action+"\t"+spacekey);
 		  his_self.addMove(`unbesiege_if_empty\t${spacekey}\t${action}`);
 		  for (let z = 0; z < his_self.game.spaces[spacekey].units[action].length; z++) {
 		    if (his_self.game.spaces[spacekey].units[action][z].type === "mercenary") {
@@ -11924,6 +11925,7 @@ if (space.key == "milan") {
 		});
 
 	      } else {
+                his_self.addMove("maybe_evacuate_or_capture_leaders\t"+factions[0]+"\t"+spacekey);
 		his_self.addMove(`unbesiege_if_empty\t${spacekey}\t${factions[0]}`);
 		for (let z = 0; z < his_self.game.spaces[spacekey].units[factions[0]].length; z++) {
 		  if (his_self.game.spaces[spacekey].units[factions[0]][z].type === "mercenary") {
@@ -12129,7 +12131,7 @@ if (space.key == "milan") {
 	  his_self.activateMinorPower("papacy", "venice");
 	} else {
 	  if (faction === "papacy" || faction === "ottoman") {
-	    his_self.deactivateMinorPower("hapsburg", "venice");
+	    his_self.deactivateMinorPower(ally, "venice");
 	  }
 	}
 	his_self.displayWarBox();

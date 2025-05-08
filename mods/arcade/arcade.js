@@ -120,6 +120,18 @@ class Arcade extends ModTemplate {
 			}
 		});
 
+
+		app.connection.on('arcade-launch-game-selector', (obj = {}) => {
+			if (!this.invite_manager){
+				setTimeout(()=> {
+					this.invite_manager = new InviteManager(app, this, '.overlay-invite-manager');
+					this.invite_manager.type = 'long';
+					this.invite_manager.show_carousel = false;
+					this.invite_manager.render();
+				}, 50);
+			}
+		});
+
 	}
 
 	//////////////////////////////
@@ -314,7 +326,9 @@ class Arcade extends ModTemplate {
 					let status = game_tx.msg.request;
 					let game_added = arcade_self.addGame(game_tx);
 
-					console.log(game_tx, status, game_added);
+					if (arcade_self?.debug && arcade_self.browser_active) {
+						console.log("Available arcade game:", status, game_added, game_tx);	
+					}
 
 					//Game is marked as "active" but we didn't already add it from our app.options file...
 					if (status == 'active' && game_added && arcade_self.isMyGame(game_tx)) {
@@ -327,28 +341,8 @@ class Arcade extends ModTemplate {
 				// For processing direct link to game invite
 				//
 				if (arcade_self.app.browser.returnURLParameter('game_id')) {
-					let game_id_short = arcade_self.app.browser.returnURLParameter('game_id');
-					let game = arcade_self.returnGameFromHash(game_id_short);
+					this.loadGameInviteById(arcade_self.app.browser.returnURLParameter('game_id'));
 
-					if (!game) {
-						salert('Sorry, the game is no longer available');
-						return;
-					}
-
-					if (arcade_self.isAvailableGame(game)) {
-						//Mark myself as an invited guest
-						game.msg.options.desired_opponent_publickey = this.publicKey;
-
-						//Then we have to remove and readd the game so it goes under "mine"
-						arcade_self.removeGame(game.signature);
-						arcade_self.addGame(game);
-					}
-
-					app.browser.logMatomoEvent('GameInvite', 'FollowLink', game.game);
-
-					let invite = new Invite(app, this, null, null, game, this.publicKey);
-					let join_overlay = new JoinGameOverlay(app, this, invite.invite_data);
-					join_overlay.render();
 					// Overwrite link-url with baseline url
 					window.history.replaceState('', '', `/arcade/`);
 				}
@@ -398,6 +392,30 @@ class Arcade extends ModTemplate {
 			}
 		}
 ********/
+	}
+
+	loadGameInviteById(game_id_short){
+		let game = this.returnGameFromHash(game_id_short);
+
+		if (!game) {
+			salert('Sorry, the game is no longer available');
+			return;
+		}
+
+		if (this.isAvailableGame(game)) {
+			//Mark myself as an invited guest
+			game.msg.options.desired_opponent_publickey = this.publicKey;
+
+			//Then we have to remove and readd the game so it goes under "mine"
+			this.removeGame(game.signature);
+			this.addGame(game);
+		}
+
+		this.app.browser.logMatomoEvent('GameInvite', 'FollowLink', game.game);
+
+		let invite = new Invite(this.app, this, null, null, game, this.publicKey);
+		let join_overlay = new JoinGameOverlay(this.app, this, invite.invite_data);
+		join_overlay.render();
 	}
 
 	////////////
@@ -462,9 +480,9 @@ class Arcade extends ModTemplate {
 			if (!this.renderIntos[qs]) {
 				this.styles = ['/arcade/style.css'];
 				this.renderIntos[qs] = [];
-				let obj = new InviteManager(this.app, this, qs);
-				obj.type = 'short';
-				this.renderIntos[qs].push(obj);
+				this.invite_manager = new InviteManager(this.app, this, qs);
+				this.invite_manager.type = 'short';
+				this.renderIntos[qs].push(this.invite_manager);
 				this.attachStyleSheets();
 			}
 		}
@@ -473,9 +491,9 @@ class Arcade extends ModTemplate {
 			if (!this.renderIntos[qs]) {
 				this.styles = ['/arcade/style.css'];
 				this.renderIntos[qs] = [];
-				let obj = new InviteManager(this.app, this, '.arcade-invites-box');
-				obj.type = 'long';
-				this.renderIntos[qs].push(obj);
+				this.invite_manager = new InviteManager(this.app, this, '.arcade-invites-box');
+				this.invite_manager.type = 'long';
+				this.renderIntos[qs].push(this.invite_manager);
 				this.attachStyleSheets();
 			}
 		}
@@ -484,9 +502,9 @@ class Arcade extends ModTemplate {
 			if (!this.renderIntos[qs]) {
 				this.styles = ['/arcade/style.css'];
 				this.renderIntos[qs] = [];
-				let obj = new InviteManager(this.app, this, '.arcade-invites-box');
-				obj.type = 'long';
-				this.renderIntos[qs].push(obj);
+				this.invite_manager = new InviteManager(this.app, this, '.arcade-invites-box');
+				this.invite_manager.type = 'long';
+				this.renderIntos[qs].push(this.invite_manager);
 				this.attachStyleSheets();
 			}
 		}
@@ -557,6 +575,7 @@ class Arcade extends ModTemplate {
 		if (type === 'saito-header') {
 			let x = [];
 			if (!this.browser_active) {
+				this.attachStyleSheets();
 				x.push({
 					text: 'Arcade',
 					icon: 'fa-solid fa-building-columns',
@@ -592,6 +611,18 @@ class Arcade extends ModTemplate {
 			return x;
 		}
 
+		if (type === 'saito-link') {
+			const urlParams = new URL(obj?.link).searchParams;
+			const entries = urlParams.entries();
+			for (const pair of entries) {
+				if (pair[0] == 'game_id') {
+					return { processLink: (link) => { 
+						this.loadGameInviteById(pair[1]);
+					}}
+				}
+			}
+		}
+
 		return super.respondTo(type, obj);
 	}
 
@@ -611,7 +642,6 @@ class Arcade extends ModTemplate {
 			if (conf == 0) {
 				if (txmsg.module === 'Arcade') {
 					if (this.hasSeenTransaction(tx)) {
-						console.log("Don't double process transactions in Arcade");
 						return;
 					}
 
@@ -739,7 +769,6 @@ class Arcade extends ModTemplate {
 				// public & private invites processed the same way
 				//
 				if (txmsg.request === 'open' || txmsg.request === 'private') {
-					console.log("!!!!!!!!");
 					await this.receiveOpenTransaction(tx);
 				}
 
@@ -820,12 +849,9 @@ class Arcade extends ModTemplate {
 			return;
 		}
 
-		console.log(this.games);
-
 		// Only care about open, public invites
 		for (let g of this.games["open"]){
 			if (publicKey == g.from[0].publicKey){
-				console.log("Mark offline", g);
 				let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 				newtx.msg = {
 					module: "Arcade",
@@ -1032,7 +1058,10 @@ class Arcade extends ModTemplate {
 
 		//Move game to different list
 		if (game) {
-			console.log(`Change game status from ${game.msg.request} to ${newStatus}`);
+
+			if (this.debug){
+				console.log(`Change game status from ${game.msg.request} to ${newStatus}`);	
+			}
 
 			if (game?.msg?.request == 'over') {
 				return;
@@ -1059,7 +1088,6 @@ class Arcade extends ModTemplate {
 		this.changeGameStatus(txmsg.game_id, 'over');
 
 		let winner = txmsg.winner || null;
-		console.log('Winner:', winner);
 
 		if (game?.msg) {
 			//Store the results locally
@@ -1071,7 +1099,7 @@ class Arcade extends ModTemplate {
 		}
 
 		if (this.debug) {
-			console.log('Winner updated in arcade');
+			console.log('Winner updated in arcade', winner);
 			console.log(this.games);
 		}
 	}
@@ -1102,7 +1130,6 @@ class Arcade extends ModTemplate {
 	// unsure
 	//
 	async createInviteTransaction(orig_tx) {
-		// console.log("createInviteTransaction", orig_tx);
 		let txmsg = orig_tx.returnMessage();
 
 		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
@@ -1219,8 +1246,6 @@ class Arcade extends ModTemplate {
 			return;
 		}
 
-
-		console.log("=============",JSON.parse(JSON.stringify(game)), "=============");
 
 		//
 		// Don't add the same player twice!
@@ -1895,6 +1920,20 @@ class Arcade extends ModTemplate {
 		}
 	}
 
+
+	removeGameFromWallet(game_id){
+		this.removeGame(game_id);
+		if (this.app.options.games) {
+			for (let i = 0; i < this.app.options.games.length; i++) {
+				if (this.app.options.games[i].id){
+					this.app.options.games.splice(i, 1);
+					break;
+				}
+			}
+		}
+		this.app.storage.saveOptions();
+		this.app.connection.emit('arcade-invite-manager-render-request');
+	}
 
 	isAvailableGame(game_tx, additional_status = '') {
 		if (game_tx.msg.request == 'open' || game_tx.msg.request == 'private') {

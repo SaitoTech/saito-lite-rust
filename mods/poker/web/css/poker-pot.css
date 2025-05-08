@@ -2,32 +2,47 @@
   cursor: pointer;
   position: absolute;
   display: block;
-  width: 19rem;
-  height: 18rem;
-  background: #dd5500;
+  width: 25rem;
+  height: 7rem;
   overflow: hidden;
   color: #fff;
-  text-shadow: 2px 2px 6px black;
-  top: calc(50% - 100px);
-  left: 0px;
-  margin-left: -8rem;
+  top: calc(50% - 180px);
   z-index: 89;
-  border-radius: 0 8rem 8rem 0;
+  border-radius: 20rem;
+  user-select: none;
+  left: 50%;
+  transition: opacity 0.75s;
+  transform: translateX(-50%);
+  background: url(/poker/img/simple-chip.svg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  border: 1px solid #aaa8;
+  background-color: #0008;
+  padding: 1rem 1rem 1rem 8rem;
+  box-shadow: 5px 5px 3px #0008;
 }
 
-.pot:hover {
-  background: #ee6600;
+.pot.invisible {
+  opacity: 0;
+}
+
+.pot::after {
+  content: "POT";
+  position: absolute;
+  top: 50%;
+  left: 3.5rem;
+  font-size: 1.75rem;
+  font-weight: bolder;
+  transform: translate(-53%, -48%);
 }
 
 .potholder {
   font-size: 2.4rem;
-  margin-left: 7.5rem;
   padding: 1rem;
   height: 100%;
-  width: 11rem;
   overflow: visible;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
@@ -38,31 +53,65 @@
   font-size: 3.4rem;
 }
 
+.potholder.squeeze {
+  justify-content: space-between;
+}
+
 .potholder.squeeze > div {
   text-align: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.potholder.squeeze .line2 {
+  font-size: unset;
+}
+
+.potholder.squeeze span {
+  font-weight: normal;
 }
 
 /*  Details overlay */
 .pot-details-overlay {
-    min-width: 38rem;
-    max-width: 100vw;
-    padding: 1rem;
+    min-width: 58rem;
+    max-width: 90vw;
+    min-height: 38rem;
+    max-height: 90vh;
+
+    padding: 3rem;
+    background-image: url('/poker/img/poker-chip-values-colors.webp');
+    background-position: center;
+    background-size: cover;
+    font-size: 2rem;
+    user-select: none;
 }
 
 .pot-details-overlay .saito-table-row {
     grid-template-columns: 1fr 1fr min-content;
     margin: 1rem 0;
+    grid-gap: 2rem;
     align-items: center;
+    background: #CCCB;
+}
+
+.pot-details-overlay.crypto-stake .saito-table-row {
+  grid-template-columns: 1fr 1fr min-content 1fr;
+}
+
+.pot-details-overlay .saito-table-row:hover{
+    background: #222B;
 }
 
 .pot-details-overlay .player-name {
-    font-size: 1.8rem;
+    font-size: 2.2rem;
 }
 
 .pot-details-overlay .player-bet {
-    font-size: 2rem;    
+    font-size: 2.6rem;    
 }
 
+/*
 @media screen and (max-width: 1000px) {
   .pot {
     width: 27rem;
@@ -97,7 +146,7 @@
   }
 
 
-}
+} */
 
 .pulse {
   animation: pulse 0.6s ease-in-out;

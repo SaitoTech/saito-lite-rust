@@ -34,9 +34,19 @@ class MenuOverlay {
 		}
 	}
 
-	render(player, faction) {
+	render(player, faction, card="") {
 
-		let his_self = this.mod;
+		let paths_self = this.mod;
+		let c = {};
+
+		if (card == "") {
+		  c.sr = 0;
+		  c.rp = 0;
+		} else {
+		  let deck = paths_self.returnDeck();
+		  c = deck[card];
+		}
+
 		this.overlay.show(MenuTemplate());
 
 		this.pushHudUnderOverlay();
@@ -45,16 +55,36 @@ class MenuOverlay {
 	      		<div id="ops" class="menu-option-container card menu_movement">
 	        		<div class="menu-option-title">Movement / Combat</div>
 	      		</div>
-	      		<div id="sr" class="menu-option-container card menu_redeployment">
+	      	`;
+
+		if (c.sr && paths_self.canPlayStrategicRedeployment(faction)) {
+			html += `
+			<div id="sr" class="menu-option-container card menu_redeployment">
 	        		<div class="menu-option-title">Strategic Redeployment</div>
 	      		</div>
+			`;
+		}
+
+    		if (c.rp && paths_self.canPlayReinforcementPoints(faction)) {
+			html += `
 	      		<div id="rp" class="menu-option-container card menu_replacement">
 	        		<div class="menu-option-title">Replacement Points</div>
 	      		</div>
-	      		<div id="event" class="menu-option-container card menu_event">
-	        		<div class="menu-option-title">Card Event</div>
-	      		</div>
-	  	`;
+			`;
+		}
+
+		let can_event_card = false;
+		this.mod.game.state.player_turn_card_select = true;
+    		try { can_event_card = c.canEvent(this.mod, faction); } catch (err) {}
+	 	if (c.cc) { can_event_card = false; }
+		this.mod.game.state.player_turn_card_select = false;
+    		if (can_event_card) {
+			html += `
+	      			<div id="event" class="menu-option-container card menu_event">
+	        			<div class="menu-option-title">Card Event</div>
+	      			</div>
+	  		`;
+		}
 
 		this.app.browser.addElementToSelector(html, `.menu`);
 		this.attachEvents();

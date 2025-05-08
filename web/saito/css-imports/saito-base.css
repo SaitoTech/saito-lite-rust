@@ -250,6 +250,7 @@ Scrollbars
   left: 5rem;
   z-index: 200;
   border-radius: var(border-radius-status-message);
+  user-select: none;
 }
 
 .message-message {

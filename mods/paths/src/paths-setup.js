@@ -35,7 +35,9 @@ console.log("\n\n\n\n");
       this.game.queue.push("init");
 
       this.game.queue.push("DEAL\t2\t2\t7");
-      this.game.queue.push("DEAL\t1\t1\t6"); // player chooses Guns of August or extra card 
+      this.game.queue.push("DEAL\t1\t1\t6"); // player automatically gets Guns of August
+      //this.game.queue.push("DEAL\t2\t2\t7");
+      //this.game.queue.push("DEAL\t1\t1\t6"); // player chooses Guns of August or extra card 
 
       this.game.queue.push("DECKENCRYPT\t2\t2");
       this.game.queue.push("DECKENCRYPT\t2\t1");
@@ -47,8 +49,16 @@ console.log("\n\n\n\n");
       this.game.queue.push("DECKXOR\t1\t2");
       this.game.queue.push("DECKXOR\t1\t1");
 
-      this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnMobilizationDeck("central")));
+      let deck = this.returnMobilizationDeck("central");
+      delete deck["cp01"];
+      this.game.queue.push("DECK\t1\t"+JSON.stringify(deck));
+      // this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnMobilizationDeck("central")));
       this.game.queue.push("DECK\t2\t"+JSON.stringify(this.returnMobilizationDeck("allies")));
+
+      //
+      // belgium joins the allies
+      //
+      this.convertCountryToPower("belgium", "allies");
 
     }
 

@@ -1,18 +1,11 @@
 class PokerUI {
   returnPlayerRole(player) {
     
-    if (this.game.state.winners.length > 0){
+    if (this.game.state.winners.length > 0) {
       if (this.game.state.winners.includes(player)) {
         return 'Winner!';
-      }else{
-        return `Lost ${this.formatWager(this.game.state.player_pot[player-1])}`;
       }
     }
-
-    if (this.game.state.flipped){
-      return `${this.formatWager(this.game.state.player_pot[player-1])} in pot`;
-    }
-
 
     if (player == this.game.state.button_player && player == this.game.state.small_blind_player) {
       return 'dealer / small blind';
@@ -41,8 +34,17 @@ class PokerUI {
       this.displayPlayerStack(i);
 
       if (!preserveLog) {
-        this.displayPlayerNotice('', i);
+        this.displayPlayerNotice(`<div class="plog-update"></div>`, i);
       }
+    }
+  }
+
+  clearPlayers(){
+    //
+    // clear displayed cards... / button / player-pots
+    //
+    for (let i = 1; i <= this.game.players.length; i++) {
+      this.playerbox.updateGraphics('', i);
     }
   }
 
@@ -67,8 +69,14 @@ class PokerUI {
       }else{
         this.playerbox.updateGraphics('', i); 
       }
+
+      if (this.game.state.player_pot[i - 1] && !this.loadGamePreference("poker-hide-pot")){
+        let html = `<div class="poker-player-stake"><span class="stake-in-chips">${this.game.state.player_pot[i - 1]}</span></div>`;
+        this.playerbox.replaceGraphics(html, ".poker-player-stake", i); 
+      }
     }
   }
+
 
   displayHand() {
     if (this.game.player == 0) {
@@ -105,11 +113,13 @@ class PokerUI {
       return;
     }
     if (player == this.game.player) {
-      this.playerbox.updateBody(`<div class="status"></div>`, player);
+      this.playerbox.updateBody(`<div class="status" id="status"></div><div class="controls" id="controls"></div>`, player);
       this.updateStatus(msg);
     } else {
       this.playerbox.updateBody(msg, player);
     }
+
+    console.log("displayPlayerNotice:", msg);
   }
 
   // Update the player's role and wager...
@@ -118,17 +128,14 @@ class PokerUI {
       return;
     }
 
-    let credit = this.convertChipsToCrypto(this.game.state.player_credit[player - 1]);
-
-    if (amount !== -1){
-      credit = this.convertChipsToCrypto(amount);
-    }else{
+    if (amount === -1){
       amount = this.game.state.player_credit[player - 1];
-
-      //let html = `<div class="poker-player-stake">${this.game.state.player_pot[player - 1]}</div>`;
-      // If we show player-pot outside the player box
-      //this.playerbox.replaceGraphics(html, ".poker-player-stake", player); 
     }
+    let credit = this.convertChipsToCrypto(amount);
+
+    //
+    // Amount = number of chips in player stack, credit = crypto value of chips in player stack
+    //
 
     let chips = 'CHIP';
     if (amount !== 1){
@@ -195,6 +202,8 @@ class PokerUI {
 
     let step_speed = Math.min(150, 550/amount);
 
+    let qs;
+
     for (let i = 1; i <= amount; i++){
 
       this.moveGameElement(this.createGameElement(`<div class="poker-chip"></div>`, `.game-playerbox-${better}`),
@@ -203,12 +212,20 @@ class PokerUI {
           callback: () => {
             this.pot.render(++initial_pot);
             this.displayPlayerStack(better, --initial_stack);
-            this.playerbox.replaceGraphics(`<div class="poker-player-stake">${this.game.state.player_pot[better - 1]+i}</div>`, ".poker-player-stake", better); 
+            // player_pot is update outside the animation...
+            qs = this.playerbox.replaceGraphics(`<div class="poker-player-stake"><span class="stake-in-chips">${this.game.state.player_pot[better - 1]+i}</span></div>`, ".poker-player-stake", better); 
             this.pot.addPulse();
           },
           run_all_callbacks: true
         },
         (item) => {
+
+          if (this.loadGamePreference("poker-hide-pot")){
+            setTimeout(()=> {
+              document.querySelector(qs).classList.add("invisible");
+            }, 500);
+          }
+
           if (!restartQueue){
             $(item).remove(); 
           }else{
@@ -237,8 +254,6 @@ class PokerUI {
     }
 
     let poker_self = this;
-    let mobileToggle =
-      window.matchMedia('(orientation: landscape)').matches && window.innerHeight <= 600;
 
     //
     // cancel raise kicks us back
@@ -294,21 +309,21 @@ class PokerUI {
       return;
     }
 
-    let html = '<ul>';
-    html += '<li class="option" id="fold">fold</li>';
+    this.displayPlayerNotice(`your turn:`, this.game.player);
+
+    let html = '<div class="option" id="fold"><img src="/poker/img/fold_icon.svg" alt="fold"><span>fold</span></div>';
 
     if (match_required > 0) {
-      html += `<li class="option" id="call">call - ${this.formatWager(match_required)}</li>`;
+      html += `<div class="option" id="call"><img src="/poker/img/call_icon.svg" alt="call"><span>call <span class="call-wager">(${this.formatWager(match_required, false)})</span></span></div>`;
     } else {
       // we don't NEED to match
-      html += '<li class="option" id="check">check</li>';
+      html += '<div class="option" id="check"><img src="/poker/img/check_icon.svg" alt="check"><span>check</span></div>';
     }
     if (can_raise) {
-      html += `<li class="option" id="raise">raise</li>`;
+      html += `<div class="option" id="raise"><img src="/poker/img/raise_icon.svg" alt="raise"><span>raise</span></div>`;
     }
-    html += '</ul>';
 
-    this.updateStatus(html);
+    this.updateControls(html);
 
     $('.option').off();
     $('.option').on('click', async function () {
@@ -318,46 +333,69 @@ class PokerUI {
         let credit_remaining =
           poker_self.game.state.player_credit[poker_self.game.player - 1] - match_required;
 
-        html = `<div class="menu-player">`;
+        html = `<div class="option raise_option" id="0"><img src="/poker/img/cancel_raise_icon.svg" alt="cancel"></div>`;
         if (match_required > 0) {
-          html += `match ${poker_self.formatWager(match_required)} and raise `;
-        } else {
-        }
-        html += `</div><ul><li class="option" id="0">${
-          mobileToggle ? 'nope' : 'cancel raise'
-        }</li>`;
+          html += `match ${poker_self.formatWager(match_required)} and  `;
+        } 
+        html += `raise: `;
+        
+        poker_self.updateStatus(html);
+
         let max_raise = Math.min(credit_remaining, smallest_stack);
 
-        for (let i = 0; i < 4; i++) {
-          let this_raise = poker_self.game.state.last_raise + i * poker_self.game.state.last_raise;
+        html = "";
+
+        for (let i = 0; i < 3; i++) {
+          let this_raise = poker_self.game.state.last_raise * 2**i;
 
           if (max_raise > this_raise) {
-            html += `<li class="option" id="${this_raise + match_required}">${
-              mobileToggle ? ' ' : 'raise '
-            }${poker_self.formatWager(this_raise)}</li>`;
+            html += `<div class="option raise_option" id="${this_raise + match_required}"><img src="/poker/img/raise_value_icon.svg" alt="raise">`;
+            html += poker_self.formatWager(this_raise, false);
+            if (poker_self.game.stake && poker_self.game.crypto !== "CHIPS"){
+              html += `<div class="crypto-hover-raise">${poker_self.convertChipsToCrypto(this_raise)} <span class="smaller-font"> ${poker_self.game.crypto}</span></div>`
+            }
+            html += "</div>";
           } else {
             break;
           }
         }
 
-        //Always give option for all in
-        html += `<li class="option" id="${max_raise + match_required}">
-                  raise ${poker_self.formatWager(max_raise)}
-                  (all in${
-                    smallest_stack_player !== poker_self.game.player - 1
-                      ? ` for ${poker_self.game.state.player_names[smallest_stack_player]}`
-                      : ''
-                  })</li>`;
+        //Option for manual input...
+        html += `<div class="option raise_option" id="manual"><img src="/poker/img/raise_allin_icon.svg" alt="raise"><span>?</span></div>`;
 
-        html += '</ul>';
-        poker_self.updateStatus(html);
+        //Always give option for all in
+        html += `<div class="option raise_option all-in" id="${max_raise + match_required}"><img src="/poker/img/raise_allin_icon.svg" alt="raise">`;
+        html += poker_self.formatWager(max_raise, false);
+        if (poker_self.game.stake && poker_self.game.crypto !== "CHIPS"){
+          html += `<div class="crypto-hover-raise">${poker_self.convertChipsToCrypto(max_raise)} <span class="smaller-font"> ${poker_self.game.crypto}</span></div>`
+        }
+        html += `</div>`;
+
+
+        poker_self.updateControls(html);
+
+        const enterRaise = async () => {
+          let c = await sprompt("How many chips would you like to raise?");
+          if (c){
+            let amt = parseInt(c);
+            if (amt >= poker_self.game.state.last_raise && amt <= max_raise){
+              poker_self.addMove(`raise\t${poker_self.game.player}\t${amt+match_required}`);
+              poker_self.endTurn();
+            }else{
+              await sconfirm("Invalid input");
+              enterRaise();
+            }
+          }
+        }
 
         $('.option').off();
-        $('.option').on('click', function () {
+        $('.option').on('click', async function () {
           let raise = $(this).attr('id');
 
           if (raise === '0') {
             poker_self.playerTurn();
+          } else if (raise === 'manual'){
+            enterRaise();
           } else {
             poker_self.addMove(`raise\t${poker_self.game.player}\t${raise}`);
             poker_self.endTurn();

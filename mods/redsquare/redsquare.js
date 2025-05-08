@@ -754,20 +754,22 @@ class RedSquare extends ModTemplate {
 
             if (txs.length > 0) {
               count = this.processTweetsFromPeer(this.peers[i], txs, 'redsquare.loadTweets');
+              if (this.debug) {
+                console.log(
+                  `REDSQUARE-${i} (${this.peers[i].publicKey}): returned ${
+                    txs.length
+                  } ${created_at} tweets, ${count} are new to the feed. New earliest timestamp -- ${new Date(
+                    this.peers[i].tweets_earliest_ts
+                  )}`
+                );
+              }
             } else {
               if (created_at === 'earlier') {
+                if (this.debug) {
+                  console.log(`REDSQUARE-${i} (${this.peers[i].publicKey}) peer out of earlier tweets. Mark as closed`);
+                }
                 this.peers[i].tweets_earliest_ts = 0;
               }
-            }
-
-            if (this.debug) {
-              console.log(
-                `REDSQUARE-${i} (${this.peers[i].publicKey}): returned ${
-                  txs.length
-                } ${created_at} tweets, ${count} are new to the feed. New earliest timestamp -- ${new Date(
-                  this.peers[i].tweets_earliest_ts
-                )}`
-              );
             }
 
             //
@@ -801,7 +803,7 @@ class RedSquare extends ModTemplate {
                 } else {
                   this.app.connection.emit('redsquare-remove-loading-message');
                 }
-              }, 1000);
+              }, 2000);
             }
 
             if (mycallback) {

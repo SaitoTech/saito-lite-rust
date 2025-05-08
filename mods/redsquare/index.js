@@ -50,8 +50,8 @@ module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
   <link rel="icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png" />
   <link rel="apple-touch-icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png" />
 
-  <script src="/saito/lib/pace/pace.min.js"></script>
-  <link rel="stylesheet" href="/saito/lib/pace/pace-theme.min.css">
+  <script data-pace-options='{ "restartOnRequestAfter" : false, "restartOnPushState" : false}' src="/saito/lib/pace/pace.min.js"></script>
+  <link rel="stylesheet" href="/saito/lib/pace/center-atom.css">
   <link rel="stylesheet" type="text/css" href="/saito/saito.css?v=${build_number}" />
   <link rel="stylesheet" type="text/css" href="/redsquare/style.css?v=${build_number}" />
 

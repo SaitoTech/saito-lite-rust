@@ -44,18 +44,18 @@ body {
 .deal {
   display: flex;
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin: 8rem 0 0;
   height: 230px;
 }
 
 .mystuff {
   position: absolute;
-  width: 250px;
-  height: 250px;
+  width: 100vw;
+  height: 240px;
   max-height: 36vh;
-  left: calc(50% - 125px);
+  /*left: calc(50% - 125px);*/  
   bottom: 10px;
-  max-width: min(250px, 66vw);
+  /*max-width: min(250px, 66vw);*/
 }
 
 
@@ -70,10 +70,14 @@ body {
 
 .htmlCard {
 	margin: 5px 3px;
-	display: inline-block;
 	background: #fffd;
-	padding: 4px 2px;
 	border-radius: 6px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.05em;
+  height: 32px;
+  width: 32px;
 }
 
 .dealer-button {
@@ -117,8 +121,9 @@ body {
   .gameboard {
     padding: 2rem;
   }
-
+  /*
   .mystuff {
     left: calc(50vw - min(125px, 33vw));
   }
+  */
 }

@@ -53,6 +53,7 @@ class LossOverlay {
 	}
 
 	returnMaxLossPossible() {
+
 		//
 		// associative array with all stepwise losses
 		//
@@ -174,6 +175,13 @@ class LossOverlay {
 		let qs_defender = '.loss-overlay .units.defender';
 		let my_qs = '.loss-overlay .units.defender';
 		let defender_units = this.mod.returnDefenderUnits();
+		this.units = defender_units;
+
+console.log("%");
+console.log("%");
+console.log("% DEBZUGGING: ");
+console.log("%" + JSON.stringify(this.units));
+console.log("%");
 
 		this.overlay.show(LossTemplate());
 		this.updateInstructions("Defender - Take Additional Hit to Cancel Retreat");
@@ -214,7 +222,7 @@ class LossOverlay {
 console.log(JSON.stringify(this.mod.game.state.combat));
 console.log("DEFENDER UNITS: " + JSON.stringify(defender_units));
 console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
-
+ 
 		this.units = defender_units;
 
 		if (
@@ -283,13 +291,14 @@ console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
 		document.querySelector(".attacker_damage").innerHTML = this.mod.game.state.combat.defender_loss_factor;
 		document.querySelector(".defender_damage").innerHTML = this.mod.game.state.combat.attacker_loss_factor;
 
+
 		//
 		// show terrain effects
 		//
 		document.querySelectorAll(".effects_table .row").forEach((el) => { el.style.display = "none"; });
 		document.querySelectorAll(".firing_table .row .col").forEach((el) => { el.style.color = "black"; });
 		document.querySelectorAll(".firing_table .row .col").forEach((el) => { el.style.backgroundColor = "transparent"; });
-console.log("SPACE: " + JSON.stringify(space));
+
 		if (space.terrain == "normal")   { document.querySelector(".effects_table .clear").style.display = "contents"; }
 		if (space.terrain == "mountain") { document.querySelector(".effects_table .mountain").style.display = "contents"; }
 		if (space.terrain == "swamp")    { document.querySelector(".effects_table .swamp").style.display = "contents"; }
@@ -297,6 +306,20 @@ console.log("SPACE: " + JSON.stringify(space));
 		if (space.terrain == "desert")   { document.querySelector(".effects_table .desert").style.display = "contents"; }
 		if (space.trench == 1) 	  	 { document.querySelector(".effects_table .trench1").style.display = "contents"; }
 		if (space.trench == 2) 		 { document.querySelector(".effects_table .trench2").style.display = "contents"; }
+
+		//
+		// add active card effects
+		//
+		for (let z = 0; z < this.mod.game.state.cc_allies_active.length; z++) {
+		  let cc = this.mod.game.state.cc_allies_active[z];
+		  let html = this.mod.popup(cc) + " ";
+		  document.querySelector(".other_effects").innerHTML += html;
+		}
+		for (let z = 0; z < this.mod.game.state.cc_central_active.length; z++) {
+		  let cc = this.mod.game.state.cc_central_active[z];
+		  let html = this.mod.popup(cc) + " ";
+		  document.querySelector(".other_effects").innerHTML += html;
+		}
 
 		//
 		// 
@@ -341,28 +364,44 @@ console.log("SPACE: " + JSON.stringify(space));
 		  attacker_column_number += this.mod.game.state.combat.attacker_column_shift;
 		  if (attacker_column_number < 0) { attacker_column_number = 0; }
 		  if (attacker_column_number > 10) { attacker_column_number = 10; }
-		  this.highlightFiringTable("army", "#f2dade", "#b6344a", attacker_modified_roll, attacker_column_number);
+		  this.highlightFiringTable("army", attacker_color, attacker_color_highlight, attacker_modified_roll, attacker_column_number);
 		}
 		if (attacker_table == "corps") {
 		  attacker_column_number = this.mod.returnCorpsColumnNumber(attacker_strength);
 		  attacker_column_number += this.mod.game.state.combat.attacker_column_shift;
 		  if (attacker_column_number < 0) { attacker_column_number = 0; }
 		  if (attacker_column_number > 9) { attacker_column_number = 9; }
-		  this.highlightFiringTable("corps", "#f2dade", "#b6344a", attacker_modified_roll, attacker_column_number);
+		  this.highlightFiringTable("corps", attacker_color, attacker_color_highlight, attacker_modified_roll, attacker_column_number);
 		}
 		if (defender_table == "army")  {
+
+	          //
+    		  // forts lend their combat strength to the defense
+    		  //
+    		  if (this.mod.game.spaces[this.mod.game.state.combat.key].fort > 0) {
+      		    defender_strength += this.mod.game.spaces[this.mod.game.state.combat.key].fort; 
+		  }
+
 		  defender_column_number = this.mod.returnArmyColumnNumber(defender_strength);
 		  defender_column_number += this.mod.game.state.combat.defender_column_shift;
 		  if (defender_column_number < 0) { defender_column_number = 0; }
 		  if (defender_column_number > 10) { defender_column_number = 10; }
-		  this.highlightFiringTable("army", "#dadcf2", "#343ab6", defender_modified_roll, defender_column_number);
+		  this.highlightFiringTable("army", defender_color, defender_color_highlight, defender_modified_roll, defender_column_number);
 		}
 		if (defender_table == "corps") {
+
+	          //
+    		  // forts lend their combat strength to the defense
+    		  //
+    		  if (this.mod.game.spaces[this.mod.game.state.combat.key].fort > 0) {
+      		    defender_strength += this.mod.game.spaces[this.mod.game.state.combat.key].fort; 
+		  }
+
 		  defender_column_number = this.mod.returnCorpsColumnNumber(defender_strength);
 		  defender_column_number += this.mod.game.state.combat.defender_column_shift;
 		  if (defender_column_number < 0) { defender_column_number = 0; }
 		  if (defender_column_number > 9) { defender_column_number = 9; }
-		  this.highlightFiringTable("corps", "#dadcf2", "#343ab6", defender_modified_roll, defender_column_number);
+		  this.highlightFiringTable("corps", defender_color, defender_color_highlight, defender_modified_roll, defender_column_number);
 		}
 
 		//
@@ -426,12 +465,12 @@ console.log("SPACE: " + JSON.stringify(space));
 	highlightFiringTable(ftable="corps", color="blue", highlight_color="blue", defender_modified_roll=0, defender_column_number=0) {
 		let qs = `.${ftable}_firing_table .firing_table `;
 	        for (let i = 0; i <= defender_column_number; i++) {
-			console.log(`${qs} .row-${defender_modified_roll} .col-${i}`);
-			document.querySelector(`${qs} .row-${defender_modified_roll} .col-${i}`).style.backgroundColor = color;;
+			let obj = document.querySelector(`${qs} .row-${defender_modified_roll} .col-${i}`);
+			if (obj.style.color == "black") { obj.style.backgroundColor = color; }
 		}
 	        for (let i = 0; i < defender_modified_roll; i++) {
-			console.log(`${qs} .row-${i} .col-${defender_column_number}`);
-			document.querySelector(`${qs} .row-${i} .col-${defender_column_number}`).style.backgroundColor = color;;
+			let obj = document.querySelector(`${qs} .row-${i} .col-${defender_column_number}`);
+			if (obj.style.color == "black") { obj.style.backgroundColor = color; }
 		}
 		document.querySelector(`${qs} .row-${defender_modified_roll} .col-${defender_column_number}`).style.backgroundColor = highlight_color;
 		document.querySelector(`${qs} .row-${defender_modified_roll} .col-${defender_column_number}`).style.color = "#FFFFFF";
@@ -441,16 +480,13 @@ console.log("SPACE: " + JSON.stringify(space));
 
 	attachEvents(am_i_the_attacker, my_qs ,faction) {
 
+		let paths_self = this.mod;
+
 		if (!this.canTakeMoreLosses()) {
 				for (let i = this.moves.length - 1; i >= 0; i--) {
-					this.mod.addMove(this.moves[i]);
+					paths_self.addMove(this.moves[i]);
 				}
-				let lmv = this.mod.game.queue[this.mod.game.queue.length-1].split("\t")[0];
-				this.mod.endTurn();
-				//this.updateInstructions(`<div class="continue_btn">Click to Continue</div>`);
-				//document.querySelector(".continue_btn").onclick = (e) => {
-				//  this.hide();
-				//}
+				paths_self.endTurn();
 				return;
 		}
 
@@ -461,7 +497,6 @@ console.log("SPACE: " + JSON.stringify(space));
 
 				let idx = e.currentTarget.id;
 
-alert('here: ' + idx);
 				let unit = this.units[idx];
 				if (unit.destroyed) { alert("destroyed"); }
 				let unit_key = e.currentTarget.dataset.key;
@@ -471,10 +506,24 @@ alert('here: ' + idx);
 				let didx = idx;
 				let unit_idx = didx;
 
+				//
+				// withdrawal
+				//
+				if (unit.corps && unit.eligible_for_withdrawal_bonus && paths_self.game.state.events.withdrawal && paths_self.game.state.events.withdrawal_bonus_used != 1) {
+				  try { salert("Withdrawal Negates 1 Corps Stepwise Loss..."); } catch (err) {}
+				  if (unit.damaged) {
+				    this.loss_factor -= unit.rloss;
+				  } else {
+				    this.loss_factor -= unit.loss;
+				  }
+				  paths_self.game.state.events.withdrawal_bonus_used = 1;
+				}
+
 				if (unit.damaged) {
 
-					this.moves.push(`damage\t${unit_spacekey}\t${unit_key}\t1\t${this.mod.game.player}`);
+console.log("assigning hits to damaged unit...");
 
+					this.moves.push(`damage\t${unit_spacekey}\t${unit_key}\t1\t${paths_self.game.player}`);
 					this.loss_factor -= unit.rloss;
 
 					unit.damaged = true;
@@ -489,13 +538,29 @@ alert('here: ' + idx);
 					//
 					if (unit.key.indexOf('army') > 0) {
 
+						let corpsbox = "arbox";
+						if (paths_self.returnFactionOfPlayer() == "central") { corpsbox = "crbox"; }
 						let corpskey = unit.key.split('_')[0] + '_corps';
-						let corpsunit = this.mod.cloneUnit(corpskey);
+						let corpsunit = paths_self.cloneUnit(corpskey);
 						corpsunit.spacekey = unit.spacekey;
+if (paths_self.doesSpaceHaveUnit(corpsbox, corpskey)) {
+
+//
+// add new unit
+//
 						this.units.push(corpsunit);
+						if (am_i_the_attacker) {
+						  paths_self.game.spaces[corpsunit.spacekey].units.push(corpsunit);
+						  paths_self.game.state.combat.attacker.push({ key : paths_self.game.state.combat.key , unit_idx : paths_self.game.spaces[corpsunit.spacekey].units.length-1 , unit_sourcekey : corpsunit.spacekey });
+						}
+//
+// others remove and add too
+//
 						this.moves.push(`add\t${unit.spacekey}\t${corpskey}\t${this.mod.game.player}`);
+						this.moves.push(`remove\t${corpsbox}\t${corpskey}\t${this.mod.game.player}`);
 						let html = `<div class="loss-overlay-unit" data-spacekey="${corpsunit.spacekey}" data-key="${corpskey}" data-damaged="0" id="${this.units.length - 1}">${this.mod.returnUnitImageWithMouseoverOfStepwiseLoss(this.units[this.units.length - 1], false, true)}</div>`;
 						this.app.browser.addElementToSelector(html, my_qs);
+}
 		  				this.attachEvents(am_i_the_attacker, my_qs, faction);
 
 					//
@@ -508,16 +573,11 @@ alert('here: ' + idx);
 					// move to eliminated box
 					//
                 			let f = this.mod.returnPowerOfUnit(unit);
-// cannot move now
-//					if (f === "central") {
-//					  this.mod.moveUnit(unit_spacekey, unit_idx, "ceubox");
-//					} else {
-//					  this.mod.moveUnit(unit_spacekey, unit_idx, "aeubox");
-//					}
-
 		      			this.updateInstructions(`${this.mod.returnFactionName(this.mod.returnFactionOfPlayer(this.mod.game.player))} - Assign ${this.loss_factor} More Damage`);
 
 				} else {
+
+console.log("assigning hits to un-damaged unit...");
 
 					this.moves.push(`damage\t${unit_spacekey}\t${unit_key}\t0\t${this.mod.game.player}`);
 					unit.damaged = true;
@@ -562,6 +622,7 @@ alert('here: ' + idx);
 
 		});
 	}
+
 }
 
 module.exports = LossOverlay;

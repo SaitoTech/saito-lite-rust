@@ -50,6 +50,7 @@ data/issuance/issuance
 data/saito.stats
 data/peer_state.txt
 data/checkpoints/*
+data/issuance/*.issuance
 
 bundler
 bundler/*

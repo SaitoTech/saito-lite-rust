@@ -2913,7 +2913,11 @@ console.log("ERROR DISPLAYING NEW WORLD STUFF: " + JSON.stringify(err));
 
   displayNavalSpace(key) {
 
-    if (this.game.spaces[key]) { this.displaySpace(key); return; }
+    if (this.game.spaces[key]) {
+      this.displaySpace(key);
+      return;
+    }
+
     if (!this.game.navalspaces[key]) { return; }
 
     let obj = document.getElementById(key);
@@ -2929,6 +2933,9 @@ console.log("ERROR DISPLAYING NEW WORLD STUFF: " + JSON.stringify(err));
     	  if (a.type > b.type) return 1;
     	  return 0;
 	});
+        for (let z = 0; z < space.units[key].length; z++) {
+	  space.units[key][z].idx = z;
+	}
       }
     }
 

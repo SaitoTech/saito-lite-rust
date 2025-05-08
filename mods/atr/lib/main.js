@@ -24,8 +24,14 @@ class Main {
 
     	document.querySelector('.saito-container.atr').innerHTML = MainTemplate(this.app, this.mod);
 
-		for (let i = 0; i < this.mod.blocks.length; i++) {
-			let block = this.mod.blocks[i];
+		  const resp     = await fetch('/atr/cache');
+		  const cacheObj = await resp.json();
+		  const blocks   = Object.values(cacheObj);
+
+		  console.log("serverCache inside main.js:", blocks);
+
+		  blocks.forEach((block, i) => {
+
 			let blockslot = (i + 1);
 
 			console.log("main.js block: ", block);
@@ -64,7 +70,7 @@ class Main {
 			document.querySelector(`.blocktable .graveyard .blockslot${blockslot}`).innerHTML = (block.graveyard).toLocaleString();
 			document.querySelector(`.blocktable .utxo .blockslot${blockslot}`).innerHTML = (block.utxo).toLocaleString();
 			document.querySelector(`.blocktable .total_supply .blockslot${blockslot}`).innerHTML = (block.total_supply).toLocaleString();
-		}
+		});
 
 		await this.renderBalance();
 

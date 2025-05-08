@@ -25,8 +25,8 @@
 }
 
 .game-playerbox.game-playerbox-seat-1 {
-	height: 250px;
 	max-width: unset;
+	bottom: unset;
 }
 
 .game-playerbox-icons {
@@ -45,46 +45,74 @@
 	position: absolute;
 	display: none;
 	border: 1px solid white;
-	bottom: calc(100% + 1.5rem);
+	bottom: calc(100% + 2rem);
 	border-radius: 1rem;
 	padding: 0.5rem;
 	font-size: 24px;
 	background-color: #020;
 }
 
-.saito-user:hover > .game-playerbox-icons .crypto-hover-balance {
+.saito-user > .game-playerbox-icons:after{
+	content: "";
+	position: absolute;
+	width: 6rem;
+	height: 5rem;
+}
+
+.saito-user > .game-playerbox-icons:hover .crypto-hover-balance {
+	display: block;
+}
+
+
+.crypto-hover-raise {
+	position: absolute;
+	display: none;
+	border: 1px solid white;
+	bottom: 100%;
+	border-radius: 1rem;
+	padding: 0.5rem;
+	font-size: 18px;
+	background-color: #020;
+	pointer-events: none;
+	white-space: nowrap;
+}
+
+.raise_option:hover .crypto-hover-raise {
 	display: block;
 }
 
 .game-playerbox {
-	width: 100%;
+	/*width: 100%;*/
 	max-width: min(280px, 50vw);
 	border: 1px solid #fff3;
-	min-height: 12rem;
+	min-height: 7.5rem;
 	color: white;
-	background-color: #020E;
+	background-color: #0a1808ee;
 	position: relative;
 	border-radius: 1.5rem;
 	transition: all 0.5s;
 	margin: auto; /* auto-center in grid */
-	padding: 1.2rem;
+	padding: 1.5rem;
 	gap: 0.5rem;
 	border-radius: 0.5rem;
-    padding: 2rem;
     max-width: 350px;
-    transform: scale(1.1);
+	box-shadow: 5px 5px 3px #0a1808dd;
 }
 
 .game-playerbox.folded {
 	filter: grayscale(100%) brightness(0.6) opacity(75%);
 }
 
-.game-playerbox.active:not(.game-playerbox-seat-1) {
+.game-playerbox.active {
 	border: 1px solid #fff;
-	filter: drop-shadow(5px 5px 3px black);
-  	transform: translate(-3px, -2px);
+  transform: scale(1.05);
 }
 
+
+.game-playerbox-body {
+	width: 100%;
+	overflow: visible;
+}
 
 .game-playerbox-head .saito-user > .saito-address {
 	color: white;
@@ -93,6 +121,8 @@
 .game-playerbox-head .saito-user > .saito-userline {
 	text-transform: lowercase;
 	align-items: flex-end;
+	justify-content: start;
+	gap: 3px;
 }
 
 .saito-user > .saito-identicon-box {
@@ -111,28 +141,48 @@
 
 
 .poker-player-stake {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 14px;
-	position: absolute;
-	top: calc(100% + 2px);
-	left: 50%;
-	transform: translateX(-50%);
-	border-radius: 100%;
-	color: #fff;
-	background-color: #dd5500;
-	text-shadow: 1px 1px 3px black;
-	height: 4rem;
-	width: 4rem;
-	display: none;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    font-size: 2.5rem;
+    position: absolute;
+    top: calc(100% + 1rem);
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 10rem;
+    color: #fff;
+    height: 4rem;
+    width: 10rem;
+    transition: opacity 0.75s;
+    background-image: url(/poker/img/simple-chip.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+    padding: 2px 2rem 0;
+    border: 1px solid #aaa8;
+    background-color: #0008;
+    box-shadow: 5px 5px 3px #0008;
 }
+
+.poker-player-stake.invisible {
+  opacity: 0;
+}
+
+
+.poker-player-stake::after {
+	content: "BET";
+	position: absolute;
+	top: 50%;
+	left: 1.99rem;
+	font-size: 1.1rem;
+	font-weight: bolder;
+	transform: translate(-51%, -46%);
+  }
 
 .game-playerbox-seat-1 .poker-player-stake{
 	left: unset;
 	transform: unset;
 	top: unset;
-	bottom: calc(100% + 2px);
+	bottom: calc(100% + 1rem);
 	right: 2px;
 }
 
@@ -141,6 +191,7 @@
 	text-align: center;
 	margin-top: 0.5rem;
 	cursor: default;
+	min-height: 2.3rem;
 }
 
 
@@ -153,5 +204,15 @@
 @media screen and (max-width: 600px) {
   .game-playerbox-manager {
     gap: 1rem;
+  }
+
+  .game-playerbox.game-playerbox-seat-1 {
+	width: 100vw;
+	transform: none;
+	bottom: 0px;
+  }
+  .dealer-button {
+	left: 1rem;
+	top: -4rem !important;
   }
 }

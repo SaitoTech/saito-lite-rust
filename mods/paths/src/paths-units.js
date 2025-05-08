@@ -4,8 +4,8 @@
 
     try { if (!unit.ckey) { unit = this.game.units[unit]; } } catch (err) {}
 
-    let allied = ["FR", "RU", "BR", "BE", "IT", "US"];
-    let central = ["GE", "AH", "TU", "BG"];
+    let allied = ["FR", "RU", "BR", "BE", "IT", "US", "ANA", "AUS", "BEF", "CAU", "CND", "CZL", "GR", "MEF", "MN", "NE", "OA", "POL", "PT" , "RO", "SB"];
+    let central = ["GE", "AH", "TU", "BG", "AOI", "BU", "SN" , "YLD"];
 
     if (allied.includes(unit.ckey)) { return "allies"; }
     if (central.includes(unit.ckey)) { return "central"; }
@@ -23,26 +23,34 @@
     //
     // avoid re-importing
     //
-    if (this.game.units[key]) { return; }
+    if (this.game.units[key]) {
+      if (obj.checkSupplyStatus) {
+	this.game.units[key].checkSupplyStatus = obj.checkSupplyStatus;
+      } else {
+	this.game.units[key].checkSupplyStatus = (paths_self, spacekey) => { return 0; }
+      }
+      return;
+    }
 
     obj.key = key;
 
-    if (!obj.name)      { obj.name      = "Unknown"; }
-    if (!obj.army)	{ obj.army 	= 0; }
-    if (!obj.corps)	{ obj.corps 	= 0; }
-    if (!obj.combat)	{ obj.combat 	= 5; }
-    if (!obj.loss)	{ obj.loss 	= 3; }
-    if (!obj.movement)	{ obj.movement 	= 3; }
-    if (!obj.rcombat)	{ obj.rcombat 	= 5; }
-    if (!obj.rloss)	{ obj.rloss 	= 3; }
-    if (!obj.rmovement)	{ obj.rmovement = 3; }
+    if (!obj.name)      	{ obj.name      = "Unknown"; }
+    if (!obj.army)		{ obj.army 	= 0; }
+    if (!obj.corps)		{ obj.corps 	= 0; }
+    if (!obj.combat)		{ obj.combat 	= 5; }
+    if (!obj.loss)		{ obj.loss 	= 3; }
+    if (!obj.movement)		{ obj.movement 	= 3; }
+    if (!obj.rcombat)		{ obj.rcombat 	= 5; }
+    if (!obj.rloss)		{ obj.rloss 	= 3; }
+    if (!obj.rmovement)		{ obj.rmovement = 3; }
 
-    if (!obj.attacked)	{ obj.attacked  = 0; }
-    if (!obj.moved)	{ obj.moved     = 0; }
+    if (!obj.attacked)		{ obj.attacked  = 0; }
+    if (!obj.moved)		{ obj.moved     = 0; }
 
-    if (!obj.damaged)	{ obj.damaged = false; }
-    if (!obj.destroyed)	{ obj.destroyed = false; }
-    if (!obj.spacekey)  { obj.spacekey = ""; }
+    if (!obj.damaged)		{ obj.damaged = false; }
+    if (!obj.destroyed)		{ obj.destroyed = false; }
+    if (!obj.spacekey)  	{ obj.spacekey = ""; }
+    if (!obj.checkSupplyStatus) { obj.checkSupplyStatus = (paths_self, spacekey) => { return 0; } };
 
     if (key.indexOf("army") > -1) { obj.army = 1; } else { obj.corps = 1; }
 
@@ -55,6 +63,13 @@
     this.game.spaces[sourcekey].units[sourceidx].moved = 1;
     this.game.spaces[sourcekey].units.splice(sourceidx, 1);
     if (!this.game.spaces[destinationkey].units) { this.game.spaces[destinationkey].units = []; }
+
+    if (destinationkey == "aeubox" || destinationkey == "ceubox") {
+      this.updateLog(unit.name + " eliminated.");
+    } else {
+      this.updateLog(unit.name + " moves from " + this.game.spaces[sourcekey].name + " to " + this.game.spaces[destinationkey].name);
+    }
+
     unit.spacekey = destinationkey;
     this.game.spaces[destinationkey].units.push(unit);
     unit.spacekey = destinationkey;
@@ -143,7 +158,6 @@
       // replace with corps if destroyed
       //
       if (unit.key.indexOf('army') >= 0) {
-
         let corpskey = unit.key.split('_')[0] + '_corps';
         let new_unit = this.cloneUnit(corpskey);
         return this.returnUnitImage(new_unit, just_link);

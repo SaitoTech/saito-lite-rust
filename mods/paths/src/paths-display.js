@@ -4,18 +4,19 @@
   }
 
   shakeSpacekey(spacekey) {
+
     let qs = `.space.${spacekey}`;
-    let element = document.querySelector(qs);
+    let element = document.querySelectorAll(qs).forEach((element) => {
 
-    if (!element) { return; }
+      if (element.classList.contains("shake")) { return; }
+      element.classList.add("shake");
 
-    if (element.classList.contains("shake")) return;
-
-    element.classList.add("shake");
-
-    setTimeout(() => { 
-      element.classList.remove("shake");
-    }, 1500);
+      setTimeout(() => { 
+        document.querySelectorAll(qs).forEach((element) => {
+          element.classList.remove("shake");
+        }); 
+      }, 1500);
+    });
   }
 
   shakeUnit(skey, ukey) {
@@ -23,17 +24,19 @@
     let qs = `.${ukey}`;
     document.querySelectorAll(qs).forEach((element) => {
 
-      if (element.classList.contains("shake")) return;
+      if (element.classList.contains("shake")) { return; }
       element.classList.add("shake");
 
       setTimeout(() => { 
-        element.classList.remove("shake");
+        document.querySelectorAll(qs).forEach((element) => {
+          element.classList.remove("shake");
+	}); 
       }, 1500);
     });
 
   }
 
-  displayCustomOverlay(c="", msg="") {
+  displayCustomOverlay(obj={}) {
 
     //
     // move HUD above winter if winter is showing
@@ -41,29 +44,24 @@
     this.welcome_overlay.pullHudOverOverlay();
     this.welcome_overlay.pushHudUnderOverlay();
 
+    let deck = this.returnDeck(); // include removed
 
-    let deck = this.returnDeck(true); // include removed
-    if (deck[c]) {
-      if (deck[c].returnCustomOverlay) {
+    let title = "";
+    let text = "";
+    let img = "";
+    let card = "";
 
-        let obj = deck[c].returnCustomOverlay();
-        let title = obj.title;
-        let text = obj.text;
-        let img = obj.img;
-        let card = this.returnCardImage(c);
+    if (obj.title) { title = obj.title; }
+    if (obj.text) { text = obj.text; }
+    if (obj.img) { img = obj.img; }
+    if (obj.card) { card = obj.card; }
 
-        if (msg == "") {
-          msg = this.popup(c) + " triggers";
-        }
- 
         this.welcome_overlay.renderCustom({
           text : text,
           title : title,
           img : img,
-          card : card,
+	  card : card
         });
-      }
-    }
 
   }
 
@@ -200,7 +198,7 @@ console.log("!");
 
   displaySpace(key) {
 
-    if (key == "arbox" || key == "crbox" || key == "aeubox" || key == "ceubox") { return; }
+    if (key === "arbox" || key === "crbox" || key === "aeubox" || key === "ceubox") { return; }
 
     try {
 
@@ -224,6 +222,20 @@ console.log("!");
       if (space.activated_for_combat) {
         html += `<img src="/paths/img/tiles/activate_attack.png" class="activation-tile" />`;
       }
+
+      //
+      // add central control
+      //
+      if (space.country == "germany" || space.country == "austria" || space.country == "bulgaria" || space.country == "turkey") {
+	if (space.control == "allies") {
+          html += `<img src="/paths/img/tiles/control_ap.png" class="trench-tile control-tile" />`;
+	}
+      } else {
+	if (space.control == "central") {
+          html += `<img src="/paths/img/tiles/control_cp.png" class="trench-tile control-tile" />`;
+	}
+      }
+
 
       //
       // trenches
@@ -251,6 +263,26 @@ console.log("!");
       if (space.fort == -1) {
         html += `<img src="/paths/img/tiles/fort_destroyed.png" class="trench-tile fort-destroyed" />`;
       }
+
+      //
+      // out of supply
+      //
+      if (space.oos == 1 && space.units.length > 0) { 
+	if (this.returnPowerOfUnit(space.units[0]) == "central") {
+          html += `<img src="/paths/img/tiles/oos_central.png" class="trench-tile oos-tile" />`;
+	} else {
+          html += `<img src="/paths/img/tiles/oos_allies.png" class="trench-tile oos-tile" />`;
+	}
+      } else {
+
+	//
+	// remove any highlights
+	//
+        document.querySelectorAll(`.${key}`).forEach((el) => { 
+	  el.classList.remove("oos-highlight");
+	});
+      }
+
 
       document.querySelectorAll(`.${key}`).forEach((el) => { 
 //        if (control == "allies") { el.classList.add("allies-highlight"); }
@@ -351,11 +383,27 @@ console.log("err: " + err);
     if (deck[cardname]) {
       card = deck[cardname];
       html = `<img class="${cardclass}" src="/paths/img/${card.img}" />`;
+      let can_event_card = false;
       try {
-	if (!card.canEvent(this)) {
+	can_event_card = card.canEvent(this);
+      } catch (err) {}
+      try {
+        if (!can_event_card || (this.game.state.player_turn_card_select == true && card.cc == true)) {
           html += `<img class="${cardclass} cancel_x" src="/paths/img/cancel_x.png" />`;
         }
-      } catch (err) {}
+      } catch (err) {
+
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$");
+console.log(err);
+
+      }
     }
 
     return html
@@ -393,28 +441,35 @@ console.log("err: " + err);
 
       document.querySelectorAll(".turn-track").forEach((el) => { el.classList.remove("active"); });
 
-      if (this.game.state.turn_track == 1) { document.querySelector(".turn-track-1").classList.add("active"); }
-      if (this.game.state.turn_track == 2) { document.querySelector(".turn-track-2").classList.add("active"); }
-      if (this.game.state.turn_track == 3) { document.querySelector(".turn-track-3").classList.add("active"); }
-      if (this.game.state.turn_track == 4) { document.querySelector(".turn-track-4").classList.add("active"); }
-      if (this.game.state.turn_track == 5) { document.querySelector(".turn-track-5").classList.add("active"); }
-      if (this.game.state.turn_track == 6) { document.querySelector(".turn-track-6").classList.add("active"); }
-      if (this.game.state.turn_track == 7) { document.querySelector(".turn-track-7").classList.add("active"); }
-      if (this.game.state.turn_track == 8) { document.querySelector(".turn-track-8").classList.add("active"); }
-      if (this.game.state.turn_track == 9) { document.querySelector(".turn-track-9").classList.add("active"); }
-      if (this.game.state.turn_track == 10) { document.querySelector(".turn-track-10").classList.add("active"); }
-      if (this.game.state.turn_track == 11) { document.querySelector(".turn-track-11").classList.add("active"); }
-      if (this.game.state.turn_track == 12) { document.querySelector(".turn-track-12").classList.add("active"); }
-      if (this.game.state.turn_track == 13) { document.querySelector(".turn-track-13").classList.add("active"); }
-      if (this.game.state.turn_track == 14) { document.querySelector(".turn-track-14").classList.add("active"); }
-      if (this.game.state.turn_track == 15) { document.querySelector(".turn-track-15").classList.add("active"); }
-      if (this.game.state.turn_track == 16) { document.querySelector(".turn-track-16").classList.add("active"); }
-      if (this.game.state.turn_track == 17) { document.querySelector(".turn-track-17").classList.add("active"); }
-      if (this.game.state.turn_track == 18) { document.querySelector(".turn-track-18").classList.add("active"); }
-      if (this.game.state.turn_track == 19) { document.querySelector(".turn-track-19").classList.add("active"); }
-      if (this.game.state.turn_track == 20) { document.querySelector(".turn-track-20").classList.add("active"); }
+      if (this.game.state.turn == 1) { document.querySelector(".turn-track-1").classList.add("active"); }
+      if (this.game.state.turn == 2) { document.querySelector(".turn-track-2").classList.add("active"); }
+      if (this.game.state.turn == 3) { document.querySelector(".turn-track-3").classList.add("active"); }
+      if (this.game.state.turn == 4) { document.querySelector(".turn-track-4").classList.add("active"); }
+      if (this.game.state.turn == 5) { document.querySelector(".turn-track-5").classList.add("active"); }
+      if (this.game.state.turn == 6) { document.querySelector(".turn-track-6").classList.add("active"); }
+      if (this.game.state.turn == 7) { document.querySelector(".turn-track-7").classList.add("active"); }
+      if (this.game.state.turn == 8) { document.querySelector(".turn-track-8").classList.add("active"); }
+      if (this.game.state.turn == 9) { document.querySelector(".turn-track-9").classList.add("active"); }
+      if (this.game.state.turn == 10) { document.querySelector(".turn-track-10").classList.add("active"); }
+      if (this.game.state.turn == 11) { document.querySelector(".turn-track-11").classList.add("active"); }
+      if (this.game.state.turn == 12) { document.querySelector(".turn-track-12").classList.add("active"); }
+      if (this.game.state.turn == 13) { document.querySelector(".turn-track-13").classList.add("active"); }
+      if (this.game.state.turn == 14) { document.querySelector(".turn-track-14").classList.add("active"); }
+      if (this.game.state.turn == 15) { document.querySelector(".turn-track-15").classList.add("active"); }
+      if (this.game.state.turn == 16) { document.querySelector(".turn-track-16").classList.add("active"); }
+      if (this.game.state.turn == 17) { document.querySelector(".turn-track-17").classList.add("active"); }
+      if (this.game.state.turn == 18) { document.querySelector(".turn-track-18").classList.add("active"); }
+      if (this.game.state.turn == 19) { document.querySelector(".turn-track-19").classList.add("active"); }
+      if (this.game.state.turn == 20) { document.querySelector(".turn-track-20").classList.add("active"); }
 
     } catch (err) {
+
+console.log("*");
+console.log("*");
+console.log("*");
+console.log("*");
+console.log("*");
+console.log(JSON.stringify(err));
 
     }
 
@@ -480,6 +535,16 @@ console.log("Central: " + this.game.state.general_records_track.central_war_stat
       document.querySelector(`.general-records-track-${this.game.state.general_records_track.current_cp_russian_vp}`).innerHTML += current_cp_russian_vp;
 
     } catch (err) {
+console.log("X");
+console.log("X");
+console.log("X");
+console.log("X");
+console.log("X");
+console.log("X");
+console.log("X");
+console.log("X");
+console.log("X");
+console.log("X");
       console.log(err);
     }
 
@@ -492,24 +557,53 @@ console.log("Central: " + this.game.state.general_records_track.central_war_stat
     let current_round = this.game.state.round;
     let current_turn = this.game.state.turn;
 
-    let last_allies_move = "";
-    let last_central_move = "";
-
     document.querySelectorAll(`.central-action-round-track`).forEach((el) => { el.innerHTML = ""; });
     document.querySelectorAll(`.allies-action-round-track`).forEach((el) => { el.innerHTML = ""; });
 
-
-    if (this.game.state.allies_rounds.length > 0) {
-      last_allies_move = this.game.state.allies_rounds[this.game.state.allies_rounds.length-1];
+    for (let z = 0; z < this.game.state.allies_rounds.length; z++) {
+      let allies_move = this.game.state.allies_rounds[z];
+      if (allies_move == "sr") {
+	document.querySelector(".allies-action-round-track-5").innerHTML = `<ing src="/paths/img/action_ap${(z+1)}.png" />`;
+      }
+      if (allies_move == "rp") {
+	document.querySelector(".allies-action-round-track-6").innerHTML = `<ing src="/paths/img/action_ap${(z+1)}.png" />`;
+      }
     }
-    if (this.game.state.central_rounds.length > 0) {
-      last_central_move = this.game.state.central_rounds[this.game.state.central_rounds.length-1];
+    for (let z = 0; z < this.game.state.central_rounds.length; z++) {
+      let central_move = this.game.state.central_rounds[z];
+      if (central_move == "sr") {
+	document.querySelector(".central-action-round-track-7").innerHTML = `<ing src="/paths/img/action_cp${(z+1)}.png" />`;
+      }
+      if (central_move == "rp") {
+	document.querySelector(".central-action-round-track-8").innerHTML = `<ing src="/paths/img/action_cp${(z+1)}.png" />`;
+      }
     }
 
-    if (last_central_move === "rp") {
-
+    if (parseInt(this.game.state.central_reinforcements_ge) > 0) {
+      document.querySelector(`.central-action-round-track-2`).innerHTML = `<img src="/paths/img/action_cp${this.game.state.central_reinforcements_ge}.png" />`;
     }
- 
+    if (parseInt(this.game.state.central_reinforcements_ah) > 0) {
+      document.querySelector(`.central-action-round-track-3`).innerHTML = `<img src="/paths/img/action_cp${this.game.state.central_reinforcements_ah}.png" />`;
+    }
+    if (parseInt(this.game.state.central_reinforcements_tu) > 0) {
+      document.querySelector(`.central-action-round-track-4`).innerHTML = `<img src="/paths/img/action_cp${this.game.state.central_reinforcements_tu}.png" />`;
+    }
+
+    if (parseInt(this.game.state.allies_reinforcements_fr) > 0) {
+      document.querySelector(`.allies-action-round-track-2`).innerHTML = `<img src="/paths/img/action_ap${this.game.state.allies_reinforcements_fr}.png" />`;
+    }
+    if (parseInt(this.game.state.allies_reinforcements_br) > 0) {
+      document.querySelector(`.allies-action-round-track-3`).innerHTML = `<img src="/paths/img/action_ap${this.game.state.allies_reinforcements_br}.png" />`;
+    }
+    if (parseInt(this.game.state.allies_reinforcements_ru) > 0) {
+      document.querySelector(`.allies-action-round-track-4`).innerHTML = `<img src="/paths/img/action_ap${this.game.state.allies_reinforcements_ru}.png" />`;
+    }
+    if (parseInt(this.game.state.allies_reinforcements_it) > 0) {
+      document.querySelector(`.allies-action-round-track-5`).innerHTML = `<img src="/paths/img/action_ap${this.game.state.allies_reinforcements_it}.png" />`;
+    }
+    if (parseInt(this.game.state.allies_reinforcements_us) > 0) {
+      document.querySelector(`.allies-action-round-track-6`).innerHTML = `<img src="/paths/img/action_ap${this.game.state.allies_reinforcements_us}.png" />`;
+    }
 
     if (this.game.state.neutral_entry != 0) {
       document.querySelector(`.central-action-round-track-1`).innerHTML = central_token;;
@@ -519,19 +613,42 @@ console.log("Central: " + this.game.state.general_records_track.central_war_stat
   }
 
   displayMandatedOffensiveTracks() {
-/****
-          if (central == 2) { this.game.state.mandated_offensives.central = "AH IT"; }
-          if (central == 3) { this.game.state.mandated_offensives.central = "TU"; }
-          if (central == 4) { this.game.state.mandated_offensives.central = "GE"; }
-          if (central == 5) { this.game.state.mandated_offensives.central = ""; }
-          if (central == 6) { this.game.state.mandated_offensives.central = ""; }
-          if (allies == 1)  { this.game.state.mandated_offensives.allies = "FR"; }
-          if (allies == 2)  { this.game.state.mandated_offensives.allies = "FR"; }
-          if (allies == 3)  { this.game.state.mandated_offensives.allies = "BR"; }
-          if (allies == 4)  { this.game.state.mandated_offensives.allies = "IT"; }
-          if (allies == 5)  { this.game.state.mandated_offensives.allies = "IT"; }
-          if (allies == 6)  { this.game.state.mandated_offensives.allies = "RU"; }
-****/
+
+    document.querySelectorAll(".central-mandated-offensive-track").forEach((el) => { el.classList.remove("active"); });
+    document.querySelectorAll(".allies-mandated-offensive-track").forEach((el) => { el.classList.remove("active"); });
+
+    if (this.game.state.mandated_offensives.central === "AH") {
+      document.querySelector(".central-mandated-offensive-track-1").classList.add("active");
+    }
+    if (this.game.state.mandated_offensives.central === "AH IT") {
+      document.querySelector(".central-mandated-offensive-track-1").classList.add("active");
+    }
+    if (this.game.state.mandated_offensives.central === "TU") {
+      document.querySelector(".central-mandated-offensive-track-1").classList.add("active");
+    }
+    if (this.game.state.mandated_offensives.central === "GE") {
+      document.querySelector(".central-mandated-offensive-track-1").classList.add("active");
+    }
+
+    if (this.game.state.mandated_offensives.allies === "FR") {
+      document.querySelector(".allies-mandated-offensive-track-1").classList.add("active");
+    }
+    if (this.game.state.mandated_offensives.allies === "FR") {
+      document.querySelector(".allies-mandated-offensive-track-2").classList.add("active");
+    }
+    if (this.game.state.mandated_offensives.allies === "BR") {
+      document.querySelector(".allies-mandated-offensive-track-3").classList.add("active");
+    }
+    if (this.game.state.mandated_offensives.allies === "IT") {
+      document.querySelector(".allies-mandated-offensive-track-4").classList.add("active");
+    }
+    if (this.game.state.mandated_offensives.allies === "IT") {
+      document.querySelector(".allies-mandated-offensive-track-5").classList.add("active");
+    }
+    if (this.game.state.mandated_offensives.allies === "RU") {
+      document.querySelector(".allies-mandated-offensive-track-5").classList.add("active");
+    }
+
   }
 
   displayUSCommitmentTrack() {

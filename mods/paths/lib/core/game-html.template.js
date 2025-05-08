@@ -178,7 +178,7 @@ export default (app, mod) => {
                         <div class="space zhitomir" id="zhitomir"></div>
                         <div class="space kiev" id="kiev"></div>
                         <div class="space kharkov" id="kharkov"></div>
-                        <div class="space kamenetspodolsky" id="kamenetspodolski"></div>
+                        <div class="space kamenetspodolski" id="kamenetspodolski"></div>
                         <div class="space vinnitsa" id="vinnitsa"></div>
                         <div class="space belayatserkov" id="belayatserkov"></div>
                         <div class="space zhmerinka" id="zhmerinka"></div>
@@ -277,7 +277,7 @@ export default (app, mod) => {
                         <div class="space nis" id="nis"></div>
                         <div class="space skopje" id="skopje"></div>
                         <div class="space monastir" id="monastir"></div>
-                        <div class="space centije" id="centije"></div>
+                        <div class="space cetinje" id="cetinje"></div>
                         <div class="space tirana" id="tirana"></div>
                         <div class="space valona" id="valona"></div>
                         <div class="space florina" id="florina"></div>
@@ -735,8 +735,40 @@ export default (app, mod) => {
                                 id="central-mandated-offensive-track-1"
                         ></div>
                         <div
+                                class="central-mandated-offensive-track central-mandated-offensive-track-2"
+                                id="central-mandated-offensive-track-2"
+                        ></div>
+                        <div
+                                class="central-mandated-offensive-track central-mandated-offensive-track-3"
+                                id="central-mandated-offensive-track-3"
+                        ></div>
+                        <div
+                                class="central-mandated-offensive-track central-mandated-offensive-track-4"
+                                id="central-mandated-offensive-track-4"
+                        ></div>
+                        <div
+                                class="central-mandated-offensive-track central-mandated-offensive-track-5"
+                                id="central-mandated-offensive-track-5"
+                        ></div>
+                        <div
                                 class="allies-mandated-offensive-track allies-mandated-offensive-track-1"
                                 id="allies-mandated-offensive-track-1"
+                        ></div>
+                        <div
+                                class="allies-mandated-offensive-track allies-mandated-offensive-track-2"
+                                id="allies-mandated-offensive-track-2"
+                        ></div>
+                        <div
+                                class="allies-mandated-offensive-track allies-mandated-offensive-track-3"
+                                id="allies-mandated-offensive-track-3"
+                        ></div>
+                        <div
+                                class="allies-mandated-offensive-track allies-mandated-offensive-track-4"
+                                id="allies-mandated-offensive-track-4"
+                        ></div>
+                        <div
+                                class="allies-mandated-offensive-track allies-mandated-offensive-track-5"
+                                id="allies-mandated-offensive-track-5"
                         ></div>
 
                         <!--- US COMMITMENT TRACK --->

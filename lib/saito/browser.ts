@@ -1889,13 +1889,6 @@ class Browser {
 			return "";
 		}
 		try {
-			if (createLinks) {
-				text = marked.parse(text);
-				//trim trailing line breaks -
-				// commenting it out because no need for this now
-				// because of above marked parsing
-				//text = text.replace(/[\r<br>]+$/, "");
-			}
 
 			text = sanitizeHtml(text, {
 				allowedTags: [
@@ -1940,7 +1933,8 @@ class Browser {
 					span: ['class', 'id', 'data-id'],
 					img: ['src', 'class'],
 					blockquote: ['href'],
-					i: ['class']
+					i: ['class'],
+					a: ['href', 'data-*']
 				},
 				selfClosing: [
 					'img',
@@ -1979,10 +1973,27 @@ class Browser {
 					}
 
 					return `<a ${url.includes(window.location.host)
-						? ''
+						? "data-link='local_link' "
 						: "target='_blank' rel='noopener noreferrer' "
-						} class="saito-treated-link" href="${!url.includes('http') ? `http://${url1}` : url1}">${url2}</a>`;
+						} class="saito-link" href="${!url.includes('http') ? `http://${url1}` : url1}">${url2}</a>`;
 				});
+
+				//
+				// HTML markup for some basic formatting in chat/tweets -- also functions as a link detector
+				//
+				text = marked.parse(text);
+
+				if (text.includes("<a ") && text.includes("href") && !text.includes("saito-link")){
+					// These are links created by MarkDown which has a more expansive url regexp
+					let io = text.indexOf("<a ");
+					let href = text.match(/href=".*"/)[0];
+
+					let extra_stuff = (href.includes(window.location.host)) ? "data-link='local_link'" : "target='_blank' rel='noopener noreferrer'";
+
+					text = text.slice(0, io+3) + extra_stuff + ` class="saito-link" ` + text.slice(io+3);
+				}
+
+
 			}
 
 			//trim lines at start and end
@@ -2338,9 +2349,28 @@ class Browser {
 	}
 
 	treatElements(nodeList) {
-		for (let i = 0; i < nodeList.length; i++) {
-			if (nodeList[i].files) {
-				this.treatFiles(nodeList[i]);
+		for (let node of nodeList) {
+			if (node.files) {
+				this.treatFiles(node);
+			}
+
+			if (node.classList){
+				if (node.classList.contains('saito-link')){
+					//Mark link as treated
+					node.classList.add('saito-treated-link');
+					node.classList.remove('saito-link');
+
+					if (node.dataset.link){
+						console.log("Attach events");
+						node.onclick = (e) => this.processLocalLink(e);	
+					}
+					
+				}
+			}
+
+			// Recurse!
+			if (node.childNodes.length >= 1) {
+				this.treatElements(node.childNodes);
 			}
 		}
 	}
@@ -2420,6 +2450,24 @@ class Browser {
 			let parent = input.parentNode;
 			parent.appendChild(filelabel);
 		}
+	}
+
+	processLocalLink(event){
+		event.preventDefault();	
+		
+		let link = event.target.getAttribute("href");
+		let processed = false;
+
+		this.app.modules.getRespondTos('saito-link', {link}).forEach((modResponse) => {
+			processed = true;
+			modResponse.processLink(link);
+		});
+
+		if (!processed){
+			navigateWindow(link);
+		}
+
+		return false;
 	}
 
 	switchTheme(theme) {

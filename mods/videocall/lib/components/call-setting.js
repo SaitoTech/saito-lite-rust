@@ -173,10 +173,10 @@ class CallSetting {
 			};
 
 		if (this.app.options.stun?.settings?.preferred_audio){
-			audioConstraints["deviceId"] = this.app.options.stun.settings.preferred_audio;
+			audioConstraints.audio["deviceId"] = this.app.options.stun.settings.preferred_audio;
 		}
 		if (this.app.options.stun?.settings?.preferred_video){
-			videoConstraints["deviceId"] = this.app.options.stun.settings.preferred_video;
+			videoConstraints.video["deviceId"] = this.app.options.stun.settings.preferred_video;
 		}
 
 		try {
@@ -319,19 +319,28 @@ class CallSetting {
 
 	returnSettings(){
 		//Use defaults if unopened...
-		if (!this.videoInput){
-			return {
-				ui: "large",
-				video: true,
-				audio: true,
-			};
+		let ui = 'large'; //this.mod.browser_active ? 'large' : 'video';
+
+		// True / from options
+		let video = this.app.options.stun?.settings?.preferred_video || true;
+		let audio = this.app.options.stun?.settings?.preferred_audio || true;
+
+		// Read from DOM
+		if (this.videoInput) {
+			video = { deviceId: this.videoInput.value };
+			audio = { deviceId: this.audioInput.value };
 		}
 
-		return {
-			ui: "large",
-			video: (this.videoEnabled) ? this.videoInput.value : false,
-			audio: (this.audioEnabled) ? this.audioInput.value : false,
-		};
+		// User disabled
+		if (!this.videoEnabled){
+			video = false;
+		}
+		if (!this.audioEnabled){
+			audio = false;
+		}
+
+		return { ui, video, audio };
+
 	}
 }
 

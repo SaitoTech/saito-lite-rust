@@ -206,7 +206,7 @@ class FileShareOverlay {
 		if (this.mod.outgoing_files[this.fileId] && !this.mod.outgoing_files[this.fileId]?.sending) {
 			let message_field = document.querySelector(this.qs + " .teleporter-transfer-field");
 			if (message_field){
-				message_field.innerHTML = `Peer appears to be offline. <span class="saito-link">Send them a link?</span> `;
+				message_field.innerHTML = `Peer appears to be offline. <span class="saito-pseudo-link">Send them a link?</span> `;
 
 				message_field.onclick = (e) => {
 					this.mod.copyShareLink(this.fileId);
@@ -256,7 +256,7 @@ class FileShareOverlay {
 					if (!this.recipient){
 						let handle = document.querySelector(this.qs + ' .contact');
 						if (handle){
-							handle.innerHTML = `<span class="saito-link">Copy file share link</span>`;
+							handle.innerHTML = `<span class="saito-pseudo-link">Copy file share link</span>`;
 							handle.onclick = (e) => {
 								this.mod.copyShareLink(this.fileId);
 							}

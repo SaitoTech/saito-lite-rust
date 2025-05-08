@@ -1,12 +1,10 @@
 
+
+
 .turn-track {
   position: absolute;
   height: 100px;
   width: 100px;
-}
-.turn-track.active {
-  background-image: url('/paths/img/turn.png');
-  background-size: cover;
 }
 .turn-track-1 {
   top: 213px;
@@ -88,7 +86,10 @@
   top: 768px;
   left: 616px;
 }
-
+.turn-track.active {
+  background-image: url('/paths/img/turn.png');
+  background-size: cover;
+}
 
 
 .general-records-track {
@@ -101,6 +102,9 @@
   width: 100px;
   position: absolute;
   z-index: 10;
+}
+.general-records-track-0 img {
+  display: none;
 }
 .general-records-track-1 img:nth-child(1) {
   top: -10px;
@@ -372,9 +376,7 @@
 
 
 .central-action-round-track {
-  position: absolute;
-  height: 8rem;
-  width: 8rem;
+  position: relative;
 }
 .central-action-round-track-1 {
   top: 130px;
@@ -420,9 +422,7 @@
 
 
 .allies-action-round-track {
-  position: absolute;
-  height: 8rem;
-  width: 8rem;
+  position: relative;
 }
 .allies-action-round-track-1 {
   top: 2819px;
@@ -476,6 +476,135 @@
 
 
 
+.central-mandated-offensive-track.active:hover {
+  opacity: 0;
+}
+.central-mandated-offensive-track.active {
+  background-image: url('/paths/img/tiles/mandoffensive_cp.png');
+}
+.central-mandated-offensive-track-1 {
+  top: 136px;
+  left: 2088px;
+}
+.central-mandated-offensive-track-2 {
+  top: 136px;
+  left: 2171px;
+}
+.central-mandated-offensive-track-3 {
+  top: 136px;
+  left: 2257px;
+}
+.central-mandated-offensive-track-4 {
+  top: 136px;
+  left: 2341px;
+}
+.central-mandated-offensive-track-5 {
+  top: 136px;
+  left: 2418px;
+}
+
+
+.allies-mandated-offensive-track.active:hover { 
+  opacity: 0;
+}
+.allies-mandated-offensive-track.active {
+  background-image: url('/paths/img/tiles/mandoffensive_ap.png');
+}
+.allies-mandated-offensive-track-1 {
+  top: 3078px;
+  left: 2347px;
+}
+.allies-mandated-offensive-track-2 {
+  top: 3078px;
+  left: 2431px;
+}
+.allies-mandated-offensive-track-3 {
+  top: 3078px;
+  left: 2515px;
+}
+.allies-mandated-offensive-track-4 {
+  top: 3078px;
+  left: 2600px;
+}
+.allies-mandated-offensive-track-5 {
+  top: 3078px;
+  left: 2681px;
+}
+
+
+
+
+.us-commitment-track {
+
+}
+.us-commitment-track-1 {
+  top: 2316px;
+  left: 129px;
+}
+.us-commitment-track-2 {
+  top: 2316px;
+  left: 233px;
+}
+.us-commitment-track-3 {
+  top: 2316px;
+  left: 337px;
+}
+.us-commitment-track-4 {
+  top: 2316px;
+  left: 442px;
+}
+
+
+
+
+.russian-capitulation-track {
+
+}
+.russian-capitulation-track-1 {
+  top: 2507px;
+  left: 146px;
+}
+.russian-capitulation-track-2 {
+  top: 2507px;
+  left: 251px;
+}
+.russian-capitulation-track-3 {
+  top: 2507px;
+  left: 354px;
+}
+.russian-capitulation-track-4 {
+  top: 2507px;
+  left: 459px;
+}
+.russian-capitulation-track-5 {
+  top: 2507px;
+  left: 562px;
+}
+.russian-capitulation-track-5 {
+  top: 2507px;
+  left: 562px;
+}
+}
+.allies-action-round-track-9 {
+  top: 3102px;
+  left: 1396px;
+}
+.allies-action-round-track-10 {
+  top: 3102px;
+  left: 1479px;
+}
+.allies-action-round-track-11 {
+  top: 3102px;
+  left: 1564px;
+}
+.allies-action-round-track-12 {
+  top: 3102px;
+  left: 1650px;
+}
+
+
+
+
 .central-mandated-offensive-track {
   position: absolute;
   height: 100px;
@@ -489,6 +618,8 @@
   top: 136px;
   left: 2171px;
 }
+
+
 .central-mandated-offensive-track-3 {
   top: 136px;
   left: 2257px;
@@ -606,7 +737,9 @@
 }
 
 
-
+.oos-tile {
+  z-index: 9999;
+}
 
 .allies-reserve-box {
   top: 1310px;
@@ -665,20 +798,67 @@
   flex-direction: column;
 }
 
+.eliminated-units-box .army-tile {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 100px;
+    max-height: 100px;
+}
+
+.aeubox {
+    top: 2950px;
+    left: 1880px;
+    width: 430px;
+    height: 280px;
+    padding: 3rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    row-gap: 1rem;
+    column-gap: 1rem;
+}
+.ceubox {
+    top: 110px;
+    left: 1050px;
+    width: 430px;
+    height: 280px;
+    padding: 3rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    row-gap: 1rem;
+    column-gap: 1rem;
+}
+
 .crbox {
     top: 851px;
     left: 4250px;
     width: 730px;
     height: 380px;
+    padding: 3rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    row-gap: 1rem;
+    column-gap: 1rem;
 }
 .arbox {
     top: 1280px;
     left: 4250px;
     width: 730px;
     height: 380px;
+    padding: 3rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    row-gap: 1rem;
+    column-gap: 1rem;
 }
 .reserve-box.selectable::before {
     width: inherit;
     height: inherit;
 }
+
+
 

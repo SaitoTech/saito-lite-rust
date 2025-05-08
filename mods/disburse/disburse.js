@@ -80,7 +80,7 @@ class Disburse extends ModTemplate {
 				let total_out = 0;
 				for (let i = 0; i < rows.length; i++) {
 					let row = rows[i];
-					row = row.split(/\t/);
+					row = row.split(/\s+/);
 					if (row.length == 2) {
 						// console.log(row);
 						total_out = total_out + parseFloat(row[1]);

@@ -146,7 +146,7 @@
     //
     // Arab Northern Army
     //
-    this.importUnit('aoi_corps', {
+    this.importUnit('ana_corps', {
       ckey		:       "ANA" ,
       country           :       "Arab Northern Army" ,
       name		:	"ANA Corps" ,
@@ -159,6 +159,7 @@
       rcombat		:	0 ,
       rloss		:	1 ,
       rmovement		:	3 ,
+      checkSupplyStatus :	(paths_self, spacekey) => { return 1; }
     });
 
     //
@@ -218,7 +219,7 @@
     //
     // Belgian Corps
     //
-    this.importUnit('aus_corps', {
+    this.importUnit('be_corps', {
       ckey		:       "BE" ,
       country           :       "Belgium" ,
       name		:	"BE Corps" ,
@@ -944,6 +945,7 @@
       rcombat		:	0 ,
       rloss		:	1 ,
       rmovement		:	0 ,
+      checkSupplyStatus :	(paths_self, spacekey) => { return 1; }
     });
 
     //
@@ -1260,6 +1262,9 @@
       rcombat		:	1 ,
       rloss		:	2 ,
       rmovement		:	3 ,
+      checkSupplyStatus :	(paths_self, spacekey) => { 
+	if (paths_self.game.spaces[spacekey].country == "serbia") { return 1; }
+      } ,
     });
     this.importUnit('sb_army02', {
       ckey		:       "SB" ,
@@ -1310,6 +1315,7 @@
       rcombat		:	0 ,
       rloss		:	1 ,
       rmovement		:	1 ,
+      checkSupplyStatus :	(paths_self, spacekey) => { return 1; }
     });
 
     //

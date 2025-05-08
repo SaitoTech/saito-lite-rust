@@ -14,11 +14,12 @@
 .cardfan .card {
   min-width: 100px;
   min-height: 153px;
+  filter: drop-shadow(5px 5px 3px black);
 }
 
 .cardfan {
-  top: max(-7.5rem, -14vw);
-  left: 5px;
+  top: max(-10rem, -14vw);
+  left: calc(50% - min(15vh,17vw));
   height: calc(1.53 * min(15vh, 17vw));
   width: min(15vh,17vw);
 }

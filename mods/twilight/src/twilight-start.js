@@ -1113,11 +1113,17 @@ console.log("LATEST MOVE: " + mv);
     if (mv[0] == "player_turn_card_selected") {
 
       this.game.queue.splice(qe, 1);
-      let player = parseInt(mv[1]);
+      let player = mv[1];
       let card = mv[2];
 
-      if (this.game.player == player) {
-        this.playerTurnCardSelected(card, player);
+      if (player == "us") {
+	if (this.game.player == 2) {
+          this.playerTurnCardSelected(card, player);
+        }
+      } else {
+	if (this.game.player == 1) {
+          this.playerTurnCardSelected(card, player);
+        }
       }
 
       return 0;
@@ -2966,7 +2972,7 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
       //
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["tehran", "saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
+          this.game.deck[0].hand = ["flowerpower", "saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
         } else {
           this.game.deck[0].hand = ["cubanmissile", "abmtreaty","vietnamrevolts","wargames","romanianab"];
         }
@@ -4888,7 +4894,7 @@ console.log("#");
         if (action == "cancel_cmc") {
           twilight_self.moves = []; // clear the resolve play so we go back to the same player's turn
           // submitting card + player returns to execute that card after CMC rmeoved
-	  twilight_self.cancelCubanMissileCrisis(card, player);
+	  twilight_self.cancelCubanMissileCrisis(player, card);
           return;
         }
 

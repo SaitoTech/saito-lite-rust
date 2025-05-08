@@ -1,4 +1,12 @@
 
+  convertCountryToPower(country="", power="allies") {
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].country == country) {
+	this.game.spaces[key].control = power;
+      }
+    }
+  }
+
   returnArrayOfSpacekeysForPlacingReinforcements(country="") {
 
     let options = [];
@@ -112,6 +120,15 @@
     }
   }
 
+  doesSpaceHaveUnit(spacekey, unitkey) {
+    let space = this.game.spaces[spacekey];
+    if (space) {
+      for (let z = 0; z < space.units.length; z++) {
+        if (space.units[z].key == unitkey) { return 1; }
+      }
+    }
+    return 0;
+  }
   doesSpaceHaveEnemyUnits(faction, spacekey) { return this.doesSpaceContainEnemyUnits(faction, spacekey); }
   doesSpaceContainEnemyUnits(faction, spacekey) {
     if (this.game.spaces[spacekey].control != faction) {
@@ -122,6 +139,15 @@
   isSpaceEnemyControlled(faction, spacekey) {
     if (this.game.spaces[spacekey].control != "neutral" && this.game.spaces[spacekey].control != faction) { return 1; }
     return 0;
+  }
+
+  returnFriendlyControlledPorts(faction) {
+    let ports = [];
+    for (let key in this.game.spaces) {
+      if (faction == "allies" && this.game.spaces[key].port == 1 && this.game.spaces[key].control == "allies") { ports.push(key); }
+      if (faction == "central" && this.game.spaces[key].port == 2 && this.game.spaces[key].control == "central") { ports.push(key); }
+    }
+    return ports;
   }
 
   returnSpacesConnectedToSpaceForStrategicRedeployment(faction, spacekey) {
@@ -178,30 +204,83 @@
 
 
 
-  checkReverseSupplyStatus(faction, spacekey) {
-    return this.checkSupplyStatus(faction, spacekey);
-  }
 
+  checkSupplyStatus(faction="", spacekey="") {
 
-  checkSupplyStatus(faction, spacekey) {
+let trace_supply = 0;
+if (spacekey == "insterberg" || spacekey == "konigsberg") {
+  //trace_supply = 1;
+}
+
+    //
+    // if we call this function generically, it means we want
+    // to check the supply status of every unit on the board
+    // and update their visuals.
+    //
+    if (faction == "" && spacekey == "") {
+      for (let key in this.game.spaces) {
+	if (this.game.spaces[key].oos == 1) {
+	  this.game.spaces[key].oss = 0;
+	  this.displaySpace(key);
+	}
+      }
+
+      for (let key in this.game.spaces) {
+	if (key == "crbox" || key == "arbox" || key == "ceubox" || key == "aeubox") {
+	} else {
+	  if (this.game.spaces[key].units.length > 0) {
+	    let space = this.game.spaces[key];
+	    let supplied = false;
+	    for (let z = 0; z < space.units.length; z++) {
+	      let u = space.units[z];
+	      //
+	      // some units manage their own supply
+	      //
+	      if (this.game.units[u.key].checkSupplyStatus(this, key) == 1) { 
+		supplied = true;
+	      }
+	      if (this.checkSupplyStatus(u.ckey.toLowerCase(), key)) {
+	        z = space.units.length+1;
+	        supplied = true;
+	      }
+	    }
+	    if (supplied == false) {
+	      let obj = document.querySelector(`.${key}`);
+	      if (!obj.classList.contains("oos-highlight")) { 
+	        obj.classList.add("oos-highlight");
+	        this.game.spaces[key].oos = 1;
+	        this.displaySpace(key);
+	      }
+	    }
+	  }
+	}
+      }
+      return;
+    }
 
     this.game.spaces[spacekey].supply = {};
+    this.game.spaces[spacekey].oos = 0;
 
+    let ports_added = false;
     let pending = [spacekey];
     let examined = {};
     let sources = [];
     let controlling_faction = "allies";
 
-    if (faction == "germany") { sources = ["essen", "breslau"]; controlling_faction = "central"; }
-    if (faction == "cp" || faction == "central") { sources = ["essen","breslau","sofia","constantinople"]; controlling_faction = "central"; }
-    if (faction == "france") { sources = ["london"]; }
+    if (faction == "cp" || faction == "ge" || faction == "austria" || faction == "germany" || faction == "ah" || faction == "central") { sources = ["essen","breslau","sofia","constantinople"]; controlling_faction = "central"; }
+    if (faction == "be" || faction == "belgium") { sources = ["london"]; }
+    if (faction == "fr" || faction == "france") { sources = ["london"]; }
     if (faction == "ap" || faction == "allies") { sources = ["london"]; }
     if (faction == "ru" || faction == "russia") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
-    if (faction == "ro") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
-    if (faction == "sb") { 
+    if (faction == "ro" || faction == "romania") { sources = ["moscow","petrograd","kharkov","caucasus"]; }
+    if (faction == "sb" || faction == "serbia") { 
       sources = ["moscow","petrograd","kharkov","caucasus","london"]; 
       if (this.returnControlOfSpace("salonika") == "allies") { sources["sb"].push("salonika"); }
     }
+    if (sources.length == 0) {
+      sources = ["london"];
+    }
+    let ports = this.returnFriendlyControlledPorts(controlling_faction);
 
     while (pending.length > 0) {
 
@@ -210,7 +289,10 @@
       //
       // if spacekey is a source we have a supply-line
       //
-      if (sources.includes(current)) { return 1; }
+      if (sources.includes(current)) {
+	this.displaySpace(spacekey);
+	return 1;
+      }
 
       //
       // mark space as examined
@@ -224,12 +306,74 @@
         let s = this.game.spaces[current].neighbours[n];
         if (!examined[s]) {
 	  if (this.returnControlOfSpace(s) == controlling_faction) {
-	    pending.push(s); 
+	    //
+	    // only if not besieged
+	    //
+	    if (this.game.spaces[s].fort > 0) {
+	      if (this.game.spaces[s].units.length > 0) {
+		if (this.returnPowerOfUnit(this.game.spaces[s].units[0]) != controlling_faction) {
+		  //
+		  // besieging unit blocking supply channel
+		  //
+		} else {
+	          pending.push(s); 
+		}
+	      } else {
+	        pending.push(s); 
+	      }
+	    } else {
+	      pending.push(s); 
+	    }
+	  } else {
+	    if (this.game.spaces[s].fort > 0) {
+	      if (this.game.spaces[s].units.length > 0) {
+		//
+		// we can still trace supply through besieged spaces with our units
+		//
+		if (this.returnPowerOfUnit(this.game.spaces[s].units[0]) == controlling_faction) {
+	    	  pending.push(s); 
+		}
+	      }
+	    }
 	  }
-
 	}
       }
+
+
+      if (ports_added == false) {
+	if (controlling_faction == "allies" && this.game.spaces[current].port == 1 && this.game.spaces[current].control == "allies") {
+ 	  for (let i = 0; i < ports.length; i++) {
+	    if (this.game.spaces[ports[i]].control == "allies") {
+	      pending.push(ports[i]);
+	    }
+	  }
+	  ports_added = true;
+	}
+	if (controlling_faction == "central" && this.game.spaces[current].port == 2 && this.game.spaces[current].control == "central") {
+ 	  for (let i = 0; i < ports.length; i++) {
+	    if (this.game.spaces[ports[i]].control == "central") {
+	      pending.push(ports[i]);
+	    }
+	  }
+	  ports_added = true;
+	}
+      }
+
     }
+
+
+    //
+    // exiting means no supply
+    //
+    if (this.game.spaces[spacekey].units.length > 0) {
+      if (spacekey != "crbox" && spacekey != "arbox" && spacekey != "ceubox" && spacekey != "aeubox") {
+        let obj = document.querySelector(`.${spacekey}`);
+        obj.classList.add("oos-highlight");
+        this.game.spaces[spacekey].oos = 1;
+        this.displaySpace(spacekey);
+      }
+    }
+
 
     return 0;
   }
@@ -331,7 +475,7 @@
     return count;
   }
 
-  returnSpacesWithinHops(source, limit=0, passthrough_func=null) {
+  returnSpacesWithinHops(source, limit=0, passthrough_func=null, unit=null) {
 
     let paths_self = this;
 
@@ -357,14 +501,33 @@
 	// neighbours since we cannot route through it.
 	//
 	if (passthrough) {
-
           for (let z = 0; z < paths_self.game.spaces[news[i]].neighbours.length; z++) {
             let n = paths_self.game.spaces[news[i]].neighbours[z];
-            if (!old.includes(n)) {
-              if (!news.includes(n)) {
-                if (!newer.includes(n)) {
-                  if (n !== source.key) {
-	            newer.push(n);
+
+	    //
+	    // we submit unit when calculating movement, so that we can 
+	    // determine if units can move between depots etc.
+	    //
+	    let restricted_movement = false;
+	    if (unit != null) {
+	      let lim = paths_self.game.spaces[news[i]].limits;
+	      if (lim) {
+	        for (let z = 0; z < lim.length; z++) {
+		  if (lim[z][n]) {
+		    restricted_movement = true;
+		    if (lim[z][n] == unit.ckey) { restricted_movement = false; }
+		  }
+		}
+	      }
+	    }
+
+	    if (restricted_movement == false) {
+              if (!old.includes(n)) {
+                if (!news.includes(n)) {
+                  if (!newer.includes(n)) {
+                    if (n !== source.key) {
+	              newer.push(n);
+	            }
 	          }
 	        }
 	      }
@@ -379,11 +542,9 @@
             }
           }
         }
-
       }
 
-
-      if (hop < limit) {
+      if (hop <= limit) {
 	  return addHop(newer, hop);
       } else {
 	  return old;
@@ -486,6 +647,7 @@ spaces['london'] = {
     neighbours: ["cherbourg", "lehavre", "calais"] ,
     terrain : "normal" ,
     vp : false ,
+    port : 1 ,
     country : "england" ,
    }
 
@@ -498,8 +660,10 @@ spaces['calais'] = {
     top: 1135 ,
     left: 542 ,
     neighbours: ["ostend", "cambrai", "amiens", "london"] ,
+    limits : [ { "london" : ["BR"] } ] ,
     terrain : "swamp" ,
     vp : true ,
+    port : 1 ,
     country : "france" ,
    }
 
@@ -511,6 +675,7 @@ spaces['amiens'] = {
     neighbours: ["calais", "cambrai", "paris", "rouen"] ,
     terrain : "normal" ,
     vp : true ,
+    port : 0 ,
     country : "france" ,
    }
 
@@ -522,6 +687,7 @@ spaces['cambrai'] = {
     neighbours: ["amiens", "calais", "brussels", "sedan", "chateauthierry"] ,
     terrain : "normal" ,
     vp : true , 
+    port : 0 ,
     country : "france" ,
    }
 
@@ -533,6 +699,7 @@ spaces['sedan'] = {
     neighbours: ["cambrai", "koblenz", "brussels", "liege", "chateauthierry", "verdun", "metz"] ,
     terrain : "forest" ,
     vp : true , 
+    port : 0 ,
     country : "france" ,
    }
 
@@ -545,6 +712,7 @@ spaces['verdun'] = {
     neighbours: ["sedan", "chateauthierry", "barleduc", "nancy", "metz"] ,
     terrain : "normal" ,
     vp : true , 
+    port : 0 ,
     country : "france" ,
    }
 
@@ -556,6 +724,7 @@ spaces['chateauthierry'] = {
     neighbours: ["cambrai", "sedan", "paris", "verdun", "barleduc", "melun"] ,
     terrain : "normal" ,
     vp : false , 
+    port : 0 ,
     country : "france" ,
    }
 
@@ -591,8 +760,10 @@ spaces['lehavre'] = {
     top: 1311 ,
     left: 363 , 
     neighbours: ["rouen", "london"] ,
+    limits : [ { "london" : ["BR"] } ] ,
     terrain : "normal" ,
     vp : true , 
+    port : 1 ,
     country : "france" ,
    }
 
@@ -602,8 +773,10 @@ spaces['cherbourg'] = {
     top: 1304 ,
     left: 159 , 
     neighbours: ["caen", "london"] ,
+    limits : [ { "london" : ["BR"] } ] ,
     terrain : "normal" ,
     vp : false , 
+    port : 1 ,
     country : "france" ,
    }
 
@@ -693,6 +866,7 @@ spaces['nantes'] = {
     neighbours: ["rennes","lemans","tours","larochelle"] ,
     terrain : "normal" ,
     vp : false ,
+    port : 1 ,
     country : "france" ,
    }
 
@@ -715,6 +889,7 @@ spaces['larochelle'] = {
     neighbours: ["nantes", "poitiers", "bordeaux"] ,
     terrain : "normal" ,
     vp : false , 
+    port : 1 ,
     country : "france" ,
    }
 
@@ -726,6 +901,7 @@ spaces['bordeaux'] = {
     neighbours: ["larochelle"] ,
     terrain : "normal" ,
     vp : false , 
+    port : 1 ,
     country : "france" ,
    }
 
@@ -803,6 +979,7 @@ spaces['marseilles'] = {
     neighbours: ["avignon", "nice"] ,
     terrain : "normal" ,
     vp : false , 
+    port : 1 ,
     country : "france" ,
    }
 
@@ -851,6 +1028,7 @@ spaces['ostend'] = {
     neighbours: ["calais", "brussels", "antwerp"] ,
     terrain : "swamp" ,
     vp : true , 
+    port : 1 ,
     country : "belgium" ,
    }
 
@@ -901,6 +1079,7 @@ spaces['wilhelmshaven'] = {
     neighbours: ["bremen"] ,
     terrain : "normal" ,
     vp : false , 
+      port : 2 ,
     country : "germany" ,
    }
 
@@ -1036,6 +1215,7 @@ spaces['kiel'] = {
     neighbours: ["hamburg"] ,
     terrain : "normal" ,
     vp : false , 
+      port : 2 ,
     country : "germany" ,
    }
 
@@ -1157,6 +1337,7 @@ spaces['stettin'] = {
     neighbours: ["rostock", "kolberg", "berlin"] ,
     terrain : "normal" ,
     vp : false , 
+      port : 2 ,
     country : "germany" ,
    }
 
@@ -1225,6 +1406,7 @@ spaces['kolberg'] = {
     neighbours: ["stettin", "danzig"] ,
     terrain : "normal" ,
     vp : false , 
+      port : 2 ,
     country : "germany" ,
    }
 
@@ -1249,6 +1431,7 @@ spaces['danzig'] = {
     neighbours: ["kolberg", "tannenberg", "thorn"] ,
     terrain : "normal" ,
     vp : true , 
+      port : 2 ,
     country : "germany" ,
    }
 
@@ -1261,6 +1444,7 @@ spaces['konigsberg'] = {
     neighbours: ["insterberg", "tannenberg"] ,
     terrain : "normal" ,
     vp : true , 
+    port : 2 ,
     country : "germany" ,
    }
 
@@ -1294,6 +1478,7 @@ spaces['memel'] = {
     neighbours: ["libau", "szawli", "insterberg"] ,
     terrain : "normal" ,
     vp : false , 
+      port : 2 ,
     country : "germany" ,
    }
 
@@ -1342,6 +1527,7 @@ spaces['genoa'] = {
     neighbours: ["turin", "milan", "bologna"] ,
     terrain : "normal" ,
     vp : true , 
+    port : 1 ,
     country : "italy" ,
    }
 
@@ -1485,6 +1671,7 @@ spaces['naples'] = {
     neighbours: ["rome", "foggia"] ,
     terrain : "normal" ,
     vp : true , 
+    port : 1 ,
     country : "italy" ,
    }
 
@@ -1505,8 +1692,10 @@ spaces['taranto'] = {
     top: 2646 ,
     left: 2179 , 
     neighbours: ["foggia", "valona"] ,
+    limits : [ { "valona" : ["IT"] } ] ,
     terrain : "normal" ,
     vp : false , 
+    port : 1 ,
     country : "italy" ,
    }
 
@@ -1955,6 +2144,7 @@ spaces['pskov'] = {
       top: 119 ,
       left: 3395 ,
       neighbours: ["opochka", "petrograd"] ,
+      limits : [ { "petrograd" : ["RU"] } ] ,
       terrain : "normal" ,
       vp : false ,
       country : "russia" ,
@@ -1966,6 +2156,7 @@ spaces['petrograd'] = {
       top: 82 ,
       left: 3610 ,
       neighbours: ["velikiyeluki", "pskov", "reval"] ,
+      limits : [ { "reval" : ["RU"] } ] ,
       terrain : "normal" ,
       vp : false ,
       country : "russia" ,
@@ -1978,8 +2169,10 @@ spaces['riga'] = {
       top: 240 ,
       left: 2921 ,
       neighbours: ["dvinsk", "szawli", "reval"] ,
+      limits : [ { "reval" : ["RU"] } ] ,
       terrain : "normal" ,
       vp : true ,
+      port : 2 ,
       country : "russia" ,
 }
 
@@ -1991,6 +2184,7 @@ spaces['libau'] = {
       neighbours: ["memel", "szawli"] ,
       terrain : "normal" ,
       vp : false ,
+      port : 2 ,
       country : "russia" ,
 }
 
@@ -2033,6 +2227,7 @@ spaces['velikiyeluki'] = {
       top: 298 ,
       left: 3592 ,
       neighbours: ["petrograd", "opochka", "vitebsk", "moscow"] ,
+      limits : [ { "petrograd" : ["RU"] } , { "moscow" : ["RU"] } ] ,
       terrain : "normal" ,
       vp : false ,
       country : "russia" ,
@@ -2145,6 +2340,7 @@ spaces['smolensk'] = {
       top: 563 ,
       left: 3788 ,
       neighbours: ["orsha", "moscow", "vitebsk", "roslavl"] ,
+      limits: [ { "moscow" : ["RU"] } ] ,
       terrain : "normal" ,
       vp : false ,
       country : "russia" ,
@@ -2416,6 +2612,7 @@ spaces['kiev'] = {
       top: 1188 ,
       left: 3614 ,
       neighbours: ["zhitomir", "chernigov", "kharkov", "belayatserkov"] ,
+      limits : [ { "kharkov" : ["RU"] } ] ,
       terrain : "normal" ,
       vp : true ,
       country : "russia" ,
@@ -2482,6 +2679,7 @@ spaces['uman'] = {
       top: 1546 ,
       left: 3646 ,
       neighbours: ["odessa", "vinnitsa", "belayatserkov", "caucasus"] ,
+      limits : [ { "caucasus" : ["RU"] } ] ,
       terrain : "normal" ,
       vp : false ,
       country : "russia" ,
@@ -2527,6 +2725,7 @@ spaces['odessa'] = {
       top: 1756 ,
       left: 3644 ,
       neighbours: ["caucasus", "uman", "ismail"] ,
+      limits : [ { "caucasus" : ["RU"] } ] ,
       terrain : "normal" ,
       vp : true ,
       country : "russia" ,
@@ -2538,6 +2737,7 @@ spaces['poti'] = {
       top: 1871 ,
       left: 4377 ,
       neighbours: ["caucasus", "batum"] ,
+      limits : [ { "caucasus" : ["RU"] } ] ,
       terrain : "mountain" ,
       vp : false ,
       country : "russia" ,
@@ -2549,6 +2749,7 @@ spaces['grozny'] = {
       top: 1882 ,
       left: 4594 ,
       neighbours: ["caucasus", "petrovsk", "tbilisi"] ,
+      limits : [ { "caucasus" : ["RU"] } ] ,
       terrain : "mountain" ,
       vp : false ,
       country : "russia" ,
@@ -2710,6 +2911,7 @@ spaces['basra'] = {
       neighbours: ["ahwaz", "qurna"] ,
       terrain : "normal" ,
       vp : true ,
+    port : 1 ,
       country : "persia" ,
 }
 
@@ -3032,6 +3234,7 @@ spaces['amman'] = {
       top: 2745 ,
       left: 4166 ,
       neighbours: ["arabia", "damascus", "jerusalem"] ,
+      limits: [ { "arabia" : ["ANA"] } ] ,
       terrain : "normal" ,
       vp : false ,
       country : "turkey" ,
@@ -3077,6 +3280,7 @@ spaces['jerusalem'] = {
       top: 2840 ,
       left: 4116 ,
       neighbours: ["nablus", "amman", "beersheba", "arabia"] ,
+      limits : [ { "arabia" : ["ANA"] } ] ,
       terrain : "normal" ,
       vp : false ,
       country : "turkey" ,
@@ -3135,6 +3339,7 @@ spaces['aqaba'] = {
       top: 3077 ,
       left: 4016 ,
       neighbours: ["medina", "beersheba", "arabia"] ,
+      limits : [ { "arabia" : ["ANA"] } ] ,
       terrain : "desert" ,
       vp : false ,
       country : "turkey" ,
@@ -3158,6 +3363,7 @@ spaces['medina'] = {
       top: 3155 ,
       left: 4167 ,
       neighbours: [ "aqaba", "arabia"] ,
+      limits : [ { "arabia" : ["ANA"] } ] ,
       terrain : "desert" ,
       vp : true ,
       country : "turkey" ,
@@ -3197,6 +3403,7 @@ spaces['alexandria'] = {
        neighbours: [ "libya", "cairo", "portsaid"] ,
       terrain : "normal" ,
       vp : true ,
+    port : 1 ,
       country : "egypt" ,
 }
 
@@ -3208,6 +3415,7 @@ spaces['portsaid'] = {
       neighbours: [ "alexandria", "cairo", "sinai"] ,
       terrain : "normal" ,
       vp : true ,
+    port : 1 ,
       country : "egypt" ,
 }
 
@@ -3283,6 +3491,7 @@ spaces['salonika'] = {
       neighbours: [ "strumitsa", "florina", "kavala", "monastir"] ,
       terrain : "mountain" ,
       vp : false ,
+      port : 1 ,
       country : "greece" ,
 }
 
@@ -3310,12 +3519,13 @@ spaces['larisa'] = {
 
 spaces['athens'] = {
       name: "Athens" ,
-    control: "neutral" ,
+      control: "neutral" ,
       top: 3017 ,
       left: 2888 ,
       neighbours: ["larisa"] ,
       terrain : "normal" ,
       vp : false ,
+      port : 1 ,
       country : "greece" ,
 }
 
@@ -3563,14 +3773,6 @@ spaces['targujiu'] = {
       country : "romania" ,
 }
 
-
-
-
-
-
-
-
-
 spaces['adrianople'] = {
       name: "Adrianople" ,
     control: "neutral" ,
@@ -3579,6 +3781,7 @@ spaces['adrianople'] = {
       neighbours: ["gallipoli","philippoli","burgas","constantinople"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['gallipoli'] = {
@@ -3589,6 +3792,7 @@ spaces['gallipoli'] = {
       neighbours: ["adrianople","constantinople"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['constantinople'] = {
@@ -3598,7 +3802,9 @@ spaces['constantinople'] = {
       left: 3465 ,
       neighbours: ["adrianople","gallipoli","bursa","eskidor","adapazari"] ,
       terrain : "normal" ,
+    port : 1 ,
       vp : true ,
+      country : "turkey" ,
 }
 
 spaces['balikesir'] = {
@@ -3609,6 +3815,7 @@ spaces['balikesir'] = {
       neighbours: ["bursa","canakale","izmir"] ,
       terrain : "mountain" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['canakale'] = {
@@ -3619,6 +3826,7 @@ spaces['canakale'] = {
       neighbours: ["balikesir"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['izmir'] = {
@@ -3629,6 +3837,7 @@ spaces['izmir'] = {
       neighbours: ["balikesir"] ,
       terrain : "normal" ,
       vp : false ,
+      country : "turkey" ,
 }
 
 spaces['aeubox'] = {
@@ -3679,6 +3888,7 @@ spaces['crbox'] = {
       if (!spaces[key].control) { spaces[key].control = ""; }
       spaces[key].activated_for_movement = 0;
       spaces[key].activated_for_combat = 0;
+      if (!spaces[key].port) { spaces[key].port = 0; } // no port
       spaces[key].key = key;
       spaces[key].type = "normal";
     }
