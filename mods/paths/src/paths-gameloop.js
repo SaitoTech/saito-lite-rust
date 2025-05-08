@@ -1959,7 +1959,6 @@ this.updateLog("Defender Power handling retreat: " + this.game.state.combat.defe
 	    }
 	  }
 
-
 	  return 1;
 
 	}
@@ -2092,6 +2091,20 @@ this.updateLog("Defender Power handling retreat: " + this.game.state.combat.defe
 	      if (this.game.spaces[spacekey].units[z].key === unitkey) {
 		this.game.spaces[spacekey].units.splice(z, 1);
 		z = this.game.spaces[spacekey].units.length + 2;
+
+		//
+		// if removing attacker, update unit_idx of whatever else is there
+		//
+		if (this.game.state.combat.attacker) {
+		  for (let zz = 0; zz < this.game.state.combat.attacker.length; zz++) {
+		    if (this.game.state.combat.attacker[zz].unit_sourcekey == spacekey) {
+		      if (z < this.game.state.combat.attacker[zz].unit_idx) {
+			this.game.state.combat.attacker[zz].unit_idx--;
+		      }
+		    }
+		  }
+		}
+
 	      }
 	    }
 	  }
@@ -2116,6 +2129,22 @@ this.updateLog("Defender Power handling retreat: " + this.game.state.combat.defe
 	    unit.spacekey = spacekey;
 	    this.game.spaces[spacekey].units.push(this.cloneUnit(unitkey));
 	  }
+
+	  //
+	  // if this is a corps and it is in a spacekey under combat, update
+	  //
+          if (unitkey.indexOf("corps") > -1) {
+	    if (this.game.state.combat.attacker) {
+	      for (let z = 0; z < this.game.state.combat.attacker.length; z++) {
+  	        if (this.game.state.combat.attacker[z].unit_sourcekey == spacekey) {
+	          this.game.state.combat.attacker.push({ key : this.game.state.combat.key , unit_sourcekey : spacekey , unit_idx : this.game.spaces[spacekey].units.length-1 });
+		  z = this.game.state.combat.attacker.length + 2;
+console.log("ADDACKERS NOW: " + JSON.stringify(this.game.state.combat.attacker));
+	        }
+	      }
+	    }
+	  }
+
 
 	  this.displaySpace(spacekey);
 	  this.shakeSpacekey(spacekey);

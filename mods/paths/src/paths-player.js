@@ -1499,7 +1499,6 @@ console.log(JSON.stringify(spaces_within_hops));
     paths_self.zoom_overlay.showControls();
 
 
-
     let mainInterface = function(options, mainInterface, attackInterface) {
 
       //
@@ -1679,6 +1678,7 @@ console.log(JSON.stringify(spaces_within_hops));
   		s.push(JSON.parse(paths_self.app.crypto.base64ToString(selected[z])));
 	      }
 	      paths_self.addMove("resolve\tplayer_play_combat");
+	      paths_self.addMove("player_play_combat\t"+paths_self.returnFactionOfPlayer());
 	      paths_self.addMove("post_combat_cleanup");
 	      paths_self.addMove(`combat\t${original_key}\t${JSON.stringify(s)}`);
 	      paths_self.endTurn();

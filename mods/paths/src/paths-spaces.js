@@ -236,7 +236,6 @@ if (spacekey == "insterberg" || spacekey == "konigsberg") {
 	      //
 	      // some units manage their own supply
 	      //
-console.log("unit key: " + u.key);
 	      if (this.game.units[u.key].checkSupplyStatus(this, key) == 1) { 
 		supplied = true;
 	      }

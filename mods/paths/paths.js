@@ -5097,6 +5097,8 @@ deck['cp65'] = {
       return 0;
     });
 
+console.log("X: " +JSON.stringify(x));
+
     let units = [];
     for (let z = 0; z < x.length; z++) {
       units.push(this.game.spaces[x[z].unit_sourcekey].units[x[z].unit_idx]);   
@@ -5121,10 +5123,12 @@ deck['cp65'] = {
     let x = 0;
     for (let i = 0; i < this.game.state.combat.attacker.length; i++) {
       let unit = this.game.spaces[this.game.state.combat.attacker[i].unit_sourcekey].units[this.game.state.combat.attacker[i].unit_idx];
-      if (unit.damaged) {
-        x += unit.rcombat;
-      } else {
-        x += unit.combat;
+      if (unit) {
+        if (unit.damaged) {
+          x += unit.rcombat;
+        } else {
+          x += unit.combat;
+        }
       }
     }
     return x;
@@ -6393,7 +6397,6 @@ if (spacekey == "insterberg" || spacekey == "konigsberg") {
 	      //
 	      // some units manage their own supply
 	      //
-console.log("unit key: " + u.key);
 	      if (this.game.units[u.key].checkSupplyStatus(this, key) == 1) { 
 		supplied = true;
 	      }
@@ -12386,7 +12389,6 @@ this.updateLog("Defender Power handling retreat: " + this.game.state.combat.defe
 	    }
 	  }
 
-
 	  return 1;
 
 	}
@@ -12519,6 +12521,20 @@ this.updateLog("Defender Power handling retreat: " + this.game.state.combat.defe
 	      if (this.game.spaces[spacekey].units[z].key === unitkey) {
 		this.game.spaces[spacekey].units.splice(z, 1);
 		z = this.game.spaces[spacekey].units.length + 2;
+
+		//
+		// if removing attacker, update unit_idx of whatever else is there
+		//
+		if (this.game.state.combat.attacker) {
+		  for (let zz = 0; zz < this.game.state.combat.attacker.length; zz++) {
+		    if (this.game.state.combat.attacker[zz].unit_sourcekey == spacekey) {
+		      if (z < this.game.state.combat.attacker[zz].unit_idx) {
+			this.game.state.combat.attacker[zz].unit_idx--;
+		      }
+		    }
+		  }
+		}
+
 	      }
 	    }
 	  }
@@ -12543,6 +12559,22 @@ this.updateLog("Defender Power handling retreat: " + this.game.state.combat.defe
 	    unit.spacekey = spacekey;
 	    this.game.spaces[spacekey].units.push(this.cloneUnit(unitkey));
 	  }
+
+	  //
+	  // if this is a corps and it is in a spacekey under combat, update
+	  //
+          if (unitkey.indexOf("corps") > -1) {
+	    if (this.game.state.combat.attacker) {
+	      for (let z = 0; z < this.game.state.combat.attacker.length; z++) {
+  	        if (this.game.state.combat.attacker[z].unit_sourcekey == spacekey) {
+	          this.game.state.combat.attacker.push({ key : this.game.state.combat.key , unit_sourcekey : spacekey , unit_idx : this.game.spaces[spacekey].units.length-1 });
+		  z = this.game.state.combat.attacker.length + 2;
+console.log("ADDACKERS NOW: " + JSON.stringify(this.game.state.combat.attacker));
+	        }
+	      }
+	    }
+	  }
+
 
 	  this.displaySpace(spacekey);
 	  this.shakeSpacekey(spacekey);
@@ -14424,7 +14456,6 @@ console.log(JSON.stringify(spaces_within_hops));
     paths_self.zoom_overlay.showControls();
 
 
-
     let mainInterface = function(options, mainInterface, attackInterface) {
 
       //
@@ -14604,6 +14635,7 @@ console.log(JSON.stringify(spaces_within_hops));
   		s.push(JSON.parse(paths_self.app.crypto.base64ToString(selected[z])));
 	      }
 	      paths_self.addMove("resolve\tplayer_play_combat");
+	      paths_self.addMove("player_play_combat\t"+paths_self.returnFactionOfPlayer());
 	      paths_self.addMove("post_combat_cleanup");
 	      paths_self.addMove(`combat\t${original_key}\t${JSON.stringify(s)}`);
 	      paths_self.endTurn();

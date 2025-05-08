@@ -544,7 +544,18 @@ console.log("assigning hits to damaged unit...");
 						let corpsunit = paths_self.cloneUnit(corpskey);
 						corpsunit.spacekey = unit.spacekey;
 if (paths_self.doesSpaceHaveUnit(corpsbox, corpskey)) {
+
+//
+// add new unit
+//
 						this.units.push(corpsunit);
+						if (am_i_the_attacker) {
+						  paths_self.game.spaces[corpsunit.spacekey].units.push(corpsunit);
+						  paths_self.game.state.combat.attacker.push({ key : paths_self.game.state.combat.key , unit_idx : paths_self.game.spaces[corpsunit.spacekey].units.length-1 , unit_sourcekey : corpsunit.spacekey });
+						}
+//
+// others remove and add too
+//
 						this.moves.push(`add\t${unit.spacekey}\t${corpskey}\t${this.mod.game.player}`);
 						this.moves.push(`remove\t${corpsbox}\t${corpskey}\t${this.mod.game.player}`);
 						let html = `<div class="loss-overlay-unit" data-spacekey="${corpsunit.spacekey}" data-key="${corpskey}" data-damaged="0" id="${this.units.length - 1}">${this.mod.returnUnitImageWithMouseoverOfStepwiseLoss(this.units[this.units.length - 1], false, true)}</div>`;
@@ -562,13 +573,6 @@ if (paths_self.doesSpaceHaveUnit(corpsbox, corpskey)) {
 					// move to eliminated box
 					//
                 			let f = this.mod.returnPowerOfUnit(unit);
-// cannot move now
-//					if (f === "central") {
-//					  this.mod.moveUnit(unit_spacekey, unit_idx, "ceubox");
-//					} else {
-//					  this.mod.moveUnit(unit_spacekey, unit_idx, "aeubox");
-//					}
-
 		      			this.updateInstructions(`${this.mod.returnFactionName(this.mod.returnFactionOfPlayer(this.mod.game.player))} - Assign ${this.loss_factor} More Damage`);
 
 				} else {

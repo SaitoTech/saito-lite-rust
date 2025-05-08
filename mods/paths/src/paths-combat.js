@@ -12,6 +12,8 @@
       return 0;
     });
 
+console.log("X: " +JSON.stringify(x));
+
     let units = [];
     for (let z = 0; z < x.length; z++) {
       units.push(this.game.spaces[x[z].unit_sourcekey].units[x[z].unit_idx]);   
@@ -36,10 +38,12 @@
     let x = 0;
     for (let i = 0; i < this.game.state.combat.attacker.length; i++) {
       let unit = this.game.spaces[this.game.state.combat.attacker[i].unit_sourcekey].units[this.game.state.combat.attacker[i].unit_idx];
-      if (unit.damaged) {
-        x += unit.rcombat;
-      } else {
-        x += unit.combat;
+      if (unit) {
+        if (unit.damaged) {
+          x += unit.rcombat;
+        } else {
+          x += unit.combat;
+        }
       }
     }
     return x;
