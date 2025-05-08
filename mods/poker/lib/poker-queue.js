@@ -13,6 +13,7 @@ class PokerQueue {
 	startRound() {
 		this.updateLog('===============');
 		this.updateLog('Round: ' + this.game.state.round);
+		this.updateLog('===============');
 		console.log(JSON.parse(JSON.stringify(this.game.state)));
 
 		for (let i = 0; i < this.game.players.length; i++) {
@@ -401,8 +402,9 @@ class PokerQueue {
 
 				if (this.game.state.flipped === 0) {
 					if (this.game.player > 0) {
+						this.updateLog("** HOLE CARDS **");
 						this.updateLog(
-							`** HOLE CARDS ** [${this.cardToHuman(
+							`[${this.cardToHuman(
 								this.game.deck[0].hand[0]
 							)} ${this.cardToHuman(this.game.deck[0].hand[1])}]`
 						);
@@ -411,15 +413,17 @@ class PokerQueue {
 				}
 
 				if (this.game.state.flipped === 3) {
+					this.updateLog("*** FLOP ***");
 					this.updateLog(
-						`*** FLOP *** [${this.cardToHuman(this.game.pool[0].hand[0])} ${this.cardToHuman(
+						`[${this.cardToHuman(this.game.pool[0].hand[0])} ${this.cardToHuman(
 							this.game.pool[0].hand[1]
 						)} ${this.cardToHuman(this.game.pool[0].hand[2])}]`
 					);
 				}
 				if (this.game.state.flipped === 4) {
+					this.updateLog("**** TURN ****");
 					this.updateLog(
-						`**** TURN **** [${this.cardToHuman(this.game.pool[0].hand[0])} ${this.cardToHuman(
+						`[${this.cardToHuman(this.game.pool[0].hand[0])} ${this.cardToHuman(
 							this.game.pool[0].hand[1]
 						)} ${this.cardToHuman(this.game.pool[0].hand[2])}] [${this.cardToHuman(
 							this.game.pool[0].hand[3]
@@ -427,8 +431,9 @@ class PokerQueue {
 					);
 				}
 				if (this.game.state.flipped === 5) {
+					this.updateLog("***** RIVER *****");
 					this.updateLog(
-						`***** RIVER ***** [${this.cardToHuman(this.game.pool[0].hand[0])} ${this.cardToHuman(
+						`[${this.cardToHuman(this.game.pool[0].hand[0])} ${this.cardToHuman(
 							this.game.pool[0].hand[1]
 						)} ${this.cardToHuman(this.game.pool[0].hand[2])}] [${this.cardToHuman(
 							this.game.pool[0].hand[3]
@@ -452,7 +457,8 @@ class PokerQueue {
 
 				if (scorer != this.game.player) {
 					this.showPlayerHand(scorer, card1, card2);
-					this.updateLog(`* ${this.game.state.player_names[scorer-1]} HOLE CARDS * [${this.cardToHuman(card1)} ${this.cardToHuman(card2)}]`);
+					this.updateLog(`* HOLE CARDS -- ${this.game.state.player_names[scorer-1]} *`);
+					this.updateLog(`[${this.cardToHuman(card1)} ${this.cardToHuman(card2)}]`);
 				}
 
 				//Everyone can use the pool
@@ -594,9 +600,8 @@ class PokerQueue {
 				}
 
 				this.displayPlayers();
-
-				//update log
-				this.updateLog(winnerStr + logMsg);
+				
+				logMsg = winnerStr + logMsg
 
 				// update splash!
 				if (winners.length == 1) {
@@ -627,6 +632,10 @@ class PokerQueue {
 						pl.player_hand.hand_description
 					}</div>${updateHTML}`;
 				});
+
+				//update log
+				this.updateLog(logMsg);
+
 
 				this.updateHTML = updateHTML;
 
