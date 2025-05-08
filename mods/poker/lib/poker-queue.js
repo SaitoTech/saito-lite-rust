@@ -1,3 +1,5 @@
+const html2canvas = require('html2canvas');
+
 class PokerQueue {
 	initializeQueue() {
 		this.game.queue = [];
@@ -647,32 +649,63 @@ class PokerQueue {
 
 				this.animateWin(pot_total, winObj);
 				this.halted = 1;
-				this.playerAcknowledgeNotice(winnerStr, async () => {
-					console.log("Continuing poker...");
-					this.animating = false;
-					this.cardfan.hide();
-					this.pot.clearPot();
-					this.settleLastRound(winner_keys, 'besthand');
-					this.board.clearTable();
-					this.clearPlayers();
+				this.updateStatus(winnerStr);
 
-					if (this.gameBrowserActive() && !this.prompted){
-						this.game_help.render({
-				          title: 'Showdown',
-				          text: `To speed the game along, we autocontinue after a few seconds. Click anywhere to pause, but don't forget to click acknowledge to clear the table and start the next round. `,
-				          img: '/poker/img/poker_screenshot.jpg',
-				          line1: 'what',
-				          line2: 'happened?',
-				          id: 'showdown'
-						})
-					}
-
-					await this.timeout(1000);
-					this.restartQueue();
-				});
 				this.saveGame(this.game.id);
-				this.setShotClock('.acknowledge', 4000);
 
+                html2canvas(document.body, {
+                	/*scale: 0.8,
+                	width: 0.8*window.innerWidth,
+                	height: 0.8*window.innerHeight,*/
+                	ignoreElements: function (element) {
+                		if (element.classList.contains("cardBack")){
+                			return true;
+                		}
+                		if (element.classList.contains("pot")){
+                			return true;
+                		}
+                		if (element.classList.contains("poker-player-stake")){
+                			return true;
+                		}
+                		if (element.id === "log-wrapper"){
+                			return true;
+                		}
+                		if (element.id === "saito-header"){
+                			return true;
+                		}
+                	}
+                }).then((screenshot) => {
+					this.playerAcknowledgeNotice(winnerStr, async () => {
+						
+						console.log("Continuing poker...");
+						this.animating = false;
+						this.cardfan.hide();
+						this.pot.clearPot();
+						this.settleLastRound(winner_keys, 'besthand');
+						this.board.clearTable();
+						this.clearPlayers();
+
+						await this.timeout(800);
+						this.restartQueue();
+					});
+
+					this.setShotClock('.acknowledge', 3000, true, ()=> {
+							this.game_help.render({
+					          title: 'Showdown',
+					          text: `Tip: click anywhere on the screen to interrupt the 3 second countdown that keeps the game moving along`,
+					          //img: '/poker/img/poker_screenshot.jpg',
+					          line1: 'what',
+					          line2: 'happened?',
+					          id: 'showdown',
+					          callback: ()=> {
+								let ov = document.querySelector(".game-help-overlay");
+								if (ov){
+									ov.prepend(screenshot);
+								}
+							  }						
+							});						
+					});
+                });
 
 				return 0;
 			}

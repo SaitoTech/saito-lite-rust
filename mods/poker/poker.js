@@ -31,7 +31,6 @@ class Poker extends GameTableTemplate {
 		this.card_img = 'new_red';
 		this.felt = "green";
 		this.icon = 'fa-solid fa-diamond';
-		this.prompted = false;
 
 		this.minPlayers = 2;
 		this.maxPlayers = 6;
@@ -316,6 +315,8 @@ class Poker extends GameTableTemplate {
 			clearTimeout(this.shot_clock);
 			this.shot_clock = null;
 		}
+
+		this.game_help.hide();
 
 		super.endTurn(nextTarget);
 	}
