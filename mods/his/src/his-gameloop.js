@@ -4001,7 +4001,7 @@ console.log("----------------------------");
 	  let defender_faction;
 	  let spacekey;
 
-	  if (his_self.game.state.assulat) {
+	  if (his_self.game.state.assault) {
 	    faction_map      = his_self.game.state.assault.faction_map;
 	    attacker_faction = his_self.game.state.assault.attacker_faction;
 	    defender_faction = his_self.game.state.assault.defender_faction;
@@ -11976,7 +11976,7 @@ defender_hits - attacker_hits;
 		  k = factions_in_play.length+2;
 	        }
 	      }
-	      for (let k = 0; i < factions_force_pass.length; k++) {
+	      for (let k = 0; k < factions_force_pass.length; k++) {
 	        if (factions_force_pass[k] === io[i]) {
 	          this.game.queue.push("skipturn\t"+io[i]);
 		  k = factions_force_pass.length+2;
@@ -13343,17 +13343,16 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
 
-//cardnum = 1;
+cardnum = 1;
 if (this.game.options.scenario == "is_testing") {
- if (f == "france") { cardnum = 0; }
- if (f == "papacy") { cardnum = 0; }
+// if (f == "france") { cardnum = 0; }
+// if (f == "papacy") { cardnum = 0; }
  //if (f == "hapsburg") { cardnum = 1; }
- if (f == "protestant") { cardnum = 0; }
- if (f == "england") { cardnum = 0; }
+// if (f == "protestant") { cardnum = 0; }
+// if (f == "england") { cardnum = 0; }
  //if (f == "ottoman") { cardnum = 0; }
 } else {
     		this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
-
 }
 
     	        this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
@@ -14041,6 +14040,8 @@ console.log("----------------------------");
 	      }
 	    }
 
+	    // safety check
+	    this.game.state.skip_next_impulse = [];
 	    this.game.queue.splice(qe, 1);
 	    return 1;
 	  }

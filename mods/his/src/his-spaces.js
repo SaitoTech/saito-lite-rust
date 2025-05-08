@@ -218,6 +218,51 @@
     return 1;
   }
 
+  doesNavalSpaceHaveNonFactionShip(space, faction) {
+    return this.doesNavalSpaceHaveNonFactionShips(space, faction);
+  }
+  doesNavalSpaceHaveNonFactionShips(space, faction) {
+
+    // if a port, must be controlled by faction
+    try {
+      if (this.game.spaces[space]) { 
+	space = this.game.spaces[space];  
+        if (space.language != undefined) { return this.isSpaceFriendly(space, faction); }
+      }
+    } catch (err) {}
+
+    // if naval space, must have no non-faction ship
+    try { 
+      if (this.game.navalspaces[space]) {
+	space = this.game.navalspaces[space]; 
+        for (let f in space.units) {
+          if (space.units[f].length > 0) {
+	    if (this.returnPlayerCommandingFaction(f) != this.returnPlayerCommandingFaction(faction)) { 
+	      return 1;
+	    }
+          }
+        }
+	for (let z = 0; z < space.ports.length; z++) {
+	  let s = this.game.spaces[space.ports[z]];
+	  for (let ff in s.units) {
+	    for (let zz = 0; zz < s.units[ff].length; zz++) {
+	      let u = s.units[ff][zz];
+	      if (u.type == "corsair" || u.type == "squadron") {
+		if (this.returnPlayerCommandingFaction(ff) != this.returnPlayerCommandingFaction(faction)) {
+		  return 1;
+		}
+	      }
+	    }
+	  }
+	}
+      } 
+    } catch (err) {}
+
+    // no, no non-faction ships
+    return 0;
+
+  }
+
   doesNavalSpaceHaveFriendlyShip(space, faction) {
 
     // if a port, must be controlled by faction
@@ -553,11 +598,6 @@
       // already crossed sea zone optional
       0
     );
-
-
-if (space.key == "malta") {
-console.log("RES: " + JSON.stringify(res));
-}
 
     //
     // we put the neighbours immediately into the search space for the 
@@ -1900,8 +1940,8 @@ console.log("RES: " + JSON.stringify(res));
         }
       }
       return neighbours;
-    } else {
 
+    } else {
 
       let neighbours = [];
 
@@ -1952,6 +1992,7 @@ console.log("RES: " + JSON.stringify(res));
 	    if (navalspace.ports) {
 	      if (faction != "") {
 	        for (let z = 0; z < navalspace.ports.length; z++) {
+
 		  if (transit_seas == 1) {
 	            if (this.doesOtherFactionHaveNavalUnitsInSpace(faction, navalspace.ports[z], 1)) { // 1 = ignore independent/unaligned
 	 	      if (this.game.state.events.spring_preparations != faction) {
@@ -1974,8 +2015,9 @@ console.log("RES: " + JSON.stringify(res));
  		      }
 		    }
 		  }
+
 		  if (transit_seas == 2) {
-	            if (this.doesOtherFactionHaveNavalUnitsInSpace(faction, navalspace.ports[z], 0)) { // 1 = ignore independent/unaligned
+		    if (this.doesNavalSpaceHaveNonFactionShips(navalspace.ports[z], faction)) {
 	 	      if (this.game.state.events.spring_preparations != faction) {
 	                if (ignore_hostiles == false) {
 		          any_unfriendly_ships = true;
@@ -1983,6 +2025,7 @@ console.log("RES: " + JSON.stringify(res));
 		      }
 		    }
 		  }
+
 		  if (any_unfriendly_ships != true) {
 	            let already_listed = false;
                     for (let z = 0; z < navalspace.ports.length; z++) {
@@ -2247,14 +2290,7 @@ console.log("RES: " + JSON.stringify(res));
     //
     // put the neighbours into pending
     //
-if (transit_seas == 2 && sourcekey == "palma") {
-  console.log("$ transit seas is 2");
-}
-
     let n = this.returnNeighbours(sourcekey, transit_passes, transit_seas, faction, is_spring_deployment);
-if (transit_seas == 3 && sourcekey == "malta") {
-  console.log("$ neighbours: " + JSON.stringify(n));
-}
 
     //
     // add any spaces with naval connection
@@ -2266,8 +2302,15 @@ if (transit_seas == 3 && sourcekey == "malta") {
       if (s.ports.length > 0) {
 	if (transit_seas) {
 	  for (let i = 0; i < s.ports.length; i++) {
-	    if (this.doesNavalSpaceHaveFriendlyShip(s.ports[i], faction)) {
-	      vns.push(s.ports[i]);
+	    if (transit_seas == 2) {
+	      if (!this.doesNavalSpaceHaveNonFactionShips(s.ports[i], faction)) {
+	        vns.push(s.ports[i]);
+	      }
+	    }
+	    if (transit_seas == 1) {
+	      if (this.doesNavalSpaceHaveFriendlyShip(s.ports[i], faction)) {
+	        vns.push(s.ports[i]);
+	      }
 	    }
 	  }
 	  let vnslen = vns.length;

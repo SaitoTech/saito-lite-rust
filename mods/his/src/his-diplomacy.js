@@ -303,6 +303,13 @@
       let c = his_self.game.state.players_info[i].captured;
       for (let z = 0; z < c.length; z++) {
 	if (c[z].capturing_faction === faction) {
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("CAPTURED LEADER: " + JSON.stringify(c[z]));
+console.log("#");
+console.log("#");
+console.log("#");
 	  return 1;
 	}
       }
@@ -315,6 +322,13 @@
       let c = his_self.game.state.players_info[i].captured;
       for (let z = 0; z < c.length; z++) {
 	if (c[z].owner === faction) {
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("CAPTURED LEADER: " + JSON.stringify(c[z]));
+console.log("#");
+console.log("#");
+console.log("#");
 	  return 1;
 	}
       }
@@ -1259,7 +1273,7 @@
     // check factions with squadrons
     //
     let factions_with_squadrons = {};
-    for (let spacekey in his_self.game.spaces) {
+    for (let key in his_self.game.spaces) {
       if (his_self.game.spaces[key].ports) {
 	for (let f in his_self.game.spaces[key].units) {
 	  if (!factions_with_squadrons[f]) {
@@ -1276,8 +1290,10 @@
     let msg = `${his_self.returnFactionName(faction)} - Get Squadrons from Whom: `;
     let html = '<ul>';
     for (let i = 0; i < io.length; i++) {
-      if (factions_with_squadrons.includes(faction) && faction != io[i] && io[i] != "protestant") {
-        html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
+      if (factions_with_squadrons[io[i]]) {
+        if (factions_with_squadrons[io[i]] == 1 && faction != io[i] && io[i] != "protestant") {
+          html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
+        }
       }
     }
     html += '</ul>';

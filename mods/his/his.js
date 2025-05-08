@@ -17095,6 +17095,51 @@ console.log("DELETING Z: " + z);
     return 1;
   }
 
+  doesNavalSpaceHaveNonFactionShip(space, faction) {
+    return this.doesNavalSpaceHaveNonFactionShips(space, faction);
+  }
+  doesNavalSpaceHaveNonFactionShips(space, faction) {
+
+    // if a port, must be controlled by faction
+    try {
+      if (this.game.spaces[space]) { 
+	space = this.game.spaces[space];  
+        if (space.language != undefined) { return this.isSpaceFriendly(space, faction); }
+      }
+    } catch (err) {}
+
+    // if naval space, must have no non-faction ship
+    try { 
+      if (this.game.navalspaces[space]) {
+	space = this.game.navalspaces[space]; 
+        for (let f in space.units) {
+          if (space.units[f].length > 0) {
+	    if (this.returnPlayerCommandingFaction(f) != this.returnPlayerCommandingFaction(faction)) { 
+	      return 1;
+	    }
+          }
+        }
+	for (let z = 0; z < space.ports.length; z++) {
+	  let s = this.game.spaces[space.ports[z]];
+	  for (let ff in s.units) {
+	    for (let zz = 0; zz < s.units[ff].length; zz++) {
+	      let u = s.units[ff][zz];
+	      if (u.type == "corsair" || u.type == "squadron") {
+		if (this.returnPlayerCommandingFaction(ff) != this.returnPlayerCommandingFaction(faction)) {
+		  return 1;
+		}
+	      }
+	    }
+	  }
+	}
+      } 
+    } catch (err) {}
+
+    // no, no non-faction ships
+    return 0;
+
+  }
+
   doesNavalSpaceHaveFriendlyShip(space, faction) {
 
     // if a port, must be controlled by faction
@@ -17430,11 +17475,6 @@ console.log("DELETING Z: " + z);
       // already crossed sea zone optional
       0
     );
-
-
-if (space.key == "malta") {
-console.log("RES: " + JSON.stringify(res));
-}
 
     //
     // we put the neighbours immediately into the search space for the 
@@ -18777,8 +18817,8 @@ console.log("RES: " + JSON.stringify(res));
         }
       }
       return neighbours;
-    } else {
 
+    } else {
 
       let neighbours = [];
 
@@ -18829,6 +18869,7 @@ console.log("RES: " + JSON.stringify(res));
 	    if (navalspace.ports) {
 	      if (faction != "") {
 	        for (let z = 0; z < navalspace.ports.length; z++) {
+
 		  if (transit_seas == 1) {
 	            if (this.doesOtherFactionHaveNavalUnitsInSpace(faction, navalspace.ports[z], 1)) { // 1 = ignore independent/unaligned
 	 	      if (this.game.state.events.spring_preparations != faction) {
@@ -18851,8 +18892,9 @@ console.log("RES: " + JSON.stringify(res));
  		      }
 		    }
 		  }
+
 		  if (transit_seas == 2) {
-	            if (this.doesOtherFactionHaveNavalUnitsInSpace(faction, navalspace.ports[z], 0)) { // 1 = ignore independent/unaligned
+		    if (this.doesNavalSpaceHaveNonFactionShips(navalspace.ports[z], faction)) {
 	 	      if (this.game.state.events.spring_preparations != faction) {
 	                if (ignore_hostiles == false) {
 		          any_unfriendly_ships = true;
@@ -18860,6 +18902,7 @@ console.log("RES: " + JSON.stringify(res));
 		      }
 		    }
 		  }
+
 		  if (any_unfriendly_ships != true) {
 	            let already_listed = false;
                     for (let z = 0; z < navalspace.ports.length; z++) {
@@ -19124,14 +19167,7 @@ console.log("RES: " + JSON.stringify(res));
     //
     // put the neighbours into pending
     //
-if (transit_seas == 2 && sourcekey == "palma") {
-  console.log("$ transit seas is 2");
-}
-
     let n = this.returnNeighbours(sourcekey, transit_passes, transit_seas, faction, is_spring_deployment);
-if (transit_seas == 3 && sourcekey == "malta") {
-  console.log("$ neighbours: " + JSON.stringify(n));
-}
 
     //
     // add any spaces with naval connection
@@ -19143,8 +19179,15 @@ if (transit_seas == 3 && sourcekey == "malta") {
       if (s.ports.length > 0) {
 	if (transit_seas) {
 	  for (let i = 0; i < s.ports.length; i++) {
-	    if (this.doesNavalSpaceHaveFriendlyShip(s.ports[i], faction)) {
-	      vns.push(s.ports[i]);
+	    if (transit_seas == 2) {
+	      if (!this.doesNavalSpaceHaveNonFactionShips(s.ports[i], faction)) {
+	        vns.push(s.ports[i]);
+	      }
+	    }
+	    if (transit_seas == 1) {
+	      if (this.doesNavalSpaceHaveFriendlyShip(s.ports[i], faction)) {
+	        vns.push(s.ports[i]);
+	      }
 	    }
 	  }
 	  let vnslen = vns.length;
@@ -28073,7 +28116,7 @@ console.log("----------------------------");
 	  let defender_faction;
 	  let spacekey;
 
-	  if (his_self.game.state.assulat) {
+	  if (his_self.game.state.assault) {
 	    faction_map      = his_self.game.state.assault.faction_map;
 	    attacker_faction = his_self.game.state.assault.attacker_faction;
 	    defender_faction = his_self.game.state.assault.defender_faction;
@@ -36048,7 +36091,7 @@ defender_hits - attacker_hits;
 		  k = factions_in_play.length+2;
 	        }
 	      }
-	      for (let k = 0; i < factions_force_pass.length; k++) {
+	      for (let k = 0; k < factions_force_pass.length; k++) {
 	        if (factions_force_pass[k] === io[i]) {
 	          this.game.queue.push("skipturn\t"+io[i]);
 		  k = factions_force_pass.length+2;
@@ -37415,17 +37458,16 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
 
-//cardnum = 1;
+cardnum = 1;
 if (this.game.options.scenario == "is_testing") {
- if (f == "france") { cardnum = 0; }
- if (f == "papacy") { cardnum = 0; }
+// if (f == "france") { cardnum = 0; }
+// if (f == "papacy") { cardnum = 0; }
  //if (f == "hapsburg") { cardnum = 1; }
- if (f == "protestant") { cardnum = 0; }
- if (f == "england") { cardnum = 0; }
+// if (f == "protestant") { cardnum = 0; }
+// if (f == "england") { cardnum = 0; }
  //if (f == "ottoman") { cardnum = 0; }
 } else {
     		this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
-
 }
 
     	        this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
@@ -38113,6 +38155,8 @@ console.log("----------------------------");
 	      }
 	    }
 
+	    // safety check
+	    this.game.state.skip_next_impulse = [];
 	    this.game.queue.splice(qe, 1);
 	    return 1;
 	  }
@@ -49611,6 +49655,13 @@ console.log("checking if squadrons are protecting!");
       let c = his_self.game.state.players_info[i].captured;
       for (let z = 0; z < c.length; z++) {
 	if (c[z].capturing_faction === faction) {
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("CAPTURED LEADER: " + JSON.stringify(c[z]));
+console.log("#");
+console.log("#");
+console.log("#");
 	  return 1;
 	}
       }
@@ -49623,6 +49674,13 @@ console.log("checking if squadrons are protecting!");
       let c = his_self.game.state.players_info[i].captured;
       for (let z = 0; z < c.length; z++) {
 	if (c[z].owner === faction) {
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("CAPTURED LEADER: " + JSON.stringify(c[z]));
+console.log("#");
+console.log("#");
+console.log("#");
 	  return 1;
 	}
       }
@@ -50567,7 +50625,7 @@ console.log("checking if squadrons are protecting!");
     // check factions with squadrons
     //
     let factions_with_squadrons = {};
-    for (let spacekey in his_self.game.spaces) {
+    for (let key in his_self.game.spaces) {
       if (his_self.game.spaces[key].ports) {
 	for (let f in his_self.game.spaces[key].units) {
 	  if (!factions_with_squadrons[f]) {
@@ -50584,8 +50642,10 @@ console.log("checking if squadrons are protecting!");
     let msg = `${his_self.returnFactionName(faction)} - Get Squadrons from Whom: `;
     let html = '<ul>';
     for (let i = 0; i < io.length; i++) {
-      if (factions_with_squadrons.includes(faction) && faction != io[i] && io[i] != "protestant") {
-        html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
+      if (factions_with_squadrons[io[i]]) {
+        if (factions_with_squadrons[io[i]] == 1 && faction != io[i] && io[i] != "protestant") {
+          html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
+        }
       }
     }
     html += '</ul>';
