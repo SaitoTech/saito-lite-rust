@@ -655,6 +655,18 @@ class PokerQueue {
 					this.settleLastRound(winner_keys, 'besthand');
 					this.board.clearTable();
 					this.clearPlayers();
+
+					if (this.gameBrowserActive() && !this.prompted){
+						this.game_help.render({
+				          title: 'Showdown',
+				          text: `To speed the game along, we autocontinue after a few seconds. Click anywhere to pause, but don't forget to click acknowledge to clear the table and start the next round. `,
+				          img: '/poker/img/poker_screenshot.jpg',
+				          line1: 'what',
+				          line2: 'happened?',
+				          id: 'showdown'
+						})
+					}
+
 					await this.timeout(1000);
 					this.restartQueue();
 				});
