@@ -12,7 +12,6 @@ const SettlersActions = require('./lib/src/settlers-actions');
 const SettlersDisplay = require('./lib/src/settlers-display');
 const SettlersState = require('./lib/src/settlers-state');
 
-const GameHelp = require('./lib/ui/overlays/game-help');
 const TradeOverlay = require('./lib/ui/overlays/trade');
 const BuildOverlay = require('./lib/ui/overlays/build');
 const BankOverlay = require('./lib/ui/overlays/bank');
@@ -55,7 +54,6 @@ class Settlers extends GameTemplate {
 		this.stats_overlay = new SettlersStats(this.app, this);
 		this.trade_overlay = new TradeOverlay(this.app, this);
 		this.card_overlay = new CardOverlay(this.app, this);
-		this.game_help = new GameHelp(this.app, this);
 
 		this.build = new BuildOverlay(this.app, this);
 		this.bank = new BankOverlay(this.app, this);

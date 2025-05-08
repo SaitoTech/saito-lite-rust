@@ -316,6 +316,8 @@ class Poker extends GameTableTemplate {
 			this.shot_clock = null;
 		}
 
+		this.game_help.hide();
+
 		super.endTurn(nextTarget);
 	}
 

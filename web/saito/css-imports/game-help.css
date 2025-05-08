@@ -1,4 +1,6 @@
 
+/* Triangle in bottom corner of screen */
+
 .game-help-triangle {
     cursor: pointer;
     position: absolute;
@@ -46,16 +48,29 @@
 }
 
 
-.welcome-overlay {
+/* Standard overlay with title, text, and image */
+
+.game-help-overlay {
     width: 80vw;
     height: 80vh;
     overflow: hidden;
     background-size: cover;
     background-position: center;
     user-select: none;
+    position: relative;
 }
 
-.welcome-overlay > div {
+.game-help-overlay canvas {
+    /*max-width: 100%;
+    max-height: 100%;*/
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: top left;
+    transform: scale(0.8);
+}
+
+.game-help-overlay > div {
     position: absolute;
     background: #0009;
     left: 3rem;
@@ -65,7 +80,7 @@
     border-radius: 1rem;
 }
 
-.welcome-title {
+.game-help-overlay-title {
     top: 3rem;
     font-size: 4.6rem;
     letter-spacing: 0.1rem;
@@ -74,19 +89,19 @@
     max-width: 60%;
 }
 
-.welcome-text {
+.game-help-overlay-text {
     bottom: 0px;
     line-height: 4rem;
     font-size: 2.7rem;
     bottom: 3rem;
 }
 
-.welcome-text em {
+.game-help-overlay-text em {
     font-weight: bold;
     text-decoration: underline;
 }
 
-.welcome-overlay > div.welcome-optout {
+.game-help-overlay > div.game-help-overlay-optout {
     left: unset;
     right: 1rem;
     bottom: 1rem;
@@ -97,7 +112,7 @@
 }
 
 @media screen and (max-width: 768px) {
-    .welcome-overlay > div {
+    .game-help-overlay > div {
         left: 1.5rem;
         max-width: 65%;
     }
