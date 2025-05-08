@@ -402,7 +402,7 @@ class PokerQueue {
 				if (this.game.state.flipped === 0) {
 					if (this.game.player > 0) {
 						this.updateLog(
-							`*** HOLE CARDS *** [${this.cardToHuman(
+							`** HOLE CARDS ** [${this.cardToHuman(
 								this.game.deck[0].hand[0]
 							)} ${this.cardToHuman(this.game.deck[0].hand[1])}]`
 						);
@@ -419,7 +419,7 @@ class PokerQueue {
 				}
 				if (this.game.state.flipped === 4) {
 					this.updateLog(
-						`*** TURN *** [${this.cardToHuman(this.game.pool[0].hand[0])} ${this.cardToHuman(
+						`**** TURN **** [${this.cardToHuman(this.game.pool[0].hand[0])} ${this.cardToHuman(
 							this.game.pool[0].hand[1]
 						)} ${this.cardToHuman(this.game.pool[0].hand[2])}] [${this.cardToHuman(
 							this.game.pool[0].hand[3]
@@ -428,7 +428,7 @@ class PokerQueue {
 				}
 				if (this.game.state.flipped === 5) {
 					this.updateLog(
-						`*** RIVER *** [${this.cardToHuman(this.game.pool[0].hand[0])} ${this.cardToHuman(
+						`***** RIVER ***** [${this.cardToHuman(this.game.pool[0].hand[0])} ${this.cardToHuman(
 							this.game.pool[0].hand[1]
 						)} ${this.cardToHuman(this.game.pool[0].hand[2])}] [${this.cardToHuman(
 							this.game.pool[0].hand[3]
@@ -452,6 +452,7 @@ class PokerQueue {
 
 				if (scorer != this.game.player) {
 					this.showPlayerHand(scorer, card1, card2);
+					this.updateLog(`* ${this.game.state.player_names[scorer-1]} HOLE CARDS * [${this.cardToHuman(card1)} ${this.cardToHuman(card2)}]`);
 				}
 
 				//Everyone can use the pool
@@ -559,13 +560,14 @@ class PokerQueue {
 
 				// single winner gets everything
 
-				let logMsg =
-					winners.length > 1
-						? `split the pot for ${this.formatWager(pot_size)} each`
-						: `wins ${this.formatWager(pot_total)} (${this.formatWager(
+				let logMsg = ` split the pot for ${this.formatWager(pot_size)} each`;
+				if (winners.length == 1){
+					logMsg = (winners[0] == this.game.player - 1) ? " win" : " wins";
+					logMsg += ` ${this.formatWager(pot_total)} (${this.formatWager(
 								pot_total - this.game.state.player_pot[winners[0]],
 								false
 						  )} net)`;
+				}
 
 				for (let i = 0; i < winners.length; i++) {
 					if (i >= 1) {
