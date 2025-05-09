@@ -13,7 +13,16 @@ class GameBoard {
 		this.timer = null;
 	}
 
-	render() {
+	render(enable = false) {
+
+		if (enable){
+			delete this.disable;
+		}
+
+		if (this.disable){
+			console.log("Prevent board rendering between rounds");
+			return;
+		}
 
 		if (!this.game_mod.gameBrowserActive()){
 			return;
@@ -127,6 +136,7 @@ class GameBoard {
 	clearTable() {
 
 		this.cards_visible = 0;
+		this.disable = true;
 
 		//
 		// this animation sweeps the cards off the table

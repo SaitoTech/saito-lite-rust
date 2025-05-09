@@ -271,6 +271,8 @@ class Tweet {
 
 	render(prepend = false) {
 
+		console.log("render tweet", prepend);
+
 		//
 		// Apply curation Here !!!!
 		//

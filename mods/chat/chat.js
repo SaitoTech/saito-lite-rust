@@ -1561,9 +1561,9 @@ class Chat extends ModTemplate {
     }
 
     if (this.debug) {
-      // console.log('Receive Chat Transaction:');
+      console.log('Receive Chat Transaction: ', onchain);
       // console.log(JSON.parse(JSON.stringify(tx)));
-      // console.log(JSON.parse(JSON.stringify(txmsg)));
+      //console.log(JSON.parse(JSON.stringify(txmsg)));
     }
 
 
@@ -1590,21 +1590,6 @@ class Chat extends ModTemplate {
 
     let group = this.returnGroup(txmsg.group_id);
 
-    if (group?.member_ids) {
-      let sender = tx.from[0].publicKey;
-      if (group.member_ids[sender] == -1) {
-        console.log('Refuse chat message from banned account');
-        return;
-      } else if (!group.member_ids[sender]) {
-        //fall back for adding group members to my list based on them chatting
-        group.member_ids[sender] = 1;
-      }
-
-      if (!group.members.includes(sender)) {
-        group.members.push(sender);
-      }
-    }
-
     if (!group) {
       if (!tx.isTo(this.publicKey)) {
         if (this.debug) {
@@ -1630,12 +1615,25 @@ class Chat extends ModTemplate {
       group.id = txmsg.group_id;
     }
 
+    if (group?.member_ids) {
+      let sender = tx.from[0].publicKey;
+      if (group.member_ids[sender] == -1) {
+        console.log('Refuse chat message from banned account');
+        return;
+      } else if (!group.member_ids[sender]) {
+        //fall back for adding group members to my list based on them chatting
+        group.member_ids[sender] = 1;
+      }
+
+      if (!group.members.includes(sender)) {
+        group.members.push(sender);
+      }
+    }
+
+
     //Have we already inserted this message into the chat?
     for (let z = 0; z < group.txs.length; z++) {
       if (group.txs[z].signature === tx.signature) {
-        if (this.debug) {
-          console.log('Duplicate received message');
-        }
         return;
       }
     }
@@ -1940,7 +1938,7 @@ class Chat extends ModTemplate {
 
     group.txs.splice(insertion_index, 0, new_message);
 
-    group.last_update = new_message.timestamp;
+    group.last_update = Math.max(group.last_update, new_message.timestamp);
 
     if (!this.app.BROWSER) {
       return 0;

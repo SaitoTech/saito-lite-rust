@@ -46,11 +46,12 @@ data/blocks/empty
 data/shashmaps/*.smap
 data/backup/*
 data/backup
-data/issuance/issuance
 data/saito.stats
 data/peer_state.txt
 data/checkpoints/*
+data/issuance/issuance
 data/issuance/*.issuance
+data/issuance/archive
 
 bundler
 bundler/*
