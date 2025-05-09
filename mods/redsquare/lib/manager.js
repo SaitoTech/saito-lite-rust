@@ -6,9 +6,7 @@ const SaitoProfile = require('./../../../lib/saito/ui/saito-profile/saito-profil
 const SaitoLoader = require('./../../../lib/saito/ui/saito-loader/saito-loader');
 
 class TweetManager {
-
 	constructor(app, mod, container = '.saito-main') {
-
 		this.app = app;
 		this.mod = mod;
 		this.container = container;
@@ -24,6 +22,42 @@ class TweetManager {
 		//This is an in-place loader... not super useful when content is overflowing off the bottom of the screen
 		this.loader = new SaitoLoader(app, mod, '#redsquare-intersection');
 
+		this.app.connection.on('redsquare-render-new-post', (tweettx, rparent = null) => {
+			console.log('Posting new tweet', this.mode);
+
+			if (!this.mode.includes('tweet')) {
+				console.log('Ignore new post because not in the right place to insert into feed');
+				return;
+			}
+
+			let posted_tweet = new Tweet(this.app, this.mod, tweettx, '.tweet-manager');
+			console.log('New tweet:', posted_tweet);
+
+			if (rparent) {
+				console.log('Rerender feed with temp stats');
+
+				if (posted_tweet.retweet_tx) {
+					rparent.render();
+					this.mod.addTweet(tweettx, 'post_retweet');
+					posted_tweet.render(true);
+				} else {
+					this.mod.addTweet(tweettx, 'post_reply');
+					if (rparent.parent_id != '') {
+						let t = this.mod.returnTweet(rparent.parent_id);
+						if (t) {
+							t.critical_child = posted_tweet;
+						}
+					}
+
+					rparent.critical_child = posted_tweet;
+					rparent.forceRenderWithCriticalChild();
+				}
+			} else {
+				this.mod.addTweet(tweettx, 'post_new');
+				posted_tweet.render(true);
+			}
+		});
+
 		//////////////////////////////
 		// load more on scroll-down //
 		//////////////////////////////
@@ -31,16 +65,15 @@ class TweetManager {
 			(entries) => {
 				entries.forEach((entry) => {
 					if (entry.isIntersecting) {
-
-						if (this.mod.debug){
-							console.log('RS -- IntersectionObserver triggerd, disabling...');	
+						if (this.mod.debug) {
+							console.log('RS -- IntersectionObserver triggerd, disabling...');
 						}
-						
+
 						this.intersectionObserver.disconnect();
 
 						if (this.mode === 'tweet' || this.mode == 'loading') {
-							if (this.mod.debug){
-								console.log("in wrong mode for RS IO", this.mode);	
+							if (this.mod.debug) {
+								console.log('in wrong mode for RS IO', this.mode);
 							}
 							return;
 						}
@@ -68,9 +101,8 @@ class TweetManager {
 						// about not having enough history available
 						//
 						//////////////////////////////////////////////////
-					
 
-						if (this.mode === "profile") {
+						if (this.mode === 'profile') {
 							this.loadProfile((txs) => {
 								if (this.mode !== 'profile') {
 									return;
@@ -83,7 +115,6 @@ class TweetManager {
 
 								this.profile.render();
 							});
-
 						}
 					}
 				});
@@ -99,10 +130,10 @@ class TweetManager {
 		//
 		// Stop observering while we rebuild the page
 		//
-		if (this.mod.debug){
-			console.log('REDSQUARE: Turn off IO before clearing feed...');	
+		if (this.mod.debug) {
+			console.log('REDSQUARE: Turn off IO before clearing feed...');
 		}
-		
+
 		this.intersectionObserver.disconnect();
 		let holder = document.getElementById('tweet-thread-holder');
 		let managerElem = document.querySelector('.tweet-manager');
@@ -120,7 +151,6 @@ class TweetManager {
 	}
 
 	render(new_mode = this.mode) {
-
 		//
 		// Keep sidebar highlight in sync with the current view
 		//
@@ -133,12 +163,11 @@ class TweetManager {
 		//
 		// Stop observering while we rebuild the page
 		//
-		if (this.mod.debug){
-			console.log(`REDSQUARE: Turn off IO before rendering manager...(${new_mode})`);	
+		if (this.mod.debug) {
+			console.log(`REDSQUARE: Turn off IO before rendering manager...(${new_mode})`);
 		}
-		
-		this.intersectionObserver.disconnect();
 
+		this.intersectionObserver.disconnect();
 
 		// reset this with a new render
 		this.just_fetched_tweets = false;
@@ -155,13 +184,16 @@ class TweetManager {
 		this.profile.remove();
 
 		if (!document.querySelector(myqs)) {
-			this.app.browser.addElementToSelector(TweetManagerTemplate(this.app, this.mod), this.container);
+			this.app.browser.addElementToSelector(
+				TweetManagerTemplate(this.app, this.mod),
+				this.container
+			);
 		}
 
-		if (new_mode == "tweets"){
-			document.querySelector(".redsquare-feed-source").classList.remove("hidden");
-		}else{
-			document.querySelector(".redsquare-feed-source").classList.add("hidden");
+		if (new_mode == 'tweets') {
+			document.querySelector('.redsquare-feed-source').classList.remove('hidden');
+		} else {
+			document.querySelector('.redsquare-feed-source').classList.add('hidden');
 		}
 
 		let holder = document.getElementById('tweet-thread-holder');
@@ -180,7 +212,6 @@ class TweetManager {
 			}
 		}
 
-
 		//
 		// if someone asks the manager to render with a mode that is not currently
 		// set, we want to update our mode and proceed with it.
@@ -188,23 +219,22 @@ class TweetManager {
 		if (new_mode != this.mode) {
 			this.mode = new_mode;
 		}
-		
+
 		////////////
 		// tweets //
 		////////////
 		if (new_mode == 'tweets') {
-
 			for (let tweet of this.mod.tweets) {
 				if (!tweet.isRendered()) {
 					//
 					// remove DOM element telling us nothing more exists...
 					//
-					if (document.querySelector(".saito-end-of-redsquare")) {
-						document.querySelector(".saito-end-of-redsquare").remove();
+					if (document.querySelector('.saito-end-of-redsquare')) {
+						document.querySelector('.saito-end-of-redsquare').remove();
 					}
-					
+
 					tweet.renderWithCriticalChild();
-				} 
+				}
 			}
 
 			//Fire up the intersection observer
@@ -218,9 +248,8 @@ class TweetManager {
 		// notifications //
 		///////////////////
 		if (new_mode == 'notifications') {
-		    
 			if (this.mod.notifications.length > 0) {
-				if (this.mod.debug){
+				if (this.mod.debug) {
 					console.log(
 						'Redsquare render notifications: already have ' +
 							this.mod.notifications.length +
@@ -237,9 +266,6 @@ class TweetManager {
 			this.loadNotifications();
 			return;
 		}
-
-
-
 	}
 
 	loadNotifications() {
@@ -262,8 +288,8 @@ class TweetManager {
 					'.tweet-manager'
 				);
 				if (document.querySelector('#intersection-observer-trigger')) {
-					if (this.mod.debug){
-						console.log('REDSQUARE: Turn off IO before rendering no notifications msg...');	
+					if (this.mod.debug) {
+						console.log('REDSQUARE: Turn off IO before rendering no notifications msg...');
 					}
 					this.intersectionObserver.disconnect();
 				}
@@ -278,8 +304,8 @@ class TweetManager {
 					this.hideLoader();
 				}, 50);
 			} else {
-				if (this.mod.debug){
-					console.log('Redsquare turn on Intersection observer for notifications');	
+				if (this.mod.debug) {
+					console.log('Redsquare turn on Intersection observer for notifications');
 				}
 				//Fire up the intersection observer after the callback completes...
 				this.attachEvents();
@@ -287,21 +313,17 @@ class TweetManager {
 		});
 	}
 
-	fetchTweets(){
-
-		if (this.just_fetched_tweets == true) { 
-			if (this.mod.debug){
-				console.log("RS IO blocked because just_fetched_tweets");	
+	fetchTweets() {
+		if (this.just_fetched_tweets == true) {
+			if (this.mod.debug) {
+				console.log('RS IO blocked because just_fetched_tweets');
 			}
-			return; 
+			return;
 		}
-		
+
 		this.just_fetched_tweets = true;
 
-		this.numActivePeers = this.mod.loadTweets(
-			'earlier',
-			this.insertOlderTweets.bind(this)
-		);
+		this.numActivePeers = this.mod.loadTweets('earlier', this.insertOlderTweets.bind(this));
 
 		if (!this.numActivePeers) {
 			this.mod.tweets_earliest_ts--;
@@ -314,12 +336,11 @@ class TweetManager {
 	}
 
 	insertOlderTweets(tx_count, peer = null) {
-
 		this.numActivePeers--;
 
 		if (this.mode !== 'tweets') {
-			if (this.mod.debug){
-				console.log('Not on main feed anymore, currently on: ' + this.mode);	
+			if (this.mod.debug) {
+				console.log('Not on main feed anymore, currently on: ' + this.mode);
 			}
 			return;
 		}
@@ -329,12 +350,12 @@ class TweetManager {
 				//
 				// remove DOM element telling us nothing more exists...
 				//
-				if (document.querySelector(".saito-end-of-redsquare")) {
-					document.querySelector(".saito-end-of-redsquare").remove();
+				if (document.querySelector('.saito-end-of-redsquare')) {
+					document.querySelector('.saito-end-of-redsquare').remove();
 				}
-				
+
 				tweet.renderWithCriticalChild();
-			} 
+			}
 		}
 
 		if (tx_count == -1) {
@@ -344,28 +365,25 @@ class TweetManager {
 					'.tweet-manager'
 				);
 			}
-			this.hideLoader();	
-			if (this.mod.debug){
-				console.log('REDSQUARE: Turn off IO before rendering end of feed message...');	
+			this.hideLoader();
+			if (this.mod.debug) {
+				console.log('REDSQUARE: Turn off IO before rendering end of feed message...');
 			}
 			this.intersectionObserver.disconnect();
 		} else {
-
 			this.just_fetched_tweets = false;
-			if (this.mod.debug){
-				console.log("RS -- add IO for infinite scroll (1)");	
+			if (this.mod.debug) {
+				console.log('RS -- add IO for infinite scroll (1)');
 			}
 			this.intersectionObserver.observe(document.getElementById('intersection-observer-trigger'));
 		}
 
-		if (this.numActivePeers == 0 && tx_count > 0 ){
-			this.hideLoader();	
+		if (this.numActivePeers == 0 && tx_count > 0) {
+			this.hideLoader();
 		}
-		
 	}
 
 	renderProfile(publicKey) {
-
 		//if (this.mode == "profile" && publicKey == this.profile?.publicKey){
 		//	return;
 		//}
@@ -385,7 +403,7 @@ class TweetManager {
 
 		this.profile.render();
 
-		for (let peer of this.mod.peers){
+		for (let peer of this.mod.peers) {
 			peer.profile_ts = new Date().getTime();
 		}
 
@@ -400,11 +418,8 @@ class TweetManager {
 			this.profile.render();
 
 			this.hideLoader();
-
 		});
-
 	}
-
 
 	// When we render the profile, we have a synchronous fetch on local archive for banner/description
 	// by making this async the storage loading here should get pushed back
@@ -460,18 +475,20 @@ class TweetManager {
 					// Don't use processTweetsFromPeer(peer, txs)
 					// because it updates the global timestamps and caches tweets in our local storage
 					//
-				    for (let z = 0; z < txs.length; z++) {
-      					txs[z].decryptMessage(this.app);
-      					this.mod.addTweet(txs[z], `${peer.publicKey}-profile`);
-      					peer.profile_ts = txs[z]?.timestamp;
-      				}
+					for (let z = 0; z < txs.length; z++) {
+						txs[z].decryptMessage(this.app);
+						this.mod.addTweet(txs[z], `${peer.publicKey}-profile`);
+						peer.profile_ts = txs[z]?.timestamp;
+					}
 
-      				if (txs.length == 100) {
-      					if (this.mod.debug){
-      						console.log("RS -- add IO for infinite scroll (2)");	
-      					}
-      					this.intersectionObserver.observe(document.getElementById('intersection-observer-trigger'));
-      				}
+					if (txs.length == 100) {
+						if (this.mod.debug) {
+							console.log('RS -- add IO for infinite scroll (2)');
+						}
+						this.intersectionObserver.observe(
+							document.getElementById('intersection-observer-trigger')
+						);
+					}
 
 					if (peer.peer !== 'localhost') {
 						this.app.connection.emit(
@@ -589,7 +606,6 @@ class TweetManager {
 	// as they appear...
 	//
 	renderTweet(tweet) {
-		
 		this.render('tweet');
 
 		// If searching for a tweet by sig, make sure it will be shown
@@ -619,7 +635,6 @@ class TweetManager {
 			this.thread_id = thread_id;
 			this.showLoader();
 
-
 			this.mod.loadTweetThread(thread_id, () => {
 				//
 				// This will catch you navigating back to the main feed before the callback completes
@@ -634,7 +649,7 @@ class TweetManager {
 					if (document.querySelector(`.tweet-${tweet.tx.signature}`)) {
 						document.querySelector(`.tweet-${tweet.tx.signature}`).classList.add('highlight-tweet');
 
-						if (!this.app.browser.isMobileBrowser()){
+						if (!this.app.browser.isMobileBrowser()) {
 							let post = new Post(this.app, this.mod, tweet);
 							post.parent_id = tweet.tx.signature;
 							post.thread_id = tweet.thread_id;
@@ -652,7 +667,7 @@ class TweetManager {
 			if (document.querySelector(`.tweet-${tweet.tx.signature}`)) {
 				document.querySelector(`.tweet-${tweet.tx.signature}`).classList.add('highlight-tweet');
 
-				if (!this.app.browser.isMobileBrowser()){
+				if (!this.app.browser.isMobileBrowser()) {
 					let post = new Post(this.app, this.mod, tweet);
 					post.parent_id = tweet.tx.signature;
 					post.thread_id = tweet.thread_id;
@@ -676,7 +691,7 @@ class TweetManager {
 		let ob = document.getElementById('intersection-observer-trigger');
 
 		if (ob) {
-			console.log("RS -- add IO for infinite scroll (3)");
+			console.log('RS -- add IO for infinite scroll (3)');
 			this.intersectionObserver.observe(ob);
 			//Only set up intersection observer if we have more content than fits on the screen
 			//(so we don't double tap the servers)
@@ -686,29 +701,31 @@ class TweetManager {
 			}*/
 		}
 
-		if (document.getElementById("curated")){ // for you
-			document.getElementById("curated").onclick = (e) => {
-				e.currentTarget.classList.add("active");
-				document.getElementById("everything").classList.remove("active");
+		if (document.getElementById('curated')) {
+			// for you
+			document.getElementById('curated').onclick = (e) => {
+				e.currentTarget.classList.add('active');
+				document.getElementById('everything').classList.remove('active');
 				this.mod.curated = true;
 				this.mod.saveOptions();
 				this.showLoader();
 				setTimeout(() => {
 					this.render();
 				}, 10);
-			}
+			};
 		}
-		if (document.getElementById("everything")){ // everything
-			document.getElementById("everything").onclick = (e) => {
-				e.currentTarget.classList.add("active");
-				document.getElementById("curated").classList.remove("active");
+		if (document.getElementById('everything')) {
+			// everything
+			document.getElementById('everything').onclick = (e) => {
+				e.currentTarget.classList.add('active');
+				document.getElementById('curated').classList.remove('active');
 				this.mod.curated = false;
 				this.mod.saveOptions();
 				this.showLoader();
 				setTimeout(() => {
 					this.render();
 				}, 10);
-			}
+			};
 		}
 	}
 

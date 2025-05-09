@@ -329,7 +329,7 @@ class Post {
 					this.tweet.retweeters.unshift(post_self.mod.publicKey);	
 				}
 
-				if (this.mod?.manager?.mode?.includes('tweet')) {
+				if (this.mod?.main?.manager?.mode?.includes('tweet')) {
 					this.tweet.render();
 				}
 
@@ -343,54 +343,9 @@ class Post {
 			this.app.browser.logMatomoEvent('RedSquare', 'Post', 'newTweet');
 		}
 
-		if (this.mod?.manager?.mode?.includes('tweet')) {
-			this.renderNewTweet(newtx);
-			/*
-        This is Really f*cking annoying... I want to stay where I am in the feed if replying to someone, 
-        not autoscroll to the top, but retweeting pushes the retweet at the top, and ditto for a new tweet...
-        It's an art, not a science
-        */
 
-			//	if (source == 'Post') {
-			//		this.mod.main.scrollFeed(0);
-			//	}
-		}
-	}
+		this.app.connection.emit('redsquare-render-new-post', newtx, this.tweet);
 
-	renderNewTweet(newtx) {
-		//
-		// This makes no sense. If you require at the top of the file, it fails with a
-		// new Tweet is not a constructor error!!! ???
-		//
-		const Tweet = require('./tweet');
-		let posted_tweet = new Tweet(this.app, this.mod, newtx, '.tweet-manager');
-		//console.log("New tweet:", posted_tweet);
-
-		let rparent = this.tweet;
-		if (rparent) {
-			//console.log("Rerender feed with temp stats");
-
-			if (posted_tweet.retweet_tx) {
-				rparent.render();
-				this.mod.addTweet(newtx, 'post_retweet');
-
-				posted_tweet.render(true);
-			} else {
-				this.mod.addTweet(newtx, 'post_reply');
-				if (rparent.parent_id != '') {
-					let t = this.mod.returnTweet(rparent.parent_id);
-					if (t) {
-						t.critical_child = posted_tweet;
-					}
-				}
-
-				rparent.critical_child = posted_tweet;
-				rparent.forceRenderWithCriticalChild();
-			}
-		} else {
-			this.mod.addTweet(newtx, 'post_new');
-			posted_tweet.render(true);
-		}
 	}
 
 	addImg(img) {
