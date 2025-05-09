@@ -7605,7 +7605,6 @@ console.log("checking if squadrons are protecting!");
     );
   }
   canPlayerBuyCorsair(his_self, player, faction) {
-
     if (his_self.returnNumberOfUnitsAvailableForConstruction(faction, "squadron") == 0) { return 0; }   
     if (faction === "ottoman" && his_self.game.state.events.ottoman_corsairs_enabled == 1) {
       if (his_self.isSpaceControlled("algiers", "ottoman") && his_self.game.spaces["algiers"].besieged == 0) { return 1; }
@@ -7626,7 +7625,7 @@ console.log("checking if squadrons are protecting!");
     if (count == 1) {
       his_self.unbindBackButtonFunction();
       his_self.updateStatus("acknowledge...");
-      his_self.addMove("build\tland\t"+faction+"\t"+"corsair"+"\t"+destination_spacekey);
+      his_self.addMove("build\tland\t"+faction+"\t"+"corsair"+"\t"+"algiers");
       his_self.endTurn();
       return;
     }
