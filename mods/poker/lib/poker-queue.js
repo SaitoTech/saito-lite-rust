@@ -397,7 +397,7 @@ class PokerQueue {
 			if (mv[0] === 'announce') {
 				this.game.queue.splice(qe, 1);
 
-				this.board.render();
+				this.board.render(true);
 				this.displayPlayers(true);
 
 				if (this.game.state.flipped === 0) {
@@ -695,7 +695,6 @@ class PokerQueue {
 						this.settleLastRound(winner_keys, 'besthand');
 						this.board.clearTable();
 						this.clearPlayers();
-
 						await this.timeout(800);
 						this.restartQueue();
 					});
@@ -725,7 +724,7 @@ class PokerQueue {
 			if (mv[0] == 'ante') {
 				this.game.queue.splice(qe, 1);
 
-				this.board.render();
+				this.board.render(true);
 
 				let bbpi = this.game.state.big_blind_player - 1;
 				//
