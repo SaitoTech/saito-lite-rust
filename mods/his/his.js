@@ -38094,6 +38094,11 @@ console.log("----------------------------");
 
 	  let faction = mv[1];
 
+	  //
+	  // check this first if it is the Haps turn - perhaps Ottoman field battle requires!
+	  //
+	  if (this.game.state.events.defeat_of_hungary_bohemia != 1) { this.triggerDefeatOfHungaryBohemia(); }
+
 	  this.factionbar.setActive(faction);
 
 	  this.unbindBackButtonFunction();
@@ -41422,14 +41427,6 @@ if (this.game.state.events.society_of_jesus == 1) {
       mycallback(card, faction);
     });
 
-  }
-
-  countSpacesWithFilter(filter_func) {
-    let count = 0;
-    for (let key in this.game.spaces) {
-      if (filter_func(this.game.spaces[key]) == 1) { count++; }
-    }
-    return count;
   }
 
   playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
@@ -47793,6 +47790,20 @@ console.log("checking if squadrons are protecting!");
   }
   async playerBuyCorsair(his_self, player, faction) {
 
+    let count = his_self.countSpacesWithFilter((space) => {
+      if (space.besieged != 0) { return 0; }
+      if (space.pirate_haven == 1 && his_self.isSpaceControlled(space.key, "ottoman")) { return 1; }
+      return 0;
+    });
+
+    if (count == 1) {
+      his_self.unbindBackButtonFunction();
+      his_self.updateStatus("acknowledge...");
+      his_self.addMove("build\tland\t"+faction+"\t"+"corsair"+"\t"+destination_spacekey);
+      his_self.endTurn();
+      return;
+    }
+
     his_self.playerSelectSpaceWithFilter(
 
       "Select Port for Corsair",
@@ -49670,18 +49681,14 @@ console.log("#");
   }
 
   canPlayerGetCapturedLeader(his_self, player, faction) {
+    let io = his_self.returnDiplomacyImpulseOrder(faction);
     for (let i = 0; i < his_self.game.state.players_info.length; i++) {
       let c = his_self.game.state.players_info[i].captured;
       for (let z = 0; z < c.length; z++) {
 	if (c[z].owner === faction) {
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("CAPTURED LEADER: " + JSON.stringify(c[z]));
-console.log("#");
-console.log("#");
-console.log("#");
-	  return 1;
+	  if (io.includes(c[z].capturing_faction)) {
+	    return 1;
+	  }
 	}
       }
     }

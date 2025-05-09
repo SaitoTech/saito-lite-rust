@@ -318,18 +318,14 @@ console.log("#");
   }
 
   canPlayerGetCapturedLeader(his_self, player, faction) {
+    let io = his_self.returnDiplomacyImpulseOrder(faction);
     for (let i = 0; i < his_self.game.state.players_info.length; i++) {
       let c = his_self.game.state.players_info[i].captured;
       for (let z = 0; z < c.length; z++) {
 	if (c[z].owner === faction) {
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("CAPTURED LEADER: " + JSON.stringify(c[z]));
-console.log("#");
-console.log("#");
-console.log("#");
-	  return 1;
+	  if (io.includes(c[z].capturing_faction)) {
+	    return 1;
+	  }
 	}
       }
     }

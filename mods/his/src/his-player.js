@@ -1256,14 +1256,6 @@ if (this.game.state.events.society_of_jesus == 1) {
 
   }
 
-  countSpacesWithFilter(filter_func) {
-    let count = 0;
-    for (let key in this.game.spaces) {
-      if (filter_func(this.game.spaces[key]) == 1) { count++; }
-    }
-    return count;
-  }
-
   playerSelectSpaceWithFilter(msg, filter_func, mycallback = null, cancel_func = null, board_clickable = false) {
 
     let his_self = this;
@@ -7624,6 +7616,20 @@ console.log("checking if squadrons are protecting!");
     return 0;
   }
   async playerBuyCorsair(his_self, player, faction) {
+
+    let count = his_self.countSpacesWithFilter((space) => {
+      if (space.besieged != 0) { return 0; }
+      if (space.pirate_haven == 1 && his_self.isSpaceControlled(space.key, "ottoman")) { return 1; }
+      return 0;
+    });
+
+    if (count == 1) {
+      his_self.unbindBackButtonFunction();
+      his_self.updateStatus("acknowledge...");
+      his_self.addMove("build\tland\t"+faction+"\t"+"corsair"+"\t"+destination_spacekey);
+      his_self.endTurn();
+      return;
+    }
 
     his_self.playerSelectSpaceWithFilter(
 

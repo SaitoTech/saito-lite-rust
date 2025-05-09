@@ -13979,6 +13979,11 @@ console.log("----------------------------");
 
 	  let faction = mv[1];
 
+	  //
+	  // check this first if it is the Haps turn - perhaps Ottoman field battle requires!
+	  //
+	  if (this.game.state.events.defeat_of_hungary_bohemia != 1) { this.triggerDefeatOfHungaryBohemia(); }
+
 	  this.factionbar.setActive(faction);
 
 	  this.unbindBackButtonFunction();
