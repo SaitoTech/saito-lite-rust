@@ -111,7 +111,7 @@ class Invite {
 				let inviteKeys = Object.keys(txmsg.options);
 
 				for (const key of inviteKeys) {
-					if (key !== 'desired_opponent_publickey' && !key.includes('game-wizard-players') && key !== "eliminated"){
+					if (key !== 'desired_opponent_publickey' && !key.includes('game-wizard-players') && key !== "eliminated" && key !== "open-table"){
 						if (!defaultOptions[key] || defaultOptions[key] != txmsg.options[key]) {
 							alt_game_type += 'custom ';
 							this.invite_data.game_type = 'custom game';
@@ -125,10 +125,18 @@ class Invite {
 				}
 			}
 
+			if (txmsg.options["open-table"]){
+				alt_game_type += 'open table ';
+				this.invite_data.game_type = 'open table ';
+			}			
+
 			//Crypto Game
 			if (txmsg.options?.crypto) {
 				alt_game_type += txmsg.options.crypto + ' ';
 				this.invite_data.game_type = `${txmsg.options.crypto} game`;
+				if (txmsg.options["open-table"]){
+					this.invite_data.game_type = `open ${txmsg.options.crypto} table`;
+				}
 			}
 
 			//League
@@ -145,6 +153,7 @@ class Invite {
 				this.invite_data.game_type = 'private game';
 			}
 			alt_game_type += 'game';
+
 			if (alt_game_type == 'game') {
 				this.invite_data.verbose_game_type =
 					'standard game open';
