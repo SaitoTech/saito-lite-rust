@@ -65,11 +65,81 @@ export default class Wallet extends SaitoWallet {
     return S.getInstance().createTransactionWithMultiplePayments(keys, amounts, fee);
   }
 
+  public async getNftList(): Promise<String> {
+      return S.getInstance().getNftList();
+  }
+
+
   public async getBalance(ticker = 'SAITO'): Promise<bigint> {
     if (ticker === 'SAITO') {
       return this.instance.get_balance();
     }
     return BigInt(0);
+  }
+
+
+  public async createBoundTransaction(
+    amt,
+    bid,
+    tid,
+    sid,
+    num,
+    deposit,
+    change,
+    data,
+    fee,
+    receipient_publicKey,
+  ): Promise<Transaction> {
+
+
+      console.log("values going to saito.ts:");
+      console.log(amt);
+      console.log(bid);
+      console.log(tid);
+      console.log(sid);
+      console.log(num);
+      console.log(deposit);
+      console.log(change);
+      console.log(data);
+      console.log(fee);
+      console.log(receipient_publicKey);
+
+      let nft_type = "Standard";
+      return S.getInstance().createBoundTransaction(
+        amt,
+        bid,
+        tid,
+        sid,
+        num,
+        deposit,
+        change,
+        data,
+        fee,
+        receipient_publicKey,
+        nft_type
+      );
+  }
+
+  public async createSendBoundTransaction(
+    amt,
+    nft_id,
+    data,
+    receipient_publicKey,
+  ){
+
+
+      console.log("values going to saito.ts:");
+      console.log(amt);
+      console.log(nft_id);
+      console.log(data);
+      console.log(receipient_publicKey);
+
+      return S.getInstance().createSendBoundTransaction(
+        amt,
+        nft_id,
+        data,
+        receipient_publicKey,
+      );
   }
 
   async initialize() {
@@ -155,8 +225,12 @@ export default class Wallet extends SaitoWallet {
           hash: unique_hash
         };
 
+        console.log("newtx created: ", newtx);
+
         await this.app.wallet.signAndEncryptTransaction(newtx);
         await this.app.network.propagateTransaction(newtx);
+
+        console.log("newtx propogated: ", newtx);
 
         return newtx.signature;
       }

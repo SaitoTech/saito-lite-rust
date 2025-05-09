@@ -304,6 +304,12 @@ textarea {
     align-items: center;
 }
 
+.utxo-div.send-nft {
+    gap: 0rem;
+    width: auto;
+    flex-direction: column;
+}
+
 #utxo-list {
     display: flex;
     flex-direction: column;
