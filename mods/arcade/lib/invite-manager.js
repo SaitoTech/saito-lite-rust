@@ -21,6 +21,11 @@ class InviteManager {
 		this.list = 'all';
 		this.lists = ['mine', 'open', 'active'];
 
+		if (mod?.sudo){
+			console.log("Sudo mode!");
+			this.lists = ['mine', 'open', 'active', 'private', 'close', 'over', 'offline'];
+		}
+
 		this.game_filter = null;
 
 		this.show_carousel = true;
@@ -167,7 +172,7 @@ class InviteManager {
 
 				for (let i = 0; i < this.mod.games[list].length && i < 5; i++) {
 					if (!this?.game_filter || this.game_filter == this.mod.games[list][i].msg.game) {
-						if (list == 'active' && !this.mod.games[list][i].msg.options['open-table']) {
+						if (list == 'active' && !this.mod.games[list][i].msg.options['open-table'] && !this.mod.sudo) {
 							continue;
 						}
 

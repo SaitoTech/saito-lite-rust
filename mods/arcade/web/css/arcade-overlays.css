@@ -34,6 +34,12 @@
 	cursor: pointer;
 }
 
+.debug_overlay {
+	width: min(800px, 90vw);
+	max-height: 100vh;
+	overflow: scroll;
+	padding: 2rem;
+}
 
 .arcade-game-playerbox.requested_player {
 	opacity: 0.6;
