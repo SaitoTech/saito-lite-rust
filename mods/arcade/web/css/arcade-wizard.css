@@ -172,7 +172,7 @@
 }
 
 .saito-select::after {
-	border-left: 3px solid var(--color-primary);
+	border-left: 1px solid var(--color-primary);
 }
 
 .arcade-wizard-game-controls .settings > div.overlay-input {
@@ -210,6 +210,9 @@
 	transition: 0.25s all ease;
 	border-radius: 0 1rem 1rem 0;
 	border-left: 1px solid var(--color-primary);
+	width: 5rem;
+	display: flex;
+	justify-content: center;
 }
 
 .saito-module-intro-title {
@@ -250,7 +253,7 @@
 }
 
 .saito-multi-select_btn_options {
-	width: calc(100% - 5rem - 2px);
+	width: calc(100% - 5rem);
 	padding: 0 !important;
 	border: none;
 	background: none;
@@ -264,6 +267,10 @@
 	background: none;
 }
 
+.arcade-wizard-overlay select {
+	width: 100%;
+}
+
 .saito-multi-select_btn_options button {
 	background: var(--saito-arcade-overlay-background);
 	margin: 0rem;
@@ -273,7 +280,7 @@
 	border-radius: 0;
 	min-height: 4.8rem;
 	font-size: 2rem;
-	margin-bottom: 0.2rem;
+	margin-bottom: -1px;
 	border: 1px solid var(--color-primary);
 }
 
