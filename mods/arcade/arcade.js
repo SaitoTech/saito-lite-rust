@@ -25,6 +25,7 @@ class Arcade extends ModTemplate {
 
 		this.name = 'Arcade';
 		this.slug = 'arcade';
+		this.sudo = false;
 		this.description =
 			'Interface for creating and joining games coded for the Saito Open Source Game Engine.';
 		this.categories = 'Games Entertainment Appspace';
@@ -192,6 +193,11 @@ class Arcade extends ModTemplate {
 		// initialize some UI components and query the list of games to display
 		//
 		if (this.app.BROWSER == 1) {
+
+			if (this.browser_active && this.app.browser.returnURLParameter('moderator')) {
+				this.sudo = true;
+			}
+
 			// These are three overlays with event listeners that can function outside of the Arcade
 			this.wizard = new GameWizard(app, this, null, {});
 			this.game_selector = new GameSelector(app, this, {});
@@ -750,6 +756,10 @@ class Arcade extends ModTemplate {
 			}
 		}
 
+		if (message.request === "arcade clear invite") {
+			this.removeGame(message.data.game_id);
+		}
+
 		//
 		// this code doubles onConfirmation
 		//
@@ -1000,7 +1010,7 @@ class Arcade extends ModTemplate {
 					);
 				}
 
-				this.changeGameStatus(txmsg.game_id, 'close');
+				this.changeGameStatus(txmsg.game_id, 'closed');
 			} else {
 				if (this.debug) {
 					console.log(
@@ -1023,7 +1033,7 @@ class Arcade extends ModTemplate {
 			if (this.publicKey == game.msg.originator) {
 				siteMessage('Your game invite was declined', 5000);
 			}
-			this.changeGameStatus(txmsg.game_id, 'close');
+			this.changeGameStatus(txmsg.game_id, 'closed');
 		}
 
 		this.app.connection.emit('arcade-close-game', txmsg.game_id);
@@ -1059,11 +1069,11 @@ class Arcade extends ModTemplate {
 		//Move game to different list
 		if (game) {
 
-			if (this.debug){
+			if (this.debug || this.sudo){
 				console.log(`Change game status from ${game.msg.request} to ${newStatus}`);	
 			}
 
-			if (game?.msg?.request == 'over') {
+			if (game?.msg?.request == 'over' && !this?.sudo) {
 				return;
 			}
 
@@ -1110,7 +1120,7 @@ class Arcade extends ModTemplate {
 		// Mark game as closed, unless it is a player leaving an open table...
 		if (txmsg.reason !== "withdraw"){
 			this.app.connection.emit('arcade-close-game', txmsg.game_id);
-			this.changeGameStatus(txmsg.game_id, 'close');
+			this.changeGameStatus(txmsg.game_id, 'closed');
 		}
 	}
 

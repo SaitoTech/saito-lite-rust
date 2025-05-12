@@ -123,6 +123,16 @@ class ChatPopup {
 		this.app.connection.emit('chat-manager-render-request');
 	}
 
+	activate(){
+		let popup_qs = '#chat-popup-' + this.group.id;
+
+		document.querySelectorAll('.chat-container').forEach((el) => {
+			el.classList.remove('active');
+		});
+
+		document.querySelector(popup_qs).classList.add('active');
+	}
+
 	forceRender() {
 		let popup_qs = '#chat-popup-' + this.group.id;
 		let chatPopup = document.querySelector(popup_qs);
@@ -733,12 +743,7 @@ class ChatPopup {
 			this.app.browser.makeResizeable(popup_qs, header_qs, group_id);
 		}
 
-		chatPopup.onmousedown = (e) => {
-			document.querySelectorAll('.chat-container').forEach((el) => {
-				el.classList.remove('active');
-			});
-			e.currentTarget.classList.add('active');
-		};
+		chatPopup.onmousedown = this.activate;
 
 		//
 		// minimize
@@ -957,7 +962,8 @@ class ChatPopup {
 	restorePopup(chatPopup) {
 		chatPopup.classList.remove('minimized');
 		chatPopup.classList.remove('maximized');
-		chatPopup.classList.add('active');
+
+		this.activate();
 
 		//console.log("Restore: ", this.dimensions);
 		if (Object.keys(this.dimensions).length > 0) {

@@ -382,6 +382,7 @@ class ChatManager {
 					this.popups[gid].manually_closed = false;
 
 					this.popups[gid].render();
+					this.popups[gid].activate();
 
 					//
 					// We would want to force this if juggling multiple chat popups on a desktop
