@@ -181,7 +181,7 @@ console.log("!");
         }
 	//
         // nothing is selectable here, so show zoom
-        paths_self.zoom_overlay.renderAtCoordinates(xpos, ypos);
+        paths_self.zoom_overlay.renderAtCoordinates(ypos, xpos);
       });
 
       //
@@ -353,7 +353,7 @@ console.log("err: " + err);
 	}
 	// otherwise show zoom
         //if (e.target.classList.contains("space")) {
-          paths_self.zoom_overlay.renderAtCoordinates(xpos, ypos);
+          paths_self.zoom_overlay.renderAtCoordinates(ypos, xpos);
 	  //e.stopPropagation();
 	  //e.preventDefault();	
 	  //return;

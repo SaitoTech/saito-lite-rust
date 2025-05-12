@@ -1381,6 +1381,17 @@ deck['ap30'] = {
 
 	  paths_self.game.state.events.salonika = 1;
 
+	  if (paths_self.game.state.events.greece != 1) {
+	    paths_self.addUnitToSpace("gr_corps", "florina");
+	    paths_self.addUnitToSpace("gr_corps", "athens");
+	    paths_self.addUnitToSpace("gr_corps", "larisa");
+	  }
+
+	  //
+	  // 9.3.3 - rhe play of the Salonika event counts as an SR play for purposes of this rule.
+	  //
+	  paths_self.game.state.central_rounds[paths_self.game.state.central_rounds.length-1] = "sr";
+
 	  let p = paths_self.returnPlayerOfFaction("allies");
           let just_stop = 0;
 
@@ -2349,9 +2360,11 @@ deck['ap44'] = {
 	  paths_self.game.state.events.greece = true;
 	  paths_self.game.state.neutral_entry = 1;
 
-	  paths_self.addUnitToSpace("gr_corps", "florina");
-	  paths_self.addUnitToSpace("gr_corps", "athens");
-	  paths_self.addUnitToSpace("gr_corps", "larisa");
+	  if (paths_self.game.state.events.salonika != 1) {
+	    paths_self.addUnitToSpace("gr_corps", "florina");
+	    paths_self.addUnitToSpace("gr_corps", "athens");
+	    paths_self.addUnitToSpace("gr_corps", "larisa");
+	  }
 
 	  return 1;
         } ,

@@ -1279,6 +1279,9 @@
       rcombat		:	1 ,
       rloss		:	2 ,
       rmovement		:	3 ,
+      checkSupplyStatus :	(paths_self, spacekey) => { 
+	if (paths_self.game.spaces[spacekey].country == "serbia") { return 1; }
+      } ,
     });
 
     //
@@ -1297,6 +1300,9 @@
       rcombat		:	0 ,
       rloss		:	1 ,
       rmovement		:	4 ,
+      checkSupplyStatus :	(paths_self, spacekey) => { 
+	if (paths_self.game.spaces[spacekey].country == "serbia") { return 1; }
+      } ,
     });
 
     //

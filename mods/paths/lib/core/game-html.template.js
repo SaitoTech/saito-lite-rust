@@ -1,6 +1,12 @@
 export default (app, mod) => {
         return `<div id="main" class="main" style="display: all">
                 <div class="gameboard" id="gameboard">
+                        <!--- COMBAT CARDS ---> 
+			<div class="combat_cards">
+                        	<div class="central" id=""></div>
+                        	<div class="allies" id=""></div>
+			</div>
+
                         <!--- SPACES ---> 
                         <div class="space london" id="london"></div>
                         <div class="space calais" id="calais"></div>

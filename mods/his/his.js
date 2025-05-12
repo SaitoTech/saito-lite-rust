@@ -47792,16 +47792,10 @@ console.log("checking if squadrons are protecting!");
     let count = his_self.countSpacesWithFilter((space) => {
       if (space.besieged != 0) { return 0; }
       if (space.pirate_haven == 1 && his_self.isSpaceControlled(space.key, "ottoman")) { return 1; }
+      if (space.ports.length > 0 && space.home == "ottoman" && his_self.isSpaceControlled(space.key, "ottoman")) { return 1; }
       return 0;
     });
 
-    if (count == 1) {
-      his_self.unbindBackButtonFunction();
-      his_self.updateStatus("acknowledge...");
-      his_self.addMove("build\tland\t"+faction+"\t"+"corsair"+"\t"+"algiers");
-      his_self.endTurn();
-      return;
-    }
 
     his_self.playerSelectSpaceWithFilter(
 
@@ -47810,6 +47804,7 @@ console.log("checking if squadrons are protecting!");
       function(space) {
         if (space.besieged != 0) { return 0; }
         if (space.pirate_haven == 1 && his_self.isSpaceControlled(space.key, "ottoman")) { return 1; }
+        if (space.ports.length > 0 && space.home == "ottoman" && his_self.isSpaceControlled(space.key, "ottoman")) { return 1; }
 	return 0;
       },
 

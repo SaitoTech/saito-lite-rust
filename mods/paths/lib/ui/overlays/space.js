@@ -23,8 +23,12 @@ class SpaceOverlay {
 		//
 		// add battle information
 		//
-		document.querySelector(".space-overlay .units").innerHTML = JSON.stringify(space.units, null, 2);	
-		document.querySelector(".space-overlay .details").innerHTML = JSON.stringify(space, null, 2);
+		document.querySelector(".space-overlay .name").innerHTML = space.name + " - " + space.country;
+		let html = "";
+		for (let z = 0; z < space.units.length; z++) { html += this.mod.returnUnitImage(space.units[z]); }
+		document.querySelector(".space-overlay .units").innerHTML = html;
+		document.querySelector(".space-overlay .status").innerHTML = "in supply";
+		if (!this.mod.checkSupplyStatus(spacekey)) { document.querySelector(".space-overlay .status").innerHTML = "out-of-supply"; }
 
 		this.attachEvents();
 

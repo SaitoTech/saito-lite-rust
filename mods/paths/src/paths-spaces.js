@@ -208,8 +208,8 @@
   checkSupplyStatus(faction="", spacekey="") {
 
 let trace_supply = 0;
-if (spacekey == "insterberg" || spacekey == "konigsberg") {
-  //trace_supply = 1;
+if (spacekey == "batum") {
+  trace_supply = 1;
 }
 
     //
@@ -220,7 +220,7 @@ if (spacekey == "insterberg" || spacekey == "konigsberg") {
     if (faction == "" && spacekey == "") {
       for (let key in this.game.spaces) {
 	if (this.game.spaces[key].oos == 1) {
-	  this.game.spaces[key].oss = 0;
+	  this.game.spaces[key].oos = 0;
 	  this.displaySpace(key);
 	}
       }
@@ -237,6 +237,7 @@ if (spacekey == "insterberg" || spacekey == "konigsberg") {
 	      // some units manage their own supply
 	      //
 	      if (this.game.units[u.key].checkSupplyStatus(this, key) == 1) { 
+console.log("unit: " + u.name + " w " + u.key + " --- " + key);
 		supplied = true;
 	      }
 	      if (this.checkSupplyStatus(u.ckey.toLowerCase(), key)) {
@@ -361,16 +362,24 @@ if (spacekey == "insterberg" || spacekey == "konigsberg") {
 
     }
 
-
     //
     // exiting means no supply
     //
     if (this.game.spaces[spacekey].units.length > 0) {
       if (spacekey != "crbox" && spacekey != "arbox" && spacekey != "ceubox" && spacekey != "aeubox") {
-        let obj = document.querySelector(`.${spacekey}`);
-        obj.classList.add("oos-highlight");
-        this.game.spaces[spacekey].oos = 1;
-        this.displaySpace(spacekey);
+	let is_supplied = false;
+	for (let z = 0; z < this.game.spaces[spacekey].units.length; z++) {
+	  let u = this.game.spaces[spacekey].units[z];
+	  if (this.game.units[u.key].checkSupplyStatus(this, spacekey) == 1) { 
+	    is_supplied = true;
+	  }
+	}
+	if (!is_supplied) {
+          let obj = document.querySelector(`.${spacekey}`);
+          obj.classList.add("oos-highlight");
+          this.game.spaces[spacekey].oos = 1;
+          this.displaySpace(spacekey);
+        }
       }
     }
 
@@ -2733,7 +2742,7 @@ spaces['odessa'] = {
 
 spaces['poti'] = {
       name: "Poti" ,
-    control: "neutral" ,
+    control: "allies" ,
       top: 1871 ,
       left: 4377 ,
       neighbours: ["caucasus", "batum"] ,
@@ -2745,7 +2754,7 @@ spaces['poti'] = {
 
 spaces['grozny'] = {
       name: "Grozny" ,
-    control: "neutral" ,
+    control: "allies" ,
       top: 1882 ,
       left: 4594 ,
       neighbours: ["caucasus", "petrovsk", "tbilisi"] ,
@@ -2757,7 +2766,7 @@ spaces['grozny'] = {
 
 spaces['petrovsk'] = {
       name: "Petrovsk" ,
-    control: "neutral" ,
+    control: "allies" ,
       top: 1921 ,
       left: 4801 ,
       neighbours: ["grozny", "tbilisi"] ,
@@ -2768,7 +2777,7 @@ spaces['petrovsk'] = {
 
 spaces['batum'] = {
       name: "Batum" ,
-    control: "neutral" ,
+    control: "allies" ,
       top: 2038 ,
       left: 4458 ,
       neighbours: ["kars", "poti", "rize"] ,
@@ -2779,7 +2788,7 @@ spaces['batum'] = {
 
 spaces['kars'] = {
       name: "Kars" ,
-    control: "neutral" ,
+    control: "allies" ,
       top: 2085 ,
       left: 4560 ,
       neighbours: ["batum", "erzerum", "tbilisi"] ,
@@ -2790,7 +2799,7 @@ spaces['kars'] = {
 
 spaces['tbilisi'] = {
       name: "Tbilisi" ,
-    control: "neutral" ,
+    control: "allies" ,
       top: 2035 ,
       left: 4683 ,
       neighbours: ["grozny", "kars", "petrovsk", "erivan", "elizabethpol"] ,
@@ -2801,7 +2810,7 @@ spaces['tbilisi'] = {
 
 spaces['erivan'] = {
       name: "Erivan" ,
-    control: "neutral" ,
+    control: "allies" ,
       top: 2166 ,
       left: 4684 ,
       neighbours: ["tbilisi", "dilman", "eleskrit"] ,
@@ -2812,7 +2821,7 @@ spaces['erivan'] = {
 
 spaces['elizabethpol'] = {
       name: "Elizabethpol" ,
-    control: "neutral" ,
+    control: "allies" ,
       top: 2119 ,
       left: 4797 ,
       neighbours: ["tbilisi", "baku"] ,
@@ -2823,7 +2832,7 @@ spaces['elizabethpol'] = {
 
 spaces['baku'] = {
       name: "Baku" ,
-    control: "neutral" ,
+    control: "allies" ,
       top: 2202 ,
       left: 4919 ,
       neighbours: ["elizabethpol"] ,

@@ -1582,6 +1582,9 @@ class PathsOfGlory extends GameTemplate {
       rcombat		:	1 ,
       rloss		:	2 ,
       rmovement		:	3 ,
+      checkSupplyStatus :	(paths_self, spacekey) => { 
+	if (paths_self.game.spaces[spacekey].country == "serbia") { return 1; }
+      } ,
     });
 
     //
@@ -1600,6 +1603,9 @@ class PathsOfGlory extends GameTemplate {
       rcombat		:	0 ,
       rloss		:	1 ,
       rmovement		:	4 ,
+      checkSupplyStatus :	(paths_self, spacekey) => { 
+	if (paths_self.game.spaces[spacekey].country == "serbia") { return 1; }
+      } ,
     });
 
     //
@@ -3174,6 +3180,17 @@ deck['ap30'] = {
 
 	  paths_self.game.state.events.salonika = 1;
 
+	  if (paths_self.game.state.events.greece != 1) {
+	    paths_self.addUnitToSpace("gr_corps", "florina");
+	    paths_self.addUnitToSpace("gr_corps", "athens");
+	    paths_self.addUnitToSpace("gr_corps", "larisa");
+	  }
+
+	  //
+	  // 9.3.3 - rhe play of the Salonika event counts as an SR play for purposes of this rule.
+	  //
+	  paths_self.game.state.central_rounds[paths_self.game.state.central_rounds.length-1] = "sr";
+
 	  let p = paths_self.returnPlayerOfFaction("allies");
           let just_stop = 0;
 
@@ -4142,9 +4159,11 @@ deck['ap44'] = {
 	  paths_self.game.state.events.greece = true;
 	  paths_self.game.state.neutral_entry = 1;
 
-	  paths_self.addUnitToSpace("gr_corps", "florina");
-	  paths_self.addUnitToSpace("gr_corps", "athens");
-	  paths_self.addUnitToSpace("gr_corps", "larisa");
+	  if (paths_self.game.state.events.salonika != 1) {
+	    paths_self.addUnitToSpace("gr_corps", "florina");
+	    paths_self.addUnitToSpace("gr_corps", "athens");
+	    paths_self.addUnitToSpace("gr_corps", "larisa");
+	  }
 
 	  return 1;
         } ,
@@ -5097,8 +5116,6 @@ deck['cp65'] = {
       return 0;
     });
 
-console.log("X: " +JSON.stringify(x));
-
     let units = [];
     for (let z = 0; z < x.length; z++) {
       units.push(this.game.spaces[x[z].unit_sourcekey].units[x[z].unit_idx]);   
@@ -5518,7 +5535,7 @@ console.log("!");
         }
 	//
         // nothing is selectable here, so show zoom
-        paths_self.zoom_overlay.renderAtCoordinates(xpos, ypos);
+        paths_self.zoom_overlay.renderAtCoordinates(ypos, xpos);
       });
 
       //
@@ -5690,7 +5707,7 @@ console.log("err: " + err);
 	}
 	// otherwise show zoom
         //if (e.target.classList.contains("space")) {
-          paths_self.zoom_overlay.renderAtCoordinates(xpos, ypos);
+          paths_self.zoom_overlay.renderAtCoordinates(ypos, xpos);
 	  //e.stopPropagation();
 	  //e.preventDefault();	
 	  //return;
@@ -6369,8 +6386,8 @@ console.log("X");
   checkSupplyStatus(faction="", spacekey="") {
 
 let trace_supply = 0;
-if (spacekey == "insterberg" || spacekey == "konigsberg") {
-  //trace_supply = 1;
+if (spacekey == "batum") {
+  trace_supply = 1;
 }
 
     //
@@ -6381,7 +6398,7 @@ if (spacekey == "insterberg" || spacekey == "konigsberg") {
     if (faction == "" && spacekey == "") {
       for (let key in this.game.spaces) {
 	if (this.game.spaces[key].oos == 1) {
-	  this.game.spaces[key].oss = 0;
+	  this.game.spaces[key].oos = 0;
 	  this.displaySpace(key);
 	}
       }
@@ -6398,6 +6415,7 @@ if (spacekey == "insterberg" || spacekey == "konigsberg") {
 	      // some units manage their own supply
 	      //
 	      if (this.game.units[u.key].checkSupplyStatus(this, key) == 1) { 
+console.log("unit: " + u.name + " w " + u.key + " --- " + key);
 		supplied = true;
 	      }
 	      if (this.checkSupplyStatus(u.ckey.toLowerCase(), key)) {
@@ -6522,16 +6540,24 @@ if (spacekey == "insterberg" || spacekey == "konigsberg") {
 
     }
 
-
     //
     // exiting means no supply
     //
     if (this.game.spaces[spacekey].units.length > 0) {
       if (spacekey != "crbox" && spacekey != "arbox" && spacekey != "ceubox" && spacekey != "aeubox") {
-        let obj = document.querySelector(`.${spacekey}`);
-        obj.classList.add("oos-highlight");
-        this.game.spaces[spacekey].oos = 1;
-        this.displaySpace(spacekey);
+	let is_supplied = false;
+	for (let z = 0; z < this.game.spaces[spacekey].units.length; z++) {
+	  let u = this.game.spaces[spacekey].units[z];
+	  if (this.game.units[u.key].checkSupplyStatus(this, spacekey) == 1) { 
+	    is_supplied = true;
+	  }
+	}
+	if (!is_supplied) {
+          let obj = document.querySelector(`.${spacekey}`);
+          obj.classList.add("oos-highlight");
+          this.game.spaces[spacekey].oos = 1;
+          this.displaySpace(spacekey);
+        }
       }
     }
 
@@ -8894,7 +8920,7 @@ spaces['odessa'] = {
 
 spaces['poti'] = {
       name: "Poti" ,
-    control: "neutral" ,
+    control: "allies" ,
       top: 1871 ,
       left: 4377 ,
       neighbours: ["caucasus", "batum"] ,
@@ -8906,7 +8932,7 @@ spaces['poti'] = {
 
 spaces['grozny'] = {
       name: "Grozny" ,
-    control: "neutral" ,
+    control: "allies" ,
       top: 1882 ,
       left: 4594 ,
       neighbours: ["caucasus", "petrovsk", "tbilisi"] ,
@@ -8918,7 +8944,7 @@ spaces['grozny'] = {
 
 spaces['petrovsk'] = {
       name: "Petrovsk" ,
-    control: "neutral" ,
+    control: "allies" ,
       top: 1921 ,
       left: 4801 ,
       neighbours: ["grozny", "tbilisi"] ,
@@ -8929,7 +8955,7 @@ spaces['petrovsk'] = {
 
 spaces['batum'] = {
       name: "Batum" ,
-    control: "neutral" ,
+    control: "allies" ,
       top: 2038 ,
       left: 4458 ,
       neighbours: ["kars", "poti", "rize"] ,
@@ -8940,7 +8966,7 @@ spaces['batum'] = {
 
 spaces['kars'] = {
       name: "Kars" ,
-    control: "neutral" ,
+    control: "allies" ,
       top: 2085 ,
       left: 4560 ,
       neighbours: ["batum", "erzerum", "tbilisi"] ,
@@ -8951,7 +8977,7 @@ spaces['kars'] = {
 
 spaces['tbilisi'] = {
       name: "Tbilisi" ,
-    control: "neutral" ,
+    control: "allies" ,
       top: 2035 ,
       left: 4683 ,
       neighbours: ["grozny", "kars", "petrovsk", "erivan", "elizabethpol"] ,
@@ -8962,7 +8988,7 @@ spaces['tbilisi'] = {
 
 spaces['erivan'] = {
       name: "Erivan" ,
-    control: "neutral" ,
+    control: "allies" ,
       top: 2166 ,
       left: 4684 ,
       neighbours: ["tbilisi", "dilman", "eleskrit"] ,
@@ -8973,7 +8999,7 @@ spaces['erivan'] = {
 
 spaces['elizabethpol'] = {
       name: "Elizabethpol" ,
-    control: "neutral" ,
+    control: "allies" ,
       top: 2119 ,
       left: 4797 ,
       neighbours: ["tbilisi", "baku"] ,
@@ -8984,7 +9010,7 @@ spaces['elizabethpol'] = {
 
 spaces['baku'] = {
       name: "Baku" ,
-    control: "neutral" ,
+    control: "allies" ,
       top: 2202 ,
       left: 4919 ,
       neighbours: ["elizabethpol"] ,
@@ -10741,7 +10767,11 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 	  //	
 	  let count = 0;
 	  for (let key in this.game.state.rp[faction]) { count += parseInt(this.game.state.rp[faction][key]); }
-	  if (count == 0) { return 1; }
+	  if (count == 0) { 
+
+alert("no replacement points for... " + faction);
+
+return 1; }
 
 	  if (this.returnPlayerOfFaction(faction) == this.game.player) {
 	    this.playerSpendReplacementPoints(faction);
@@ -11024,6 +11054,7 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 
  	  if (central == 1) { this.game.state.mandated_offensives.central = "AH"; }
  	  if (central == 2) { this.game.state.mandated_offensives.central = "AH IT"; }
+	  if (this.game.state.events.italy != 1) { this.game.state.mandated_offensives.central = "AH"; }
  	  if (central == 3) { this.game.state.mandated_offensives.central = "TU"; }
  	  if (central == 4) { this.game.state.mandated_offensives.central = "GE"; }
  	  if (central == 5) { this.game.state.mandated_offensives.central = ""; }
@@ -11035,7 +11066,71 @@ console.log(JSON.stringify(this.game.deck[1].hand));
  	  if (allies == 5)  { this.game.state.mandated_offensives.allies = "IT"; }
  	  if (allies == 6)  { this.game.state.mandated_offensives.allies = "RU"; }
 
-	  //this.mandates_overlay.render({ central : central, allies : allies });
+	  // 7.1.2 If the result is “None” or a currently neutral nation, there is 
+	  // no effect. If the nation’s capital (both Budapest and Vienna in the 
+	  // case of Austria-Hungary) is currently controlled by the enemy, that 
+	  // nation does not have a MO and the MO is shifted one space to the right 
+	  // on the MO Table.
+	  //
+
+	  //
+	  // allies
+	  //
+	  let shift_required = true;
+	  allies--;
+	  while (shift_required && allies <= 6) {
+
+	    allies++;
+ 	    if (allies == 1)  { this.game.state.mandated_offensives.allies = "FR"; }
+ 	    if (allies == 2)  { this.game.state.mandated_offensives.allies = "FR"; }
+ 	    if (allies == 3)  { this.game.state.mandated_offensives.allies = "BR"; }
+ 	    if (allies == 4)  { this.game.state.mandated_offensives.allies = "IT"; }
+ 	    if (allies == 5)  { this.game.state.mandated_offensives.allies = "IT"; }
+ 	    if (allies == 6)  { this.game.state.mandated_offensives.allies = "RU"; }
+ 	    if (allies == 7)  { this.game.state.mandated_offensives.allies = ""; }
+
+	    let c = this.returnCapital(this.game.state.mandated_offensives.allies);
+	    for (let z = 0; z < c.length; z++) {
+	      if (this.game.spaces[c[z]].besieged == 0 && this.game.spaces[c[z]].control != "allies") {
+	      } else {
+		shift_required = false;
+	      }
+	    }
+
+	  }
+
+
+	  //
+	  // central
+	  //
+	  shift_required = true;
+	  central--;
+	  while (shift_required && central <= 6) {
+
+	    central++;
+
+ 	    if (central == 1) { this.game.state.mandated_offensives.central = "AH"; }
+ 	    if (central == 2) { this.game.state.mandated_offensives.central = "AH IT"; }
+	    if (this.game.state.events.italy != 1) { this.game.state.mandated_offensives.central = "AH"; }
+ 	    if (central == 3) { this.game.state.mandated_offensives.central = "TU"; }
+ 	    if (central == 4) { this.game.state.mandated_offensives.central = "GE"; }
+ 	    if (central == 5) { this.game.state.mandated_offensives.central = ""; }
+ 	    if (central == 6) { this.game.state.mandated_offensives.central = ""; }
+ 	    if (central == 7) { this.game.state.mandated_offensives.central = ""; }
+
+	    let ckey = this.game.state.mandated_offensives.central;
+	    if (ckey == "AH IT") { ckey = "AH"; }
+	    let c = this.returnCapital(ckey);
+
+	    for (let z = 0; z < c.length; z++) {
+	      if (this.game.spaces[c[z]].besieged == 0 && this.game.spaces[c[z]].control != "central") {
+	      } else {
+		shift_required = false;
+	      }
+	    }
+
+	  }
+
 	  this.displayMandatedOffensiveTracks();
           this.game.queue.splice(qe, 1);
 
@@ -11573,14 +11668,105 @@ try {
 	  //
 	  // mandated offensive tracking
 	  //
+	  let au = this.returnAttackerUnits();
 	  if (this.game.state.combat.attacking_faction == "central") {
-	    for (let i = 0; i < this.game.spaces[this.game.state.combat.key].units.length; i++) {
-	      this.game.state.mo["central"].push(this.game.spaces[this.game.state.combat.key].units[i].ckey);
+	    if (this.game.state.mandated_offensives.allies === "AH IT") {
+
+	      // 7.1.6 If the result is “AH (It)” and Italy is at war, an Austro- Hungarian 
+	      // unit must attack either a space containing Italian units, a space in Italy, 
+	      // or a space containing Allied units tracing supply through a space in Italy. 
+	      // If Italy is neutral or its capital is controlled by the CP during the Mandated 
+	      // Offensive Phase, move the Mandated Offensive marker to the AH box and treat 
+	      // the result as if “AH” had been rolled.
+	      //
+	      let valid_target = false;
+	      let sp = this.game.spaces[this.game.state.combat.key];
+	      if (sp.country == "italy") { valid_target = true; } else {
+		for (let z = 0; z < sp.units.length; z++) {
+		  if (sp.units[z].ckey === "IT") {
+		    valid_target = true;
+		  }
+		}
+	      }
+
+	      if (valid_target) {
+	        this.game.state.mo["central"].push("AH");
+	      }
+
+	    } else {
+
+	      // 7.1.5 To count as a Mandated Offensive, German units must attack an American, 
+	      // British, Belgian, or French unit in France, Belgium or Germany. Treat GE 
+	      // Mandated Offensives as “None” after the H-L Take Command event is in effect (as 
+	      // noted on the CP Mandated Offensive Table). To count as a Mandated Offensive, a 
+	      // Turkish unit must attack an Allied unit. The SN cannot satisfy the TU MO.
+	      //
+	      if (this.game.state.mandated_offensives.allies === "TU") {
+
+	        let valid_target = false;
+	        let sp = this.game.spaces[this.game.state.combat.key];
+		for (let z = 0; z < sp.units.length; z++) {
+		  if (sp.units[z].ckey != "SN") {
+		    valid_target = true;
+		  }
+	        }
+	        if (valid_target) {
+	          this.game.state.mo["central"].push("TU");
+	        }
+
+	      } else {
+
+	        if (this.game.state.mandated_offensives.allies === "GE") {
+
+	          let valid_target = false;
+	          let sp = this.game.spaces[this.game.state.combat.key];
+		  for (let z = 0; z < sp.units.length; z++) {
+		    if (sp.units[z].ckey == "US") { valid_target = true; }
+		    if (sp.units[z].ckey == "BR") { valid_target = true; }
+		    if (sp.units[z].ckey == "FR") { valid_target = true; }
+		    if (sp.units[z].ckey == "BE") { valid_target = true; }
+		  }
+		  if (valid_target == true && sp.country != "france" && sp.country != "belgium" && sp.country != "germany") {
+		    valid_target = false;
+		  }
+
+	          if (valid_target) {
+	            this.game.state.mo["central"].push("GE");
+	          }
+
+		} else {
+	          for (let i = 0; i < au.length; i++) {
+	            this.game.state.mo["central"].push(au[i].ckey);
+	          }
+	        }
+
+	      }
+
 	    }
 	  }
 	  if (this.game.state.combat.attacking_faction == "allies") {
-	    for (let i = 0; i < this.game.spaces[this.game.state.combat.key].units.length; i++) {
-	      this.game.state.mo["allies"].push(this.game.spaces[this.game.state.combat.key].units[i].ckey);
+	    for (let i = 0; i < au.length; i++) {
+
+	      //
+	      // 1.4 To count as a Mandated Offensive, British or French units must attack 
+	      // a German unit in France, Belgium or Germany. (AUS, CND, PT, or ANA do not 
+	      // count as British for this purpose nor are they impacted by the Lloyd George 
+	      // event.)
+	      //
+	      if (this.game.state.mandated_offensives.allies == "BR" || this.game.state.mandated_offensives.allies == "FR") {
+		let sp = this.game.spaces[this.game.state.combat.key];
+		if (sp.country == "belgium" || sp.country == "france" || sp.country == "germany") {
+		  for (let z = 0; z < sp.units.length; z++) {
+		    if (sp.units[z].ckey == "GE") {
+	              this.game.state.mo["allies"].push(this.game.spaces[this.game.state.combat.key].units[i].ckey);
+		      z = sp.units.length+1;
+		    }
+		  }
+		}
+	      } else {
+	        this.game.state.mo["allies"].push(au[i].ckey);
+	      }
+
 	    }
 	  }
 
@@ -13750,6 +13936,16 @@ console.log("UNIT: " + JSON.stringify(unit));
     let do_upgradeable_units_remain = false;
     let just_stop = 0;
 
+
+console.log("XXX");
+console.log("XXX");
+console.log("XXX");
+console.log("XXX");
+console.log("XXX");
+console.log("XXX");
+console.log("XXX");
+console.log(JSON.stringify(rp));
+
     //
     // players can spend their replacement points to:
     //
@@ -13758,6 +13954,25 @@ console.log("UNIT: " + JSON.stringify(unit));
     // 3. return eliminated units to RB 
     //
     let do_replacement_points_exist_for_unit = (unit) => {
+
+      // 17.1.3 - Belgian and Serbian Army units can be recreated only if they may 
+      // legally be placed on the map [see 17.1.5] Belgian and Serbian corps can still 
+      // be rebuilt in the Reserve Box, even if their countries are completely controlled 
+      // by the enemy.
+      //
+      if (unit.ckey === "BE") {
+	if (this.game.spaces["antwerp"].control == "allies") { return 1; }
+	if (this.game.spaces["brussels"].control == "allies") { return 1; }
+	if (this.game.spaces["ostend"].control == "allies") { return 1; }
+	if (this.game.spaces["liege"].control == "allies") { return 1; }
+      }
+      if (unit.ckey === "SB") {
+	if (this.game.spaces["belgrade"].control == "allies") { return 1; }
+	if (this.game.spaces["valjevo"].control == "allies") { return 1; }
+	if (this.game.spaces["nis"].control == "allies") { return 1; }
+	if (this.game.spaces["skopje"].control == "allies") { return 1; }
+	if (this.game.spaces["monastir"].control == "allies") { return 1; }
+      }
 
       //
       // cannot spend replacement points if capital is besieged
@@ -13776,7 +13991,7 @@ console.log("UNIT: " + JSON.stringify(unit));
 	if ((z+1) < capitals.length) { is_capital_besieged = false; }
       }
 
-      if (is_capital_besieged == false) { return 0; }
+      if (is_capital_besieged == true) { return 0; }
       if (rp[unit.ckey] > 0) { return 1; }
       if (rp["A"] > 0) {
 	if (unit.ckey == "ANA" || unit.ckey == "AUS" || unit.ckey == "BE" || unit,ckey == "CND" || unit.ckey == "MN" || unit.ckey == "PT" || unit.ckey == "RO" || unit.ckey == "GR" || unit.ckey == "SB") {
@@ -13876,7 +14091,6 @@ console.log("UNIT: " + JSON.stringify(unit));
 
     if (continue_fnct()) {
       paths_self.replacements_overlay.render();
-    } else {
     }
 
     return 1;
@@ -14743,12 +14957,21 @@ console.log(JSON.stringify(spaces_within_hops));
 	  return 0;
 	},
 	(key) => {
+
+	  if (key === "skip") {
+            paths_self.addMove("resolve\tplayer_play_movement");
+            paths_self.removeSelectable();
+            paths_self.endTurn();
+            return;
+	  }
+
 	  paths_self.zoom_overlay.scrollTo(key);
 	  paths_self.removeSelectable();
 	  moveInterface(key, options, mainInterface, moveInterface, unitActionInterface, continueMoveInterface);
 	},
-	null,
-	true
+	null ,
+	true , 
+	[{ key : "skip" , value : "finish movement" }],
       )
     }
 

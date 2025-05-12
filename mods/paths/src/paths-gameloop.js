@@ -311,7 +311,11 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 	  //	
 	  let count = 0;
 	  for (let key in this.game.state.rp[faction]) { count += parseInt(this.game.state.rp[faction][key]); }
-	  if (count == 0) { return 1; }
+	  if (count == 0) { 
+
+alert("no replacement points for... " + faction);
+
+return 1; }
 
 	  if (this.returnPlayerOfFaction(faction) == this.game.player) {
 	    this.playerSpendReplacementPoints(faction);
@@ -594,6 +598,7 @@ console.log(JSON.stringify(this.game.deck[1].hand));
 
  	  if (central == 1) { this.game.state.mandated_offensives.central = "AH"; }
  	  if (central == 2) { this.game.state.mandated_offensives.central = "AH IT"; }
+	  if (this.game.state.events.italy != 1) { this.game.state.mandated_offensives.central = "AH"; }
  	  if (central == 3) { this.game.state.mandated_offensives.central = "TU"; }
  	  if (central == 4) { this.game.state.mandated_offensives.central = "GE"; }
  	  if (central == 5) { this.game.state.mandated_offensives.central = ""; }
@@ -605,7 +610,71 @@ console.log(JSON.stringify(this.game.deck[1].hand));
  	  if (allies == 5)  { this.game.state.mandated_offensives.allies = "IT"; }
  	  if (allies == 6)  { this.game.state.mandated_offensives.allies = "RU"; }
 
-	  //this.mandates_overlay.render({ central : central, allies : allies });
+	  // 7.1.2 If the result is “None” or a currently neutral nation, there is 
+	  // no effect. If the nation’s capital (both Budapest and Vienna in the 
+	  // case of Austria-Hungary) is currently controlled by the enemy, that 
+	  // nation does not have a MO and the MO is shifted one space to the right 
+	  // on the MO Table.
+	  //
+
+	  //
+	  // allies
+	  //
+	  let shift_required = true;
+	  allies--;
+	  while (shift_required && allies <= 6) {
+
+	    allies++;
+ 	    if (allies == 1)  { this.game.state.mandated_offensives.allies = "FR"; }
+ 	    if (allies == 2)  { this.game.state.mandated_offensives.allies = "FR"; }
+ 	    if (allies == 3)  { this.game.state.mandated_offensives.allies = "BR"; }
+ 	    if (allies == 4)  { this.game.state.mandated_offensives.allies = "IT"; }
+ 	    if (allies == 5)  { this.game.state.mandated_offensives.allies = "IT"; }
+ 	    if (allies == 6)  { this.game.state.mandated_offensives.allies = "RU"; }
+ 	    if (allies == 7)  { this.game.state.mandated_offensives.allies = ""; }
+
+	    let c = this.returnCapital(this.game.state.mandated_offensives.allies);
+	    for (let z = 0; z < c.length; z++) {
+	      if (this.game.spaces[c[z]].besieged == 0 && this.game.spaces[c[z]].control != "allies") {
+	      } else {
+		shift_required = false;
+	      }
+	    }
+
+	  }
+
+
+	  //
+	  // central
+	  //
+	  shift_required = true;
+	  central--;
+	  while (shift_required && central <= 6) {
+
+	    central++;
+
+ 	    if (central == 1) { this.game.state.mandated_offensives.central = "AH"; }
+ 	    if (central == 2) { this.game.state.mandated_offensives.central = "AH IT"; }
+	    if (this.game.state.events.italy != 1) { this.game.state.mandated_offensives.central = "AH"; }
+ 	    if (central == 3) { this.game.state.mandated_offensives.central = "TU"; }
+ 	    if (central == 4) { this.game.state.mandated_offensives.central = "GE"; }
+ 	    if (central == 5) { this.game.state.mandated_offensives.central = ""; }
+ 	    if (central == 6) { this.game.state.mandated_offensives.central = ""; }
+ 	    if (central == 7) { this.game.state.mandated_offensives.central = ""; }
+
+	    let ckey = this.game.state.mandated_offensives.central;
+	    if (ckey == "AH IT") { ckey = "AH"; }
+	    let c = this.returnCapital(ckey);
+
+	    for (let z = 0; z < c.length; z++) {
+	      if (this.game.spaces[c[z]].besieged == 0 && this.game.spaces[c[z]].control != "central") {
+	      } else {
+		shift_required = false;
+	      }
+	    }
+
+	  }
+
 	  this.displayMandatedOffensiveTracks();
           this.game.queue.splice(qe, 1);
 
@@ -1143,14 +1212,105 @@ try {
 	  //
 	  // mandated offensive tracking
 	  //
+	  let au = this.returnAttackerUnits();
 	  if (this.game.state.combat.attacking_faction == "central") {
-	    for (let i = 0; i < this.game.spaces[this.game.state.combat.key].units.length; i++) {
-	      this.game.state.mo["central"].push(this.game.spaces[this.game.state.combat.key].units[i].ckey);
+	    if (this.game.state.mandated_offensives.allies === "AH IT") {
+
+	      // 7.1.6 If the result is “AH (It)” and Italy is at war, an Austro- Hungarian 
+	      // unit must attack either a space containing Italian units, a space in Italy, 
+	      // or a space containing Allied units tracing supply through a space in Italy. 
+	      // If Italy is neutral or its capital is controlled by the CP during the Mandated 
+	      // Offensive Phase, move the Mandated Offensive marker to the AH box and treat 
+	      // the result as if “AH” had been rolled.
+	      //
+	      let valid_target = false;
+	      let sp = this.game.spaces[this.game.state.combat.key];
+	      if (sp.country == "italy") { valid_target = true; } else {
+		for (let z = 0; z < sp.units.length; z++) {
+		  if (sp.units[z].ckey === "IT") {
+		    valid_target = true;
+		  }
+		}
+	      }
+
+	      if (valid_target) {
+	        this.game.state.mo["central"].push("AH");
+	      }
+
+	    } else {
+
+	      // 7.1.5 To count as a Mandated Offensive, German units must attack an American, 
+	      // British, Belgian, or French unit in France, Belgium or Germany. Treat GE 
+	      // Mandated Offensives as “None” after the H-L Take Command event is in effect (as 
+	      // noted on the CP Mandated Offensive Table). To count as a Mandated Offensive, a 
+	      // Turkish unit must attack an Allied unit. The SN cannot satisfy the TU MO.
+	      //
+	      if (this.game.state.mandated_offensives.allies === "TU") {
+
+	        let valid_target = false;
+	        let sp = this.game.spaces[this.game.state.combat.key];
+		for (let z = 0; z < sp.units.length; z++) {
+		  if (sp.units[z].ckey != "SN") {
+		    valid_target = true;
+		  }
+	        }
+	        if (valid_target) {
+	          this.game.state.mo["central"].push("TU");
+	        }
+
+	      } else {
+
+	        if (this.game.state.mandated_offensives.allies === "GE") {
+
+	          let valid_target = false;
+	          let sp = this.game.spaces[this.game.state.combat.key];
+		  for (let z = 0; z < sp.units.length; z++) {
+		    if (sp.units[z].ckey == "US") { valid_target = true; }
+		    if (sp.units[z].ckey == "BR") { valid_target = true; }
+		    if (sp.units[z].ckey == "FR") { valid_target = true; }
+		    if (sp.units[z].ckey == "BE") { valid_target = true; }
+		  }
+		  if (valid_target == true && sp.country != "france" && sp.country != "belgium" && sp.country != "germany") {
+		    valid_target = false;
+		  }
+
+	          if (valid_target) {
+	            this.game.state.mo["central"].push("GE");
+	          }
+
+		} else {
+	          for (let i = 0; i < au.length; i++) {
+	            this.game.state.mo["central"].push(au[i].ckey);
+	          }
+	        }
+
+	      }
+
 	    }
 	  }
 	  if (this.game.state.combat.attacking_faction == "allies") {
-	    for (let i = 0; i < this.game.spaces[this.game.state.combat.key].units.length; i++) {
-	      this.game.state.mo["allies"].push(this.game.spaces[this.game.state.combat.key].units[i].ckey);
+	    for (let i = 0; i < au.length; i++) {
+
+	      //
+	      // 1.4 To count as a Mandated Offensive, British or French units must attack 
+	      // a German unit in France, Belgium or Germany. (AUS, CND, PT, or ANA do not 
+	      // count as British for this purpose nor are they impacted by the Lloyd George 
+	      // event.)
+	      //
+	      if (this.game.state.mandated_offensives.allies == "BR" || this.game.state.mandated_offensives.allies == "FR") {
+		let sp = this.game.spaces[this.game.state.combat.key];
+		if (sp.country == "belgium" || sp.country == "france" || sp.country == "germany") {
+		  for (let z = 0; z < sp.units.length; z++) {
+		    if (sp.units[z].ckey == "GE") {
+	              this.game.state.mo["allies"].push(this.game.spaces[this.game.state.combat.key].units[i].ckey);
+		      z = sp.units.length+1;
+		    }
+		  }
+		}
+	      } else {
+	        this.game.state.mo["allies"].push(au[i].ckey);
+	      }
+
 	    }
 	  }
 

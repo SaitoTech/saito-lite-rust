@@ -22,6 +22,7 @@ class LossOverlay {
 	}
 
 	canTakeMoreLosses() {
+
 		if (this.loss_factor == 0) {
 			return false;
 		}
@@ -194,7 +195,7 @@ console.log("%");
 			this.app.browser.addElementToSelector(html, qs_defender);
 		}
 
-		this.attachEvents(false, ".loss-overlay .units.defender", this.mod.game.state.combat.defender_power);
+		this.attachEvents(false, ".loss-overlay .units.defender", this.mod.game.state.combat.defender_power, true); // true = 1 more hit!
 		this.loss_factor = 0; // this results in canTakeMoreLosses() to return NO after the first hit
 
 	}
@@ -478,18 +479,17 @@ console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
 
 
 
-	attachEvents(am_i_the_attacker, my_qs ,faction) {
+	attachEvents(am_i_the_attacker, my_qs, faction, just_one_more_hit=false) {
 
 		let paths_self = this.mod;
 
-		if (!this.canTakeMoreLosses()) {
+		if (!this.canTakeMoreLosses() && just_one_more_hit == false) {
 				for (let i = this.moves.length - 1; i >= 0; i--) {
 					paths_self.addMove(this.moves[i]);
 				}
 				paths_self.endTurn();
 				return;
 		}
-
 
 		document.querySelectorAll(my_qs + " .loss-overlay-unit").forEach((el) => {
 
@@ -520,8 +520,6 @@ console.log("ATTACKER UNITS: " + JSON.stringify(attacker_units));
 				}
 
 				if (unit.damaged) {
-
-console.log("assigning hits to damaged unit...");
 
 					this.moves.push(`damage\t${unit_spacekey}\t${unit_key}\t1\t${paths_self.game.player}`);
 					this.loss_factor -= unit.rloss;
@@ -577,8 +575,6 @@ if (paths_self.doesSpaceHaveUnit(corpsbox, corpskey)) {
 
 				} else {
 
-console.log("assigning hits to un-damaged unit...");
-
 					this.moves.push(`damage\t${unit_spacekey}\t${unit_key}\t0\t${this.mod.game.player}`);
 					unit.damaged = true;
 					this.loss_factor -= unit.loss;
@@ -599,22 +595,16 @@ console.log("assigning hits to un-damaged unit...");
 						.forEach((el) => {
 							el.onclick = (e) => {};
 						});
-					//setTimeout(() => {
-						//let c = confirm('Maximum Losses Sustained: Submit?');
-						//if (c) {
 							for (let i = this.moves.length - 1; i >= 0; i--) {
 								this.mod.addMove(this.moves[i]);
 							}
 							this.mod.endTurn();
-						//	this.hide();
-						//	return;
-					//}, 50);
 				}
 
 				//
 				// negative loss factor = we're cancelling hits
 				//
-				if (this.loss_factor < 0) { 
+				if (this.loss_factor <= 0) { 
 					this.hide();
 				}
 

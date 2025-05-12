@@ -1,5 +1,41 @@
 
 
+.combat_cards {
+  height: 300px;
+  display: flex;
+  flex-direction: columns;
+  width: 100%;
+}
+
+.combat_cards .central , .combat_cards .allies {
+  height: 300px;
+  max-height: 300px;
+  width: 50%;
+}
+
+.combat_cards .allies {
+  height: 300px;
+  max-height: 300px;
+  justify-items: left;
+}
+
+.combat_cards .central {
+  height: 300px;
+  max-height: 300px;
+  justify-items: right;
+}
+
+.combat_cards .central div img , .combat_cards .allies div img {
+  height: 300px;
+  max-height: 300px;
+  width: auto;
+}
+
+.combat_cards .central div , .combat_cards .allies div {
+  height: 300px;
+  max-height: 300px;
+  width: auto;
+}
 
 .turn-track {
   position: absolute;
@@ -481,6 +517,7 @@
 }
 .central-mandated-offensive-track.active {
   background-image: url('/paths/img/tiles/mandoffensive_cp.png');
+  background-size: cover;
 }
 .central-mandated-offensive-track-1 {
   top: 136px;
@@ -509,6 +546,7 @@
 }
 .allies-mandated-offensive-track.active {
   background-image: url('/paths/img/tiles/mandoffensive_ap.png');
+  background-size: cover;
 }
 .allies-mandated-offensive-track-1 {
   top: 3078px;

@@ -90,7 +90,9 @@ class ReplacementsOverlay {
 
 
 	hideSubMenu() {
-		document.querySelector('.replacements-overlay .submenu').style.visibility = "hidden";
+		try {
+			document.querySelector('.replacements-overlay .submenu').style.visibility = "hidden";
+		} catch (err) {}
 	}
 
 	showSubMenu(id="uneliminate") {
@@ -183,7 +185,6 @@ class ReplacementsOverlay {
               					(spacekey) => {
 
 							if (spacekey == "mainmenu") {
-alert("back to main!");
 								this.render();
 								return 1;
 							}
@@ -204,8 +205,10 @@ alert("back to main!");
 
 		});
 
-		document.querySelector('.replacements-overlay .submenu').style.visibility = "visible";
-
+		try {
+			document.querySelector('.replacements-overlay .submenu').style.visibility = "visible";
+		} catch (err) {
+		}
 	}
 
 }

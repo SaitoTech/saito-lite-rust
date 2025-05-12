@@ -793,6 +793,16 @@ console.log("UNIT: " + JSON.stringify(unit));
     let do_upgradeable_units_remain = false;
     let just_stop = 0;
 
+
+console.log("XXX");
+console.log("XXX");
+console.log("XXX");
+console.log("XXX");
+console.log("XXX");
+console.log("XXX");
+console.log("XXX");
+console.log(JSON.stringify(rp));
+
     //
     // players can spend their replacement points to:
     //
@@ -801,6 +811,25 @@ console.log("UNIT: " + JSON.stringify(unit));
     // 3. return eliminated units to RB 
     //
     let do_replacement_points_exist_for_unit = (unit) => {
+
+      // 17.1.3 - Belgian and Serbian Army units can be recreated only if they may 
+      // legally be placed on the map [see 17.1.5] Belgian and Serbian corps can still 
+      // be rebuilt in the Reserve Box, even if their countries are completely controlled 
+      // by the enemy.
+      //
+      if (unit.ckey === "BE") {
+	if (this.game.spaces["antwerp"].control == "allies") { return 1; }
+	if (this.game.spaces["brussels"].control == "allies") { return 1; }
+	if (this.game.spaces["ostend"].control == "allies") { return 1; }
+	if (this.game.spaces["liege"].control == "allies") { return 1; }
+      }
+      if (unit.ckey === "SB") {
+	if (this.game.spaces["belgrade"].control == "allies") { return 1; }
+	if (this.game.spaces["valjevo"].control == "allies") { return 1; }
+	if (this.game.spaces["nis"].control == "allies") { return 1; }
+	if (this.game.spaces["skopje"].control == "allies") { return 1; }
+	if (this.game.spaces["monastir"].control == "allies") { return 1; }
+      }
 
       //
       // cannot spend replacement points if capital is besieged
@@ -819,7 +848,7 @@ console.log("UNIT: " + JSON.stringify(unit));
 	if ((z+1) < capitals.length) { is_capital_besieged = false; }
       }
 
-      if (is_capital_besieged == false) { return 0; }
+      if (is_capital_besieged == true) { return 0; }
       if (rp[unit.ckey] > 0) { return 1; }
       if (rp["A"] > 0) {
 	if (unit.ckey == "ANA" || unit.ckey == "AUS" || unit.ckey == "BE" || unit,ckey == "CND" || unit.ckey == "MN" || unit.ckey == "PT" || unit.ckey == "RO" || unit.ckey == "GR" || unit.ckey == "SB") {
@@ -919,7 +948,6 @@ console.log("UNIT: " + JSON.stringify(unit));
 
     if (continue_fnct()) {
       paths_self.replacements_overlay.render();
-    } else {
     }
 
     return 1;
@@ -1786,12 +1814,21 @@ console.log(JSON.stringify(spaces_within_hops));
 	  return 0;
 	},
 	(key) => {
+
+	  if (key === "skip") {
+            paths_self.addMove("resolve\tplayer_play_movement");
+            paths_self.removeSelectable();
+            paths_self.endTurn();
+            return;
+	  }
+
 	  paths_self.zoom_overlay.scrollTo(key);
 	  paths_self.removeSelectable();
 	  moveInterface(key, options, mainInterface, moveInterface, unitActionInterface, continueMoveInterface);
 	},
-	null,
-	true
+	null ,
+	true , 
+	[{ key : "skip" , value : "finish movement" }],
       )
     }
 
