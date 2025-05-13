@@ -28,6 +28,9 @@ config/runtime.config.js
 config/mixin-credentials.js
 config/build.json
 
+scripts/mods
+scripts/mods/*
+
 .gitignore
 compile-e
 
