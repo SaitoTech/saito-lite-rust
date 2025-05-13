@@ -107,8 +107,28 @@ class ArcadeMain {
 			document.querySelectorAll('.arcade-game-selector-game')
 		).forEach((game) => {
 			game.onclick = (e) => {
+
 				e.stopPropagation();
 				let league_id = e.currentTarget.getAttribute('data-league');
+
+				if (e.currentTarget.classList.contains("arcade-game-selector-teaser")) {
+					let c = confirm("Do you want to install this game? This will take you to the app download site:");
+					if (c) {
+						let link = "";
+						let modname = e.currentTarget.getAttribute('data-id');
+						for (let z = 0; z < this.app.modules.mods.length; z++) {
+							if (modname === this.app.modules.mods[z].name) {
+								link = this.app.modules.mods[z].link;
+							}
+						}
+						if (link != "") {
+							window.location.href = link;
+							return;
+						}
+						return;
+					}
+					return;
+				}
 
 				if (league_id){
 					this.app.browser.logMatomoEvent(

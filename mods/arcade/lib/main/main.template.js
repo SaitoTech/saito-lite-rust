@@ -19,17 +19,35 @@ module.exports = (app, mod) => {
       lid = "";
     }
 
+console.log("%");
+console.log("%");
+console.log("%");
+console.log("%");
+console.log("%");
+console.log("%");
+console.log("% teaser " + game_mod.teaser);
+console.log("%");
+console.log("%");
+
+    if (game_mod.teaser == true) {
+      games_menu += `
+       <div id="${game_mod.name}" class="arcade-game-selector-game arcade-game-selector-teaser" data-id="${ game_mod.name }" data-league="${lid}">
+         <div class="arcade-game-selector-game-image"><img src="${game_mod.img}" /></div>
+         <div class="arcade-game-selector-game-title"><span>${game_mod.returnName()}</span></div>
+         <div class="arcade-game-selector-footer"></div>
+       </div>
+      `;
+    } else {
       games_menu += `
        <div id="${game_mod.name}" class="arcade-game-selector-game" data-id="${ game_mod.name }" data-league="${lid}">
          <div class="arcade-game-selector-game-image"><img src="${game_mod.respondTo('arcade-games').image}" /></div>
-         <div class="arcade-game-selector-game-title"><span>${game_mod.returnName()}</span>`
-     /*if (game_mod?.can_bet){
-        games_menu += `<i class="fa-solid fa-coins game-crypto-enabled-icon" title="you can stake web3 crypto on this game"></i>`;  
-     }*/
+         <div class="arcade-game-selector-game-title"><span>${game_mod.returnName()}</span></div>
+         <div class="arcade-game-selector-footer"></div>
+       </div>
+      `;
+    }
 
-     games_menu +=`</div>
-      <div class="arcade-game-selector-footer"></div>
-      </div>`;
+
   }
 
 	return `
