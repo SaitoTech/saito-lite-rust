@@ -274,6 +274,20 @@ class DevTools extends ModTemplate {
 
 				//console.log("Loaded DYN_MOD_WEB:", DYN_MOD_WEB);
 
+/********************************************************
+/**** WHEN DEBUGGING, EDIT THIS TO HAVE A COPY SAVED ****
+/********************************************************
+				execSync(`cp ./build/dyn_mod.js /Users/david/dyn_mod.js`, (error, stdout, stderr) => {
+					console.log(stdout);
+					console.log(stderr);
+					if (error !== null) {
+						console.log(`execSync error: ${error}`);
+					}
+				});
+/********************************************************
+/********************************************************
+/*******************************************************/
+
 				execSync(`rm -rf  ./tmp_mod/ ./build/dyn_mod.js`, (error, stdout, stderr) => {
 					console.log(stdout);
 					console.log(stderr);
@@ -353,10 +367,19 @@ class DevTools extends ModTemplate {
 			let slug = '';
 			let version = '1.0.0';
 
+console.log("TRYIG TO ANALYZE ZIP");
+console.log("TRYIG TO ANALYZE ZIP");
+console.log("TRYIG TO ANALYZE ZIP");
+console.log("TRYIG TO ANALYZE ZIP");
+console.log("TRYIG TO ANALYZE ZIP");
+console.log("TRYIG TO ANALYZE ZIP");
+console.log("TRYIG TO ANALYZE ZIP");
+
 			try {
 				const directory = await unzipper.Open.file(path.resolve(__dirname, zip_path));
 				let promises = directory.files.map(async (file) => {
-					// console.log('file: ', file);
+
+					console.log('file: ', file);
 					// return;
 
 					if (file.path === 'web/img/arcade/arcade.jpg') {
@@ -409,7 +432,7 @@ class DevTools extends ModTemplate {
 					for (
 						let i = 0;
 						i < zip_lines.length &&
-						i < 50 &&
+						i < 100 &&
 						(found_name == 0 || found_description == 0 || found_categories == 0);
 						i++
 					) {

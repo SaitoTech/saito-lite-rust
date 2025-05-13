@@ -129,17 +129,8 @@
 
     for (let i = 0; i < num; i++) {
 
-      if (i == 0) { col = "color1"; }
-      if (i == 1) { col = "color2"; }
-      if (i == 2) { col = "color3"; }
-      if (i == 3) { col = "color4"; }
-      if (i == 4) { col = "color5"; }
-      if (i == 5) { col = "color6"; }
-
-
       let rf = "";
       
-
       if (i == 0) {
         if (this.game.options.player1 != undefined) {
           if (this.game.options.player1 != "random") {
@@ -379,7 +370,7 @@
     units_to_destroy = [];
     units_available = [];
 
-    for (f in space.units) {
+    for (let f in space.units) {
       if (f == faction || this.isAlliedMinorPower(f, faction)) {
         for (let i = 0; i < space.units[f].length; i++) {
           if (space.units[f][i].type === "regular")   { units_available.push(space.units[f][i]); }
@@ -1640,7 +1631,7 @@ if (this.game.state.events.society_of_jesus == 1) {
     let units_to_move = [];
     let available_units = [];
 
-    for (f in space.units) {
+    for (let f in space.units) {
       for (let i = 0; i < space.units[f].length; i++) {
 	if (space.units[f][i].besieged != 0) {
           available_units.push({ faction : f , unit_idx : i , type : space.units[f][i].type });
@@ -1778,7 +1769,7 @@ if (this.game.state.events.society_of_jesus == 1) {
     let available_units = [];
     let anyone_in_relief_force = false;
 
-    for (f in faction_map) {
+    for (let f in faction_map) {
       if (this.returnPlayerCommandingFaction(f) != attacker_player) {
         for (let i = 0; i < space.units[f].length; i++) {
           if (space.units[f][i].relief_force == 1) { anyone_in_relief_force = true; }
@@ -1787,7 +1778,7 @@ if (this.game.state.events.society_of_jesus == 1) {
     }
     if (this.game.state.field_battle_relief_battle) { anyone_in_relief_force = true; }
 
-    for (f in faction_map) { 
+    for (let f in faction_map) { 
       if (this.returnPlayerCommandingFaction(f) != attacker_player) {
         for (let i = 0; i < space.units[f].length; i++) {
 	  if (space.units[f][i].type == "regular" || space.units[f][i].type == "mercenary" || space.units[f][i].type == "cavalry" || space.units[f][i].army_leader) {

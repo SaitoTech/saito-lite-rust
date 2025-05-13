@@ -10293,7 +10293,7 @@ if (space.key == "milan") {
 	      "Select Fortified Home Space: ",
 
 	      function(space) {
-		if (space.type == "fortress" && space.home == ransomed_leader.owner) {
+		if ((space.type == "fortress" || space.type == "electorate" || space.type == "key") && space.home == ransomed_leader.owner) {
 		  if (his_self.isSpaceControlled(space.key, ransomed_leader.owner)) {
 		    return 1;
 		  }

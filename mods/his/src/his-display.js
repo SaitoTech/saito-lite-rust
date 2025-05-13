@@ -3098,7 +3098,7 @@ try {
     let zindex = 1;
     for (let i = 0; i < 30; i++) { tiles.push(0); }
 
-    for (f in factions_and_scores) {
+    for (let f in factions_and_scores) {
 try {
       let total_vp = factions_and_scores[f].vp;
       let ftile = f + "_vp_tile";
