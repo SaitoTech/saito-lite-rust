@@ -452,6 +452,8 @@ class SettingsAppspace {
 
 						// Centrally Manage localForage
 						await this.app.storage.clearLocalForage();
+						// And purge dyn mods
+						await this.app.storage.removeAllLocalApplications();
 
 						let archive = this.app.modules.returnModule('Archive');
 						if (archive) {

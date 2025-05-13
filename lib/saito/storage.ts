@@ -398,18 +398,6 @@ class Storage {
     }
   }
 
-  // saveLocalApplication(tx, mod) {
-  //    if (!this.app.options.dyn_mods) { this.app.options.dyn_mods = []; }
-  //    this.app.options.dyn_mods.push(mod);
-
-  //    this.saveOptions();
-  // }
-
-  // loadLocalApplications() {
-  //    if (!this.app.options.dyn_mods) { this.app.options.dyn_mods = []; }
-  //    return this.app.options.dyn_mods;
-  // }
-
   async saveLocalApplication(mod, bin) {
     if (!this.app.BROWSER) {
       return;
@@ -477,6 +465,26 @@ class Storage {
     } catch (err) {
       console.log('Error removeLocalApplication: ', err);
     }
+  }
+
+  async removeAllLocalApplications() {
+
+    try {
+
+      if (!this.app.BROWSER) {
+        return;
+      }
+
+      let rowsDeleted = await this.localDB.remove({
+          from: 'dyn_mods'
+      });
+
+      return rowsDeleted;
+
+    } catch (err) {
+      console.log('Error removeLocalApplication: ', err);
+    }
+
   }
 
   async initializeApplicationDB() {

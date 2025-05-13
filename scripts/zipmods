@@ -1,0 +1,35 @@
+#!/bin/bash
+
+#
+# This script creates a directory of zipped modules prepared for submission to the /devtools
+# dynamic module compilation (lacking /img dirs etc.) so that they can be compiled into 
+# binary form for distribution as signed applications...
+#
+
+mkdir -p ./mods
+
+SOURCE_DIR="$(cd ../mods && pwd)"
+TARGET_DIR="$(pwd)/mods"
+
+for dir in "$SOURCE_DIR"/*; do
+  if [ -d "$dir" ]; then
+
+    dirname=$(basename "$dir")
+    echo "Copying $dirname..."
+
+    cp -r "$dir" "$TARGET_DIR/$dirname"
+
+    rm -rf "$TARGET_DIR/$dirname/license"
+    rm -rf "$TARGET_DIR/$dirname/web"
+    rm -rf "$TARGET_DIR/$dirname/.DS_Store"
+
+    (cd "$TARGET_DIR" && zip -r "$dirname.zip" "$dirname" > /dev/null)
+
+    rm -rf "$TARGET_DIR/$dirname"
+  fi
+done
+
+echo "Done copying directories."
+
+
+
