@@ -313,7 +313,7 @@ class PokerQueue {
 						this.restartQueue();
 					});
 					this.saveGame(this.game.id);
-					this.setShotClock('.acknowledge');
+					this.setShotClock('.acknowledge', 6000);
 
 					return 0;
 				}
@@ -702,7 +702,7 @@ class PokerQueue {
 							this.restartQueue();
 						});
 
-						this.setShotClock('.acknowledge', 3000, true, () => {
+						this.setShotClock('.acknowledge', 10000, true, () => {
 							this.game_help.render({
 								title: 'Showdown',
 								text: `Tip: click anywhere on the screen to interrupt the 3 second countdown that keeps the game moving along`,
