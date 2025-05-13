@@ -459,6 +459,10 @@ class SettingsAppspace {
 						if (archive) {
 							await archive.onUpgrade('nuke');
 						}
+
+                                        	if (this.app.browser.browser_active == 1) {     
+                                                	reloadWindow(300);
+						}
 					}
 				};
 			}
