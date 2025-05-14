@@ -45,10 +45,10 @@ class TweetMenu {
 					console.log(e.currentTarget);
 					switch (e.currentTarget.getAttribute('id')) {
 						case 'delete_tweet':
-							this.deleteTweet();
+							this.tweet.deleteTweet();
 							break;
 						case 'edit_tweet':
-							this.editTweet();
+							this.tweet.editTweet();
 							break;
 						case 'block_contact':
 							this.blockContact();
@@ -83,16 +83,6 @@ class TweetMenu {
 		if (this.tweet.source?.peer) { info += "Node: " + this.tweet.source.peer + "\n"; }
 		alert(info);
 	}
-
-	editTweet() {
-                let post = new Post(this.app, this.mod, this.tweet);
-                post.source = 'Edit';
-                post.render();
-        }
-	deleteTweet() {
-        	let post = new Post(this.app, this.mod, this.tweet);
-                post.deleteTweet();
-        }
 
 	blockContact() {
 		//Also flag the tweet
