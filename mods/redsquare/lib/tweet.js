@@ -249,6 +249,10 @@ class Tweet {
 
 
 	remove() {
+		if (!this.app.BROWSER) {
+		 return;
+		}
+		
 		let eqs = `.tweet-${this.tx.signature}`;
 		if (document.querySelector(eqs)) {
 			document.querySelector(eqs).remove();
@@ -1354,6 +1358,17 @@ class Tweet {
 		}
 
 		return txs;
+	}
+
+	editTweet(){
+        let post = new Post(this.app, this.mod, this);
+        post.source = 'Edit';
+        post.render();
+	}
+
+	deleteTweet(){
+    	let post = new Post(this.app, this.mod, this);
+        post.deleteTweet();
 	}
 }
 
