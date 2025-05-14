@@ -1,6 +1,7 @@
 const MainTemplate = require('./main.template');
 const AddMempool = require('./add-mempool');
-const Nft = require('./nft');
+const Nft = require('./../../../lib/saito/ui/saito-nft/create-nft');
+const SendNft = require('./../../../lib/saito/ui/saito-nft/send-nft');
 
 class Main {
 	constructor(app, mod, container = '') {
@@ -12,6 +13,7 @@ class Main {
 		});
 		this.add_mempool = new AddMempool(app, mod);
 		this.nft = new Nft(app, mod);
+		this.send_nft = new SendNft(app, mod);
 	}
 
 
@@ -103,6 +105,10 @@ class Main {
 
 		document.querySelector('#add_nft').onclick = async (e) => {
 			await this.nft.render();
+		};
+
+		document.querySelector('#send_nft').onclick = async (e) => {
+			await this.send_nft.render();
 		};
 	}
 

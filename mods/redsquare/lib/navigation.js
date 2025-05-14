@@ -115,9 +115,13 @@ class RedSquareNavigation {
       e.preventDefault();
       e.stopImmediatePropagation();
 
+      console.log("======================", "RSNAV: click home ...")
+
       if (window.location.hash || window.location.search) {
+
         this.app.connection.emit('redsquare-home-render-request');
         this.app.connection.emit('redsquare-remove-loading-message', 'navigating...');
+
       } else {
         this.app.connection.emit('redsquare-home-render-request', true);
 
@@ -133,7 +137,6 @@ class RedSquareNavigation {
         }
       }
 
-      this.app.connection.emit('saito-header-reset-logo');
     };
 
     //

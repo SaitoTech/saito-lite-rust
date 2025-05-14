@@ -280,6 +280,7 @@ class RedSquareMain {
   }
 
   renderHome() {
+    console.log("RS: renderHome");
     this.manager.render('tweets');
     this.scrollFeed(this.scroll_depth, this.behavior);
 

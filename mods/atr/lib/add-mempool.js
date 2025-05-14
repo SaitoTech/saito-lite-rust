@@ -28,6 +28,9 @@ class Main {
                 data: { random: Math.random() }
             };
             await newtx.sign();
+
+            console.log("newtx:", newtx);
+
             await this.app.network.propagateTransaction(newtx);
             console.log('newtx', newtx);
             this_self.overlay.hide();

@@ -25,7 +25,6 @@ Selects
   position: absolute;
   top: 0;
   right: 0;
-  padding: 0 1em;
   color: var(--color-white);
   background-color: var(--color-primary);
   cursor: pointer;
@@ -34,6 +33,10 @@ Selects
   -o-transition: 0.25s all ease;
   transition: 0.25s all ease;
   border-radius: 0 1rem 1rem 0;
+  height: 100%;
+  width: 5rem;
+  display: flex;
+  justify-content: center;
 }
 
 .saito-select:hover::after {
@@ -68,6 +71,10 @@ textarea:focus, input:focus, select:focus {
 option {
   background: var(--background-color-main);
   color: var(--saito-font-color);
+}
+
+option:hover, option:focus{
+  color: violet;
 }
 
 /* ----------------------------------------------------------------

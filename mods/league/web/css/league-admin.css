@@ -513,39 +513,6 @@ i.link_icon.private {
 	justify-content: space-between;
 }
 
-.saito-select {
-	position: relative;
-	display: flex;
-	width: 20em;
-	height: 3em;
-	line-height: 3;
-	background-color: transparent;
-	overflow: hidden;
-	width: 100%;
-	border-radius: 0 1rem 1rem 0;
-	outline: none;
-	background-color: none;
-}
-
-.saito-select::after {
-	content: '\25BC';
-	position: absolute;
-	top: 0;
-	right: 0;
-	padding: 0 1em;
-	color: var(--saito-white);
-	background-color: var(--color-primary);
-	cursor: pointer;
-	pointer-events: none;
-	-webkit-transition: 0.25s all ease;
-	-o-transition: 0.25s all ease;
-	transition: 0.25s all ease;
-	border-radius: 0 1rem 1rem 0;
-}
-
-.saito-select:hover::after {
-	color: var(--color-white) !important;
-}
 
 @media (max-width: 900px) {
 	.league-main-container {
