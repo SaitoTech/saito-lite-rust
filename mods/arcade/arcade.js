@@ -150,6 +150,7 @@ class Arcade extends ModTemplate {
 		// compile list of arcade games
 		//
 		app.modules.returnModulesRespondingTo('arcade-games').forEach((game_mod) => {
+			
 			this.arcade_games.push(game_mod);
 			//
 			// and listen to their transactions
