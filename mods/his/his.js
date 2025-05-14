@@ -7665,7 +7665,7 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
 	his_self.factionbar.setActive("protestant");
 
 	// set player to protestant
-	player = his_self.returnPlayerOfFaction("protestant");
+	let player = his_self.returnPlayerOfFaction("protestant");
 
 	let players_to_go = [];
 	for (let i = 1; i < his_self.game.players.length; i++) {

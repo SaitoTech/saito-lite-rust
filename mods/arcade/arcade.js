@@ -358,7 +358,8 @@ class Arcade extends ModTemplate {
 			});
 		}
 
-		/******** NOV 18 - disabled to test chain-sync bug
+
+
 		if (service.service === 'archive') {
 			for (let game of this.app.options.games) {
 
@@ -369,16 +370,6 @@ class Arcade extends ModTemplate {
 
 				if (!game_mod) { continue; }
 
-				//
-				// URL param includes this to skip archive fetch
-				//
-//
-// we should no longer need this, now that receiving TXS from others will result in the
-// game opening and executing regardless of whether we are in another game... NOV 4, 2024
-//
-//	                        let noload = app.browser.returnURLParameter('noload');
-//        	                if (noload) { return; }
-//
 				this.app.storage.loadTransactions(
 					{
 						field1: query
@@ -397,8 +388,8 @@ class Arcade extends ModTemplate {
 				);
 			}
 		}
-********/
 	}
+
 
 	loadGameInviteById(game_id_short){
 		let game = this.returnGameFromHash(game_id_short);
