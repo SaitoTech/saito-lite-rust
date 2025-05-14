@@ -436,7 +436,7 @@ return 1; }
 		    if (this.game.state.turn < 2) { roll -= 2; }
 		    if (roll > space.fort) {
 		      space.fort = -1;
-		      this.updateStatus(this.returnSpaceName(space.key) + " fort destroyed (roll: " + roll + ")");
+		      this.updateStatus(this.returnSpaceNameForLog(space.key) + " fort destroyed (roll: " + roll + ")");
 
 	              //
 	              // switch control
@@ -451,7 +451,7 @@ return 1; }
 		     this.shakeSpacekey(key);
 
 		    } else {
-		      this.updateStatus(this.returnSpaceName(space.key) + " fort resists siege (roll: " + roll + ")");
+		      this.updateStatus(this.returnSpaceNameForLog(space.key) + " fort resists siege (roll: " + roll + ")");
 		    }
 
 		  }
@@ -497,22 +497,22 @@ return 1; }
 		    let u = this.game.spaces[key].units[z];
 		    if (u.army) {
           	      if (power == "allies") {
-			this.updateLog(u.name + " eliminated from " + this.game.spaces[key].name + " (out-of-supply)");
+			this.updateLog(u.name + " eliminated from " + this.returnSpaceNameForLog(key) + " (out-of-supply)");
 			this.game.spaces[key].units.splice(z, 1);
 		      }
           	      if (power == "central") {
-			this.updateLog(u.name + " eliminated from " + this.game.spaces[key].name + " (out-of-supply)");
+			this.updateLog(u.name + " eliminated from " + this.returnSpaceNameForLog(key) + " (out-of-supply)");
 			this.game.spaces[key].units.splice(z, 1);
 		      }
 		    }
 		    if (u.corps) {
           	      if (power == "allies") {
-			this.updateLog(u.name + " eliminated from " + this.game.spaces[key].name + " (out-of-supply)");
+			this.updateLog(u.name + " eliminated from " + this.returnSpaceNameForLog(key) + " (out-of-supply)");
             		this.game.state.eliminated["allies"].push(this.game.spaces[key].units[z]);
 			this.game.spaces[key].units.splice(z, 1);
 		      }
           	      if (power == "central") {
-			this.updateLog(u.name + " eliminated from " + this.game.spaces[key].name + " (out-of-supply)");
+			this.updateLog(u.name + " eliminated from " + this.returnSpaceNameForLog(key) + " (out-of-supply)");
             		this.game.state.eliminated["central"].push(this.game.spaces[key].units[z]);
 			this.game.spaces[key].units.splice(z, 1);
 		      }
@@ -1013,7 +1013,7 @@ try {
 	  this.game.spaces[source].units.splice(unit_idx, 1);
 	  this.game.spaces[destination].units.push(unit);
 
-	  this.updateLog(unit.name + " redeploys to " + this.returnSpaceName(destination));
+	  this.updateLog(unit.name + " redeploys to " + this.returnSpaceNameForLog(destination));
 
 	  this.displaySpace(source);
 	  this.displaySpace(destination);
@@ -1193,7 +1193,7 @@ try {
 	  //
 	  // update log
 	  //
-	  this.updateLog(this.returnFactionName(this.game.state.combat.attacking_faction) + " attacks " + this.game.spaces[key].name);
+	  this.updateLog(this.returnFactionName(this.game.state.combat.attacking_faction) + " attacks " + this.returnSpaceNameForLog(key));
 
 	  //
 	  // Great Retreat allows RU units to retreat
@@ -2131,7 +2131,7 @@ this.updateLog("Defender Power handling retreat: " + this.game.state.combat.defe
 
 	  let unit = this.game.spaces[spacekey].units[idx];
 	  let faction = this.returnPowerOfUnit(unit);
-	  this.updateLog(unit.name + " eliminated in " + this.returnSpaceName(spacekey));
+	  this.updateLog(unit.name + " eliminated in " + this.returnSpaceNameForLog(spacekey));
 
 	  if (faction == "allies") {
    	    this.game.state.eliminated["allies"].push(unit);
@@ -2478,9 +2478,9 @@ console.log("ADDACKERS NOW: " + JSON.stringify(this.game.state.combat.attacker))
 	  } else {
 	    if (!this.game.spaces[key].trench) { this.game.spaces[key].trench = 0; }
 	    if (this.game.spaces[key].trench == 0) { 
-	      this.updateLog(this.returnName(faction) + " entrenches in " + this.game.spaces[key].name);
+	      this.updateLog(this.returnName(faction) + " entrenches in " + this.returnSpaceNameForLog(key));
 	    } else {
-	      this.updateLog(this.returnName(faction) + " entrenches deeper in " + this.game.spaces[key].name);
+	      this.updateLog(this.returnName(faction) + " entrenches deeper in " + this.returnSpaceNameForLog(key));
 	    }
 	    this.game.spaces[key].trench++;
 	    if (this.game.spaces[key].trench > 2) { this.game.spaces[key].trench = 2; }

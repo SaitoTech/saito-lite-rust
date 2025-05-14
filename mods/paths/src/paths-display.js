@@ -3,6 +3,22 @@
     this.zoom_overlay.hide();
   }
 
+  pulseSpacekey(spacekey) {
+
+    let elements = document.querySelectorAll(`.space.${spacekey}`);
+
+    elements.forEach((el) => {
+      if (el.classList.contains("pulsing")) { return; }
+      el.classList.add("pulsing");
+    });
+
+    setTimeout(() => {
+      elements.forEach((el) => el.classList.remove("pulsing"));
+    }, 4500); // match animation-iteration-count: 3 at 1.5s each
+
+  }
+
+
   shakeSpacekey(spacekey) {
 
     let qs = `.space.${spacekey}`;
@@ -139,60 +155,6 @@ console.log("!");
       console.log("error displaying spaces... " + err);
     }
 
-
-    //
-    // add click event to gameboard for close-up / zoom UI
-    //
-    let xpos = 0;
-    let ypos = 0;
-
-    if (!paths_self.bound_gameboard_zoom) {
-
-      $('.gameboard').on('mousedown', function (e) {
-        if (e.currentTarget.classList.contains("space")) { return; }
-        xpos = e.clientX;
-        ypos = e.clientY;
-      });
-      $('.gameboard').on('mouseup', function (e) {
-        if (Math.abs(xpos-e.clientX) > 4) { return; }
-        if (Math.abs(ypos-e.clientY) > 4) { return; }
-        //
-        // if this is a selectable space, let people select directly
-        //
-        // this is a total hack by the way, but it captures the embedding that happens when
-        // we are clicking and the click action is technically on the item that is INSIDE
-        // the selectable DIV, like a click on a unit in a key, etc.
-        //
-        if (e.target.classList.contains("selectable")) {
-          return;
-        } else {
-          let el = e.target;
-          if (el.parentNode) {
-            if (el.parentNode.classList.contains("selectable")) {
-              return;
-            } else {
-              if (el.parentNode.parentNode) {
-                if (el.parentNode.parentNode.classList.contains("selectable")) {
-                  return;
-                }
-              }
-            }
-          }
-        }
-	//
-        // nothing is selectable here, so show zoom
-        paths_self.zoom_overlay.renderAtCoordinates(ypos, xpos);
-      });
-
-      //
-      // we only attach this event to the gameboard once, so once we have done
-      // that remember that we have already bound the gameboard zoom event so that
-      // we will not do it again. If necessary we can reset this variable to 0
-      // and call this function again.
-      //
-      paths_self.bound_gameboard_zoom = 1;
-    }
-
   }
 
 
@@ -313,55 +275,76 @@ console.log("err: " + err);
       }
     }
 
-    let xpos = 0;
-    let ypos = 0;
-
+    //
+    // add click event to gameboard for close-up / zoom UI
+    //
     if (!paths_self.bound_gameboard_zoom) {
 
-      $('.gameboard').on('mousedown', function (e) {
-        if (e.currentTarget.classList.contains("space")) { return; }
-        xpos = e.clientX;
-        ypos = e.clientY;
-      });
-      $('.gameboard').on('mouseup', function (e) { 
-        if (Math.abs(xpos-e.clientX) > 4) { return; }
-        if (Math.abs(ypos-e.clientY) > 4) { return; }
-	//
-	// if this is a selectable space, let people select directly
-	//
-	// this is a total hack by the way, but it captures the embedding that happens when
-	// we are clicking and the click actino is technically on the item that is INSIDE
-	// the selectable DIV, like a click on a unit in a key, etc.
-	//
-	if (e.target.classList.contains("selectable")) {
-	  // something else is handling this
-	  return;
-	} else {
-	  let el = e.target;
-	  if (el.parentNode) {
-	    if (el.parentNode.classList.contains("selectable")) {
-	      // something else is handling this
-	      return;
-	    } else {
-	      if (el.parentNode.parentNode) {
-	        if (el.parentNode.parentNode.classList.contains("selectable")) {
-	          return;
-	        }
-	      }
-	    }
-	  }
-	}
-	// otherwise show zoom
-        //if (e.target.classList.contains("space")) {
-          paths_self.zoom_overlay.renderAtCoordinates(ypos, xpos);
-	  //e.stopPropagation();
-	  //e.preventDefault();	
-	  //return;
-	//}
+      //$('.main .gameboard').on('mousedown', function (e) {
+      //  if (e.currentTarget.classList.contains("space")) { return; }
+      //});
+      $('.main .gameboard').on('mouseup', function (e) {
+
+        //
+        // if this is a selectable space, let people select directly
+        //
+        // this is a total hack by the way, but it captures the embedding that happens when
+        // we are clicking and the click action is technically on the item that is INSIDE
+        // the selectable DIV, like a click on a unit in a key, etc.
+        //
+        if (e.target.classList.contains("selectable")) {
+          return;
+        } else {
+          let el = e.target;
+          if (el.parentNode) {
+            if (el.parentNode.classList.contains("selectable")) {
+              return;
+            } else {
+              if (el.parentNode.parentNode) {
+                if (el.parentNode.parentNode.classList.contains("selectable")) {
+                  return;
+                }
+              }
+            }
+          }
+        }
+
+  	const board = document.querySelector(".main .gameboard");
+
+  	let scale = 1;
+  	const computedTransform = window.getComputedStyle(board).transform;
+  	if (computedTransform && computedTransform !== "none") {
+  	  const match = computedTransform.match(/^matrix\(([^,]+),/);
+  	  if (match) {
+  	    scale = parseFloat(match[1]);
+  	  }
+  	}
+
+    	const rect = board.getBoundingClientRect();
+  	const localX = (e.clientX - rect.left) / scale;
+  	const localY = (e.clientY - rect.top) / scale;
+
+  	paths_self.zoom_overlay.renderAtCoordinates(localY, localX);
+
       });
 
+
+document.querySelector(".log").addEventListener("mouseover", (e) => {
+  let trigger = e.target.closest(".pulse-trigger");
+  if (trigger) {
+    let spacekey = trigger.dataset.spacekey;
+    this.pulseSpacekey(spacekey);
+  }
+});
+
+
+      //
+      // we only attach this event to the gameboard once, so once we have done
+      // that remember that we have already bound the gameboard zoom event so that
+      // we will not do it again. If necessary we can reset this variable to 0
+      // and call this function again.
+      //
       paths_self.bound_gameboard_zoom = 1;
-
     }
 
 

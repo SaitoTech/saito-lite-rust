@@ -5493,60 +5493,6 @@ console.log("!");
       console.log("error displaying spaces... " + err);
     }
 
-
-    //
-    // add click event to gameboard for close-up / zoom UI
-    //
-    let xpos = 0;
-    let ypos = 0;
-
-    if (!paths_self.bound_gameboard_zoom) {
-
-      $('.gameboard').on('mousedown', function (e) {
-        if (e.currentTarget.classList.contains("space")) { return; }
-        xpos = e.clientX;
-        ypos = e.clientY;
-      });
-      $('.gameboard').on('mouseup', function (e) {
-        if (Math.abs(xpos-e.clientX) > 4) { return; }
-        if (Math.abs(ypos-e.clientY) > 4) { return; }
-        //
-        // if this is a selectable space, let people select directly
-        //
-        // this is a total hack by the way, but it captures the embedding that happens when
-        // we are clicking and the click action is technically on the item that is INSIDE
-        // the selectable DIV, like a click on a unit in a key, etc.
-        //
-        if (e.target.classList.contains("selectable")) {
-          return;
-        } else {
-          let el = e.target;
-          if (el.parentNode) {
-            if (el.parentNode.classList.contains("selectable")) {
-              return;
-            } else {
-              if (el.parentNode.parentNode) {
-                if (el.parentNode.parentNode.classList.contains("selectable")) {
-                  return;
-                }
-              }
-            }
-          }
-        }
-	//
-        // nothing is selectable here, so show zoom
-        paths_self.zoom_overlay.renderAtCoordinates(ypos, xpos);
-      });
-
-      //
-      // we only attach this event to the gameboard once, so once we have done
-      // that remember that we have already bound the gameboard zoom event so that
-      // we will not do it again. If necessary we can reset this variable to 0
-      // and call this function again.
-      //
-      paths_self.bound_gameboard_zoom = 1;
-    }
-
   }
 
 
@@ -5667,55 +5613,70 @@ console.log("err: " + err);
       }
     }
 
-    let xpos = 0;
-    let ypos = 0;
-
+    //
+    // add click event to gameboard for close-up / zoom UI
+    //
     if (!paths_self.bound_gameboard_zoom) {
 
-      $('.gameboard').on('mousedown', function (e) {
-        if (e.currentTarget.classList.contains("space")) { return; }
-        xpos = e.clientX;
-        ypos = e.clientY;
-      });
-      $('.gameboard').on('mouseup', function (e) { 
-        if (Math.abs(xpos-e.clientX) > 4) { return; }
-        if (Math.abs(ypos-e.clientY) > 4) { return; }
-	//
-	// if this is a selectable space, let people select directly
-	//
-	// this is a total hack by the way, but it captures the embedding that happens when
-	// we are clicking and the click actino is technically on the item that is INSIDE
-	// the selectable DIV, like a click on a unit in a key, etc.
-	//
-	if (e.target.classList.contains("selectable")) {
-	  // something else is handling this
-	  return;
-	} else {
-	  let el = e.target;
-	  if (el.parentNode) {
-	    if (el.parentNode.classList.contains("selectable")) {
-	      // something else is handling this
-	      return;
-	    } else {
-	      if (el.parentNode.parentNode) {
-	        if (el.parentNode.parentNode.classList.contains("selectable")) {
-	          return;
-	        }
-	      }
-	    }
-	  }
-	}
-	// otherwise show zoom
-        //if (e.target.classList.contains("space")) {
-          paths_self.zoom_overlay.renderAtCoordinates(ypos, xpos);
-	  //e.stopPropagation();
-	  //e.preventDefault();	
-	  //return;
-	//}
+      //$('.main .gameboard').on('mousedown', function (e) {
+      //  if (e.currentTarget.classList.contains("space")) { return; }
+      //});
+      $('.main .gameboard').on('mouseup', function (e) {
+
+        //
+        // if this is a selectable space, let people select directly
+        //
+        // this is a total hack by the way, but it captures the embedding that happens when
+        // we are clicking and the click action is technically on the item that is INSIDE
+        // the selectable DIV, like a click on a unit in a key, etc.
+        //
+        if (e.target.classList.contains("selectable")) {
+          return;
+        } else {
+          let el = e.target;
+          if (el.parentNode) {
+            if (el.parentNode.classList.contains("selectable")) {
+              return;
+            } else {
+              if (el.parentNode.parentNode) {
+                if (el.parentNode.parentNode.classList.contains("selectable")) {
+                  return;
+                }
+              }
+            }
+          }
+        }
+
+
+
+  	const board = document.querySelector(".main .gameboard");
+
+  	let scale = 1;
+  	const computedTransform = window.getComputedStyle(board).transform;
+  	if (computedTransform && computedTransform !== "none") {
+  	  const match = computedTransform.match(/^matrix\(([^,]+),/);
+  	  if (match) {
+  	    scale = parseFloat(match[1]);
+  	  }
+  	}
+
+    	const rect = board.getBoundingClientRect();
+  	const localX = (e.clientX - rect.left) / scale;
+  	const localY = (e.clientY - rect.top) / scale;
+
+alert("submitting: " + localX + " / " + localY);
+
+  	paths_self.zoom_overlay.renderAtCoordinates(localY, localX);
+
       });
 
+      //
+      // we only attach this event to the gameboard once, so once we have done
+      // that remember that we have already bound the gameboard zoom event so that
+      // we will not do it again. If necessary we can reset this variable to 0
+      // and call this function again.
+      //
       paths_self.bound_gameboard_zoom = 1;
-
     }
 
 
@@ -9622,7 +9583,7 @@ spaces['cairo'] = {
 //
 spaces['cetinje'] = {
       name: "Cetinje" ,
-    control: "neutral" ,
+      control: "allies" ,
       top: 2341 ,
       left: 2365 ,
       neighbours: [ "tirana", "mostar"] ,
@@ -9721,7 +9682,7 @@ spaces['athens'] = {
 //
 spaces['valjevo'] = {
       name: "Valjevo" ,
-      control: "neutral" ,
+      control: "allies" ,
       top: 2200 ,
       left: 2490 ,
       neighbours: ["sarajevo","belgrade","nis"] ,
@@ -9732,7 +9693,7 @@ spaces['valjevo'] = {
 
 spaces['belgrade'] = {
       name: "Belgrade" ,
-      control: "neutral" ,
+      control: "allies" ,
       fort : 1 ,
       top: 2040 ,
       left: 2580 ,
@@ -9744,7 +9705,7 @@ spaces['belgrade'] = {
 
 spaces['nis'] = {
       name: "Nis" ,
-      control: "neutral" ,
+      control: "allies" ,
       top: 2220 ,
       left: 2640 ,
       neighbours: ["belgrade","valjevo","sofia","skopje"] ,
@@ -9755,7 +9716,7 @@ spaces['nis'] = {
 
 spaces['skopje'] = {
       name: "Skopje" ,
-      control: "neutral" ,
+      control: "allies" ,
       top: 2400 ,
       left: 2645 ,
       neighbours: ["nis","tirana","monastir","sofia"] ,
@@ -9766,7 +9727,7 @@ spaces['skopje'] = {
 
 spaces['monastir'] = {
       name: "Skopje" ,
-      control: "neutral" ,
+      control: "allies" ,
       top: 2543 ,
       left: 2653 ,
       neighbours: ["florina","skopje","strumitsa","salonika"] ,

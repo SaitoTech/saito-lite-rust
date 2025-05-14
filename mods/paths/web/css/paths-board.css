@@ -1,5 +1,26 @@
 
 
+@keyframes pulse-highlight {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 0, 0.8);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 255, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 0, 0);
+  }
+}
+
+.space.pulsing {
+  animation: pulse-highlight 1.5s ease-out;
+  animation-iteration-count: 3;
+  z-index: 999; /* make sure it's on top */
+  position: relative; /* if not already positioned */
+}
+
+
+
 .combat_cards {
   height: 300px;
   display: flex;

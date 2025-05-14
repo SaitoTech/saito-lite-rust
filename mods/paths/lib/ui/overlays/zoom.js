@@ -38,7 +38,6 @@ class ZoomOverlay {
 			top = this.mod.game.spaces[spacekey].top;
 			left = this.mod.game.spaces[spacekey].left;
 		}
-alert("scrollTo: " + top + " / " + left);
 
 		return this.scrollToCoordinates(top, left);
 
@@ -63,8 +62,6 @@ alert("scrollTo: " + top + " / " + left);
   			let scrollTop = top - zoomHeight / 2;
 			if (scrollLeft < 0) { scrollLeft = 0; }
 			if (scrollTop < 0) { scrollTop = 0; }
-
-alert(scrollTop + " //// " + scrollLeft);
 
 			let board = document.querySelector(".zoom-overlay .gameboard");	
 			board.style.transition = "transform 0.5s ease";
@@ -111,8 +108,11 @@ alert(scrollTop + " //// " + scrollLeft);
 		const zoomWidth = zoomOverlay.clientWidth;
 		const zoomHeight = zoomOverlay.clientHeight;
 
-  		const scrollLeft = left - zoomWidth / 2;
-  		const scrollTop = top - zoomHeight / 2;
+  		let scrollLeft = left - zoomWidth / 2;
+  		let scrollTop = top - zoomHeight / 2;
+
+		if (scrollLeft < 0) { scrollLeft = 0; }
+		if (scrollTop < 0) { scrollTop = 0; }
 
 		let board = document.querySelector(".zoom-overlay .gameboard");	
 		// funky slide

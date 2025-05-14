@@ -1,4 +1,8 @@
 
+  returnSpaceNameForLog(spacekey) {
+    return `<span class="pulse-trigger">${this.game.spaces[spacekey].name}</span>`;
+  }
+
   convertCountryToPower(country="", power="allies") {
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].country == country) {
@@ -3444,7 +3448,7 @@ spaces['cairo'] = {
 //
 spaces['cetinje'] = {
       name: "Cetinje" ,
-    control: "neutral" ,
+      control: "allies" ,
       top: 2341 ,
       left: 2365 ,
       neighbours: [ "tirana", "mostar"] ,
@@ -3543,7 +3547,7 @@ spaces['athens'] = {
 //
 spaces['valjevo'] = {
       name: "Valjevo" ,
-      control: "neutral" ,
+      control: "allies" ,
       top: 2200 ,
       left: 2490 ,
       neighbours: ["sarajevo","belgrade","nis"] ,
@@ -3554,7 +3558,7 @@ spaces['valjevo'] = {
 
 spaces['belgrade'] = {
       name: "Belgrade" ,
-      control: "neutral" ,
+      control: "allies" ,
       fort : 1 ,
       top: 2040 ,
       left: 2580 ,
@@ -3566,7 +3570,7 @@ spaces['belgrade'] = {
 
 spaces['nis'] = {
       name: "Nis" ,
-      control: "neutral" ,
+      control: "allies" ,
       top: 2220 ,
       left: 2640 ,
       neighbours: ["belgrade","valjevo","sofia","skopje"] ,
@@ -3577,7 +3581,7 @@ spaces['nis'] = {
 
 spaces['skopje'] = {
       name: "Skopje" ,
-      control: "neutral" ,
+      control: "allies" ,
       top: 2400 ,
       left: 2645 ,
       neighbours: ["nis","tirana","monastir","sofia"] ,
@@ -3588,7 +3592,7 @@ spaces['skopje'] = {
 
 spaces['monastir'] = {
       name: "Skopje" ,
-      control: "neutral" ,
+      control: "allies" ,
       top: 2543 ,
       left: 2653 ,
       neighbours: ["florina","skopje","strumitsa","salonika"] ,
