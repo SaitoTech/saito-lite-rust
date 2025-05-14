@@ -124,6 +124,11 @@ class ChatPopup {
 	}
 
 	activate(){
+
+		if (!this.group?.id){
+			return;
+		}
+
 		let popup_qs = '#chat-popup-' + this.group.id;
 
 		document.querySelectorAll('.chat-container').forEach((el) => {
@@ -742,6 +747,7 @@ class ChatPopup {
 			this.app.browser.makeDraggable(popup_id, header_id, true);
 			this.app.browser.makeResizeable(popup_qs, header_qs, group_id);
 		}
+
 
 		chatPopup.onmousedown = this.activate;
 
