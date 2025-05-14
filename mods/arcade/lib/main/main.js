@@ -122,7 +122,7 @@ class ArcadeMain {
 							}
 						}
 						if (link != "") {
-							window.location.href = link;
+							navigateWindow(link, 300);
 							return;
 						}
 						return;
