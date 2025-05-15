@@ -335,8 +335,8 @@ class Settlers extends GameTemplate {
 		this.menu.addMenuOption('game-game', 'Game');
 		this.menu.addSubMenuOption('game-game', {
 			text: 'How to Play',
-			id: 'game-help',
-			class: 'game-help',
+			id: 'game-rules',
+			class: 'game-rules',
 			callback: function (app, game_mod) {
 				game_mod.menu.hideSubMenus();
 				game_mod.rules_overlay.render();

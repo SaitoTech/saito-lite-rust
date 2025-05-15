@@ -1,25 +1,5 @@
 
-.game-help {
-    cursor: pointer;
-    position: absolute;
-    display: block;
-    width: 30rem;
-    height: 20rem;
-    background: #ff7700;
-    overflow: hidden;
-    color: #fff;
-    padding-left: 30px;
-    line-height: 22px;
-    bottom: 0px;
-    left: 0px;
-    transform: skew(+55deg);
-    margin-left: -24rem;
-    z-index: 999;
-}
 
-.game-help:hover {
-    background: #ee6600;
-}
 
 .game-help-hidden {
   visibility: hidden;
@@ -33,7 +13,7 @@
   transition: opacity 1s linear;
 }
 
-.game-help-text {
+/*.game-help-text {
     font-size: 2.7rem;
     padding-top: 12rem;
     margin-left: 23rem;
@@ -44,5 +24,5 @@
     line-height: 3.5rem;
     letter-spacing: 0.1rem;
     font-weight: bold;
-}
+}*/
 

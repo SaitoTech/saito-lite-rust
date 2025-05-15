@@ -117,6 +117,8 @@ class SettlersDisplay {
                 line1: 'who is',
                 line2: 'robin hood?',
                 id: 'robinhood',
+                fontsize : "2.1rem",
+                color: "#1a7004",
               });
             }
 

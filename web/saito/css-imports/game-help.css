@@ -1,7 +1,7 @@
 
 /* Triangle in bottom corner of screen */
 
-.game-help-triangle {
+.game-help, .game-help-triangle {
     cursor: pointer;
     position: absolute;
     display: block;
@@ -19,7 +19,8 @@
     z-index: 999;
 }
 
-.game-help-triangle:hover {
+
+.game-help:hover, .game-help-triangle:hover {
     background: #ee6600;
 }
 
@@ -36,15 +37,17 @@
 }
 
 .game-help-text {
-    font-size: 2.6rem;
-    padding-top: 13.5rem;
-    margin-left: 22.5rem;
+    font-family: arial, helvetica, sans-serif;
+    font-size: 2.4rem;
+    padding-top: 12rem;
+    margin-left: 23rem;
     transform: skew(-55deg);
     min-width: 16rem;
     overflow: visible;
-    line-height: 3rem;
+    line-height: 3.5rem;
     font-weight: bold;
-    text-shadow: 1px 1px 3px black;
+    letter-spacing: 0.5px;
+    text-shadow: -2px 2px 2px black;
 }
 
 
