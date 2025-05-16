@@ -201,12 +201,19 @@ class TweetManager {
 
 		if (this.mode == 'tweets' && new_mode !== 'tweets') {
 			let kids = managerElem.children;
+			if (this.debug){
+				console.log("***** Temporarily cache RS main feed -- ", kids.length);
+			}
 			holder.replaceChildren(...kids);
+
 			if (document.getElementById('saito-new-tweets')) {
 				holder.prepend(document.getElementById('saito-new-tweets'));
 			}
 			this.thread_id = null;
 		} else {
+			if (this.debug){
+				console.log("***** Clear RS feed...");
+			}
 			while (managerElem.hasChildNodes()) {
 				managerElem.firstChild.remove();
 			}
@@ -224,6 +231,15 @@ class TweetManager {
 		// tweets //
 		////////////
 		if (new_mode == 'tweets') {
+
+			if (holder){
+				let kids = holder.children;
+				//if (this.debug){
+					console.log("***** Fast load cached tweets -- ", kids.length);
+				//}
+				managerElem.replaceChildren(...kids);
+			}
+
 			for (let tweet of this.mod.tweets) {
 				if (!tweet.isRendered()) {
 					//
