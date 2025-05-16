@@ -2265,9 +2265,6 @@ class Arcade extends ModTemplate {
 
 		//We want to send a message to the players to add us to the game.accept list so they route their game moves to us as well
 		game_msg.game_id = game_id;
-		if (watch_live) {
-			game_msg.send_state = true;
-		}
 
 		if (!this.app.options.games) {
 			this.app.options.games = [];
@@ -2283,7 +2280,11 @@ class Arcade extends ModTemplate {
 			game_mod.game.player = 0;
 		}
 
-		game_mod.sendFollowTx(game_msg);
+		if (watch_live) {
+			game_mod.expecting_state = true;
+			game_mod.sendMetaMessage("FOLLOW");
+		}
+
 	}
 }
 
