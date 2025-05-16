@@ -69,8 +69,8 @@
 .game-menu-sub-options:after {
   content: "";
   position: absolute;
-  width: calc(100% + 40px);
-  height: calc(100% + 25px);
+  width: calc(100% + 70px);
+  height: calc(100% + 45px);
   top: 0;
   left: 50%;
   transform: translateX(-50%);
