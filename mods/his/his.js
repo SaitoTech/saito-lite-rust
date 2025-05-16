@@ -10301,7 +10301,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
       canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 
-	let player = his_self.returnPlayerOfFaction(faction);
+	let player = his_self.returnPlayerOfFaction("protestant");
 
 	if (player == his_self.game.player) {
 
@@ -12033,7 +12033,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
       },
       onEvent : function(his_self, faction) {
 
-	player = his_self.returnPlayerOfFaction("protestant");
+	let player = his_self.returnPlayerOfFaction("protestant");
 
         his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
@@ -14614,7 +14614,6 @@ if (space.key == "milan") {
           return 0;
 
 	}
-
 
         if (mv[0] == "revolt_in_ireland_bonus_resistance") {
 
@@ -41942,7 +41941,7 @@ if (this.game.state.events.society_of_jesus == 1) {
     let available_units = [];
     let anyone_in_relief_force = false;
 
-    for (let f in faction_map) {
+    for (let f in faction_map) { 
       if (this.returnPlayerCommandingFaction(f) != attacker_player) {
         for (let i = 0; i < space.units[f].length; i++) {
           if (space.units[f][i].relief_force == 1) { anyone_in_relief_force = true; }
@@ -42472,7 +42471,7 @@ if (relief_siege == 1) {
       let pick_card_function = () => {
 
         this.updateStatusWithOptions(`Playing ${this.popup(card)}`, html);
-        this.attachCardboxEvents((user_choice) => {
+        this.attachCardboxEvents((user_choice) => {      
 
 	  this.updateStatus("submitting...");
 

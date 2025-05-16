@@ -1769,7 +1769,7 @@ if (this.game.state.events.society_of_jesus == 1) {
     let available_units = [];
     let anyone_in_relief_force = false;
 
-    for (let f in faction_map) {
+    for (let f in faction_map) { 
       if (this.returnPlayerCommandingFaction(f) != attacker_player) {
         for (let i = 0; i < space.units[f].length; i++) {
           if (space.units[f][i].relief_force == 1) { anyone_in_relief_force = true; }
@@ -2299,7 +2299,7 @@ if (relief_siege == 1) {
       let pick_card_function = () => {
 
         this.updateStatusWithOptions(`Playing ${this.popup(card)}`, html);
-        this.attachCardboxEvents((user_choice) => {
+        this.attachCardboxEvents((user_choice) => {      
 
 	  this.updateStatus("submitting...");
 

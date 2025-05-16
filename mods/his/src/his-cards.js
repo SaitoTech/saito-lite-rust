@@ -6409,7 +6409,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
       canEvent : function(his_self, faction) { return 1; } ,
       onEvent : function(his_self, faction) {
 
-	let player = his_self.returnPlayerOfFaction(faction);
+	let player = his_self.returnPlayerOfFaction("protestant");
 
 	if (player == his_self.game.player) {
 
@@ -8141,7 +8141,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
       },
       onEvent : function(his_self, faction) {
 
-	player = his_self.returnPlayerOfFaction("protestant");
+	let player = his_self.returnPlayerOfFaction("protestant");
 
         his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
@@ -10722,7 +10722,6 @@ if (space.key == "milan") {
           return 0;
 
 	}
-
 
         if (mv[0] == "revolt_in_ireland_bonus_resistance") {
 
