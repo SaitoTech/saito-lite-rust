@@ -4670,6 +4670,7 @@ try {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
 	    let fis = his_self.returnArrayOfFactionsInSpace(spacekey);
+	    for (let z = 0; z < fis.length; z++) { fis[z] = his_self.returnControllingPower(fis[z]); }
 	    if (fis.includes(f)) {
               if (his_self.game.deck[0].fhand[i].includes('024')) {
 	        if (his_self.doesPlayerHaveLandUnitsInSpace(his_self.game.player, spacekey)) {
@@ -4736,6 +4737,7 @@ console.log("ERR: " + JSON.stringify(err));
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
 	    let fis = his_self.returnArrayOfFactionsInSpace(spacekey);
+	    for (let z = 0; z < fis.length; z++) { fis[z] = his_self.returnControllingPower(fis[z]); }
 	    if (fis.includes(f)) {
               if (his_self.game.deck[0].fhand[i].includes('025')) {
 	        if (his_self.doesPlayerHaveLandUnitsInSpace(his_self.game.player, spacekey)) {
@@ -4792,6 +4794,7 @@ console.log("ERR: " + JSON.stringify(err));
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
 	    let fis = his_self.returnArrayOfFactionsInSpace(spacekey);
+	    for (let z = 0; z < fis.length; z++) { fis[z] = his_self.returnControllingPower(fis[z]); }
 	    if (fis.includes(f)) {
               if (his_self.game.deck[0].fhand[i].includes('026')) {
 	        if (his_self.doesPlayerHaveLandUnitsInSpace(his_self.game.player, spacekey)) {
@@ -4914,6 +4917,7 @@ console.log("ERR: " + JSON.stringify(err));
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
 	    let fis = his_self.returnArrayOfFactionsInSpace(spacekey);
+	    for (let z = 0; z < fis.length; z++) { fis[z] = his_self.returnControllingPower(fis[z]); }
 	    if (fis.includes(f)) {
               if (his_self.game.deck[0].fhand[i].includes('027')) {
 	        let assault_spacekey = "";
@@ -5038,14 +5042,13 @@ console.log("ERR: " + JSON.stringify(err));
       menuOption  :       function(his_self, menu, player, spacekey) {
         if (menu == "pre_assault_rolls") {
  	  if (his_self.game.player != his_self.game.state.active_player) {
-console.log("returning nothing...");
 	    return {};
 	  }
           let f = "";
-console.log("and spacekey is..." + spacekey);
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
 	    let fis = his_self.returnArrayOfFactionsInSpace(spacekey);
+	    for (let z = 0; z < fis.length; z++) { fis[z] = his_self.returnCommandingPower(fis[z]); }
 	    if (fis.includes(f)) {
               if (his_self.game.deck[0].fhand[i].includes('028')) {
 console.log("and we have Siege Mining...");
@@ -5179,6 +5182,7 @@ console.log("and we have Siege Mining...");
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
 	    let fis = his_self.returnArrayOfFactionsInSpace(spacekey);
+	    for (let z = 0; z < fis.length; z++) { fis[z] = his_self.returnControllingPower(fis[z]); }
 	    if (fis.includes(f)) {
               if (his_self.game.deck[0].fhand[i].includes('030')) {
 	        for (let f in his_self.game.spaces[spacekey].units) {
@@ -5204,15 +5208,22 @@ console.log("and we have Siege Mining...");
 	    his_self.endTurn();
           } else {
 	    let nhr = 0;
-	    for (let i = 0; i < his_self.game.spaces[his_self.game.state.field_battle.spacekey].units["hapsburg"].length; i++) {
-	      if (his_self.game.spaces[his_self.game.state.field_battle.spacekey].units["hapsburg"][i].type == "regular") {
-		nhr++;
+	    for (let f in his_self.game.spaces[his_self.game.state.field_battle.spacekey].units) {
+	      if (his_self.returnControllingPower(f) == "hapsburg") {
+	        for (let i = 0; i < his_self.game.spaces[his_self.game.state.field_battle.spacekey].units[f].length; i++) {
+		  if (his_self.game.spaces[his_self.game.state.field_battle.spacekey].units[f][i].type == "regular") {
+		    nhr++;
+	          }
+	        }
 	      }
 	    }
 	    if (nhr >= 3) {
 	      his_self.addMove("discard\t"+faction+"\t030");
 	      his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction) + " triggers " + his_self.popup("030"));
 	      his_self.addMove("tercios_remove_haps_rolls\t"+his_self.game.state.field_battle.spacekey+"\t"+faction+"\t"+3);
+	      his_self.endTurn();
+	    } else {
+	      // submit the resolve at least
 	      his_self.endTurn();
 	    }
 	  }
@@ -12970,6 +12981,7 @@ console.log("DELETING Z: " + z);
     }
   }
 }
+
 
     for (let key in deck) {
       deck[key].key = key;

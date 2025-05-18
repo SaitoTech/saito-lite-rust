@@ -519,6 +519,7 @@
   doesSpaceHaveLineOfControl(space, faction, transit_passes=1, transit_seas=3) { return this.isSpaceInLineOfControl(space, faction, transit_passes, transit_seas); }
   isSpaceInLineOfControl(space, faction, transit_passes=1, transit_seas=3) { // transit_seas=3 ==> my ships need to be in any connecting navalspace
 
+
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
     let his_self = this;
@@ -745,6 +746,8 @@
 
     if (this.game.state.spring_deploy_across_seas.includes(faction)) {
       hostile_sea_passes = 1;
+    } else {
+      transit_seas = 2;
     }
     if (this.game.state.spring_deploy_across_passes.includes(faction)) {
       transit_passes = 1;
@@ -1446,12 +1449,12 @@
       }
       if (luis > 0) {
         if (!this.areAllies(attacker_faction, f) && f !== attacker_faction) {
-	  return f;
+	  return this.returnControllingPower(f);
 	}
       }
     }
     // no-one is here, so defender must be controlling the space
-    return this.returnFactionControllingSpace(space.key);
+    return this.returnControllingPower(this.returnFactionControllingSpace(space.key));
   }
 
   returnNonFactionLandUnitsInSpace(faction, space) {
@@ -2017,7 +2020,7 @@
 		  }
 
 		  if (transit_seas == 2) {
-		    if (this.doesNavalSpaceHaveNonFactionShips(navalspace.ports[z], faction)) {
+		    if (this.doesNavalSpaceHaveNonFactionShips(navalspace.key, faction) || this.doesNavalSpaceHaveNonFactionShips(navalspace.ports[z], faction)) {
 	 	      if (this.game.state.events.spring_preparations != faction) {
 	                if (ignore_hostiles == false) {
 		          any_unfriendly_ships = true;
@@ -2060,6 +2063,7 @@
  	  }
         }
       }
+
       return neighbours;
     }
 
@@ -2335,16 +2339,30 @@
 	  for (let i = 0; i < vns.length; i++) {
 	    let ns = this.game.navalspaces[vns[i]];
 	    for (let i = 0; i < ns.ports.length; i++) {
-	      n.push({"neighbour": ns.ports[i],"overseas":true});
+              if (transit_seas == 2) {
+                if (!this.doesNavalSpaceHaveNonFactionShips(this.game.spaces[vns[i]], faction)) {
+	          n.push({"neighbour": ns.ports[i],"overseas":true});
+                }
+              }
+              if (transit_seas == 1) {
+                if (this.doesNavalSpaceHaveFriendlyShip(vns[i], faction)) {
+	          n.push({"neighbour": ns.ports[i],"overseas":true});
+                }
+              }
 	    }
 	  }
-
         }
       }
     }
 
     for (let i = 0; i < n.length; i++) {
-      pending_spaces[n[i].neighbour] = { hops : 0 , key : n[i] , overseas : n[i].overseas };
+      if (transit_passes == 1) {
+        pending_spaces[n[i].neighbour] = { hops : 0 , key : n[i] , overseas : n[i].overseas };
+      } else {
+	if (!s.pass.includes(n[i].neighbour)) {
+          pending_spaces[n[i].neighbour] = { hops : 0 , key : n[i] , overseas : n[i].overseas };
+	}
+      }
     }
 
     //
@@ -2370,13 +2388,16 @@
 	    searched_spaces[key] = { hops : (hops+1) , key : key };
 	  }
 	} else {
+
 	  if (propagation_filter(key)) {
+
 	    let nn = [];
 	    if (pending_spaces[key].overseas) {
 	      nn = this.returnNeighbours(key, transit_passes, 0, faction);
 	    } else {
-	      nn = this.returnNeighbours(key, transit_passes, 1, faction);
+	      nn = this.returnNeighbours(key, transit_passes, transit_seas, faction);
 	    }
+
     	    for (let i = 0; i < nn.length; i++) {
 	      if (searched_spaces[nn[i].neighbour]) {
 		// don't add to pending as we've transversed before

@@ -70,11 +70,13 @@
 	    this.game.state.colonies[z].colony = "england_colony1";
 	    this.game.state.colonies[z].name = "Roanoke";
 	    this.game.state.colonies[z].img = "/his/img/tiles/colonies/Roanoke.svg";
+	    this.updateLog("England founds Roanoke");
           } else {
 	    this.game.state.newworld['england_colony2'].claimed = 1;
 	    this.game.state.colonies[z].colony = "england_colony2";
 	    this.game.state.colonies[z].name = "Jamestown";
 	    this.game.state.colonies[z].img = "/his/img/tiles/colonies/Jamestown.svg";
+	    this.updateLog("England founds Jamestown");
 	  }
         }
 
@@ -84,11 +86,13 @@
 	    this.game.state.colonies[z].colony = "france_colony1";
 	    this.game.state.colonies[z].name = "Charlesbourg";
 	    this.game.state.colonies[z].img = "/his/img/tiles/colonies/Charlesbourg.svg";
+	    this.updateLog("France founds Charlesbourg");
           } else {
 	    this.game.state.newworld['france_colony2'].claimed = 1;
 	    this.game.state.colonies[z].colony = "france_colony2";
 	    this.game.state.colonies[z].name = "Montreal";
 	    this.game.state.colonies[z].img = "/his/img/tiles/colonies/Montreal.svg";
+	    this.updateLog("France founds Montreal");
 	  }
         }
 
@@ -98,17 +102,20 @@
 	      this.game.state.colonies[z].colony = "hapsburg_colony1";
 	      this.game.state.colonies[z].name = "Puerto Rico";
 	      this.game.state.colonies[z].img = "/his/img/tiles/colonies/PuertoRico.svg";
+	      this.updateLog("Hapsburgs found Puerto Rico");
           } else {
 	    if (this.game.state.newworld['hapsburg_colony2'].claimed != 1) {
 	      this.game.state.newworld['hapsburg_colony2'].claimed = 1;
 	      this.game.state.colonies[z].colony = "hapsburg_colony2";
 	      this.game.state.colonies[z].name = "Cuba";
 	      this.game.state.colonies[z].img = "/his/img/tiles/colonies/Cuba.svg";
+	      this.updateLog("Hapsburgs found Cuba");
 	    } else {
 	      this.game.state.newworld['hapsburg_colony3'].claimed = 1;
 	      this.game.state.colonies[z].colony = "hapsburg_colony3";
 	      this.game.state.colonies[z].name = "Hispaniola";
 	      this.game.state.colonies[z].img = "/his/img/tiles/colonies/Hispaniola.svg";
+	      this.updateLog("Hapsburgs found Hispaniola");
 	    }
 	  }
         }

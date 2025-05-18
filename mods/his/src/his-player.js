@@ -4066,7 +4066,9 @@ does_units_to_move_have_unit = true; }
 	        if (does_units_to_move_have_unit) {
 
 	          if (uob.overcapacity == 1) {
-	            alert("This faction is over-capacity (no more unused 1-UNIT tokens). Please move by clicking on the tokens you wish to move instead of manually re-assigning by numbers");
+	            alert("This faction is over-capacity (no more free 1-UNIT tokens). Please move by clicking on the circular tokens you wish to move instead of manually re-assigning by numbers");
+		    his_self.spring_deployment_overlay.hide();
+		    his_self.playerPlaySpringDeployment(faction, player, removed_queue_instruction);
 	            return;
 	          }
 
@@ -4080,7 +4082,9 @@ does_units_to_move_have_unit = true; }
 	        } else {
 
 	          if (uob.overcapacity == 1) {
-	            alert("This faction is over-capacity (no more unused 1-UNIT tokens). Please move by clicking on the tokens you wish to move instead of manually re-assigning by numbers");
+	            alert("This faction is over-capacity (no more free 1-UNIT tokens). Please move by clicking on the circular tokens you wish to move instead of manually re-assigning by numbers");
+		    his_self.spring_deployment_overlay.hide();
+		    his_self.playerPlaySpringDeployment(faction, player, removed_queue_instruction);
 	            return;
 	          }
 
@@ -4384,7 +4388,9 @@ does_units_to_move_have_unit = true; }
 	    if (does_units_to_move_have_unit) {
 
 	      if (uob.overcapacity == 1) {
-	        alert("This faction is over-capacity (no more unused 1-UNIT tokens). Please move by clicking on the tokens you wish to move instead of manually re-assigning by numbers");
+	        alert("This faction is over-capacity (no more free 1-UNIT tokens). Please move by clicking on the circular tokens you wish to move instead of manually re-assigning by numbers");
+		his_self.movement_overlay.hide();
+		his_self.playerContinueToMoveFormationInClear(his_self, player, faction, spacekey, ops_to_spend, ops_remaining);
 	        return;
 	      }
 
@@ -4403,7 +4409,9 @@ does_units_to_move_have_unit = true; }
 	    } else {
 
 	      if (uob.overcapacity == 1) {
-	        alert("This faction is over-capacity (no more free 1-UNIT tokens). Please move by clicking on the tokens you wish to move instead of shifting forces in 1-UNIT increments");
+	        alert("This faction is over-capacity (no more free 1-UNIT tokens). Please move by clicking on the circular tokens you wish to move instead of shifting forces in 1-UNIT increments");
+		his_self.movement_overlay.hide();
+		his_self.playerContinueToMoveFormationInClear(his_self, player, faction, spacekey, ops_to_spend, ops_remaining);
 	        return;
 	      }
 
@@ -4705,7 +4713,9 @@ does_units_to_move_have_unit = true; }
 	    if (does_units_to_move_have_unit) {
 
 	      if (uob.overcapacity == 1) {
-	        alert("This faction is over-capacity (no more unused 1-UNIT tokens). Please move by clicking on the tokens you wish to move instead of manually re-assigning by numbers");
+	        alert("This faction is over-capacity (no more free 1-UNIT tokens). Please move by clicking on the circular tokens you wish to move instead of manually re-assigning by numbers");
+		his_self.movement_overlay.hide();
+		his_self.playerMoveFormationInClear(his_self, player, faction, ops_to_spend, ops_remaining);
 	        return;
 	      }
 
@@ -4724,7 +4734,9 @@ does_units_to_move_have_unit = true; }
 	    } else {
 
 	      if (uob.overcapacity == 1) {
-	        alert("This faction is over-capacity (no more free 1-UNIT tokens). Please move by clicking on the tokens you wish to move instead of shifting forces in 1-UNIT increments");
+	        alert("This faction is over-capacity (no more free 1-UNIT tokens). Please move by clicking on the circular tokens you wish to move instead of shifting forces in 1-UNIT increments");
+		his_self.movement_overlay.hide();
+		his_self.playerMoveFormationInClear(his_self, player, faction, ops_to_spend, ops_remaining);
 	        return;
 	      }
 
@@ -6838,6 +6850,8 @@ console.log("checking if squadrons are protecting!");
         }
       }
     }
+
+console.log("are there assaultable_spaces: " + assaultable_spaces);
 
     if (assaultable_spaces > 0 ) { return 1; }
     return 0;

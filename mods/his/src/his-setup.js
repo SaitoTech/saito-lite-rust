@@ -582,10 +582,9 @@ console.log("\n\n\n\n");
 	  // 1532 wars and allies / diplomatic situation
 	  //
 	  this.setEnemies("hapsburg", "ottoman");
-	  this.setAllies("hapsburg", "genoa");
+	  this.setAllies("france", "genoa");
 	  this.setAllies("hapsburg", "hungary");
 	  this.setActivatedPower("hapsburg", "hungary");
-
 
 	  this.addNavalSquadron("hapsburg", "gibraltar", 1);
 	  this.addNavalSquadron("hapsburg", "gibraltar", 1);
@@ -872,7 +871,7 @@ console.log("\n\n\n\n");
 	  // TESTING AND MODIFICTIONS
 	  //
 	  //
-	  this.addRegular("hapsburg", "graz", 4);
+//	  this.addRegular("hapsburg", "graz", 4);
 
 	  this.setAllies("england", "scotland");
 	  this.setEnemies("hapsburg", "france");
@@ -889,6 +888,20 @@ console.log("\n\n\n\n");
 
 	  this.removeCardFromGame("009");
 	  this.removeCardFromGame("008");
+
+	  this.setAllies("protestant", "england");
+	  this.controlSpace("hapsburg", "trent");
+	  this.setAllies("hapsburg", "venice");
+	  this.setEnemies("ottoman", "venice");
+	  this.controlSpace("ottoman", "agram");
+	  this.controlSpace("ottoman", "zara");
+	  this.controlSpace("ottoman", "ragusa");
+          this.addNavalSquadron("hapsburg", "palma", 1);
+
+	  this.addRegular("hapsburg", "prague", 2);
+	  this.addRegular("england", "leipzig", 4);
+          this.addArmyLeader("england", "leipzig", "charles-brandon");
+
       }
 
     }

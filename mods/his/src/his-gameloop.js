@@ -2091,6 +2091,7 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	      if (x >= 9) { 
 	        c.prize = "bonus card";
 	        this.game.state.new_world_bonus[c.faction]++;
+		this.updateLog(this.returnFactionName(c.faction) + " colony earns bonus card...");
 	      }
 
 	      c.modified_roll = x;
@@ -2123,6 +2124,7 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	      if ((x == 7 && this.game.state.galleons[c.faction] == 1) || x > 7) {
 		this.game.state.new_world_bonus[c.faction]++;
 		c.bonus_prize = "bonus card";
+		this.updateLog(this.returnFactionName(c.faction) + " - Maya conquest earns bonus card...");
 	      }
 	    }
 
@@ -2142,6 +2144,7 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	      if ((x == 7 && this.game.state.galleons[c.faction] == 1) || x > 7) {
 		this.game.state.new_world_bonus[c.faction]++;
 		c.bonus_prize = "bonus card";
+		this.updateLog(this.returnFactionName(c.faction) + " - Aztec conquest earns bonus card...");
 	      }
 	    }
 
@@ -2161,6 +2164,7 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	      if (x == 6 || (x == 7 && this.game.state.galleons[c.faction] == 1) || x > 7) {
 		this.game.state.new_world_bonus[c.faction]++;
 		c.bonus_prize = "bonus card";
+		this.updateLog(this.returnFactionName(c.faction) + " - Inca conquest earns bonus card...");
 	      }
 	    }
 
@@ -6502,6 +6506,7 @@ try {
 	  let unbesieged_defender_units = 0;
 
 	  for (let f in faction_map) {
+
 	    if (faction_map[f] === attacker_faction) {
 	      let x = calculate_rolls(f);
 
@@ -7913,6 +7918,13 @@ try {
 	      his_self.addRegular(his_self.game.state.field_battle.defender_faction, space);
 	    }
 	  }
+
+
+console.log("field battle: ");
+console.log("attacker units remaining: " + his_self.game.state.field_battle.attacker_land_units_remaining);
+console.log("defender units remaining: " + his_self.game.state.field_battle.defender_land_units_remaining);
+
+
 
 	  //
 	  // capture stranded leaders
@@ -13292,7 +13304,12 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 		//
 		// is_testing
 		//
-		if (this.game.options.scenario == "is_testing") { cardnum = 10; }
+		if (this.game.options.scenario == "is_testing") { 
+		  cardnum = 5;
+            	  this.game.queue.push("remove\tprotestant\t013");
+            	  this.game.queue.push("event\tprotestant\t013");
+		}
+
 
 	        //
 	        // fuggers card -1
