@@ -709,6 +709,7 @@ class PokerQueue {
 								//img: '/poker/img/poker_screenshot.jpg',
 								line1: 'what',
 								line2: 'happened?',
+								fontsize : "2.1rem",
 								id: 'showdown',
 								callback: () => {
 									let ov = document.querySelector('.game-help-overlay');

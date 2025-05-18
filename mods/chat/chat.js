@@ -1314,7 +1314,7 @@ class Chat extends ModTemplate {
         }
       }
 
-      console.log('CHAT:', group);
+      console.log('CHAT group update:', group);
 
       if (notice) {
         tx.msg.message = notice;
@@ -1853,7 +1853,7 @@ class Chat extends ModTemplate {
   //
   //
   //
-  addTransactionToGroup(group, tx) {
+  addTransactionToGroup(group, tx, historic = false) {
     // Limit live memory
     // I may be overly worried about memory leaks
     // If users can dynamically load older messages, this limit creates a problem
@@ -1890,6 +1890,11 @@ class Chat extends ModTemplate {
       likes: 0,
       liked_by: {}
     };
+
+    if (!historic && group.last_update > new_message.timestamp){
+      console.log("Fake the timestamp so chats don't rearrange...");
+      new_message.timestamp = group.last_update + 1;
+    }
 
     if (tx?.notice) {
       new_message.notice = tx.notice;
@@ -2268,7 +2273,7 @@ class Chat extends ModTemplate {
             //Process the chat transaction like a new message
             let tx = txs.pop();
             await tx.decryptMessage(chat_self.app);
-            chat_self.addTransactionToGroup(group, tx);
+            chat_self.addTransactionToGroup(group, tx, true);
             chat_self.app.connection.emit('chat-popup-render-request', group);
             chat_self.app.connection.emit(
               'chat-popup-scroll-top-request',
