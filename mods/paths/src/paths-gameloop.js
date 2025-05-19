@@ -2582,16 +2582,12 @@ console.log("ADDACKERS NOW: " + JSON.stringify(this.game.state.combat.attacker))
 	  //
 	  // note that this does not apply to units moving into a space they control...
 	  //
-console.log("are there units in " + destinationkey);
 	  if (this.game.spaces[destinationkey].units.length > 0) {
-console.log("yes!");
 
 	    if (this.returnPowerOfUnit(this.game.spaces[destinationkey].units[0]) != this.game.spaces[destinationkey].control) {
-console.log("space is not controlled by us...");
 	      if (this.game.spaces[destinationkey].fort > 0) {
 	        this.game.spaces[destinationkey].besieged = 1;
 	      } else {
-console.log("switching control!");
 	        //
 	        // switch control
 	        //
@@ -2600,12 +2596,10 @@ console.log("switching control!");
 	        //
 	        // degrade trenches
 	        //
-console.log("degrading trench!");
 	        if (this.game.spaces[destinationkey].trench > 0) { this.game.spaces[destinationkey].trench--; }
 	      }
 	    }
 	  }
-
 
 	  //
 	  // check if no longer besieged?

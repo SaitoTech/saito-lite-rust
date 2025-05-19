@@ -8,13 +8,13 @@
     let elements = document.querySelectorAll(`.space.${spacekey}`);
 
     elements.forEach((el) => {
-      if (el.classList.contains("pulsing")) { return; }
+      el.classList.remove("pulsing");
       el.classList.add("pulsing");
     });
 
     setTimeout(() => {
       elements.forEach((el) => el.classList.remove("pulsing"));
-    }, 4500); // match animation-iteration-count: 3 at 1.5s each
+    }, 2100);
 
   }
 

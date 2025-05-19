@@ -1,6 +1,6 @@
 
   returnSpaceNameForLog(spacekey) {
-    return `<span class="pulse-trigger">${this.game.spaces[spacekey].name}</span>`;
+    return `<span data-spacekey="${spacekey}" class="pulse-trigger">${this.game.spaces[spacekey].name}</span>`;
   }
 
   convertCountryToPower(country="", power="allies") {

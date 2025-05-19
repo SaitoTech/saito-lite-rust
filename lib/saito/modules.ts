@@ -157,10 +157,13 @@ class Mods {
   async initialize() {
     try {
       if (this.app.BROWSER === 1) {
+
         let mods = await this.app.storage.loadLocalApplications();
 
         if (mods.length > 0) {
+
           console.log('loaded mods:', mods);
+
           self['saito-js'] = require('saito-js').default;
           self['saito-js/lib/slip'] = require('saito-js/lib/slip').default;
           self['saito-js/lib/transaction'] = require('saito-js/lib/transaction').default;
@@ -191,6 +194,10 @@ class Mods {
 
               m.handleUrlParams(urlParams);
             }
+
+	    for (let z = 0; z < this.mods.length; z++) {
+	      if (this.mods[z].name === m.name && !m.teaser) { this.mods.splice(z, 1); }
+	    }
             this.mods.push(m);
           }
         }
@@ -249,9 +256,6 @@ class Mods {
         }
       }
     }
-
-
-console.log("TESITNG WE REACH HERE...");
 
     //
     // install any new modules

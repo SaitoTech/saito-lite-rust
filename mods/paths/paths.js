@@ -1798,6 +1798,12 @@ console.log("INITIALIZING PATHS");
 
 
 
+  returnSpaceNameForLog() {
+    return `<span class="showcard ${card}" id="${card}">${card}</span>`;
+
+
+  }
+
   popup(card) {
 
     let c = null;
@@ -2469,7 +2475,7 @@ deck['ap14'] = {
         	  return 1;
       	        }
         	paths_self.game.spaces[spacekey].units[unit_idx].damaged = 0;
-		paths_self.addMove(`NOTIFY\t${paths_self.game.spaces[spacekey].units[unit_idx].name} repaired in ${paths_self.game.spaces[spacekey].name}`);
+		paths_self.addMove(`NOTIFY\t${paths_self.game.spaces[spacekey].units[unit_idx].name} repaired in ${paths_self.returnSpaceNameForLog(spacekey)}`);
         	paths_self.addMove(`repair\tcentral\t${spacekey}\t${unit_idx}\t${paths_self.game.player}`);
         	paths_self.displaySpace(spacekey);
         	paths_self.shakeSpacekey(spacekey);
@@ -5357,6 +5363,22 @@ console.log("calculating hits: " + hits[i][this.game.state.combat.attacker_modif
     this.zoom_overlay.hide();
   }
 
+  pulseSpacekey(spacekey) {
+
+    let elements = document.querySelectorAll(`.space.${spacekey}`);
+
+    elements.forEach((el) => {
+      el.classList.remove("pulsing");
+      el.classList.add("pulsing");
+    });
+
+    setTimeout(() => {
+      elements.forEach((el) => el.classList.remove("pulsing"));
+    }, 2100);
+
+  }
+
+
   shakeSpacekey(spacekey) {
 
     let qs = `.space.${spacekey}`;
@@ -5647,8 +5669,6 @@ console.log("err: " + err);
           }
         }
 
-
-
   	const board = document.querySelector(".main .gameboard");
 
   	let scale = 1;
@@ -5664,11 +5684,19 @@ console.log("err: " + err);
   	const localX = (e.clientX - rect.left) / scale;
   	const localY = (e.clientY - rect.top) / scale;
 
-alert("submitting: " + localX + " / " + localY);
-
   	paths_self.zoom_overlay.renderAtCoordinates(localY, localX);
 
       });
+
+
+document.querySelector(".log").addEventListener("mouseover", (e) => {
+  let trigger = e.target.closest(".pulse-trigger");
+  if (trigger) {
+    let spacekey = trigger.dataset.spacekey;
+    this.pulseSpacekey(spacekey);
+  }
+});
+
 
       //
       // we only attach this event to the gameboard once, so once we have done
@@ -6137,6 +6165,10 @@ console.log("X");
   }
 
 
+
+  returnSpaceNameForLog(spacekey) {
+    return `<span data-spacekey="${spacekey}" class="pulse-trigger">${this.game.spaces[spacekey].name}</span>`;
+  }
 
   convertCountryToPower(country="", power="allies") {
     for (let key in this.game.spaces) {
@@ -10853,7 +10885,7 @@ return 1; }
 		    if (this.game.state.turn < 2) { roll -= 2; }
 		    if (roll > space.fort) {
 		      space.fort = -1;
-		      this.updateStatus(this.returnSpaceName(space.key) + " fort destroyed (roll: " + roll + ")");
+		      this.updateStatus(this.returnSpaceNameForLog(space.key) + " fort destroyed (roll: " + roll + ")");
 
 	              //
 	              // switch control
@@ -10868,7 +10900,7 @@ return 1; }
 		     this.shakeSpacekey(key);
 
 		    } else {
-		      this.updateStatus(this.returnSpaceName(space.key) + " fort resists siege (roll: " + roll + ")");
+		      this.updateStatus(this.returnSpaceNameForLog(space.key) + " fort resists siege (roll: " + roll + ")");
 		    }
 
 		  }
@@ -10914,22 +10946,22 @@ return 1; }
 		    let u = this.game.spaces[key].units[z];
 		    if (u.army) {
           	      if (power == "allies") {
-			this.updateLog(u.name + " eliminated from " + this.game.spaces[key].name + " (out-of-supply)");
+			this.updateLog(u.name + " eliminated from " + this.returnSpaceNameForLog(key) + " (out-of-supply)");
 			this.game.spaces[key].units.splice(z, 1);
 		      }
           	      if (power == "central") {
-			this.updateLog(u.name + " eliminated from " + this.game.spaces[key].name + " (out-of-supply)");
+			this.updateLog(u.name + " eliminated from " + this.returnSpaceNameForLog(key) + " (out-of-supply)");
 			this.game.spaces[key].units.splice(z, 1);
 		      }
 		    }
 		    if (u.corps) {
           	      if (power == "allies") {
-			this.updateLog(u.name + " eliminated from " + this.game.spaces[key].name + " (out-of-supply)");
+			this.updateLog(u.name + " eliminated from " + this.returnSpaceNameForLog(key) + " (out-of-supply)");
             		this.game.state.eliminated["allies"].push(this.game.spaces[key].units[z]);
 			this.game.spaces[key].units.splice(z, 1);
 		      }
           	      if (power == "central") {
-			this.updateLog(u.name + " eliminated from " + this.game.spaces[key].name + " (out-of-supply)");
+			this.updateLog(u.name + " eliminated from " + this.returnSpaceNameForLog(key) + " (out-of-supply)");
             		this.game.state.eliminated["central"].push(this.game.spaces[key].units[z]);
 			this.game.spaces[key].units.splice(z, 1);
 		      }
@@ -11430,7 +11462,7 @@ try {
 	  this.game.spaces[source].units.splice(unit_idx, 1);
 	  this.game.spaces[destination].units.push(unit);
 
-	  this.updateLog(unit.name + " redeploys to " + this.returnSpaceName(destination));
+	  this.updateLog(unit.name + " redeploys to " + this.returnSpaceNameForLog(destination));
 
 	  this.displaySpace(source);
 	  this.displaySpace(destination);
@@ -11610,7 +11642,7 @@ try {
 	  //
 	  // update log
 	  //
-	  this.updateLog(this.returnFactionName(this.game.state.combat.attacking_faction) + " attacks " + this.game.spaces[key].name);
+	  this.updateLog(this.returnFactionName(this.game.state.combat.attacking_faction) + " attacks " + this.returnSpaceNameForLog(key));
 
 	  //
 	  // Great Retreat allows RU units to retreat
@@ -12548,7 +12580,7 @@ this.updateLog("Defender Power handling retreat: " + this.game.state.combat.defe
 
 	  let unit = this.game.spaces[spacekey].units[idx];
 	  let faction = this.returnPowerOfUnit(unit);
-	  this.updateLog(unit.name + " eliminated in " + this.returnSpaceName(spacekey));
+	  this.updateLog(unit.name + " eliminated in " + this.returnSpaceNameForLog(spacekey));
 
 	  if (faction == "allies") {
    	    this.game.state.eliminated["allies"].push(unit);
@@ -12895,9 +12927,9 @@ console.log("ADDACKERS NOW: " + JSON.stringify(this.game.state.combat.attacker))
 	  } else {
 	    if (!this.game.spaces[key].trench) { this.game.spaces[key].trench = 0; }
 	    if (this.game.spaces[key].trench == 0) { 
-	      this.updateLog(this.returnName(faction) + " entrenches in " + this.game.spaces[key].name);
+	      this.updateLog(this.returnName(faction) + " entrenches in " + this.returnSpaceNameForLog(key));
 	    } else {
-	      this.updateLog(this.returnName(faction) + " entrenches deeper in " + this.game.spaces[key].name);
+	      this.updateLog(this.returnName(faction) + " entrenches deeper in " + this.returnSpaceNameForLog(key));
 	    }
 	    this.game.spaces[key].trench++;
 	    if (this.game.spaces[key].trench > 2) { this.game.spaces[key].trench = 2; }
@@ -12999,16 +13031,12 @@ console.log("ADDACKERS NOW: " + JSON.stringify(this.game.state.combat.attacker))
 	  //
 	  // note that this does not apply to units moving into a space they control...
 	  //
-console.log("are there units in " + destinationkey);
 	  if (this.game.spaces[destinationkey].units.length > 0) {
-console.log("yes!");
 
 	    if (this.returnPowerOfUnit(this.game.spaces[destinationkey].units[0]) != this.game.spaces[destinationkey].control) {
-console.log("space is not controlled by us...");
 	      if (this.game.spaces[destinationkey].fort > 0) {
 	        this.game.spaces[destinationkey].besieged = 1;
 	      } else {
-console.log("switching control!");
 	        //
 	        // switch control
 	        //
@@ -13017,12 +13045,10 @@ console.log("switching control!");
 	        //
 	        // degrade trenches
 	        //
-console.log("degrading trench!");
 	        if (this.game.spaces[destinationkey].trench > 0) { this.game.spaces[destinationkey].trench--; }
 	      }
 	    }
 	  }
-
 
 	  //
 	  // check if no longer besieged?
@@ -16171,7 +16197,7 @@ console.log("in supply!");
     if (destinationkey == "aeubox" || destinationkey == "ceubox") {
       this.updateLog(unit.name + " eliminated.");
     } else {
-      this.updateLog(unit.name + " moves from " + this.game.spaces[sourcekey].name + " to " + this.game.spaces[destinationkey].name);
+      this.updateLog(unit.name + " moves from " + this.returnSpaceNameForLog(sourcekey) + " to " + this.returnSpaceNameForLog(destinationkey));
     }
 
     unit.spacekey = destinationkey;

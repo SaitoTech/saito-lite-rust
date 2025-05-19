@@ -67,7 +67,7 @@
     if (destinationkey == "aeubox" || destinationkey == "ceubox") {
       this.updateLog(unit.name + " eliminated.");
     } else {
-      this.updateLog(unit.name + " moves from " + this.game.spaces[sourcekey].name + " to " + this.game.spaces[destinationkey].name);
+      this.updateLog(unit.name + " moves from " + this.returnSpaceNameForLog(sourcekey) + " to " + this.returnSpaceNameForLog(destinationkey));
     }
 
     unit.spacekey = destinationkey;
