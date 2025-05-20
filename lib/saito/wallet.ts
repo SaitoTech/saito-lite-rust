@@ -122,7 +122,9 @@ export default class Wallet extends SaitoWallet {
 
   public async createSendBoundTransaction(
     amt,
-    nft_id,
+    slip1UtxoKey,
+    slip2UtxoKey,
+    slip3UtxoKey,
     data,
     receipient_publicKey,
   ){
@@ -130,13 +132,17 @@ export default class Wallet extends SaitoWallet {
 
       console.log("values going to saito.ts:");
       console.log(amt);
-      console.log(nft_id);
+      console.log(slip1UtxoKey);
+      console.log(slip2UtxoKey);
+      console.log(slip3UtxoKey);
       console.log(data);
       console.log(receipient_publicKey);
 
       return S.getInstance().createSendBoundTransaction(
         amt,
-        nft_id,
+        slip1UtxoKey,
+        slip2UtxoKey,
+        slip3UtxoKey,
         data,
         receipient_publicKey,
       );
@@ -554,6 +560,9 @@ export default class Wallet extends SaitoWallet {
 
     let slips = await this.getSlips();
     this.app.options.wallet.slips = slips.map((slip) => slip.toJson());
+
+
+    console.log("saving wallet: ", this.app.options.wallet.nft);
 
     await this.save();
     this.app.storage.saveOptions();
@@ -1214,4 +1223,20 @@ export default class Wallet extends SaitoWallet {
   public async produceBlockWithoutGt() {
     return S.getInstance().produceBlockWithoutGt();
   }
+
+  /**
+   * Update wallet’s nft list
+   * @param {Object[]} nft_list  an array of NFT objects
+   */
+  async saveNftList(nft_list) {
+    if (!Array.isArray(nft_list)) {
+      throw new Error("saveNftList expects an array of NFTs");
+    }
+
+    this.app.options.wallet.nft = nft_list;
+
+    await this.saveWallet();
+
+  }
+
 }
