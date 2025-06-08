@@ -1,3 +1,8 @@
+# Deprecated Repo
+
+The new Saito Repo can be found [here]([url](https://github.com/SaitoTech/saito)).
+
+
 # Welcome to Saito
 
 Saito is a **Tier 1 Blockchain Protocol** that provides **high throughput**. The network accomplishes this with a consensus mechanism that pays nodes in the network for the collection and sharing of fees. This incentivizes spending on whatever user-facing infrastructure or services provide value to users, instead of extractive activities of mining and staking which require participants to find external business models to support the network.
