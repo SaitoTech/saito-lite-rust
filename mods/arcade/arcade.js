@@ -64,7 +64,7 @@ class Arcade extends ModTemplate {
 			twitter: '@SaitoOfficial',
 			title: '🟥 Saito Arcade',
 			url: 'https://saito.io/arcade/',
-			description: 'Peer to peer gaming on the blockchain',
+			description: 'Open Internet blockchain gaming',
 			image: 'https://saito.tech/wp-content/uploads/2023/11/arcade-300x300.png'
 		};
 
