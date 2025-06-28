@@ -57,7 +57,7 @@ class Fileshare extends ModTemplate {
 			twitter: '@SaitoOfficial',
 			title: 'Saito Fileshare',
 			url: 'https://saito.io/fileshare/',
-			description: 'P2P live file transfering on Saito Network blockchain',
+			description: 'Limitless encrypted file transfer on the Open Internet',
 			image: 'https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png'
 		};
 
