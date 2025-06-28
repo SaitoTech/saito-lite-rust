@@ -42,7 +42,7 @@ class Limbo extends ModTemplate {
 			twitter: '@SaitoOfficial',
 			title: `🟥 ${this.returnName()}`,
 			url: `https://saito.io/${this.returnSlug()}/`,
-			description: 'Voice and video "swarmcasting" with no middleman',
+			description: 'Voice and video swarmcasting over the Open Internet',
 			image: 'https://saito.tech/wp-content/uploads/2023/11/videocall-300x300.png'
 		};
 
