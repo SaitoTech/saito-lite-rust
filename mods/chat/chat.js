@@ -118,7 +118,7 @@ class Chat extends ModTemplate {
       twitter: '@SaitoOfficial',
       title: 'Saito Chat',
       url: 'https://saito.io/chat/',
-      description: 'Instant messaging client on Saito Network blockchain',
+      description: 'Open Internet instant messaging on Saito',
       image:
         'https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png'
     };
