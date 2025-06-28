@@ -39,7 +39,7 @@ class Videocall extends ModTemplate {
 			twitter: '@SaitoOfficial',
 			title: '🟥 Saito Talk',
 			url: 'https://saito.io/videocall/',
-			description: 'Peer to peer voice and video calling with no middleman',
+			description: 'Open Internet video call with no middleman',
 			image: '/videocall/img/video-call-og.png'
 			//image: 'https://saito.tech/wp-content/uploads/2023/11/videocall-300x300.png',
 		};
