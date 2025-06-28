@@ -24,7 +24,7 @@ class Blog extends ModTemplate {
             twitter: '@SaitoOfficial',
             title: '🟥 Saito User - Web3 Social Media',
             url: 'https://saito.io/blog',
-            description: 'Peer to peer Web3 social media platform',
+            description: 'Open Internet blog client',
             image: 'https://saito.tech/wp-content/uploads/2022/04/saito_card.png'
         };
 
